@@ -1,0 +1,38 @@
+---
+
+- name: Clients
+  ansible.builtin.import_tasks: clients.yaml
+  tags:
+    - clients
+
+- name: Log
+  ansible.builtin.import_tasks: log.yaml
+  tags:
+    - log
+
+- name: Log warn
+  ansible.builtin.import_tasks: log-warn.yaml
+  tags:
+    - log
+    - log_warn
+
+- name: Log unattended
+  ansible.builtin.import_tasks: log-unattended.yaml
+  tags:
+    - log
+    - log_unattended
+
+- name: Uname
+  ansible.builtin.import_tasks: uname.yaml
+  tags:
+    - uname
+
+- name: Tor version
+  ansible.builtin.import_tasks: version.yaml
+  tags:
+    - version
+
+- name: Metrics
+  ansible.builtin.import_tasks: metrics.yaml
+  tags:
+    - metrics

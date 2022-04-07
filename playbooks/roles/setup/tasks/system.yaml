@@ -1,0 +1,30 @@
+---
+
+- name: Update Dist
+  ansible.builtin.apt:
+    cache_valid_time: 600
+    force_apt_get: true
+    upgrade: dist
+  register: apt_dist_output
+
+- name: Install needed software
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - gpg
+      - unattended-upgrades
+
+- name: Configure auto upgrades
+  ansible.builtin.copy:
+    src: 20auto-upgrades
+    dest: "/etc/apt/apt.conf.d/20auto-upgrades"
+
+- name: Configure unattended upgrades
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: "/etc/apt/apt.conf.d/50unattended-upgrades"
+
+- name: Cleanup
+  ansible.builtin.apt:
+    autoclean: yes
+    autoremove: yes

@@ -1,0 +1,9 @@
+---
+
+- name: 'Bridge Line'
+  hosts:
+    - '!setup'
+    - deployed
+    - readonly
+  roles:
+    - role: bridgeline

@@ -1,0 +1,16 @@
+BridgeRelay 1
+
+SandBox 0
+
+ORPort {{ or_port }}
+
+ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
+
+ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
+
+ExtORPort auto
+
+{% for item in torrc_config %}
+{{ item.name }} {{ item.value }}
+
+{% endfor %}

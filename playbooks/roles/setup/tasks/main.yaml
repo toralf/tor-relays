@@ -1,0 +1,34 @@
+---
+
+- block:
+    - name: System
+      ansible.builtin.import_tasks: system.yaml
+      tags:
+        - system
+
+    - name: Tor
+      ansible.builtin.import_tasks: tor.yaml
+      tags:
+        - tor
+
+    - name: Reboot
+      ansible.builtin.import_tasks: reboot.yaml
+      tags:
+        - reboot
+
+  module_defaults:
+    ansible.builtin.apt:
+      state: latest
+      update_cache: yes
+    ansible.builtin.copy:
+      owner: root
+      group: root
+      mode: 0644
+    ansible.builtin.file:
+      owner: root
+      group: root
+      mode: 0644
+    ansible.builtin.template:
+      owner: root
+      group: root
+      mode: 0644

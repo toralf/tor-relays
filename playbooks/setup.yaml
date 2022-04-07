@@ -1,0 +1,9 @@
+---
+
+- name: 'Setup'
+  hosts:
+    - setup
+    - '!deployed'
+    - '!readonly'
+  roles:
+    - role: setup

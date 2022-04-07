@@ -1,0 +1,10 @@
+---
+
+- name: Get unique clients from {{ notice_log }}
+  ansible.builtin.shell: |
+    /usr/bin/tac {{ notice_log }} {{ notice_log }}.1 | /usr/bin/grep -m 4 'unique clients.' | /usr/bin/tac
+  register: result
+
+- name: result
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"

@@ -1,0 +1,3 @@
+---
+
+torrc_config: "{{ torrc_generic + torrc_public }}"

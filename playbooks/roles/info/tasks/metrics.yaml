@@ -1,0 +1,39 @@
+---
+
+- name: Get hashed fingerprint
+  ansible.builtin.shell: |
+    cut -f2 -d' ' /var/lib/tor/hashed-fingerprint
+  register: result
+
+- ansible.builtin.set_fact:
+    hashed_fingerprint: "{{ result.stdout.split('\n')[0] }}"
+
+- name: Query b.t.o
+  ansible.builtin.uri:
+    url: "https://bridges.torproject.org/status?id={{ hashed_fingerprint }}"
+    return_content: yes
+    status_code: [200, 404]
+  register: result
+
+- name: Show b.t.o data
+  ansible.builtin.debug:
+    msg: "{{ result.content }}"
+
+- name: Query Onionoo
+  ansible.builtin.uri:
+    url: "https://onionoo.torproject.org/details?search={{ hashed_fingerprint }}"
+    return_content: yes
+    status_code: [200, 404]
+  register: result
+
+- ansible.builtin.set_fact:
+    data: "{{ result.json.bridges[0] }}"
+  when: result.json.bridges[0] is defined
+
+- name: Onionoo data
+  ansible.builtin.debug:
+    msg: "{{ '%-10s' | format(data.bridgedb_distributor | default('None')) }}
+          {{ '%10i' | format(data.advertised_bandwidth) }}
+          {{ '  running:' + data.running | string }}
+          {{ '  blocklist:' + data.blocklist | default([]) | join(',') }}"
+  when: data is defined

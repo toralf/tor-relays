@@ -1,0 +1,10 @@
+---
+
+- name: Get last {{ log_lines }} lines from {{ unattended_log }}
+  ansible.builtin.shell: |
+    /usr/bin/tail -n {{ log_lines }} {{ unattended_log }} || true
+  register: result
+
+- name: results
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"

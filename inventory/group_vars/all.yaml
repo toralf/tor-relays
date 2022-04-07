@@ -1,0 +1,31 @@
+---
+
+unattended_log: '/var/log/unattended-upgrades/unattended-upgrades-dpkg.log'
+notice_log: '/var/log/tor/notice.log'
+warn_log: '/var/log/tor/warn.log'
+log_lines: 10
+
+public_ip: "{{ ansible_eth0.ipv4.address }}"
+or_port: "{{ range(1024, 65535) | random(seed=ansible_hostname + public_ip + seed_or_port) }}"
+
+torrc_generic:
+  - name: 'Log notice file'
+    value: "{{ notice_log }}"
+  - name: 'Log warn file'
+    value: "{{ warn_log }}"
+
+torrc_public:
+  - name: 'PublishServerDescriptor'
+    value: 'bridge'
+  - name: 'BridgeDistribution'
+    value: 'any'
+  - name: 'Nickname'
+    value: "{{ (nickname_prefix + ansible_hostname)[:19] }}"
+  - name: 'ContactInfo'
+    value: "{{ contact_info }}"
+
+torrc_private:
+  - name: 'PublishServerDescriptor'
+    value: '0'  # 1 when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved
+  - name: 'BridgeDistribution'
+    value: 'none'

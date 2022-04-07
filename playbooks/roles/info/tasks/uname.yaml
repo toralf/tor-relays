@@ -1,0 +1,11 @@
+---
+
+- name: Uname
+  ansible.builtin.shell: |
+    uname -rv
+    uptime
+  register: result
+
+- name: result
+  ansible.builtin.debug:
+    msg: "{{ result.stdout }}"

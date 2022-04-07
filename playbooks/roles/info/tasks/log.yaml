@@ -1,0 +1,10 @@
+---
+
+- name: Get last {{ log_lines }} lines from {{ notice_log }}
+  ansible.builtin.shell: |
+    /usr/bin/tail -n {{ log_lines }} {{ notice_log }}
+  register: result
+
+- name: results
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"

@@ -1,0 +1,25 @@
+---
+
+- name: Get fingerprint
+  ansible.builtin.shell: |
+    cut -f2 -d' ' /var/lib/tor/fingerprint
+  register: result
+
+- ansible.builtin.set_fact:
+    fp: "{{ result.stdout.split('\n')[0] }}"
+
+- name: Get certificate
+  ansible.builtin.shell: |
+    grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
+  register: result
+
+- ansible.builtin.set_fact:
+    cert: "{{ result.stdout.split('\n')[0] }}"
+
+- name: sort -k 8 /tmp/bridgeline.txt
+  ansible.builtin.lineinfile:
+    line: "Bridge obfs4 {{ '%15s' | format(ansible_eth0.ipv4.address) }}:{{ '%-5s' | format(obfs4_port) }} {{ fp }} {{ cert }} iat-mode=0  # {{ ansible_hostname }}"
+    path: /tmp/bridgeline.txt
+    create: yes
+    mode: 0600
+  delegate_to: localhost

@@ -1,0 +1,72 @@
+---
+
+- name: Configure Tor repo
+  ansible.builtin.template:
+    src: tor.list.j2
+    dest: "/etc/apt/sources.list.d/tor.list"
+
+- name: Check if Tor repo key needs to be fetched
+  ansible.builtin.stat:
+    path: /usr/share/keyrings/tor-archive-keyring.gpg
+    get_md5: no
+  register: key_needs_to_be_fetched
+
+- name: Add Tor repo key
+  ansible.builtin.shell: |
+    wget -O- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor > /usr/share/keyrings/tor-archive-keyring.gpg
+  when: not key_needs_to_be_fetched.stat.exists
+
+- name: Install Tor
+  ansible.builtin.apt:
+    name:
+      - tor
+      - tor-geoipdb
+      - deb.torproject.org-keyring
+
+- name: Install obfs4proxy
+  ansible.builtin.apt:
+    name:
+      - obfs4proxy
+    default_release: "{{ ansible_distribution_release }}-backports"
+  register: obfs4proxy_state
+
+- name: Set caps
+  ansible.builtin.capabilities:
+    path: /usr/bin/obfs4proxy
+    capability: 'cap_net_bind_service=+ep'
+    state: present
+  when: obfs4_port < 1024 and obfs4proxy_state.changed
+
+- name: Create dirs to configure privileged orport
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/systemd/system/{{ item }}.d"
+    recurse: yes
+  with_items:
+    - "tor@default.service"
+    - "tor@.service"
+    - "tor.service.d"
+  when: obfs4_port < 1024 and obfs4proxy_state.changed
+
+- name: Configure privileged orport
+  ansible.builtin.copy:
+    src: override_tor_service.conf
+    dest: "/etc/systemd/system/{{ item }}.d/override.conf"
+  with_items:
+    - "tor@default.service"
+    - "tor@.service"
+    - "tor.service.d"
+  when: obfs4_port < 1024 and obfs4proxy_state.changed
+
+- name: Configure torrc
+  ansible.builtin.template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
+
+- name: Enable Tor service
+  ansible.builtin.systemd:
+    name: "tor@default"
+    state: started
+    daemon_reload: yes
+    enabled: yes
+    no_block: yes
