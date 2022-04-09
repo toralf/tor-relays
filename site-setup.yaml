@@ -1,4 +1,4 @@
-#!/usr/bin/env -S ansible-playbook -i inventory -e @secrets/local.yaml
+#!/usr/bin/env -S ansible-playbook -e @secrets/local.yaml
 
 ---
 
