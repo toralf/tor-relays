@@ -5,6 +5,11 @@
     src: tor.list.j2
     dest: "/etc/apt/sources.list.d/tor.list"
 
+- name: Configure backports
+  ansible.builtin.lineinfile:
+    line: "deb http://mirror.hetzner.com/debian/packages {{ ansible_distribution_release }}-backports main contrib non-free"
+    path: /etc/apt/sources.list.d/hetzner-mirror.list
+
 - name: Check if Tor repo key needs to be fetched
   ansible.builtin.stat:
     path: /usr/share/keyrings/tor-archive-keyring.gpg
@@ -66,7 +71,6 @@
 - name: Enable Tor service
   ansible.builtin.systemd:
     name: "tor@default"
-    state: started
-    daemon_reload: yes
+    state: restarted
     enabled: yes
     no_block: yes
