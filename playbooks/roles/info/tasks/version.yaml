@@ -4,7 +4,7 @@
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Tor
+- name: Tor / obfs4proxy
   ansible.builtin.debug:
     msg:
-      - "{{ ansible_facts.packages['tor'][0].version }} {{ ansible_facts.packages['obfs4proxy'][0].version }}"
+      - "{{ ansible_facts.packages['tor'][0].version }}   /   {{ ansible_facts.packages['obfs4proxy'][0].version }}"
