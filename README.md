@@ -50,12 +50,12 @@ private:
 6. Get the bridge line
 
 ```bash
-./site-bridgeline.yaml
+./site-bridgeline.yaml --limit my_public_bridge
 ```
 7. Run
 
 ```bash
-./site-info.yaml
+./site-info.yaml --limit my_public_bridge
 ```
 
 That's all.
