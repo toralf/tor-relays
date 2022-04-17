@@ -38,12 +38,10 @@ do
   i=10
   while ((i--))
   do
-    if ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=5 ${name} "uname -a"; then
-      break
-    elif [[ ${i} -eq 0 ]]; then
-      echo -n "\nFAILED to reach: ${name}\n"
-      break
+    if ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=5 ${name} "uname -a" </dev/null; then
+      continue 2
     fi
     sleep 3
   done
+  echo -n "\nFAILED to reach: ${name}\n"
 done
