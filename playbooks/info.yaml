@@ -2,7 +2,7 @@
 
 - name: 'Info'
   hosts:
-    - setup
+    - '!setup'
     - deployed
     - readonly
   strategy: linear
