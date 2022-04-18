@@ -14,18 +14,3 @@ torrc_generic:
   - name: 'Log warn file'
     value: "{{ warn_log }}"
 
-torrc_public:
-  - name: 'PublishServerDescriptor'
-    value: 'bridge'
-  - name: 'BridgeDistribution'
-    value: 'any'
-  - name: 'Nickname'
-    value: "{{ (nickname_prefix + ansible_hostname)[:19] }}"
-  - name: 'ContactInfo'
-    value: "{{ contact_info }}"
-
-torrc_private:
-  - name: 'PublishServerDescriptor'
-    value: '0'  # 1 when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved
-  - name: 'BridgeDistribution'
-    value: 'none'

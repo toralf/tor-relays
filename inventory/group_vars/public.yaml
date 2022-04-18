@@ -1,3 +1,14 @@
 ---
 
+contact_info: ''
+nickname_prefix: ''
+
+torrc_public:
+  - name: 'PublishServerDescriptor'
+    value: 'bridge'
+  - name: 'Nickname'
+    value: "{{ (nickname_prefix + ansible_hostname)[:19] }}"
+  - name: 'ContactInfo'
+    value: "{{ contact_info }}"
+
 torrc_config: "{{ torrc_generic + torrc_public }}"

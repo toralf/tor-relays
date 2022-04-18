@@ -10,10 +10,9 @@ They do expect _unbound_ as a local resolver.
 
 ```yaml
 ---
-obfs4_port: 2323
-seed_or_port: 'a-random-string'
 contact_info: 'see https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
-nickname_prefix: ''
+obfs4_port: 2323
+seed_or_port: 'insert-here-a-generated-random-string'
 ```
 2. Create a VPS (name i.e. is `my_public_bridge`)
 
