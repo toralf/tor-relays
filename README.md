@@ -1,25 +1,25 @@
-# A stack to deploy Tor relays
-Only bridges are supported currently.
+# A stack to deploy Tor bridges
 The deployment is made via an _Ansible_ role.
-Only Debian is supported.
-The shell scripts works for Hetzner VPS only.
+Debian is the supported OS.
+The shell scripts works for Hetzner VPS.
 They do expect _unbound_ as a local resolver.
 
 ### Usage
-1. Create `secrets/local.yaml` like:
+Create a Tor bridge *my_public_bridge* within the Hetzner cloud project _public_.
+1. Create the file `secrets/local.yaml` eg.:
 
 ```yaml
 ---
 contact_info: 'see https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
 obfs4_port: 2323
-seed_or_port: 'insert-here-a-generated-random-string'
+seed_or_port: 'a-random-string'
 ```
-2. Create a VPS (name i.e. is `my_public_bridge`)
+2. Create the VPS
 
 ```bash
 ./bin/create-server.sh public my_public_bridge
 ```
-3. Add the host to the subgroup `setup` of the group `public`:
+3. Add it to the ansible inventory subgroup `setup` of the group `public`:
 
 ```yaml
 ---
@@ -49,12 +49,7 @@ private:
 6. Get the bridge line
 
 ```bash
-./site-bridgeline.yaml --limit my_public_bridge
-```
-7. Run
-
-```bash
-./site-info.yaml --limit my_public_bridge
+./site-bridgeline.yaml
 ```
 
 That's all.
