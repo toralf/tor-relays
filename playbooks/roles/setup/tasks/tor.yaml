@@ -72,5 +72,5 @@
   ansible.builtin.systemd:
     name: "tor@default"
     state: restarted
+    daemon_reload: yes
     enabled: yes
-    no_block: yes
