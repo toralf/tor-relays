@@ -2,7 +2,6 @@
 
 - name: Update Dist
   ansible.builtin.apt:
-    cache_valid_time: 600
     force_apt_get: true
     upgrade: dist
   register: apt_dist_output
