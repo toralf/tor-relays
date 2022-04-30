@@ -28,3 +28,10 @@
   ansible.builtin.apt:
     autoclean: yes
     autoremove: yes
+
+- name: Tweak readline
+  ansible.builtin.lineinfile:
+    line: "set enable-bracketed-paste off"
+    path: /root/.inputrc
+    create: yes
+    mode: 0644
