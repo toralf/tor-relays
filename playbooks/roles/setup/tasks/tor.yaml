@@ -1,25 +1,21 @@
 ---
 
-- name: Configure Tor repo
-  ansible.builtin.template:
-    src: tor.list.j2
-    dest: "/etc/apt/sources.list.d/tor.list"
+- name: Configure Hetzner Mirror repository "backports"
+  ansible.builtin.apt_repository:
+    filename: 'hetzner-mirror'
+    repo: "deb http://mirror.hetzner.com/debian/packages {{ ansible_distribution_release }}-backports main contrib non-free"
+    state: present
 
-- name: Configure backports
-  ansible.builtin.lineinfile:
-    line: "deb http://mirror.hetzner.com/debian/packages {{ ansible_distribution_release }}-backports main contrib non-free"
-    path: /etc/apt/sources.list.d/hetzner-mirror.list
+- name: Get Tor repository apt key
+  ansible.builtin.apt_key:
+    url: 'https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc'
+    state: present
 
-- name: Check if Tor repo key needs to be fetched
-  ansible.builtin.stat:
-    path: /usr/share/keyrings/tor-archive-keyring.gpg
-    get_md5: no
-  register: key_needs_to_be_fetched
-
-- name: Add Tor repo key
-  ansible.builtin.shell: |
-    wget -O- https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc | gpg --dearmor > /usr/share/keyrings/tor-archive-keyring.gpg
-  when: not key_needs_to_be_fetched.stat.exists
+- name: Configure repository "Tor"
+  ansible.builtin.apt_repository:
+    filename: 'tor'
+    repo: "deb https://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main"
+    state: present
 
 - name: Install Tor
   ansible.builtin.apt:

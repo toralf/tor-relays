@@ -3,6 +3,7 @@
 - name: Update Dist
   ansible.builtin.apt:
     force_apt_get: true
+    update_cache: yes
     upgrade: dist
   register: apt_dist_output
 
