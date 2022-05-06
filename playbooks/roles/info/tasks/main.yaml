@@ -6,9 +6,10 @@
     - clients
 
 - name: Log
-  ansible.builtin.import_tasks: log.yaml
+  ansible.builtin.import_tasks: log-notice.yaml
   tags:
     - log
+    - log_notice
 
 - name: Log warn
   ansible.builtin.import_tasks: log-warn.yaml
