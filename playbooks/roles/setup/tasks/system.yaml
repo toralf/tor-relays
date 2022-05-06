@@ -12,6 +12,7 @@
     name:
       - apt-transport-https
       - gpg
+      - gpg-agent
       - unattended-upgrades
 
 - name: Configure auto upgrades
