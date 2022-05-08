@@ -1,8 +1,8 @@
 ---
 
-- name: Configure Hetzner Mirror repository "backports"
+- name: Configure repository "backports"
   ansible.builtin.apt_repository:
-    filename: 'hetzner-mirror'
+    filename: 'backports'
     repo: "deb http://mirror.hetzner.com/debian/packages {{ ansible_distribution_release }}-backports main contrib non-free"
     state: present
 
@@ -11,7 +11,7 @@
     url: 'https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc'
     state: present
 
-- name: Configure repository "Tor"
+- name: Configure repository "tor"
   ansible.builtin.apt_repository:
     filename: 'tor'
     repo: "deb https://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main"
