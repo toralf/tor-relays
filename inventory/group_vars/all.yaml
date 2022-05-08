@@ -13,4 +13,3 @@ torrc_generic:
     value: "{{ notice_log }}"
   - name: 'Log warn file'
     value: "{{ warn_log }}"
-

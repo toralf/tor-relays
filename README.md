@@ -30,8 +30,6 @@ public:
         my_public_bridge:
     deployed:
       hosts:
-    readonly:
-      hosts:
 
 private:
   children:
