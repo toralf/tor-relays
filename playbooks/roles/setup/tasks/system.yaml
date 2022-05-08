@@ -20,11 +20,13 @@
   ansible.builtin.copy:
     src: 20auto-upgrades
     dest: "/etc/apt/apt.conf.d/20auto-upgrades"
+    mode: 0644
 
 - name: Configure unattended upgrades
   ansible.builtin.copy:
     src: 50unattended-upgrades
     dest: "/etc/apt/apt.conf.d/50unattended-upgrades"
+    mode: 0644
 
 - name: Cleanup
   ansible.builtin.apt:

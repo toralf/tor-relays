@@ -43,6 +43,7 @@
     state: directory
     path: "/etc/systemd/system/{{ item }}.d"
     recurse: yes
+    mode: 0755
   with_items:
     - "tor@default.service"
     - "tor@.service"
@@ -53,6 +54,7 @@
   ansible.builtin.copy:
     src: override_tor_service.conf
     dest: "/etc/systemd/system/{{ item }}.d/override.conf"
+    mode: 0644
   with_items:
     - "tor@default.service"
     - "tor@.service"
@@ -63,6 +65,7 @@
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
+    mode: 0600
 
 - name: Enable Tor service
   ansible.builtin.systemd:
