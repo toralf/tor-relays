@@ -13,7 +13,8 @@
     grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: result
 
-- ansible.builtin.set_fact:
+- name: Get the fact
+  ansible.builtin.set_fact:
     cert: "{{ result.stdout.split('\n')[0] }}"
 
 - name: sort -k 8 /tmp/bridgeline.txt

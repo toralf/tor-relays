@@ -5,7 +5,8 @@
     cut -f2 -d' ' /var/lib/tor/hashed-fingerprint
   register: result
 
-- ansible.builtin.set_fact:
+- name: Set fact
+  ansible.builtin.set_fact:
     hashed_fingerprint: "{{ result.stdout.split('\n')[0] }}"
 
 - name: Query b.t.o
@@ -26,7 +27,8 @@
     status_code: [200, 404]
   register: result
 
-- ansible.builtin.set_fact:
+- name: Set fact
+  ansible.builtin.set_fact:
     data: "{{ result.json.bridges[0] }}"
   when: result.json.bridges[0] is defined
 
