@@ -15,5 +15,4 @@ do
   sed -i -e "/^${name} /d" ~/.ssh/known_hosts
 done
 
-# update /etc/unbound/hetzner-${project}.conf
 $(dirname $0)/update-dns.sh ${project}

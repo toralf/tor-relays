@@ -29,19 +29,5 @@ do
       --name "${name}"
 done
 
-# update /etc/unbound/hetzner-${project}.conf
 $(dirname $0)/update-dns.sh ${project}
-
-# update ~/.ssh/known_hosts
-for name in ${@}
-do
-  i=10
-  while ((i--))
-  do
-    if ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=5 ${name} "uname -a" </dev/null; then
-      continue 2
-    fi
-    sleep 3
-  done
-  echo -n "\nFAILED to reach: ${name}\n"
-done
+$(dirname $0)/update-known_hosts.sh ${@}
