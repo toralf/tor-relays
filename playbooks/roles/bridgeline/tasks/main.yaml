@@ -5,7 +5,8 @@
     cut -f2 -d' ' /var/lib/tor/fingerprint
   register: result
 
-- ansible.builtin.set_fact:
+- name: Get the fact
+  ansible.builtin.set_fact:
     fp: "{{ result.stdout.split('\n')[0] }}"
 
 - name: Get certificate
