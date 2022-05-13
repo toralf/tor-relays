@@ -6,7 +6,6 @@
 set -euf
 export LANG=C.utf8
 
-# set Hetzner project
 project=${1:?}
 hcloud context use ${project}
 
