@@ -2,7 +2,7 @@
 
 - name: Get last {{ log_lines }} lines from {{ warn_log }}
   ansible.builtin.shell: |
-    /usr/bin/tail -n {{ log_lines }} {{ warn_log }}
+    /usr/bin/tail -n {{ log_lines }} {{ warn_log }} {{ warn_log }}.1 2>/dev/null || true
   register: result
 
 - name: results
