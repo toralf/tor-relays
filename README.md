@@ -1,8 +1,7 @@
 # A stack to deploy Tor bridges
 The deployment is made via an _Ansible_ role.
-Debian is the supported OS.
-The shell scripts works for Hetzner VPS.
-They do expect _unbound_ as a local resolver.
+Debian _bullseye_ is the supported OS.
+The shell scripts works for Hetzner VPS and do expect _unbound_ as a local resolver.
 
 ### Usage
 Create a Tor bridge *my_public_bridge* within the Hetzner cloud project _public_.
@@ -10,9 +9,9 @@ Create a Tor bridge *my_public_bridge* within the Hetzner cloud project _public_
 
 ```yaml
 ---
-contact_info: 'see https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
-obfs4_port: 2323
-seed_or_port: 'a-random-string'
+contact_info: 'fill in here data as aspecified in https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
+obfs4_port: 4711
+seed_or_port: 'a-really-random-string-here-please'
 ```
 2. Create the VPS
 
