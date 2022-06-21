@@ -6,7 +6,7 @@
 
 - name: Tor version
   ansible.builtin.shell: |
-    tor --version
+    tor --version | grep -m 1 ^Tor
   register: result
 
 - name: Tor / obfs4proxy / running
