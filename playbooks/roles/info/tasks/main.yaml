@@ -27,6 +27,7 @@
   ansible.builtin.import_tasks: uname.yaml
   tags:
     - uname
+    - uptime
 
 - name: Tor version
   ansible.builtin.import_tasks: version.yaml
