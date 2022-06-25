@@ -5,8 +5,9 @@ set -euf
 export LANG=C.utf8
 
 project=${1:?}
-hcloud context use ${project}
 shift
+
+hcloud context use ${project}
 
 for name in ${@}
 do
