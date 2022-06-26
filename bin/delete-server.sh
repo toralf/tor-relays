@@ -15,4 +15,5 @@ do
   sed -i -e "/^${name} /d" ~/.ssh/known_hosts
 done
 
+echo
 $(dirname $0)/update-dns.sh ${project}

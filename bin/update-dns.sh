@@ -33,4 +33,5 @@ do
 done |\
 sudo tee -a ${hconf} 1>/dev/null
 
+echo
 sudo /sbin/rc-service unbound reload

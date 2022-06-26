@@ -14,5 +14,5 @@ do
     fi
     sleep 3
   done
-  echo -n "\n FAILED to reach: ${name}\n"
+  echo -e "\n FAILED to reach: ${name}\n"
 done

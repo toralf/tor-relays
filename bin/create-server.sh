@@ -17,10 +17,13 @@ do
   hcloud server create \
       --image "debian-11" \
       --ssh-key "tfoerste@t44" \
-      --location "$(shuf -n1 <<< ${loc_list})" \
+      --location "$(shuf -n 1 <<< ${loc_list})" \
       --type "cpx11" \
       --name "${name}"
 done
 
+echo
 $(dirname $0)/update-dns.sh ${project}
+
+echo
 $(dirname $0)/update-known_hosts.sh ${@}
