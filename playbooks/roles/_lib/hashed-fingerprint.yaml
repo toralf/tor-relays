@@ -1,0 +1,14 @@
+---
+
+- name: Get hashed fingerprint
+  ansible.builtin.shell: |
+    cut -f2 -d' ' /var/lib/tor/hashed-fingerprint
+  register: result
+
+- name: Set fact
+  ansible.builtin.set_fact:
+    hashed_fingerprint: "{{ result.stdout.split('\n')[0] }}"
+
+- name: result
+  ansible.builtin.debug:
+    msg: "# {{ ansible_hostname }}  {{ hashed_fingerprint }}"

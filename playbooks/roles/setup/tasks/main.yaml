@@ -16,6 +16,11 @@
       tags:
         - reboot
 
+    - name: Hint
+      ansible.builtin.import_tasks: ../../_lib/hashed-fingerprint.yaml
+      tags:
+        - hint
+
   module_defaults:
     ansible.builtin.apt:
       state: latest

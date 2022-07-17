@@ -34,7 +34,19 @@
   tags:
     - version
 
-- name: Metrics
-  ansible.builtin.import_tasks: metrics.yaml
+- name: ghf
+  ansible.builtin.import_tasks: ../../_lib/hashed-fingerprint.yaml
   tags:
-    - metrics
+    - bto
+    - hashed_fingerprint
+    - onionoo
+
+- name: onionoo
+  ansible.builtin.import_tasks: onionoo.yaml
+  tags:
+    - onionoo
+
+- name: bto
+  ansible.builtin.import_tasks: bto.yaml
+  tags:
+    - bto

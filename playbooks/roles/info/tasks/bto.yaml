@@ -1,0 +1,12 @@
+---
+
+- name: Query b.t.o
+  ansible.builtin.uri:
+    url: "https://bridges.torproject.org/status?id={{ hashed_fingerprint }}"
+    return_content: yes
+    status_code: [200, 404]
+  register: result
+
+- name: Show b.t.o data
+  ansible.builtin.debug:
+    msg: "{{ result.content }}"

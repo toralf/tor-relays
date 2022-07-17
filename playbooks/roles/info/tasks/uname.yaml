@@ -1,11 +1,8 @@
 ---
 
-- name: current date
-  debug:
-    msg: "{{ ansible_date_time.iso8601 }}"
-
 - name: Uname
   ansible.builtin.shell: |
+    date
     uname -rv
     uptime
   register: result
