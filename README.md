@@ -9,7 +9,8 @@ Create a Tor bridge *my_public_bridge* within the Hetzner cloud project _public_
 
 ```yaml
 ---
-contact_info: 'fill in here data as aspecified in https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
+contact_info: 'look at https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
+nickname_prefix: 'nickneck'
 obfs4_port: 4711
 seed_or_port: 'a-really-random-string-here-please'
 ```
