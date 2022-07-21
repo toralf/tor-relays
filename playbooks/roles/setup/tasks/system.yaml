@@ -19,13 +19,13 @@
 - name: Configure auto upgrades
   ansible.builtin.copy:
     src: 20auto-upgrades
-    dest: "/etc/apt/apt.conf.d/20auto-upgrades"
+    dest: /etc/apt/apt.conf.d/
     mode: 0644
 
 - name: Configure unattended upgrades
   ansible.builtin.copy:
     src: 50unattended-upgrades
-    dest: "/etc/apt/apt.conf.d/50unattended-upgrades"
+    dest: /etc/apt/apt.conf.d/
     mode: 0644
 
 - name: Cleanup
@@ -38,4 +38,10 @@
     line: "set enable-bracketed-paste off"
     path: /root/.inputrc
     create: yes
+    mode: 0644
+
+- name: Htop config
+  ansible.builtin.copy:
+    src: htoprc
+    dest: /root/.config/htop/
     mode: 0644
