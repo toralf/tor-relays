@@ -11,15 +11,15 @@
       tags:
         - tor
 
+    - name: Hint
+      ansible.builtin.import_tasks: hint.yaml
+      tags:
+        - hint
+
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
-
-    - name: Hint
-      ansible.builtin.import_tasks: ../../_lib/hashed-fingerprint.yaml
-      tags:
-        - hint
 
   module_defaults:
     ansible.builtin.apt:
