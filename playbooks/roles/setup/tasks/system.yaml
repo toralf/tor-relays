@@ -45,3 +45,9 @@
     src: htoprc
     dest: /root/.config/htop/
     mode: 0644
+
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20-tor.conf
+    dest: /etc/sysctl.d/
+    mode: 0644
