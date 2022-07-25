@@ -2,8 +2,7 @@
 
 - name: 'Setup'
   hosts:
-    - setup
-    - '!deployed'
+    - bridges
   strategy: free
   roles:
     - role: setup

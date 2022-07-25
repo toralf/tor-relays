@@ -2,8 +2,7 @@
 
 - name: 'Info'
   hosts:
-    - '!setup'
-    - deployed
+    - bridges
   strategy: linear
   roles:
     - role: info
