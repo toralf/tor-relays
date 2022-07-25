@@ -37,7 +37,7 @@ private:
 4. Run
 
 ```bash
-./site-setup.yaml -i inventory/public.yaml
+./site-public-setup.yaml --limit my_public_bridge
 ```
 
 That's all.
