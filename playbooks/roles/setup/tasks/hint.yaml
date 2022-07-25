@@ -6,4 +6,6 @@
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 - name: Hint
   ansible.builtin.debug:
-    msg: "Add hashed fingerprint to ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt"
+    msg:
+      - "Add to ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt :"
+      - "# {{ ansible_hostname }} {{ hashed_fingerprint }}"

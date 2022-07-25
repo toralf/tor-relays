@@ -34,11 +34,10 @@
   tags:
     - version
 
-- name: ghf
+- name: _lib/hashed-fingerprint
   ansible.builtin.import_tasks: ../../_lib/hashed-fingerprint.yaml
   tags:
     - bto
-    - hashed_fingerprint
     - onionoo
 
 - name: onionoo
