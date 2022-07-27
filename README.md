@@ -1,3 +1,5 @@
+[![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
+
 # A stack to deploy Tor bridges
 The deployment is made via an _Ansible_ role.
 Debian _bullseye_ is the supported OS.
