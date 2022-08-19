@@ -40,7 +40,7 @@
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
     mode: 0644
 
-- name: restart
+- name: Activate unattended upgrades time
   ansible.builtin.shell: |
     systemctl restart apt-daily.timer
 
