@@ -28,6 +28,22 @@
     dest: /etc/apt/apt.conf.d/
     mode: 0644
 
+- name: Configure unattended upgrades directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/systemd/system/apt-daily-upgrade.timer.d/"
+    mode: 0755
+
+- name: Configure unattended upgrades time
+  ansible.builtin.template:
+    src: timer.j2
+    dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
+    mode: 0644
+
+- name: restart
+  ansible.builtin.shell: |
+    systemctl restart apt-daily.timer
+
 - name: Cleanup
   ansible.builtin.apt:
     autoclean: yes
