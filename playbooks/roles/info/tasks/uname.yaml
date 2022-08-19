@@ -2,9 +2,8 @@
 
 - name: Uname
   ansible.builtin.shell: |
-    date
     uname -rv
-    uptime
+    uptime -ps
   register: result
 
 - name: result
