@@ -2,4 +2,6 @@
 
 [Timer]
 OnCalendar=
-OnCalendar={{ apt_upgrade_time }}:00
+OnCalendar=*-*-* {{ apt_upgrade_time }}:00
+RandomizedDelaySec=0
+

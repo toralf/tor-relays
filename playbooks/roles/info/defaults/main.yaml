@@ -1,0 +1,5 @@
+---
+
+log_lines: 10
+
+unattended_log: '/var/log/unattended-upgrades/unattended-upgrades-dpkg.log'
