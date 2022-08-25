@@ -23,6 +23,7 @@
       - tor
       - tor-geoipdb
       - deb.torproject.org-keyring
+  register: tor_state
 
 - name: Install obfs4proxy
   ansible.builtin.apt:
@@ -36,7 +37,7 @@
     path: /usr/bin/obfs4proxy
     capability: 'cap_net_bind_service=+ep'
     state: present
-  when: obfs4_port < 1024 and obfs4proxy_state.changed
+  when: obfs4_port < 1024
 
 - name: Create dirs to configure privileged orport
   ansible.builtin.file:
@@ -48,7 +49,7 @@
     - "tor@default.service"
     - "tor@.service"
     - "tor.service.d"
-  when: obfs4_port < 1024 and obfs4proxy_state.changed
+  when: obfs4_port < 1024
 
 - name: Configure privileged orport
   ansible.builtin.copy:
@@ -59,7 +60,7 @@
     - "tor@default.service"
     - "tor@.service"
     - "tor.service.d"
-  when: obfs4_port < 1024 and obfs4proxy_state.changed
+  when: obfs4_port < 1024
 
 - name: Configure torrc
   ansible.builtin.template:
@@ -73,3 +74,4 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
+  when: tor_state.changed or obfs4proxy_state.changed
