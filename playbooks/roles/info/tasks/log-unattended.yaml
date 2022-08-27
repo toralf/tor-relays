@@ -2,7 +2,6 @@
 
 - name: Get last {{ log_lines }} lines from {{ unattended_log }}
   ansible.builtin.shell: |
-    tac {{ unattended_log }} | grep -m 1 '^Log started:' || true
     /usr/bin/tail -n {{ log_lines }} {{ unattended_log }} || true
   register: result
 
