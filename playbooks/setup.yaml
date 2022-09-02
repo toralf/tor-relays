@@ -6,3 +6,4 @@
   strategy: free
   roles:
     - role: setup
+    - role: bridgeline
