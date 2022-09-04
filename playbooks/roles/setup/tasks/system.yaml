@@ -41,7 +41,7 @@
     mode: 0644
   register: upgrade_timer_state
 
-- name: Activate unattended upgrades time
+- name: Restart apt-daily timer
   ansible.builtin.shell: |
     systemctl restart apt-daily.timer
   when: upgrade_timer_state.changed
