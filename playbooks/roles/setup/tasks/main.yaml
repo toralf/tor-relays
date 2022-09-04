@@ -13,9 +13,8 @@
 
     - name: Hint
       ansible.builtin.import_tasks: hint.yaml
+      when: contact_info is defined
       tags:
-        - never
-        - hint
         - tor
 
     - name: Reboot
