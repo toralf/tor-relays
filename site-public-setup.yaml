@@ -4,5 +4,3 @@
 ---
 
 - import_playbook: playbooks/setup.yaml
-  tags:
-    - hint
