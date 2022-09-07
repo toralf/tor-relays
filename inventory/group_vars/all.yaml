@@ -1,7 +1,7 @@
 ---
 
-notice_log: '/var/log/tor/notice.log'
-warn_log: '/var/log/tor/warn.log'
+log_notice: '/var/log/tor/notice.log'
+log_warn: '/var/log/tor/warn.log'
 
 or_port: "{{ range(1024, 65535) | random(seed=ansible_hostname + ansible_eth0.ipv4.address + seed_or_port) }}"
 

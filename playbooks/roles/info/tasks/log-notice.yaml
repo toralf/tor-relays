@@ -1,8 +1,8 @@
 ---
 
-- name: Get last {{ log_lines }} lines from {{ notice_log }}
+- name: Get last {{ log_lines }} lines from {{ log_notice }}
   ansible.builtin.shell: |
-    /usr/bin/tail -n {{ log_lines }} {{ notice_log }}
+    /usr/bin/tail -n {{ log_lines }} {{ log_notice }}
   register: result
 
 - name: results

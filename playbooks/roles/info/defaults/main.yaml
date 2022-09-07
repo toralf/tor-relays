@@ -2,4 +2,6 @@
 
 log_lines: 10
 
-unattended_log: '/var/log/unattended-upgrades/unattended-upgrades-dpkg.log'
+log_unattended: '/var/log/unattended-upgrades/unattended-upgrades-dpkg.log'
+
+log_system: '/var/log/messages'

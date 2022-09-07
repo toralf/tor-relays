@@ -1,0 +1,12 @@
+---
+
+- name: Grep {{ log_system }}
+  ansible.builtin.shell: |
+    zgrep -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* | grep -v 'ansible-ansible.legacy.command:' | head -n {{ log_lines }}
+  register: result
+
+- name: results
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when:
+    result.stdout_lines | length != 5

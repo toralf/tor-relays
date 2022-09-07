@@ -1,8 +1,8 @@
 ---
 
-- name: Get last {{ log_lines }} lines from {{ unattended_log }}
+- name: Get last {{ log_lines }} lines from {{ log_unattended }}
   ansible.builtin.shell: |
-    /usr/bin/tail -n {{ log_lines }} {{ unattended_log }} || true
+    /usr/bin/tail -n {{ log_lines }} {{ log_unattended }} || true
   register: result
 
 - name: results
