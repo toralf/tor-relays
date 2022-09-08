@@ -1,8 +1,8 @@
 ---
 
-- name: Get unique clients from {{ notice_log }}
+- name: Get unique clients from {{ log_notice }}
   ansible.builtin.shell: |
-    /usr/bin/tac {{ notice_log }} {{ notice_log }}.1 | /usr/bin/grep --text -m 4 -F ' unique clients.' | /usr/bin/tac
+    /usr/bin/tac {{ log_notice }} {{ log_notice }}.1 2>/dev/null | /usr/bin/grep --text -m 4 -F ' unique clients.' | /usr/bin/tac
   register: result
 
 - name: result

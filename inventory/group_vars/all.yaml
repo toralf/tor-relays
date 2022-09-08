@@ -7,6 +7,6 @@ or_port: "{{ range(1024, 65535) | random(seed=ansible_hostname + ansible_eth0.ip
 
 torrc_generic:
   - name: 'Log notice file'
-    value: "{{ notice_log }}"
+    value: "{{ log_notice }}"
   - name: 'Log warn file'
-    value: "{{ warn_log }}"
+    value: "{{ log_warn }}"
