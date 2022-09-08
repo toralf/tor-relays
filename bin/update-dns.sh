@@ -11,7 +11,7 @@ project=${1:?}
 
 hconf=/etc/unbound/hetzner-${project}.conf
 if ! grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
-  echo "unbound has to be configured to include ${hconf}"
+  echo -e "\n unbound has to be configured to include ${hconf} !\n"
   exit 1
 fi
 
@@ -22,7 +22,7 @@ sudo chmod 644 ${hconf}
 
 hcloud server list |\
 # ID   NAME   STATUS   IPV4   IPV6   DATACENTER
-awk ' !/ID/ { print $2, $4, $5 } ' |\
+awk '! /ID/ { print $2, $4, $5 }' |\
 sort |\
 while read -r name ip4 ip6mask
 do
@@ -36,3 +36,5 @@ sudo tee -a ${hconf} 1>/dev/null
 
 echo
 sudo /sbin/rc-service unbound reload
+echo
+

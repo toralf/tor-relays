@@ -12,9 +12,11 @@ hcloud context use ${project}
 loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
 
 # create at an arbitrarily chosen Hetzner location
+i=0
 for name in ${@}
 do
-  echo -e "\n name: ${name}\n"
+  ((++i))
+  echo -e " ${i}#$#\tname: ${name}\n"
   hcloud server create \
       --image "debian-11" \
       --ssh-key "tfoerste@t44" \
