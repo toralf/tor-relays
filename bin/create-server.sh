@@ -13,6 +13,7 @@ hcloud context use ${project}
 # create at an arbitrarily chosen Hetzner location
 loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
 
+now=$(date +%s)
 i=0
 for name in ${@}
 do
@@ -28,6 +29,13 @@ done
 
 echo
 $(dirname $0)/update-dns.sh ${project}
+
+# it needs few seconds till (1st) system is booted
+delta=$(( 20 - ($(date +%s) - now) ))
+if [[ $delta -gt 0 ]]; then
+  echo
+  sleep $delta
+fi
 
 echo
 $(dirname $0)/add-to-known_hosts.sh ${@}

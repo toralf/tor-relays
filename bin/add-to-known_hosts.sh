@@ -13,7 +13,7 @@ do
     if ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=5 ${name} "uname -a" </dev/null; then
       continue 2
     fi
-    sleep 3
+    sleep 1
   done
   echo -e "\n FAILED to reach: ${name}\n"
 done
