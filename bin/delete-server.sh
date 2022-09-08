@@ -18,3 +18,6 @@ done
 
 echo
 $(dirname $0)/update-dns.sh ${project}
+
+echo
+$(dirname $0)/del-from-known_hosts.sh ${@}

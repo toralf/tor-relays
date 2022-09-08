@@ -27,4 +27,4 @@ echo
 $(dirname $0)/update-dns.sh ${project}
 
 echo
-$(dirname $0)/update-known_hosts.sh ${@}
+$(dirname $0)/add-to-known_hosts.sh ${@}
