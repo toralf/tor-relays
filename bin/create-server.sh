@@ -9,9 +9,10 @@ project=${1:?}
 shift
 
 hcloud context use ${project}
-loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
 
 # create at an arbitrarily chosen Hetzner location
+loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
+
 i=0
 for name in ${@}
 do
