@@ -9,7 +9,9 @@ function action() {
       --ssh-key "tfoerste@t44" \
       --location "$(shuf -n 1 <<< ${loc_list})" \
       --type "cpx11" \
-      --name "$1"
+      --name "$1" \
+      --poll-interval 1s 1>/dev/null
+  echo -n " $1 "
 }
 
 
@@ -32,7 +34,7 @@ fi
 echo
 $(dirname $0)/update-dns.sh ${project}
 
-sleep 10
+sleep 15
 
 echo
 $(dirname $0)/add-to-known_hosts.sh ${@}

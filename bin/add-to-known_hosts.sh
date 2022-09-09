@@ -4,7 +4,8 @@
 
 
 function action() {
-  ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=5 -oConnectionAttempts=3 $1 "uname -a" </dev/null >/dev/null
+  ssh -q -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 $1 "uname -a" </dev/null >/dev/null
+  echo -n " $1 "
 }
 
 
