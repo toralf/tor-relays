@@ -46,10 +46,13 @@ sudo touch ${hconf}.new
   done
 ) | sudo tee ${hconf}.new 1>/dev/null
 
-# no unneeded reload
 if ! diff -q ${hconf}.new ${hconf} 1>/dev/null; then
+  echo " reloading DNS ..."
   sudo cp ${hconf}.new ${hconf}
   sudo /sbin/rc-service unbound reload
+else
+  echo " no changes to DNS"
 fi
-
 sudo rm ${hconf}.new
+
+echo
