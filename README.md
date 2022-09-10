@@ -3,7 +3,7 @@
 # A stack to deploy Tor bridges
 The deployment is made via _Ansible_.
 Debian _bullseye_ is used as the OS.
-The shell scripts under ./bin works for Hetzner VPS.
+The shell scripts under `./bin` works for Hetzner VPS.
 As a local DNS resolver _unbound_ is used.
 
 ### Usage
