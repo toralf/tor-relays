@@ -14,27 +14,22 @@ To setup a new Tor bridge (i.e. *my_public_bridge*) within the Hetzner cloud pro
 contact_info: 'look at https://github.com/nusenu/ContactInfo-Information-Sharing-Specification'
 nickname_prefix: 'nickneck'
 obfs4_port: 4711
-seed_or_port: 'a-really-random-string-here-please'
+seed_or_port: 'a-no-longer-changed-and-really-random-string-here-please'
 ```
 2. Create the VPS
 
 ```bash
 ./bin/create-server.sh public my_public_bridge
 ```
-3. Add it to the ansible inventory subgroup `bridges` of the group `public`:
+3. Add the hostname to `public_bridges`:
 
 ```yaml
 ---
-public:
+public_bridges:
   children:
     bridges:
       hosts:
         my_public_bridge:
-
-private:
-  children:
-    bridges:
-      hosts:
 ```
 4. Run
 
