@@ -1,9 +1,10 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
 # A stack to deploy Tor bridges
-The deployment is made via an _Ansible_ role.
-Debian _bullseye_ is the supported OS.
-The shell scripts works for Hetzner VPS and do expect _unbound_ as a local resolver.
+The deployment is made via _Ansible_.
+Debian _bullseye_ is used as the OS.
+The shell scripts under ./bin works for Hetzner VPS.
+As a local DNS resolver _unbound_ is used.
 
 ### Usage
 To setup a new Tor bridge (i.e. *my_public_bridge*) within the Hetzner cloud project (i.e. _public_) do:
