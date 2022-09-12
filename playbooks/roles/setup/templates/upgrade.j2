@@ -1,0 +1,7 @@
+# {{ ansible_managed }}
+
+[Timer]
+OnCalendar=
+OnCalendar=*-*-* {{ 24 | random(seed=ansible_hostname) }}:10
+RandomizedDelaySec=3000
+

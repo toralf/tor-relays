@@ -21,6 +21,18 @@
     autoclean: yes
     autoremove: yes
 
+- name: Configure auto upgrades
+  ansible.builtin.copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/
+    mode: 0644
+
+- name: Configure unattended upgrades
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/
+    mode: 0644
+
 - name: Tweak readline
   ansible.builtin.lineinfile:
     line: "set enable-bracketed-paste off"

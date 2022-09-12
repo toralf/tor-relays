@@ -1,0 +1,33 @@
+---
+
+- name: Configure update package list directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/systemd/system/apt-daily.timer.d/"
+    mode: 0755
+
+- name: Configure update package list time
+  ansible.builtin.template:
+    src: timer.j2
+    dest: /etc/systemd/system/apt-daily.timer.d/override.conf
+    mode: 0644
+  register: timer_state
+
+- name: Configure unattended upgrades directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/systemd/system/apt-daily-upgrade.timer.d/"
+    mode: 0755
+
+- name: Configure unattended upgrades time
+  ansible.builtin.template:
+    src: upgrade.j2
+    dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
+    mode: 0644
+  register: upgrade_timer_state
+
+- name: Restart apt-daily timer
+  ansible.builtin.shell: |
+    systemctl restart apt-daily.timer
+  when: timer_state.changed or upgrade_timer_state.changed
+
