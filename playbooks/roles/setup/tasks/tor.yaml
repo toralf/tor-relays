@@ -75,3 +75,9 @@
     daemon_reload: yes
     enabled: yes
   when: tor_state.changed or obfs4proxy_state.changed
+
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20-tor.conf
+    dest: /etc/sysctl.d/
+    mode: 0644

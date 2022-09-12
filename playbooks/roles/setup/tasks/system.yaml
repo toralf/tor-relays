@@ -16,36 +16,6 @@
       - ntp
       - unattended-upgrades
 
-- name: Configure auto upgrades
-  ansible.builtin.copy:
-    src: 20auto-upgrades
-    dest: /etc/apt/apt.conf.d/
-    mode: 0644
-
-- name: Configure unattended upgrades
-  ansible.builtin.copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/
-    mode: 0644
-
-- name: Configure unattended upgrades directory
-  ansible.builtin.file:
-    state: directory
-    path: "/etc/systemd/system/apt-daily-upgrade.timer.d/"
-    mode: 0755
-
-- name: Configure unattended upgrades time
-  ansible.builtin.template:
-    src: timer.j2
-    dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
-    mode: 0644
-  register: upgrade_timer_state
-
-- name: Restart apt-daily timer
-  ansible.builtin.shell: |
-    systemctl restart apt-daily.timer
-  when: upgrade_timer_state.changed
-
 - name: Cleanup
   ansible.builtin.apt:
     autoclean: yes
@@ -62,10 +32,4 @@
   ansible.builtin.copy:
     src: htoprc
     dest: /root/.config/htop/
-    mode: 0644
-
-- name: Sysctl config
-  ansible.builtin.copy:
-    src: 20-tor.conf
-    dest: /etc/sysctl.d/
     mode: 0644

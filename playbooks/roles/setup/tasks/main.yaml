@@ -6,6 +6,11 @@
       tags:
         - system
 
+    - name: Upgrade
+      ansible.builtin.import_tasks: upgrade.yaml
+      tags:
+        - upgrade
+
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml
       tags:
