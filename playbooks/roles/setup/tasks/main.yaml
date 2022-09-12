@@ -6,10 +6,10 @@
       tags:
         - system
 
-    - name: Upgrade
-      ansible.builtin.import_tasks: upgrade.yaml
+    - name: Timer
+      ansible.builtin.import_tasks: timer.yaml
       tags:
-        - upgrade
+        - timer
 
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml
