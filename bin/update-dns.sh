@@ -32,10 +32,10 @@ sudo touch ${hconf}.new
 (
   echo 'server:'
 
-  hcloud server list |\
+  hcloud server list |
   # ID   NAME   STATUS   IPV4   IPV6   DATACENTER
-  awk '! /ID/ { print $2, $4, $5 }' |\
-  sort |\
+  awk '! /ID/ { print $2, $4, $5 }' |
+  sort |
   while read -r name ip4 ip6mask
   do
     ip6=$(sed -e 's,/64,1,' <<< ${ip6mask})   # Debian defaults to [...:1]
