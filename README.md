@@ -18,7 +18,7 @@ To setup a new Tor bridge (i.e. _my_public_bridge_) within the Hetzner cloud pro
 contact_info: "look at https://github.com/nusenu/ContactInfo-Information-Sharing-Specification"
 nickname_prefix: "nickneck"
 obfs4_port: 4711
-seed_or_port: "a-no-longer-changed-and-really-random-string-here-please"
+seed_or_port: "a-really-random-string"
 ```
 
 2. Create the VPS
@@ -27,21 +27,20 @@ seed_or_port: "a-no-longer-changed-and-really-random-string-here-please"
 ./bin/create-server.sh public my_public_bridge
 ```
 
-3. Add the hostname to `public_bridges`:
+3. Add the hostname to the host group `public` (other groups are `private` and `special`):
 
 ```yaml
 ---
-public_bridges:
-  children:
-    bridges:
-      hosts:
-        my_public_bridge:
+public:
+  bridges:
+    hosts:
+      my_public_bridge:
 ```
 
 4. Run
 
 ```bash
-./site-public-setup.yaml --limit my_public_bridge
+./site-setup.yaml --limit my_public_bridge
 ```
 
 That's all.

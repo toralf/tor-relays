@@ -2,8 +2,8 @@
 
 - name: 'Setup'
   hosts:
-    - bridges
-    - ! special
+    - all
+    - '!special'
   strategy: free
   roles:
     - role: setup
