@@ -2,8 +2,7 @@
 
 - name: 'Bridge Line'
   hosts:
-    - all
-    - '!special'
+    - private
   strategy: free
   roles:
     - role: bridgeline
