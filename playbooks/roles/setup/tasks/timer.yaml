@@ -13,6 +13,8 @@
     mode: 0644
   register: timer_state
 
+# usually the apt-daily timer calls the unattended upgrades too but let configure it here nevertheless
+
 - name: Configure unattended upgrades directory
   ansible.builtin.file:
     state: directory
