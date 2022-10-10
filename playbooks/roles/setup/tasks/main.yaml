@@ -20,7 +20,7 @@
       ansible.builtin.import_tasks: hint.yaml
       when: contact_info is defined
       tags:
-        - tor
+        - hint
 
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
