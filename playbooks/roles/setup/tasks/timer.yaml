@@ -13,7 +13,7 @@
     mode: 0644
   register: timer_state
 
-# usually the apt-daily timer calls the unattended upgrades too but let configure it here nevertheless
+# the apt-daily timer should call unattended upgrades already but configure it here nevertheless
 
 - name: Configure unattended upgrades directory
   ansible.builtin.file:
@@ -31,4 +31,5 @@
 - name: Restart apt-daily timer
   ansible.builtin.shell: |
     systemctl restart apt-daily.timer
+    systemctl daemon-reload
   when: timer_state.changed or upgrade_timer_state.changed
