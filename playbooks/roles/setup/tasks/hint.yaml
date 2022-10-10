@@ -8,4 +8,5 @@
   ansible.builtin.debug:
     msg:
       - "Add to ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt :"
-      - "# {{ ansible_hostname }} {{ hashed_fingerprint }}"
+      - "# {{ ansible_hostname }}"
+      - "{{ hashed_fingerprint }}"
