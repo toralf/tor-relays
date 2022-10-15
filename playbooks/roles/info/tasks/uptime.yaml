@@ -1,8 +1,8 @@
 ---
 
-- name: Uname
+- name: Uptime
   ansible.builtin.shell: |
-    uname -rv
+    uptime -ps
   register: result
 
 - name: result
