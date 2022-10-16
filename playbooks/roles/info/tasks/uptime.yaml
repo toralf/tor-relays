@@ -2,9 +2,10 @@
 
 - name: Uptime
   ansible.builtin.shell: |
-    uptime -ps
+    systemctl show tor | grep ExecMainStartTimestamp= | sed -e 's,ExecMainStartTimestamp=, Tor= ,'
+    uptime -ps | sed -e "s,$,    $(hostname),"
   register: result
 
 - name: result
   ansible.builtin.debug:
-    msg: "{{ result.stdout }}"
+    msg: "{{ result.stdout_lines[0] }}         {{ result.stdout_lines[1] }}"
