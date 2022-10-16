@@ -1,0 +1,6 @@
+---
+
+- name: Restart Tor
+  ansible.builtin.shell: |
+    systemctl restart tor
+  when: force_restart
