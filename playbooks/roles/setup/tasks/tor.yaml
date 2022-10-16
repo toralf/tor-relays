@@ -69,16 +69,16 @@
     dest: /etc/tor/torrc
     mode: 0644
 
-- name: Enable or restart Tor service
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20-tor.conf
+    dest: /etc/sysctl.d/
+    mode: 0644
+
+- name: Enable Tor service
   ansible.builtin.systemd:
     name: "tor@default"
     state: restarted
     daemon_reload: yes
     enabled: yes
   when: tor_state.changed or obfs4proxy_state.changed or obfs4proxy_cap.changed or force_restart
-
-- name: Sysctl config
-  ansible.builtin.copy:
-    src: 20-tor.conf
-    dest: /etc/sysctl.d/
-    mode: 0644
