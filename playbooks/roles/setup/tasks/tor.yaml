@@ -38,6 +38,7 @@
     capability: 'cap_net_bind_service=+ep'
     state: present
   when: obfs4_port < 1024
+  register: obfs4proxy_cap
 
 - name: Create dirs to configure privileged orport
   ansible.builtin.file:
@@ -68,13 +69,13 @@
     dest: /etc/tor/torrc
     mode: 0644
 
-- name: Enable Tor service
+- name: Enable or restart Tor service
   ansible.builtin.systemd:
     name: "tor@default"
     state: restarted
     daemon_reload: yes
     enabled: yes
-  when: tor_state.changed or obfs4proxy_state.changed
+  when: tor_state.changed or obfs4proxy_state.changed or obfs4proxy_cap.changed or force_restart
 
 - name: Sysctl config
   ansible.builtin.copy:
