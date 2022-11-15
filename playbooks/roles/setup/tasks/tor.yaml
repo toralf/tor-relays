@@ -25,6 +25,15 @@
       - deb.torproject.org-keyring
   register: tor_state
 
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+- name: Configure apt hook for obfs4proxy
+  ansible.builtin.lineinfile:
+    line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
+    path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
+    create: yes
+    mode: 0644
+  when: obfs4_port < 1024
+
 - name: Install obfs4proxy
   ansible.builtin.apt:
     name:
@@ -32,15 +41,7 @@
     default_release: "{{ ansible_distribution_release }}-backports"
   register: obfs4proxy_state
 
-- name: Set caps
-  ansible.builtin.capabilities:
-    path: /usr/bin/obfs4proxy
-    capability: 'cap_net_bind_service=+ep'
-    state: present
-  when: obfs4_port < 1024
-  register: obfs4proxy_cap
-
-- name: Create dirs to configure privileged orport
+- name: Create dirs to configure service to use privileged port
   ansible.builtin.file:
     state: directory
     path: "/etc/systemd/system/{{ item }}.d"
@@ -52,7 +53,7 @@
     - "tor.service.d"
   when: obfs4_port < 1024
 
-- name: Configure privileged orport
+- name: Configure service to use privileged port
   ansible.builtin.copy:
     src: override_tor_service.conf
     dest: "/etc/systemd/system/{{ item }}.d/override.conf"
@@ -81,4 +82,4 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
-  when: tor_state.changed or obfs4proxy_state.changed or obfs4proxy_cap.changed or force_restart
+  when: tor_state.changed or obfs4proxy_state.changed or force_restart
