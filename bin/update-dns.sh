@@ -18,16 +18,13 @@ fi
 hcloud context use ${project}
 
 # do not run in parallel
-if [[ -f ${hconf}.new ]]; then
-  echo -n " $(date) found ${hconf}.new, waiting "
-  while [[ -e ${hconf}.new ]]
-  do
-    echo -n '.'
-    sleep 2
-  done
-  date
-fi
+while [[ -e ${hconf}.new ]]
+do
+  echo -n '.'
+  sleep 2
+done
 sudo touch ${hconf}.new
+date
 
 (
   echo 'server:'
