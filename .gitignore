@@ -1,3 +1,4 @@
+.ansible_facts/
 .idea/
 inventory/*.yaml
-secrets/*
+secrets/
