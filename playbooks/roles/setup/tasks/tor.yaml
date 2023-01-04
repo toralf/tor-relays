@@ -75,6 +75,12 @@
     src: 20-tor.conf
     dest: /etc/sysctl.d/
     mode: 0644
+  register: sysctl_state
+
+- name: Sysctl reload
+  ansible.builtin.shell: |
+    sysctl --system
+  when: sysctl_state.changed
 
 - name: Enable Tor service
   ansible.builtin.systemd:
