@@ -1,9 +1,10 @@
 ---
 
-- name: Set defaults
+- name: Ansible defaults
   ansible.builtin.setup:
     gather_subset:
       - '!all'
+      - 'all_ipv4_addresses'
     gather_timeout: 20
 
 - name: Clients
