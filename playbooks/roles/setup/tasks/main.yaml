@@ -1,6 +1,23 @@
 ---
 
-- block:
+- name: Main
+  module_defaults:
+    ansible.builtin.apt:
+      state: latest
+      cache_valid_time: 600
+    ansible.builtin.copy:
+      owner: root
+      group: root
+      mode: 0644
+    ansible.builtin.file:
+      owner: root
+      group: root
+      mode: 0644
+    ansible.builtin.template:
+      owner: root
+      group: root
+      mode: 0644
+  block:
     - name: System
       ansible.builtin.import_tasks: system.yaml
       tags:
@@ -32,20 +49,3 @@
       tags:
         - never
         - restart
-
-  module_defaults:
-    ansible.builtin.apt:
-      state: latest
-      cache_valid_time: 600
-    ansible.builtin.copy:
-      owner: root
-      group: root
-      mode: 0644
-    ansible.builtin.file:
-      owner: root
-      group: root
-      mode: 0644
-    ansible.builtin.template:
-      owner: root
-      group: root
-      mode: 0644
