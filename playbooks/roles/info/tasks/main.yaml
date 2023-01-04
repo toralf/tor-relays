@@ -1,5 +1,11 @@
 ---
 
+- name: Set defaults
+  ansible.builtin.setup:
+    gather_subset:
+      - '!all'
+    gather_timeout: 20
+
 - name: Clients
   ansible.builtin.import_tasks: clients.yaml
   tags:
