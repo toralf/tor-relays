@@ -57,12 +57,18 @@
     - bto
     - onionoo
 
-- name: onionoo
+- name: Onionoo
   ansible.builtin.import_tasks: onionoo.yaml
   tags:
     - onionoo
 
-- name: bto
+- name: ORPort
+  ansible.builtin.import_tasks: orport.yaml
+  tags:
+    - never
+    - orport
+
+- name: Bto
   ansible.builtin.import_tasks: bto.yaml
   tags:
     - bto

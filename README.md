@@ -37,9 +37,11 @@ Setup a new Tor public bridge within the Hetzner cloud:
     public:
       hosts:
         my_bridge:
+          or_port: 8443         # overwrite the default of the secret
+          obfs4_port: 47119     # overwrite the default of the secret
     ```
 
-1. run
+1. deploy it
 
     ```bash
     ./site-setup.yaml --limit my_bridge
@@ -53,7 +55,7 @@ Setup a new Tor public bridge within the Hetzner cloud:
 
 ## Details
 
-The Tor bridges are deployed via an _Ansible_ role with the Debian OS.
+The Tor bridges are deployed via an _Ansible_ role with a recent Debian OS.
 The scripts under `./bin` works only for the Hetzner cloud,
 _unbound_ is expected as the local DNS resolver.
 

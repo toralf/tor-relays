@@ -1,0 +1,11 @@
+---
+
+
+- name: Tor ORPort
+  ansible.builtin.shell: |
+    grep "^ORPort" /etc/tor/torrc
+  register: result
+
+- name: result
+  ansible.builtin.debug:
+    msg: "{{ result.stdout_lines[0] }}  versus {{ or_port }}"
