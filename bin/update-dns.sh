@@ -10,21 +10,20 @@ export LANG=C.utf8
 project=${1:?}
 
 hconf=/etc/unbound/hetzner-${project}.conf
-if ! grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
+if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
   echo -e "\n unbound does not use ${hconf} ?!\n"
   exit 1
 fi
 
 hcloud context use ${project}
 
-# do not run in parallel
+# do not run this script parallel
 while [[ -e ${hconf}.new ]]
 do
   echo -n '.'
-  sleep 2
+  sleep 1
 done
-sudo touch ${hconf}.new
-date
+echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new
 
 (
   echo 'server:'
@@ -41,9 +40,9 @@ date
     printf "  local-data-ptr: \"%-40s        %s\"\n" ${ip4} ${name}
     printf "  local-data-ptr: \"%-40s        %s\"\n" ${ip6} ${name}
   done
-) | sudo tee ${hconf}.new 1>/dev/null
+) | sudo tee -a ${hconf}.new 1>/dev/null
 
-if ! diff -q ${hconf}.new ${hconf} 1>/dev/null; then
+if ! sudo diff ${hconf}.new ${hconf}; then
   echo " reloading DNS ..."
   sudo cp ${hconf}.new ${hconf}
   sudo /sbin/rc-service unbound reload
