@@ -1,11 +1,14 @@
 ---
-
-
 - name: Tor ORPort
   ansible.builtin.shell: |
-    grep "^ORPort" /etc/tor/torrc
+    grep "^ORPort" /etc/tor/torrc | awk '{ print $2 }'
   register: result
 
-- name: result
+- name: Set Fact
+  ansible.builtin.set_fact:
+    curr_port: "{{ result.stdout_lines[0] }}"
+
+- name: ORPort would be changed
   ansible.builtin.debug:
-    msg: "{{ result.stdout_lines[0] }}  versus {{ or_port }}"
+    msg: "current: {{ curr_port }}, future: {{ or_port }}"
+  when: curr_port | int != or_port
