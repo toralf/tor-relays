@@ -1,6 +1,5 @@
 ---
 skip_list:
-  - name[casing]
   - name[template]
   - no-changed-when
   - no-handler

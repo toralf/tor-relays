@@ -5,6 +5,6 @@
     grep -v -e 'Reading database' -e '^$' {{ log_unattended }} | tail -n {{ log_lines }}
   register: result
 
-- name: results
+- name: Results
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"

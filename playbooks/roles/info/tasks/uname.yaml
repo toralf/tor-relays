@@ -5,6 +5,6 @@
     uname -rv
   register: result
 
-- name: result
+- name: Result
   ansible.builtin.debug:
     msg: "{{ result.stdout }}"

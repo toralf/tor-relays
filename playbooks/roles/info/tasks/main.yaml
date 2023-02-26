@@ -51,7 +51,7 @@
   tags:
     - version
 
-- name: lib/hashed-fingerprint
+- name: Import hashed-fingerprint
   ansible.builtin.import_tasks: ../../lib/hashed-fingerprint.yaml
   tags:
     - bto

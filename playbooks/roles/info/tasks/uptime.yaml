@@ -9,6 +9,6 @@
     uptime -ps
   register: result
 
-- name: result
+- name: Result
   ansible.builtin.debug:
     msg: "Tor {{ tor_status.status.ExecMainStartTimestamp }}    host {{ result.stdout }}     {{ ansible_hostname }}"

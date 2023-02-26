@@ -5,6 +5,6 @@
     /usr/bin/tac {{ log_notice }} {{ log_notice }}.1 2>/dev/null | /usr/bin/grep --text -m 4 -F ' unique clients.' | /usr/bin/tac
   register: result
 
-- name: result
+- name: Result
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
