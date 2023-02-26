@@ -1,0 +1,9 @@
+---
+skip_list:
+  - name[casing]
+  - name[template]
+  - no-changed-when
+  - no-handler
+  - risky-shell-pipe
+  - role-name
+  - run-once[play]
