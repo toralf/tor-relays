@@ -38,7 +38,7 @@ Setup a new Tor public bridge within the Hetzner cloud:
       hosts:
         my_bridge:
           or_port: 8443         # overwrite the default of the secret
-          obfs4_port: 47119     # overwrite the default of the secret
+          obfs4_port: 4711      # overwrite the default of the secret
     ```
 
 1. deploy it
