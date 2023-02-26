@@ -29,7 +29,8 @@
   register: upgrade_timer_state
 
 - name: Restart apt-daily timer
-  ansible.builtin.shell: |
-    systemctl restart apt-daily.timer
-    systemctl daemon-reload
+  ansible.builtin.systemd:
+    name: apt-daily.timer
+    state: restarted
+    daemon_reload: true
   when: timer_state.changed or upgrade_timer_state.changed

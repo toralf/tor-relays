@@ -1,11 +1,14 @@
 ---
+- name: Get Service Status
+  ansible.builtin.systemd:
+    name: tor
+  register: tor_status
 
 - name: Uptime
   ansible.builtin.shell: |
-    systemctl show tor | grep ExecMainStartTimestamp= | sed -e 's,ExecMainStartTimestamp=, Tor= ,'
-    uptime -ps | sed -e "s,$,    $(hostname),"
+    uptime -ps
   register: result
 
 - name: result
   ansible.builtin.debug:
-    msg: "{{ result.stdout_lines[0] }}         {{ result.stdout_lines[1] }}"
+    msg: "Tor {{ tor_status.status.ExecMainStartTimestamp }}    host {{ result.stdout }}     {{ ansible_hostname }}"
