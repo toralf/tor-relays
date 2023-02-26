@@ -1,7 +1,7 @@
 ---
 
 - name: Fingerprint
-  ansible.builtin.import_tasks: ../../_lib/hashed-fingerprint.yaml
+  ansible.builtin.import_tasks: ../../lib/hashed-fingerprint.yaml
 
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 - name: Hint
