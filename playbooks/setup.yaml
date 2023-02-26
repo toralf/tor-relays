@@ -4,7 +4,6 @@
   hosts:
     - all
     - '!special'
-  strategy: free
   roles:
     - role: setup
     - role: bridgeline

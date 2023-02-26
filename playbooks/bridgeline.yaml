@@ -3,6 +3,5 @@
 - name: 'Bridge Line'
   hosts:
     - all
-  strategy: free
   roles:
     - role: bridgeline
