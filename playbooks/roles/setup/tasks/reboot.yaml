@@ -5,6 +5,7 @@
     manager: auto
 
 - name: Uname
+  changed_when: false
   ansible.builtin.shell: |
     uname -v
   register: result

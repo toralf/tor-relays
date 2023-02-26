@@ -1,5 +1,6 @@
 ---
 - name: Tor ORPort
+  changed_when: false
   ansible.builtin.shell: |
     grep "^ORPort" /etc/tor/torrc | awk '{ print $2 }'
   register: result

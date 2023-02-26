@@ -5,6 +5,7 @@
     manager: auto
 
 - name: Tor version
+  changed_when: false
   ansible.builtin.shell: |
     tor --version | grep -m 1 ^Tor
   register: result

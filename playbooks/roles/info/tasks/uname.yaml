@@ -1,6 +1,7 @@
 ---
 
 - name: Uname
+  changed_when: false
   ansible.builtin.shell: |
     uname -rv
   register: result

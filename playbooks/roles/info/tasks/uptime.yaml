@@ -5,6 +5,7 @@
   register: tor_status
 
 - name: Uptime
+  changed_when: false
   ansible.builtin.shell: |
     uptime -ps
   register: result
