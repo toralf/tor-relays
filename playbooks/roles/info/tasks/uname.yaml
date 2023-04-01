@@ -2,8 +2,7 @@
 
 - name: Uname
   changed_when: false
-  ansible.builtin.shell: |
-    uname -rv
+  ansible.builtin.command: "uname -rv"
   register: result
 
 - name: Result

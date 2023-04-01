@@ -12,4 +12,4 @@
 
 - name: Result
   ansible.builtin.debug:
-    msg: "Tor {{ tor_status.status.ExecMainStartTimestamp }}    host {{ result.stdout }}     {{ ansible_hostname }}"
+    msg: " Tor  {{ tor_status.status.ExecMainStartTimestamp }}    uptime  {{ result.stdout }}     {{ ansible_hostname }}"

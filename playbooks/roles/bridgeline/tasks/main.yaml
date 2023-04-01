@@ -9,8 +9,7 @@
 
 - name: Get fingerprint
   changed_when: false
-  ansible.builtin.shell: |
-    cut -f2 -d' ' /var/lib/tor/fingerprint
+  ansible.builtin.command: "cut -f 2 -d ' ' /var/lib/tor/fingerprint"
   register: result
 
 - name: Get the fact

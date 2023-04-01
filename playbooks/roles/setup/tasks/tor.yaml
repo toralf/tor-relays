@@ -78,8 +78,7 @@
   register: sysctl_state
 
 - name: Sysctl reload
-  ansible.builtin.shell: |
-    sysctl --system
+  ansible.builtin.command: "sysctl --system"
   when: sysctl_state.changed
 
 - name: Enable Tor service

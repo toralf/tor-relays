@@ -6,8 +6,7 @@
 
 - name: Uname
   changed_when: false
-  ansible.builtin.shell: |
-    uname -v
+  ansible.builtin.command: "uname -v"
   register: result
 
 - name: Reboot into installed kernel
