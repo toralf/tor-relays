@@ -1,7 +1,7 @@
 ---
 - name: Get Service Status
   ansible.builtin.systemd:
-    name: tor
+    name: tor@default.service
   register: tor_status
 
 - name: Uptime
