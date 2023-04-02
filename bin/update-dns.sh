@@ -4,10 +4,13 @@
 
 # update /etc/unbound/hetzner-${project}.conf
 
+
+#######################################################################
 set -euf
 export LANG=C.utf8
+export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-project=${1:?}
+project=${1?project missing}
 
 hconf=/etc/unbound/hetzner-${project}.conf
 if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
