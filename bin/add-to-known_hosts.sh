@@ -3,15 +3,11 @@
 # set -x
 
 
-#######################################################################
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-if [[ $# -eq 0 ]]; then
-  echo "at least 1 parameter is expected"
-  exit 1
-fi
+[[ $# -ne 0 ]]
 
 while read -r i
 do

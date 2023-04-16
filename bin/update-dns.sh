@@ -2,23 +2,16 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# update /etc/unbound/hetzner-${project}.conf
 
-
-#######################################################################
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-project=${1?project missing}
+[[ $# -eq 0 ]]
+project=$(hcloud context active 1>/dev/null)
+[[ -n $project ]]
 
 hconf=/etc/unbound/hetzner-${project}.conf
-if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
-  echo -e "\n unbound does not use ${hconf} ?!\n"
-  exit 1
-fi
-
-hcloud context use ${project}
 
 # do not run this script parallel
 while [[ -e ${hconf}.new ]]
@@ -28,6 +21,12 @@ do
 done
 echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new
 
+if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
+  echo -e "\n unbound does not use ${hconf} ?!\n"
+  exit 1
+fi
+
+# update /etc/unbound/hetzner-${project}.conf
 (
   echo 'server:'
 
@@ -50,8 +49,8 @@ if ! sudo diff ${hconf}.new ${hconf}; then
   sudo cp ${hconf}.new ${hconf}
   sudo /sbin/rc-service unbound reload
 else
-  echo " no changes to DNS"
+  echo " DNS config not changed"
 fi
-sudo rm ${hconf}.new
 
 echo
+sudo rm ${hconf}.new
