@@ -4,10 +4,11 @@
   ansible.builtin.copy:
     src: 20-tor.conf
     dest: /etc/sysctl.d/
-    mode: 0644
+    mode: "0644"
   register: sysctl_state
 
 - name: Sysctl reload
+  changed_when: false
   ansible.builtin.command: "sysctl --system"
   when: sysctl_state.changed
 
@@ -40,7 +41,7 @@
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
-    mode: 0644
+    mode: "0644"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
@@ -48,7 +49,7 @@
     line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
     path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
     create: yes
-    mode: 0644
+    mode: "0644"
   when: obfs4_port < 1024
 
 - name: Install obfs4proxy
@@ -63,7 +64,7 @@
     state: directory
     path: "/etc/systemd/system/{{ item }}.d"
     recurse: yes
-    mode: 0755
+    mode: "0755"
   with_items:
     - "tor@default.service"
     - "tor@.service"
@@ -74,7 +75,7 @@
   ansible.builtin.copy:
     src: override_tor_service.conf
     dest: "/etc/systemd/system/{{ item }}.d/override.conf"
-    mode: 0644
+    mode: "0644"
   with_items:
     - "tor@default.service"
     - "tor@.service"

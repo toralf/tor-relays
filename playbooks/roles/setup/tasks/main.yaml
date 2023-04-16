@@ -15,15 +15,15 @@
     ansible.builtin.copy:
       owner: root
       group: root
-      mode: 0644
+      mode: "0644"
     ansible.builtin.file:
       owner: root
       group: root
-      mode: 0644
+      mode: "0644"
     ansible.builtin.template:
       owner: root
       group: root
-      mode: 0644
+      mode: "0644"
   block:
     - name: System
       ansible.builtin.import_tasks: system.yaml
@@ -42,7 +42,6 @@
 
     - name: Hint
       ansible.builtin.import_tasks: hint.yaml
-      when: contact_info is not defined
       tags:
         - hint
 
