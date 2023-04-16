@@ -17,7 +17,7 @@ while read -r i; do
       --name "$i" --location "$(shuf -n 1 <<<${loc_list})" \
       --image "debian-11" --ssh-key "tfoerste@t44" --type "cpx11" --poll-interval 1s
   fi
-done < <(xargs -n 1 <<<$@)
+done < <(xargs -n 1 <<<$*)
 
 echo
 $(dirname $0)/update-dns.sh ${project}

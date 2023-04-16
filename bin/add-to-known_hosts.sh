@@ -12,5 +12,5 @@ while read -r i; do
   if ! ssh -q -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 $i "uname -a" </dev/null >/dev/null; then
     echo " issue for $i"
   fi
-done < <(xargs -n 1 <<<$@)
+done < <(xargs -n 1 <<<$*)
 echo
