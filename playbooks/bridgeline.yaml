@@ -2,6 +2,6 @@
 
 - name: 'Bridge Line'
   hosts:
-    - all
+    - private
   roles:
     - role: bridgeline
