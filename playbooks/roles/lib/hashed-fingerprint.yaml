@@ -1,5 +1,4 @@
 ---
-
 - name: Get hashed fingerprint
   changed_when: false
   ansible.builtin.shell: |

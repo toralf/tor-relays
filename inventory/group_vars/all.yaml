@@ -1,12 +1,11 @@
 ---
-
-log_notice: '/var/log/tor/notice.log'
-log_warn: '/var/log/tor/warn.log'
+log_notice: "/var/log/tor/notice.log"
+log_warn: "/var/log/tor/warn.log"
 
 or_port: "{{ range(1024, 65535) | random(seed=ansible_hostname + ansible_eth0.ipv4.address + seed_or_port) }}"
 
 torrc_generic:
-  - name: 'Log notice file'
+  - name: "Log notice file"
     value: "{{ log_notice }}"
-  - name: 'Log warn file'
+  - name: "Log warn file"
     value: "{{ log_warn }}"

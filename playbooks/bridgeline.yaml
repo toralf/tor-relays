@@ -1,6 +1,5 @@
 ---
-
-- name: 'Bridge Line'
+- name: "Bridge Line"
   hosts:
     - private
   roles:

@@ -1,5 +1,4 @@
 ---
-
 - name: Query b.t.o
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ hashed_fingerprint }}"

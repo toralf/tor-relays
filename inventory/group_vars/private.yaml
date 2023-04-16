@@ -1,9 +1,8 @@
 ---
-
 torrc_private:
-  - name: 'PublishServerDescriptor'
-    value: '0'  # 1 when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved
-  - name: 'BridgeDistribution'
-    value: 'none'
+  - name: "PublishServerDescriptor"
+    value: "0" # 1 when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved
+  - name: "BridgeDistribution"
+    value: "none"
 
 torrc_config: "{{ torrc_generic + torrc_private }}"

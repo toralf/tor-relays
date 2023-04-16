@@ -1,5 +1,4 @@
 ---
-
 - name: Restart Tor
   ansible.builtin.systemd:
     name: tor

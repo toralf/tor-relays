@@ -1,6 +1,5 @@
 ---
-
-- name: 'Info'
+- name: "Info"
   hosts:
     - all
   strategy: linear

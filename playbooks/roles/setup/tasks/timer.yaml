@@ -1,5 +1,4 @@
 ---
-
 - name: Configure update package list directory
   ansible.builtin.file:
     state: directory

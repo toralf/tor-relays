@@ -1,8 +1,7 @@
 ---
-
-- name: 'Setup'
+- name: "Setup"
   hosts:
     - all
-    - '!special'
+    - "!special"
   roles:
     - role: setup

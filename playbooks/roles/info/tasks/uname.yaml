@@ -1,5 +1,4 @@
 ---
-
 - name: Uname
   changed_when: false
   ansible.builtin.command: "uname -rv"

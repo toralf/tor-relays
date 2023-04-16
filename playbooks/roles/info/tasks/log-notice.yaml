@@ -1,5 +1,4 @@
 ---
-
 - name: Get last {{ log_lines }} lines from {{ log_notice }}
   changed_when: false
   ansible.builtin.shell: |

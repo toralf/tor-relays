@@ -1,5 +1,4 @@
 ---
-
 - name: Query Onionoo
   ansible.builtin.uri:
     url: "https://onionoo.torproject.org/details?search={{ hashed_fingerprint }}"
@@ -15,7 +14,7 @@
 - name: Onionoo data
   ansible.builtin.debug:
     msg: "{{ '%-10s' | format(data.bridgedb_distributor | default('None')) }}
-          {{ '%10i' | format(data.advertised_bandwidth) }}
-          {{ '  running:' + data.running | string }}
-          {{ '  blocklist:' + data.blocklist | default([]) | join(',') }}"
+      {{ '%10i' | format(data.advertised_bandwidth) }}
+      {{ '  running:' + data.running | string }}
+      {{ '  blocklist:' + data.blocklist | default([]) | join(',') }}"
   when: data is defined

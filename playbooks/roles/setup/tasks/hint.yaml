@@ -1,5 +1,4 @@
 ---
-
 - name: Fingerprint
   ansible.builtin.import_tasks: ../../lib/hashed-fingerprint.yaml
 

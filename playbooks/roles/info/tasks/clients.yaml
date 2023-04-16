@@ -1,5 +1,4 @@
 ---
-
 - name: Get unique clients from {{ log_notice }}
   changed_when: false
   ansible.builtin.shell: |

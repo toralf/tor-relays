@@ -1,5 +1,4 @@
 ---
-
 - name: Get last {{ log_lines }} lines from {{ log_warn }}
   changed_when: false
   ansible.builtin.shell: |
@@ -9,5 +8,4 @@
 - name: Results
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
-  when:
-    result.stdout_lines | length != 5
+  when: result.stdout_lines | length != 5

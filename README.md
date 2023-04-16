@@ -8,50 +8,50 @@ Setup a new Tor public bridge at Hetzner cloud:
 
 1. clone this repo
 
-    ```bash
-    git clone https://github.com/toralf/tor-relays.git
-    cd tor-relays
-    ```
+   ```bash
+   git clone https://github.com/toralf/tor-relays.git
+   cd tor-relays
+   ```
 
 1. create the file `secrets/local.yaml`, eg.:
 
-    ```yaml
-    ---
-    # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
-    contact_info: "me@my.net"
-    nickname_prefix: "nickneck"
-    obfs4_port: 4711
-    seed_or_port: "a-really-random-string"
-    ```
+   ```yaml
+   ---
+   # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
+   contact_info: "me@my.net"
+   nickname_prefix: "nickneck"
+   obfs4_port: 4711
+   seed_or_port: "a-really-random-string"
+   ```
 
 1. create the VPS (hostname i.e.: _my_bridge_) in a Hetzner project (i.e. _my_project_):
 
-    ```bash
-    ./bin/create-server.sh my_project my_bridge
-    ```
+   ```bash
+   ./bin/create-server.sh my_project my_bridge
+   ```
 
 1. add the hostname to the host group `public`, i.e. in `inventory/foo.yaml`:
 
-    ```yaml
-    ---
-    public:
-      hosts:
-        my_bridge:
-          or_port: 8443         # overwrite the default of the secret
-          obfs4_port: 4711      # overwrite the default of the secret
-    ```
+   ```yaml
+   ---
+   public:
+     hosts:
+       my_bridge:
+         or_port: 8443 # overwrite the default of the secret
+         obfs4_port: 4711 # overwrite the default of the secret
+   ```
 
 1. deploy it
 
-    ```bash
-    ./site-setup.yaml --limit my_bridge
-    ```
+   ```bash
+   ./site-setup.yaml --limit my_bridge
+   ```
 
 1. get its state
 
-    ```bash
-    ./site-info.yaml --limit my_bridge
-    ```
+   ```bash
+   ./site-info.yaml --limit my_bridge
+   ```
 
 ## Details
 
