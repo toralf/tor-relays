@@ -6,4 +6,3 @@
     - '!special'
   roles:
     - role: setup
-    - role: bridgeline
