@@ -25,3 +25,5 @@ if ! echo ${@} | xargs -r -P ${forks} -n 1 bash -c "action $1"; then
   echo -e "\n\n CHECK OUTPUT ^^^\n\n"
   exit 1
 fi
+
+echo
