@@ -42,7 +42,7 @@
 
     - name: Hint
       ansible.builtin.import_tasks: hint.yaml
-      when: contact_info is defined
+      when: contact_info is not defined
       tags:
         - hint
 
