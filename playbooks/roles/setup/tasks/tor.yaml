@@ -1,5 +1,16 @@
 ---
 
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20-tor.conf
+    dest: /etc/sysctl.d/
+    mode: 0644
+  register: sysctl_state
+
+- name: Sysctl reload
+  ansible.builtin.command: "sysctl --system"
+  when: sysctl_state.changed
+
 - name: Configure repository "backports"
   ansible.builtin.apt_repository:
     filename: 'backports'
@@ -24,6 +35,12 @@
       - tor-geoipdb
       - deb.torproject.org-keyring
   register: tor_state
+
+- name: Configure torrc
+  ansible.builtin.template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
+    mode: 0644
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
@@ -63,23 +80,6 @@
     - "tor@.service"
     - "tor.service.d"
   when: obfs4_port < 1024
-
-- name: Configure torrc
-  ansible.builtin.template:
-    src: torrc.j2
-    dest: /etc/tor/torrc
-    mode: 0644
-
-- name: Sysctl config
-  ansible.builtin.copy:
-    src: 20-tor.conf
-    dest: /etc/sysctl.d/
-    mode: 0644
-  register: sysctl_state
-
-- name: Sysctl reload
-  ansible.builtin.command: "sysctl --system"
-  when: sysctl_state.changed
 
 - name: Enable Tor service
   ansible.builtin.systemd:
