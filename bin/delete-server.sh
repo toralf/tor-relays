@@ -7,7 +7,7 @@ export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
-project=$(hcloud context active 1>/dev/null)
+project=$(hcloud context active)
 [[ -n $project ]]
 
 while read -r i; do

@@ -7,7 +7,7 @@ export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -eq 0 ]]
-project=$(hcloud context active 1>/dev/null)
+project=$(hcloud context active)
 [[ -n $project ]]
 
 hconf=/etc/unbound/hetzner-${project}.conf
@@ -17,7 +17,7 @@ while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
-echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new
+echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
 
 if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
   echo -e "\n unbound does not use ${hconf} ?!\n"
@@ -42,12 +42,9 @@ fi
 ) | sudo tee -a ${hconf}.new 1>/dev/null
 
 if ! sudo diff ${hconf}.new ${hconf}; then
-  echo " reloading DNS ..."
-  sudo cp ${hconf}.new ${hconf}
-  sudo /sbin/rc-service unbound reload
+  echo " update unbound config ..."
+  sudo mv ${hconf}.new ${hconf}
+  sudo rc-service unbound reload
 else
-  echo " DNS config not changed"
+  sudo rm ${hconf}.new
 fi
-
-echo
-sudo rm ${hconf}.new
