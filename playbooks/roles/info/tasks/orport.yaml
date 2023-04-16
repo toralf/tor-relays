@@ -9,7 +9,7 @@
   ansible.builtin.set_fact:
     curr_port: "{{ result.stdout_lines[0] }}"
 
-- name: ORPort would be changed
+- name: Check if ORPort would be changed
   ansible.builtin.debug:
     msg: "current: {{ curr_port }}, future: {{ or_port }}"
   when: curr_port | int != or_port
