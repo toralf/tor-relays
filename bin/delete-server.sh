@@ -20,7 +20,7 @@ shift
 
 export -f action
 forks=$(grep "^forks" $(dirname $0)/../ansible.cfg | sed 's,.*= *,,g')
-if ! echo ${@} | xargs -r -P ${forks} -n 1 bash -c 'action "$1"'; then
+if ! echo ${@} | xargs -r -P ${forks} -n 1 bash -c "action $1"; then
   echo -e "\n\n CHECK OUTPUT ^^^\n\n"
 fi
 
