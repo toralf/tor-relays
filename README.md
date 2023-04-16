@@ -4,7 +4,7 @@
 
 ## Quick start
 
-Setup a new Tor public bridge within the Hetzner cloud:
+Setup a new Tor public bridge at Hetzner cloud:
 
 1. clone this repo
 
@@ -24,13 +24,13 @@ Setup a new Tor public bridge within the Hetzner cloud:
     seed_or_port: "a-really-random-string"
     ```
 
-1. create the VPS (hostname i.e.: _my_bridge_) in a Hetzner project (i.e. _my_project_), eg.:
+1. create the VPS (hostname i.e.: _my_bridge_) in a Hetzner project (i.e. _my_project_):
 
     ```bash
     ./bin/create-server.sh my_project my_bridge
     ```
 
-1. add the hostname to the host group `public`, eg. in `inventory/foo.yaml`:
+1. add the hostname to the host group `public`, i.e. in `inventory/foo.yaml`:
 
     ```yaml
     ---
