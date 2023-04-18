@@ -6,10 +6,9 @@
 
 - name: Uptime
   changed_when: false
-  ansible.builtin.shell: |
-    uptime -ps
+  ansible.builtin.command: "uptime -ps"
   register: result
 
 - name: Result
   ansible.builtin.debug:
-    msg: " Tor  {{ tor_status.status.ExecMainStartTimestamp }}    uptime  {{ result.stdout }}     {{ ansible_hostname }}"
+    msg: "{{ ansible_hostname }}  Tor  {{ tor_status.status.ExecMainStartTimestamp }}      uptime  {{ result.stdout }}"

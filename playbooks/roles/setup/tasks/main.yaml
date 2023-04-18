@@ -43,7 +43,7 @@
       ansible.builtin.import_tasks: hint.yaml
       tags:
         - hint
-      when: contact_info is defined and contact_info != ""
+      when: contact_info
 
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml

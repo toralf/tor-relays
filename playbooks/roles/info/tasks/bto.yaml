@@ -6,6 +6,14 @@
     status_code: [200, 404]
   register: result
 
-- name: Show b.t.o data
+- name: Set Fact
+  ansible.builtin.set_fact:
+    content: "{{ result.content | split('\n') }}"
+
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: content
+
+- name: Show b.t.o state
   ansible.builtin.debug:
-    msg: "{{ result.content }}"
+    msg: "{{ ansible_hostname }} '{{ content | select('search', 'functional') | first }}' '{{ content | select('search', 'Last tested') | first }}'"

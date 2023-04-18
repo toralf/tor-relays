@@ -6,4 +6,4 @@
 
 - name: Result
   ansible.builtin.debug:
-    msg: "{{ result.stdout }}"
+    msg: "{{ ansible_hostname }} {{ result.stdout }}"

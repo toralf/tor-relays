@@ -6,15 +6,20 @@
     status_code: [200, 404]
   register: result
 
+# - name: Debug
+#   ansible.builtin.debug:
+#     var: result.json.bridges
+
 - name: Set fact
   ansible.builtin.set_fact:
     data: "{{ result.json.bridges[0] }}"
-  when: result.json.bridges[0] is defined
+  when: result.json.bridges[0]
 
 - name: Onionoo data
   ansible.builtin.debug:
-    msg: "{{ '%-10s' | format(data.bridgedb_distributor | default('None')) }}
-      {{ '%10i' | format(data.advertised_bandwidth) }}
-      {{ '  running:' + data.running | string }}
-      {{ '  blocklist:' + data.blocklist | default([]) | join(',') }}"
-  when: data is defined
+    msg: "{{ data.nickname }}
+      {{ data.bridgedb_distributor | default('n/a') }}
+      {{ data.advertised_bandwidth }}
+      running: {{ data.running }}
+      blocklist: {{ data.blocklist | default([]) | join(',') }}"
+  when: data
