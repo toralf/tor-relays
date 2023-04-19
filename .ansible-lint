@@ -1,0 +1,15 @@
+---
+
+# https://ansible-lint.readthedocs.io/
+
+enable_list:
+  - empty-string-compare # opt-in
+  - no-log-password # opt-in
+  - no-same-owner # opt-in
+
+skip_list:
+  - meta-no-info
+  - meta-no-tags
+  - risky-shell-pipe
+  - name[template]
+  - no-handler

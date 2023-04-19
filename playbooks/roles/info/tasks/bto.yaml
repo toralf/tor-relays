@@ -16,4 +16,4 @@
 
 - name: Show b.t.o state
   ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} '{{ content | select('search', 'functional') | first }}' '{{ content | select('search', 'Last tested') | first }}'"
+    msg: "{{ ansible_hostname }} {{ content | select('search', 'functional') | first }}"

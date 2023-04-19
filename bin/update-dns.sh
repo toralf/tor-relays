@@ -12,9 +12,7 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-[[ $# -eq 0 ]]
-project=$(hcloud context active)
-[[ -n $project ]]
+project=${1?project is missing}
 
 hconf=/etc/unbound/hetzner-${project}.conf
 

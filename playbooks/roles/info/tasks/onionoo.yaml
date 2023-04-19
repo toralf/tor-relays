@@ -17,7 +17,7 @@
 
 - name: Onionoo data
   ansible.builtin.debug:
-    msg: "{{ data.nickname }}
+    msg: "{{ ansible_hostname }}
       {{ data.bridgedb_distributor | default('n/a') }}
       {{ data.advertised_bandwidth }}
       running: {{ data.running }}
