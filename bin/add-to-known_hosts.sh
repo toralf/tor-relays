@@ -13,4 +13,3 @@ while read -r i; do
     echo " issue for $i"
   fi
 done < <(xargs -n 1 <<<$*)
-echo

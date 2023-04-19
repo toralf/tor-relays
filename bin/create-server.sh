@@ -20,11 +20,11 @@ while read -r i; do
 done < <(xargs -n 1 <<<$*)
 
 echo
-$(dirname $0)/update-dns.sh ${project}
+$(dirname $0)/update-dns.sh
 
 for i in $(seq 1 15); do
   echo -n '.'
   sleep 1
 done
 echo
-$(dirname $0)/add-to-known_hosts.sh ${@}
+$(dirname $0)/add-to-known_hosts.sh $*

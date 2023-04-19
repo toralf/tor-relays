@@ -12,14 +12,11 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-project=${1?project is missing}
+[[ $# -eq 0 ]]
+project=$(hcloud context active)
+[[ -n $project ]]
 
 hconf=/etc/unbound/hetzner-${project}.conf
-
-if ! sudo grep -q "include:.*${hconf}" /etc/unbound/unbound.conf; then
-  echo -e "\n unbound does not use ${hconf} ?!\n"
-  exit 1
-fi
 
 trap Exit INT QUIT TERM EXIT
 

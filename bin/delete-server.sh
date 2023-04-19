@@ -21,4 +21,4 @@ while read -r i; do
 done < <(xargs -n 1 <<<$*)
 
 echo
-$(dirname $0)/update-dns.sh ${project}
+$(dirname $0)/update-dns.sh
