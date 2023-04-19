@@ -4,7 +4,7 @@
 
 ## Quick start
 
-Setup a new Tor public bridge at Hetzner cloud:
+Setup the new Tor public bridge _my_bridge_
 
 1. clone this repo
 
@@ -24,20 +24,7 @@ Setup a new Tor public bridge at Hetzner cloud:
    seed_or_port: "a-really-random-string"
    ```
 
-1. choose the Hetzner project
-
-   ```bash
-   hcloud context list
-   hcloud context use <your project>
-   ```
-
-1. create the VPS (hostname i.e.: _my_bridge_) in a Hetzner project (i.e. _my_project_):
-
-   ```bash
-   echo "my_bridge" | xargs -n 1 -P $(nproc) ./bin/create-server.sh
-   ```
-
-1. add the hostname to the host group `public`, i.e. in `inventory/foo.yaml`:
+1. add the hostname _my_bridge_ to the host group `public`, i.e. into `inventory/foo.yaml`, configure few attributes optionally:
 
    ```yaml
    ---
@@ -51,19 +38,13 @@ Setup a new Tor public bridge at Hetzner cloud:
 1. deploy it
 
    ```bash
-   ./site-setup.yaml --limit my_bridge
+   ./site-setup.yaml
    ```
 
-1. get its state (maybe repeat after a while)
+1. Get the bridge line
 
    ```bash
-   ./site-info.yaml --limit my_bridge
-   ```
-
-1. for a private bridge get the bridge line
-
-   ```bash
-   ./site-bridgeline.yaml --limit my_bridge
+   ./site-bridgeline.yaml
    ```
 
 ## Details
@@ -77,4 +58,17 @@ include: "/etc/unbound/hetzner-private.conf"
 include: "/etc/unbound/hetzner-public.conf"
 ```
 
+To create a new VPS _my_bridge_ at Hetzner in the project _my_project_:
+
+```bash
+hcloud context use "my_project"
+echo "my_bridge" | xargs -n 1 -P $(nproc) ./bin/create-server.sh
+```
+
 To setup a private bridge, just replace `public` with `private` in the example above.
+
+Get the state
+
+```bash
+./site-info.yaml
+```
