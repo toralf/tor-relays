@@ -12,7 +12,7 @@ project=$(hcloud context active)
 
 loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
 while read -r i; do
-  if ! hcloud server describe $i &>/dev/null; then
+  if ! hcloud server describe $i 2>/dev/null | grep -e "^Name:" -e "^Status:" -e "^Created:" -e "^    IP:"; then
     hcloud server create \
       --name "$i" --location "$(shuf -n 1 <<<${loc_list})" \
       --image "debian-11" --ssh-key "tfoerste@t44" --type "cpx11" --poll-interval 1s
