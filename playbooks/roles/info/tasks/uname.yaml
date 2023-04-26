@@ -4,6 +4,10 @@
   ansible.builtin.command: "uname -rv"
   register: result
 
-- name: Result
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} {{ result.stdout }}"
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ result.stdout }}"
+    path: "/tmp/uname"
+    regex: "^{{ ansible_hostname }} "

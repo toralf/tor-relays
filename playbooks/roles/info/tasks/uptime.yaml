@@ -9,6 +9,10 @@
   ansible.builtin.command: "uptime -ps"
   register: result
 
-- name: Result
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }}  Tor  {{ tor_status.status.ExecMainStartTimestamp }}      uptime  {{ result.stdout }}"
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} Tor {{ tor_status.status.ExecMainStartTimestamp }} uptime {{ result.stdout }}"
+    path: "/tmp/uptime"
+    regex: "^{{ ansible_hostname }} "

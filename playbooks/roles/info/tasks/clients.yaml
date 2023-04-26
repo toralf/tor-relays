@@ -1,15 +1,19 @@
 ---
-- name: Get unique clients from {{ log_notice }}
+- name: Get unique clients from last 3 days
   changed_when: false
   ansible.builtin.shell: >-
-    /usr/bin/tac {{ log_notice }} {{ log_notice }}.1 2>/dev/null |
-    /usr/bin/grep --text -m 4 -F ' unique clients.' |
+    zgrep -h -F ' unique clients.' {{ log_notice }}* |
+    sort |
+    tail -n 12 |
     cut -f2- -d',' |
     grep -Po ' \d+ ' |
-    tac |
     xargs
   register: result
 
-- name: Result
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} {{ result.stdout }}"
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ result.stdout }}"
+    path: "/tmp/clients"
+    regex: "^{{ ansible_hostname }} "

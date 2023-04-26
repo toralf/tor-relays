@@ -7,9 +7,15 @@
   changed_when: false
   ansible.builtin.shell: >-
     tor --version |
-    grep -m 1 '^Tor version'
+    grep -m 1 '^Tor version' |
+    awk '{ print $3 }'
   register: result
 
-- name: Tor / obfs4proxy / running
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} {{ ansible_facts.packages['tor'][0].version }} / {{ ansible_facts.packages['obfs4proxy'][0].version }} / '{{ result.stdout_lines[0] }}'"
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ ansible_facts.packages['tor'][0].version }} {{ ansible_facts.packages['obfs4proxy'][0].version }} {{ result.stdout_lines[0] }}"
+
+    path: "/tmp/version"
+    regex: "^{{ ansible_hostname }} "

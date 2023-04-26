@@ -6,14 +6,10 @@
     status_code: [200, 404]
   register: result
 
-- name: Set Fact
-  ansible.builtin.set_fact:
-    content: "{{ result.content | split('\n') }}"
-
-# - name: Debug
-#   ansible.builtin.debug:
-#     var: content
-
-- name: Show b.t.o state
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }} {{ content | select('search', 'functional') | first }}"
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ result.content | split('\n') | select('search', 'functional') | first }}"
+    path: "/tmp/bto"
+    regex: "^{{ ansible_hostname }} "

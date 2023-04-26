@@ -6,20 +6,15 @@
     status_code: [200, 404]
   register: result
 
-# - name: Debug
-#   ansible.builtin.debug:
-#     var: result.json.bridges
-
-- name: Set fact
-  ansible.builtin.set_fact:
-    data: "{{ result.json.bridges[0] }}"
-  when: result.json.bridges[0]
-
-- name: Onionoo data
-  ansible.builtin.debug:
-    msg: "{{ ansible_hostname }}
-      {{ data.bridgedb_distributor | default('n/a') }}
-      {{ data.advertised_bandwidth }}
-      running: {{ data.running }}
-      blocklist: {{ data.blocklist | default([]) | join(',') }}"
-  when: data
+- name: Fill result to /tmp file
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }}
+      {{ result.json.bridges[0].bridgedb_distributor | default('n/a') }}
+      {{ result.json.bridges[0].advertised_bandwidth }}
+      running: {{ result.json.bridges[0].running }}
+      blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
+    path: "/tmp/onionoo"
+    regex: "^{{ ansible_hostname }} "
+  when: result.json.bridges
