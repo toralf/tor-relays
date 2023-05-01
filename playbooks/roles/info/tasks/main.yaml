@@ -6,6 +6,12 @@
       - "all_ipv4_addresses"
     gather_timeout: 20
 
+- name: "Ensure that the tmp dir does exist: {{ tmp_dir }}"
+  ansible.builtin.file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: "0755"
+
 - name: Clients
   ansible.builtin.import_tasks: clients.yaml
   tags:

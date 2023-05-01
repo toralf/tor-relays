@@ -2,6 +2,5 @@
 - name: "Info"
   hosts:
     - all
-  strategy: linear
   roles:
     - role: info

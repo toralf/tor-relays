@@ -4,10 +4,10 @@
   ansible.builtin.command: "uname -rv"
   register: result
 
-- name: Fill result to /tmp file
+- name: File results for uname
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_hostname }} {{ result.stdout }}"
-    path: "/tmp/uname"
+    path: "{{ tmp_dir }}/uname"
     regex: "^{{ ansible_hostname }} "

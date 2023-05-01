@@ -17,8 +17,7 @@
 
 - name: Get certificate
   changed_when: false
-  ansible.builtin.shell: |
-    grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
+  ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: result
 
 - name: Get the fact

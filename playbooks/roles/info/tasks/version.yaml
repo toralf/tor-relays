@@ -11,11 +11,11 @@
     awk '{ print $3 }'
   register: result
 
-- name: Fill result to /tmp file
+- name: File results for version
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_hostname }} {{ ansible_facts.packages['tor'][0].version }} {{ ansible_facts.packages['obfs4proxy'][0].version }} {{ result.stdout_lines[0] }}"
 
-    path: "/tmp/version"
+    path: "{{ tmp_dir }}/version"
     regex: "^{{ ansible_hostname }} "

@@ -6,10 +6,10 @@
     status_code: [200, 404]
   register: result
 
-- name: Fill result to /tmp file
+- name: File results for bto
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_hostname }} {{ result.content | split('\n') | select('search', 'functional') | first }}"
-    path: "/tmp/bto"
+    path: "{{ tmp_dir }}/bto"
     regex: "^{{ ansible_hostname }} "

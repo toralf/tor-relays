@@ -10,10 +10,10 @@
     xargs
   register: result
 
-- name: Fill result to /tmp file
+- name: File results for clients
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_hostname }} {{ result.stdout }}"
-    path: "/tmp/clients"
+    path: "{{ tmp_dir }}/clients"
     regex: "^{{ ansible_hostname }} "

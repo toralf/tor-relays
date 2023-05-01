@@ -8,8 +8,10 @@ enable_list:
   - no-same-owner # opt-in
 
 skip_list:
+  - line[length]
   - meta-no-info
   - meta-no-tags
-  - risky-shell-pipe
   - name[template]
   - no-handler
+  - risky-file-permissions
+  - risky-shell-pipe

@@ -6,7 +6,7 @@
     status_code: [200, 404]
   register: result
 
-- name: Fill result to /tmp file
+- name: File results for onionoo
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
@@ -15,6 +15,6 @@
       {{ result.json.bridges[0].advertised_bandwidth }}
       running: {{ result.json.bridges[0].running }}
       blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
-    path: "/tmp/onionoo"
+    path: "{{ tmp_dir }}/onionoo"
     regex: "^{{ ansible_hostname }} "
   when: result.json.bridges

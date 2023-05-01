@@ -9,3 +9,5 @@ torrc_generic:
     value: "{{ log_notice }}"
   - name: "Log warn file"
     value: "{{ log_warn }}"
+
+tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
