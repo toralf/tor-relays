@@ -12,9 +12,8 @@
     create: yes
     line: "{{ ansible_hostname }}
       {{ result.json.bridges[0].bridgedb_distributor | default('n/a') }}
-      {{ result.json.bridges[0].advertised_bandwidth }}
-      running: {{ result.json.bridges[0].running }}
+      {{ result.json.bridges[0].advertised_bandwidth | default('n/a') }}
+      running: {{ result.json.bridges[0].running | default('n/a') }}
       blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
     path: "{{ tmp_dir }}/onionoo"
     regex: "^{{ ansible_hostname }} "
-  when: result.json.bridges
