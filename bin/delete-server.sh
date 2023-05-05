@@ -13,8 +13,9 @@ project=$(hcloud context active)
 while read -r i; do
   if hcloud server describe $i 2>&1 | grep -e "^Name:" -e "^Status:" -e "^Created:" -e "^    IP:"; then
     echo
-    ssh -n $i "/usr/sbin/service tor stop"
+    ssh -n $i "/usr/sbin/service tor stop" || true
     hcloud server delete $i
+    echo
   fi
 done < <(xargs -n 1 <<<$*)
 
