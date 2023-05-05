@@ -10,12 +10,17 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 project=$(hcloud context active)
 [[ -n $project ]]
 
-loc_list=$(hcloud location list | awk 'NR > 1 { print $2 }')
+locations=$(hcloud location list --output columns=name | awk '{ if (NR > 1) { print $1 } }')
+
 while read -r i; do
   if ! hcloud server describe $i 2>/dev/null | grep -e "^Name:" -e "^Status:" -e "^Created:" -e "^    IP:"; then
-    hcloud server create \
-      --name "$i" --location "$(shuf -n 1 <<<${loc_list})" \
-      --image "debian-11" --ssh-key "tfoerste@t44" --type "cpx11" --poll-interval 1s
+    loc=$(shuf -n 1 <<<${locations})
+    case $loc in
+    fsn1) size="cax11" ;;
+    *) size="cpx11" ;;
+    esac
+    hcloud server create --name $i --location $loc --image "debian-11" --ssh-key "id_ed25519.pub" --type $size --poll-interval 2s
+    echo
   fi
 done < <(xargs -n 1 <<<$*)
 
