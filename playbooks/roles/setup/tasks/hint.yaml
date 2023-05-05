@@ -3,9 +3,8 @@
   ansible.builtin.import_tasks: ../../lib/hashed-fingerprint.yaml
 
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
-- name: Hint
+- name: "Add to ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt"
   ansible.builtin.debug:
     msg:
-      - "Add to ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt :"
       - "# {{ ansible_hostname }}"
       - "{{ hashed_fingerprint }}"

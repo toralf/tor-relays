@@ -49,9 +49,3 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
-
-    - name: Restart
-      ansible.builtin.import_tasks: restart.yaml
-      tags:
-        - never
-        - restart

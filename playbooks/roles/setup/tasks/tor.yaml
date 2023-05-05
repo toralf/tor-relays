@@ -41,6 +41,7 @@
     src: torrc.j2
     dest: /etc/tor/torrc
     mode: "0644"
+  register: torrc_state
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
@@ -84,7 +85,7 @@
 - name: Enable Tor service
   ansible.builtin.systemd:
     name: "tor@default.service"
-    state: restarted
+    state: reloaded
     daemon_reload: yes
     enabled: yes
-  when: tor_state.changed or obfs4proxy_state.changed or force_restart
+  when: tor_state.changed or torrc_state.changed or obfs4proxy_state.changed
