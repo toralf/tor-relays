@@ -1,6 +1,0 @@
----
-- name: Restart Tor
-  ansible.builtin.systemd:
-    name: tor
-    state: restarted
-  when: force_restart
