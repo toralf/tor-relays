@@ -11,13 +11,13 @@ project=$(hcloud context active)
 [[ -n $project ]]
 
 cax11_id=$(hcloud server-type list --output json | jq -cr '.[] | select(.name=="cax11") | .id') # prefer arm64
-datacenter_list=$(hcloud datacenter list --output json)
-locations=$(hcloud location list --output json | jq -cr '.[].name')
+cax11_locations=$(hcloud datacenter list --output json | jq -cr '.[] | select(.server_types.available | contains(['$cax11_id'])) | .location.name')
+all_locations=$(hcloud location list --output json | jq -cr '.[].name')
 
 while read -r name; do
   if ! hcloud server describe $name 2>/dev/null | grep -e "^Name:" -e "^Status:" -e "^Created:" -e "^    IP:"; then
-    loc=$(shuf -n 1 <<<$locations)
-    model=$(jq -cr '.[] | select(.location.name == "'$loc'") | .server_types.available | if contains(['$cax11_id']) then "cax11" else "cpx11" end' <<<$datacenter_list)
+    loc=$(shuf -n 1 <<<$all_locations)
+    [[ -n $cax11_locations && "$cax11_locations" =~ "$loc" ]] && model="cax11" || model="cpx11"
     echo "$loc $model"
     hcloud server create --name $name --location $loc --image "debian-11" --ssh-key "id_ed25519.pub" --type $model --poll-interval 2s
     echo
@@ -28,7 +28,7 @@ echo
 $(dirname $0)/update-dns.sh
 
 echo -n 'add to known_hosts '
-for i in $(seq 1 12); do
+for i in $(seq 1 15); do
   echo -n '.'
   sleep 1
 done
