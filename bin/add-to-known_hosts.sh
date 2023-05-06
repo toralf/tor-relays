@@ -8,8 +8,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-while read -r i; do
-  if ! ssh -q -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 $i "uname -a" </dev/null >/dev/null; then
-    echo " issue for $i"
+while read -r name; do
+  if ! ssh -q -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 $name "uname -a" </dev/null >/dev/null; then
+    echo " could not get pub ssh host key for $name"
   fi
 done < <(xargs -n 1 <<<$*)
