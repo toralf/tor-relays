@@ -34,14 +34,12 @@
       - tor
       - tor-geoipdb
       - deb.torproject.org-keyring
-  register: tor_state
 
 - name: Configure torrc
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
     mode: "0644"
-  register: torrc_state
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
@@ -57,7 +55,6 @@
     name:
       - obfs4proxy
     default_release: "{{ ansible_distribution_release }}-backports"
-  register: obfs4proxy_state
 
 - name: Create dirs to configure service to use privileged port
   ansible.builtin.file:
@@ -88,4 +85,3 @@
     state: reloaded
     daemon_reload: yes
     enabled: yes
-  when: tor_state.changed or torrc_state.changed or obfs4proxy_state.changed
