@@ -17,9 +17,6 @@ while read -r name; do
     hcloud server delete $name
     echo
   fi
-done < <(xargs -n 1 <<<$*)
-
-while read -r name; do
   sed -i -e "/^$name /d" ~/.ssh/known_hosts
 done < <(xargs -n 1 <<<$*)
 
