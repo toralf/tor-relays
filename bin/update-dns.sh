@@ -31,9 +31,8 @@ echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
 (
   echo 'server:'
 
-  hcloud server list |
-    # ID   NAME   STATUS   IPV4   IPV6   DATACENTER
-    awk '! /ID/ { print $2, $4, $5 }' |
+  hcloud server list --output columns=name,ipv4,ipv6 |
+    grep -v '^NAME' |
     sort |
     while read -r name ip4 ip6mask; do
       ip6="${ip6mask%/*}1" # Debian defaults to [...:1]
@@ -44,7 +43,7 @@ echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
     done
 ) | sudo tee -a ${hconf}.new 1>/dev/null
 
-if ! sudo diff -q ${hconf}.new ${hconf} 1>/dev/null; then
+if ! sudo diff ${hconf}.new ${hconf}; then
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 fi
