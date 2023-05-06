@@ -5,3 +5,4 @@
     - "!special"
   roles:
     - role: setup
+    - role: info
