@@ -2,8 +2,7 @@
 - name: Get unique clients from last 3 days
   changed_when: false
   ansible.builtin.shell: >-
-    zgrep -h -F ' unique clients.' {{ log_notice }}* |
-    sort |
+    zgrep -h -F ' unique clients.' {{ log_notice }}.4.gz {{ log_notice }}.3.gz {{ log_notice }}.2.gz {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
     tail -n 12 |
     cut -f2- -d',' |
     grep -Po ' \d+ ' |
