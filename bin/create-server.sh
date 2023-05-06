@@ -10,7 +10,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 project=$(hcloud context active)
 [[ -n $project ]]
 
-cax11_id=$(hcloud server-type list --output json | jq -cr '.[] | select(.name=="cax11") | .id')  # prefer arm64
+cax11_id=$(hcloud server-type list --output json | jq -cr '.[] | select(.name=="cax11") | .id') # prefer arm64
 datacenter_list=$(hcloud datacenter list --output json)
 locations=$(hcloud location list --output json | jq -cr '.[].name')
 
