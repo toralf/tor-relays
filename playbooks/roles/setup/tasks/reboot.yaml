@@ -10,7 +10,7 @@
     uname -r | cut -f 3 -d '-'
   register: result
 
-- name:
+- name: Set fact for linux package name
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ result.stdout_lines[1] }}"
 

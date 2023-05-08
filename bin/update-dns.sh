@@ -43,7 +43,9 @@ echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
     done
 ) | sudo tee -a ${hconf}.new 1>/dev/null
 
-if ! sudo diff ${hconf}.new ${hconf}; then
+if ! sudo diff ${hconf} ${hconf}.new; then
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
+else
+  echo " no DNS changes applied" >&2
 fi

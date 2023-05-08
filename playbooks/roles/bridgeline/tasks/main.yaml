@@ -13,7 +13,7 @@
 
 - name: Get the fact
   ansible.builtin.set_fact:
-    fp: "{{ result.stdout.split('\n')[0] }}"
+    fp: "{{ result.stdout_lines[0] }}"
 
 - name: Get certificate
   changed_when: false
@@ -22,7 +22,7 @@
 
 - name: Get the fact
   ansible.builtin.set_fact:
-    cert: "{{ result.stdout.split('\n')[0] }}"
+    cert: "{{ result.stdout_lines[0] }}"
 
 - name: Run sort -k 8 /tmp/bridgeline.txt
   delegate_to: localhost

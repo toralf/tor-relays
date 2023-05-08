@@ -10,13 +10,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 project=$(hcloud context active)
 [[ -n $project ]]
 
+xargs -r -n 1 -P $(nproc) hcloud server delete &>/dev/null <<<$*
 while read -r name; do
-  if hcloud server describe $name 2>&1 | grep -e "^Name:" -e "^Status:" -e "^Created:" -e "^    IP:"; then
-    echo
-    ssh -n $name "/usr/sbin/service tor stop" || true
-    hcloud server delete $name
-    echo
-  fi
   sed -i -e "/^$name /d" ~/.ssh/known_hosts
 done < <(xargs -n 1 <<<$*)
 
