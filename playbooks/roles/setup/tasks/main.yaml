@@ -29,23 +29,18 @@
       tags:
         - system
 
-    - name: Timer
-      ansible.builtin.import_tasks: timer.yaml
-      tags:
-        - timer
-
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml
       tags:
         - tor
+
+    - name: Timer
+      ansible.builtin.import_tasks: timer.yaml
+      tags:
+        - timer
 
     - name: Hint
       ansible.builtin.import_tasks: hint.yaml
       tags:
         - hint
       when: contact_info
-
-    - name: Reboot
-      ansible.builtin.import_tasks: reboot.yaml
-      tags:
-        - reboot
