@@ -35,23 +35,19 @@ Setup the new Tor public bridge _my_bridge_
          obfs4_port: 4711 # overwrite the default created by using "seed_or_port"
    ```
 
+   To setup a private bridge, just replace `public` with `private` in the example.
+
 1. deploy it
 
    ```bash
-   ./site-setup.yaml
-   ```
-
-1. Get the bridge line
-
-   ```bash
-   ./site-bridgeline.yaml
+   ./site-setup.yaml --limit my_bridge
    ```
 
 ## Details
 
 The Tor bridges are deployed via an _Ansible_ role with a recent Debian OS.
 The scripts under `./bin` works only for the Hetzner cloud,
-_unbound_ is expected as the local DNS resolver and is expected to be configured like:
+_unbound_ is expected as the local DNS resolver and configured in this way:
 
 ```config
 include: "/etc/unbound/hetzner-private.conf"
@@ -62,13 +58,17 @@ To create a new VPS _my_bridge_ at Hetzner in the project _my_project_:
 
 ```bash
 hcloud context use "my_project"
-echo "my_bridge" | xargs -n 1 -P $(nproc) ./bin/create-server.sh
+./bin/create-server.sh my_bridge
 ```
-
-To setup a private bridge, just replace `public` with `private` in the example above.
 
 Get the state
 
 ```bash
-./site-info.yaml
+./site-info.yaml --limit my_bridge
+```
+
+Get the bridge line
+
+```bash
+./site-bridgeline.yaml --limit my_bridge
 ```
