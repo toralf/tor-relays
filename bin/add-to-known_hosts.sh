@@ -8,6 +8,6 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-echo -n " add to ~/.ssh/known_hosts ... "
-xargs -r -n 1 -P $(nproc) ssh -q -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 -n 1>/dev/null <<<$*
+echo " adding entries to ~/.ssh/known_hosts: "
+xargs -n 1 <<<$* | xargs -r -P $(nproc) -I {} ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 {} "uname -a"
 echo
