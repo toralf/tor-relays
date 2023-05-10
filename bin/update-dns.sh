@@ -47,5 +47,5 @@ if ! sudo diff ${hconf} ${hconf}.new; then
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 else
-  echo " no DNS changes applied" >&2
+  echo " no DNS changes" >&2
 fi

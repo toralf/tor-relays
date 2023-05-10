@@ -11,7 +11,7 @@ project=$(hcloud context active)
 [[ -n $project ]]
 
 echo -n " stopping tor service ..."
-xargs -n 1 <<<$* | xargs -r -P $(nproc) -I {} ssh {} "service tor stop" 1>/dev/null
+xargs -n 1 <<<$* | xargs -r -P $(nproc) -I {} ssh {} "service tor stop &>/dev/null || true" 1>/dev/null
 echo
 
 echo -n " deleting entries from ~/.ssh/known_hosts ... "
