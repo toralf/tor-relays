@@ -38,7 +38,7 @@
     _ipv6: '{{ ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | map(attribute="address") | replace("''", "") }}'
 
 - name: Set ipv6 bridge line in /tmp/bridgeline.txt
-  no_log: false
+  no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ '%25s' | format(_ipv6) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fp }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
