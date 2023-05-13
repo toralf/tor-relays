@@ -12,6 +12,7 @@
   register: result
 
 - name: File results for version
+  no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes

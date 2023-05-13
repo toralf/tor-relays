@@ -25,6 +25,7 @@
     cert: "{{ result.stdout_lines[0] }}"
 
 - name: Run sort -k 8 /tmp/bridgeline.txt
+  no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ '%15s' | format(ansible_eth0.ipv4.address) }}:{{ '%-5s' | format(obfs4_port) }} {{ fp }} {{ cert }} iat-mode=0  # {{ ansible_hostname }}"
