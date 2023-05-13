@@ -1,7 +1,0 @@
----
-- name: Bridge Line
-  hosts:
-    - private
-    - public
-  roles:
-    - role: bridgeline

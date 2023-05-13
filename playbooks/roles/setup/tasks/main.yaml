@@ -38,9 +38,3 @@
       ansible.builtin.import_tasks: timer.yaml
       tags:
         - timer
-
-    - name: Hint
-      ansible.builtin.import_tasks: hint.yaml
-      tags:
-        - hint
-      when: contact_info

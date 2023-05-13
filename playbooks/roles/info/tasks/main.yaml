@@ -12,6 +12,25 @@
     state: directory
     mode: "0755"
 
+- name: Import hashed-fingerprint
+  ansible.builtin.import_tasks: hashed-fingerprint.yaml
+  tags:
+    - bridgeline
+    - bto
+    - onionoo
+    - wellknown
+
+- name: Bridge Line
+  ansible.builtin.import_tasks: bridgeline.yaml
+  tags:
+    - never
+    - bridgeline
+
+- name: Bto
+  ansible.builtin.import_tasks: bto.yaml
+  tags:
+    - bto
+
 - name: Clients
   ansible.builtin.import_tasks: clients.yaml
   tags:
@@ -24,11 +43,11 @@
     - log-notice
     - never
 
-- name: Log warn
-  ansible.builtin.import_tasks: log-warn.yaml
+- name: Log system
+  ansible.builtin.import_tasks: log-system.yaml
   tags:
     - log
-    - log-warn
+    - log-system
     - never
 
 - name: Log unattended
@@ -38,12 +57,17 @@
     - log-unattended
     - never
 
-- name: Log system
-  ansible.builtin.import_tasks: log-system.yaml
+- name: Log warn
+  ansible.builtin.import_tasks: log-warn.yaml
   tags:
     - log
-    - log-system
+    - log-warn
     - never
+
+- name: Onionoo
+  ansible.builtin.import_tasks: onionoo.yaml
+  tags:
+    - onionoo
 
 - name: Uname
   ansible.builtin.import_tasks: uname.yaml
@@ -55,29 +79,14 @@
   tags:
     - uptime
 
-- name: Tor version
+- name: Version of Tor
   ansible.builtin.import_tasks: version.yaml
   tags:
     - version
 
-- name: Import hashed-fingerprint
-  ansible.builtin.import_tasks: ../../lib/hashed-fingerprint.yaml
-  tags:
-    - bto
-    - onionoo
-
-- name: Onionoo
-  ansible.builtin.import_tasks: onionoo.yaml
-  tags:
-    - onionoo
-
-- name: ORPort
-  ansible.builtin.import_tasks: orport.yaml
+- name: Wellknown
+  ansible.builtin.import_tasks: wellknown.yaml
   tags:
     - never
-    - orport
+    - wellknown
 
-- name: Bto
-  ansible.builtin.import_tasks: bto.yaml
-  tags:
-    - bto
