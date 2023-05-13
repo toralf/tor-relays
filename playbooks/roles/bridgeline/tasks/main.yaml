@@ -11,24 +11,38 @@
   ansible.builtin.command: "cut -f 2 -d ' ' /var/lib/tor/fingerprint"
   register: result
 
-- name: Get the fact
+- name: Set the fingerprint
   ansible.builtin.set_fact:
-    fp: "{{ result.stdout_lines[0] }}"
+    _fp: "{{ result.stdout_lines[0] }}"
 
 - name: Get certificate
   changed_when: false
   ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: result
 
-- name: Get the fact
+- name: Set the cert
   ansible.builtin.set_fact:
-    cert: "{{ result.stdout_lines[0] }}"
+    _cert: "{{ result.stdout_lines[0] }}"
 
-- name: Run sort -k 8 /tmp/bridgeline.txt
+- name: Set ipv4 bridge line in /tmp/bridgeline.txt
   no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%15s' | format(ansible_eth0.ipv4.address) }}:{{ '%-5s' | format(obfs4_port) }} {{ fp }} {{ cert }} iat-mode=0  # {{ ansible_hostname }}"
+    line: "Bridge obfs4 {{ '%25s' | format(ansible_eth0.ipv4.address) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fp }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
     path: /tmp/bridgeline.txt
     create: yes
     mode: "0600"
+
+- name: Set ipv6 address
+  ansible.builtin.set_fact:
+    _ipv6: '{{ ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | map(attribute="address") | replace("''", "") }}'
+
+- name: Set ipv6 bridge line in /tmp/bridgeline.txt
+  no_log: false
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    line: "Bridge obfs4 {{ '%25s' | format(_ipv6) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fp }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
+    path: /tmp/bridgeline.txt
+    create: yes
+    mode: "0600"
+  when: _ipv6 is defined
