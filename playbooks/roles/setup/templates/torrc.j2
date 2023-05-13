@@ -10,7 +10,6 @@ ORPort {{ or_port }}
 ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
-ServerTransportListenAddr obfs4 [::]:{{ obfs4_port }}
 
 {% for item in torrc_config %}
 {{ item.name }} {{ item.value }}
