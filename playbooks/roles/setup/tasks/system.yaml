@@ -49,14 +49,14 @@
   ansible.builtin.package_facts:
     manager: auto
 
-- name: Current running kernel
+- name: Get current running kernel version
   changed_when: false
   ansible.builtin.shell: |
     uname -v | cut -f 4 -d ' '
     uname -r | cut -f 3 -d '-'
   register: result
 
-- name: Set fact for linux package name
+- name: Set fact for linux image package name
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ result.stdout_lines[1] }}"
 

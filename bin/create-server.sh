@@ -24,7 +24,7 @@ done < <(xargs -n 1 <<<$*) |
 echo
 $(dirname $0)/update-dns.sh
 
-echo -n ' wait ...'
-sleep 20
+echo -n ' wait 15 sec ...'
+sleep 15
 echo
 $(dirname $0)/add-to-known_hosts.sh $*
