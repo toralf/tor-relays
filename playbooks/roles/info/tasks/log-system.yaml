@@ -2,10 +2,10 @@
 - name: Grep {{ log_system }}
   changed_when: false
   ansible.builtin.shell: |
-    zgrep -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* | grep -v 'ansible-ansible.legacy.command:' | head -n {{ log_lines }}
+    zgrep -H -B 2 -A 4 -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* | grep -v 'ansible-ansible' | tee
   register: result
 
 - name: Results
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
-  when: result.stdout_lines | length != 5
+  when: result.stdout_lines | length > 0

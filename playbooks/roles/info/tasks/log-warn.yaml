@@ -1,10 +1,11 @@
 ---
-- name: Get last {{ log_lines }} lines from {{ log_warn }}
+- name: Grep {{ log_warn }}
   changed_when: false
-  ansible.builtin.shell: tail -n {{ log_lines }} {{ log_warn }} 2>/dev/null
+  ansible.builtin.shell: |
+    zgrep -H A 3 ' died' {{ log_warn }}* | tee
   register: result
 
 - name: Results
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
-  when: result.stdout_lines | length != 5
+  when: result.stdout_lines | length > 0
