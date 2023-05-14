@@ -55,11 +55,11 @@
     uname -r | cut -f 3 -d '-'
   register: _uname
 
-- name: Set fact for linux image package name
+- name: Set linux_image_arch
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"
 
-- name: Reboot into newer kernel
+- name: Reboot into newer kernel if needed
   ansible.builtin.reboot:
     connect_timeout: 5
     reboot_timeout: 120
