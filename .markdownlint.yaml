@@ -7,3 +7,6 @@ MD013:
 
 # first line
 MD041: false
+
+# bare link
+MD034: false
