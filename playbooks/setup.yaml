@@ -2,7 +2,6 @@
 - name: Setup
   hosts:
     - all
-    - "!special"
   roles:
     - role: setup
     - role: info
