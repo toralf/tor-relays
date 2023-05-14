@@ -15,25 +15,14 @@
   ansible.builtin.set_fact:
     _cert: "{{ result.stdout_lines[0] }}"
 
-- name: Set ipv4 bridge line in /tmp/bridgeline.txt
+- name: Set bridge lines in /tmp/bridgeline.txt
   no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%25s' | format(ansible_eth0.ipv4.address) }}:{{ '%-5s' | format(obfs4_port) }} {{ hashed_fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
+    line: "Bridge obfs4 {{ '%25s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ hashed_fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
     path: /tmp/bridgeline.txt
     create: yes
     mode: "0600"
-
-- name: Set ipv6 address
-  ansible.builtin.set_fact:
-    _ipv6: '{{ ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | map(attribute="address") | replace("''", "") }}'
-
-- name: Set ipv6 bridge line in /tmp/bridgeline.txt
-  no_log: true
-  delegate_to: localhost
-  ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%25s' | format(_ipv6) }}:{{ '%-5s' | format(obfs4_port) }} {{ hashed_fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
-    path: /tmp/bridgeline.txt
-    create: yes
-    mode: "0600"
-  when: _ipv6 is defined
+  with_items: 
+    - '{{ ipv4 }}'
+    - '{{ ipv6 }}'
