@@ -20,9 +20,9 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ '%25s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ hashed_fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
-    path: /tmp/bridgeline.txt
+    path: /tmp/{{ group_names[0] }}_bridgeline.txt
     create: yes
     mode: "0600"
-  with_items: 
-    - '{{ ipv4 }}'
-    - '{{ ipv6 }}'
+  with_items:
+    - "{{ ipv4 }}"
+    - "{{ ipv6 }}"

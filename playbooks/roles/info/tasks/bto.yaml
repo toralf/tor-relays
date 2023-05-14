@@ -12,5 +12,5 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_hostname }} {{ result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
-    path: "{{ tmp_dir }}/bto"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_bto"
     regex: "^{{ ansible_hostname }} "

@@ -16,5 +16,5 @@
       {{ result.json.bridges[0].advertised_bandwidth | default('n/a') }}
       running: {{ result.json.bridges[0].running | default('n/a') }}
       blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
-    path: "{{ tmp_dir }}/onionoo"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
     regex: "^{{ ansible_hostname }} "

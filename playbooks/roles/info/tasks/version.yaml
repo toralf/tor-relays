@@ -18,5 +18,5 @@
     create: yes
     line: "{{ ansible_hostname }} {{ ansible_facts.packages['tor'][0].version }} {{ ansible_facts.packages['obfs4proxy'][0].version }} {{ result.stdout_lines[0] }}"
 
-    path: "{{ tmp_dir }}/version"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_version"
     regex: "^{{ ansible_hostname }} "
