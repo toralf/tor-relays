@@ -27,19 +27,15 @@ while [[ -e ${hconf}.new ]]; do
 done
 echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
 
-# update /etc/unbound/hetzner-${project}.conf
 (
   echo 'server:'
 
-  hcloud server list --output columns=name,ipv4,ipv6 |
+  hcloud server list --output columns=name,ipv4 |
     grep -v '^NAME' |
     sort |
-    while read -r name ip4 ip6mask; do
-      ip6="${ip6mask%/*}1" # Debian defaults to [...:1]
-      printf "  local-data:     \"%-40s  A     %s\"\n" ${name} ${ip4}
-      printf "  local-data:     \"%-40s  AAAA  %s\"\n" ${name} ${ip6}
-      printf "  local-data-ptr: \"%-40s        %s\"\n" ${ip4} ${name}
-      printf "  local-data-ptr: \"%-40s        %s\"\n" ${ip6} ${name}
+    while read -r name ip4; do
+      printf "  local-data:     \"%-20s  A     %s\"\n" ${name} ${ip4}
+      printf "  local-data-ptr: \"%-20s        %s\"\n" ${ip4} ${name}
     done
 ) | sudo tee -a ${hconf}.new 1>/dev/null
 

@@ -44,7 +44,9 @@ Setup the new Tor public bridge _my_bridge_
 
 The Tor bridges are deployed via an _Ansible_ role with a recent Debian OS.
 The scripts under [bin](./bin) works only for the Hetzner cloud,
-_unbound_ is expected as the local DNS resolver and configured in this way:
+same applies to the Ansible task [network](./playbooks/roles/setup/tasks/network.yaml).
+As a local DNS resolver _unbound_ is expected.
+It needs to be configured in this way:
 
 ```config
 include: "/etc/unbound/hetzner-private.conf"

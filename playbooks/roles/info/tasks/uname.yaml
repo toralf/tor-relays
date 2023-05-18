@@ -5,7 +5,6 @@
   register: result
 
 - name: File results for uname
-  no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes

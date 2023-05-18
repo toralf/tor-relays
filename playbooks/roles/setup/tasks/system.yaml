@@ -23,26 +23,22 @@
   ansible.builtin.copy:
     src: 20auto-upgrades
     dest: /etc/apt/apt.conf.d/
-    mode: "0644"
 
 - name: Configure unattended upgrades
   ansible.builtin.copy:
     src: 50unattended-upgrades
     dest: /etc/apt/apt.conf.d/
-    mode: "0644"
 
 - name: Tweak readline
   ansible.builtin.lineinfile:
     line: "set enable-bracketed-paste off"
     path: /root/.inputrc
     create: yes
-    mode: "0644"
 
 - name: Htop config
   ansible.builtin.copy:
     src: htoprc
     dest: /root/.config/htop/
-    mode: "0644"
 
 - name: Gather the package facts
   ansible.builtin.package_facts:
@@ -64,5 +60,5 @@
     connect_timeout: 5
     reboot_timeout: 120
     pre_reboot_delay: 0
-    post_reboot_delay: 20
+    post_reboot_delay: 35
   when: not _uname.stdout_lines[0] == ansible_facts.packages[linux_image_arch][0].version

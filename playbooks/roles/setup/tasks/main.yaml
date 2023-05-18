@@ -1,9 +1,10 @@
 ---
-- name: Ansible defaults
+- name: Gather ipv4
   ansible.builtin.setup:
     gather_subset:
       - "!all"
       - "all_ipv4_addresses"
+      - "all_ipv6_addresses"
     gather_timeout: 20
 
 - name: Main
@@ -19,22 +20,31 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.lineinfile:
+      owner: root
+      group: root
+      mode: "0644"
     ansible.builtin.template:
       owner: root
       group: root
       mode: "0644"
   block:
+    - name: Network
+      ansible.builtin.import_tasks: network.yaml
+      tags:
+        - network
+
     - name: System
       ansible.builtin.import_tasks: system.yaml
       tags:
         - system
 
-    - name: Tor
-      ansible.builtin.import_tasks: tor.yaml
-      tags:
-        - tor
-
     - name: Timer
       ansible.builtin.import_tasks: timer.yaml
       tags:
         - timer
+
+    - name: Tor
+      ansible.builtin.import_tasks: tor.yaml
+      tags:
+        - tor
