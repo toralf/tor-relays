@@ -1,0 +1,52 @@
+---
+- name: Get ipv6 netmask
+  delegate_to: localhost
+  ansible.builtin.shell: |
+    hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_hostname }} / { print $2 }'
+  register: result
+
+- name: Get ipv6 prefix
+  ansible.builtin.set_fact:
+    _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
+
+- name: Dice 4 16-bit integers
+  ansible.builtin.set_fact:
+    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'B' + result.stdout) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
+    _d: "{{ range(1,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
+
+- name: Create a helper variable
+  ansible.builtin.set_fact:
+    _x: "{{ _a }}.{{ _b }}.{{ _c }}.{{ _d }}"
+
+- name: Ensure ipv6 is re-set
+  ansible.builtin.set_fact:
+    _ipv6: "{{ _ipv6_prefix }}:{{ _x | ansible.utils.ip4_hex(':') }}"
+
+- name: Ensure that Hetzner cloud network configuring is deactivated
+  ansible.builtin.copy:
+    src: 00_debian.cfg
+    dest: /etc/cloud/cloud.cfg.d/
+
+- name: Ensure new ipv6 is set
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "    address {{ _ipv6 }}/64 dev eth0"
+    path: "/etc/network/interfaces.d/50-cloud-init"
+    regex: "^    address {{ _ipv6_prefix }}:"
+
+- name: Restart network service
+  ansible.builtin.systemd:
+    name: "networking"
+    state: restarted
+    daemon_reload: yes
+    enabled: yes
+
+- name: Gather ipv6
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "all_ipv6_addresses"
+    gather_timeout: 20
+  failed_when: ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | length != 1
