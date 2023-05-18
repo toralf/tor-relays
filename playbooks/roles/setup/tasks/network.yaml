@@ -9,22 +9,22 @@
   ansible.builtin.set_fact:
     _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
 
-- name: Dice 4 16-bit integers
+- name: Dice ipv6 suffix values
   ansible.builtin.set_fact:
     _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
     _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'B' + result.stdout) }}"
     _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
     _d: "{{ range(1,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
 
-- name: Create a helper variable
+- name: Create ipv6 suffix
   ansible.builtin.set_fact:
-    _x: "{{ _a }}.{{ _b }}.{{ _c }}.{{ _d }}"
+    _ipv6_suffix: "{{ _a }}.{{ _b }}.{{ _c }}.{{ _d }}"
 
 - name: Ensure ipv6 is re-set
   ansible.builtin.set_fact:
-    _ipv6: "{{ _ipv6_prefix }}:{{ _x | ansible.utils.ip4_hex(':') }}"
+    _ipv6: "{{ _ipv6_prefix }}:{{ _ipv6_suffix | ansible.utils.ip4_hex(':') }}"
 
-- name: Ensure that Hetzner cloud network configuring is deactivated
+- name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/

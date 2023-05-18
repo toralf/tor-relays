@@ -43,8 +43,8 @@ Setup the new Tor public bridge _my_bridge_
 ## Details
 
 The Tor bridges are deployed via an _Ansible_ role with a recent Debian OS.
-The scripts under [bin](./bin) works only for the Hetzner cloud,
-same applies to the Ansible task [network](./playbooks/roles/setup/tasks/network.yaml).
+The scripts under [bin](./bin) works mostly only for the Hetzner cloud,
+similar applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
 As a local DNS resolver _unbound_ is expected.
 It needs to be configured in this way:
 
@@ -53,6 +53,7 @@ include: "/etc/unbound/hetzner-private.conf"
 include: "/etc/unbound/hetzner-public.conf"
 ```
 
+for [update-dns.sh](./bin/update-dns.sh) to work correctly.
 To create a new VPS _my_bridge_ at Hetzner in the project _my_project_, do:
 
 ```bash
@@ -66,7 +67,7 @@ Get the state
 ./site-info.yaml --limit my_bridge
 ```
 
-Get the bridge line
+Store the bridge lines in a file under _/tmp_:
 
 ```bash
 ./site-bridgeline.yaml --limit my_bridge
