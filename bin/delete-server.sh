@@ -10,8 +10,10 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 project=$(hcloud context active)
 [[ -n $project ]]
 
+jobs=$((1 * $(nproc)))
+
 echo -n " stopping tor service(s) ..."
-xargs -n 1 <<<$* | xargs -r -P $(nproc) -I {} ssh {} "service tor stop &>/dev/null || true" 1>/dev/null
+xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh {} "service tor stop &>/dev/null || true" 1>/dev/null
 echo
 
 echo -n " delete from ~/.ssh/known_hosts ... "
@@ -23,7 +25,7 @@ echo
 sleep 5
 
 echo -n " deleting server(s) ..."
-xargs -r -n 1 -P $(nproc) hcloud server delete 1>/dev/null <<<$*
+xargs -r -n 1 -P ${jobs} hcloud server delete 1>/dev/null <<<$*
 echo
 
 echo
