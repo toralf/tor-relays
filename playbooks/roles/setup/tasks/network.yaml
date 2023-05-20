@@ -1,6 +1,7 @@
 ---
 - name: Get ipv6 netmask
   delegate_to: localhost
+  changed_when: false
   ansible.builtin.shell: |
     hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_hostname }} / { print $2 }'
   register: result
@@ -14,7 +15,7 @@
     _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
     _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'B' + result.stdout) }}"
     _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
-    _d: "{{ range(1,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
+    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
 
 - name: Create ipv6 suffix
   ansible.builtin.set_fact:
@@ -51,20 +52,29 @@
     gather_timeout: 20
   failed_when: ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | length != 1
 
-- name: Flush chain PREROUTING
+- name: Flush table nat in chain PREROUTING
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     flush: true
 
-- name: Preroute incoming TCP v6 to the global ipv6 address
+- name: Accept incoming TCP v6 to the global ipv6 address
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     protocol: tcp
-    destination_port: 443
+    destination: "{{ _ipv6 }}"
+    jump: ACCEPT
+
+- name: Preroute incoming TCP v6 (except ...::1 till ...::399) to the global ipv6 address
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination: "! {{ _ipv6_prefix }}::/118"
     to_destination: "{{ _ipv6 }}"
     jump: DNAT
 

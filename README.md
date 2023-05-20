@@ -18,7 +18,7 @@ Setup the new Tor public bridge _my_bridge_
    ```yaml
    ---
    contact_info: "me@my.net"
-   nickname_prefix: "nickneck"
+   nickname_prefix: "my_preferred_prefix"
    obfs4_port: 4711
    seed_or_port: "a-really-random-string"
    ```
@@ -32,7 +32,7 @@ Setup the new Tor public bridge _my_bridge_
        my_bridge:
    ```
 
-   To setup a private bridge, just replace `public` with `private` in the example.
+   For a private bridge just replace `public` with `private`.
 
 1. deploy it
 
@@ -42,18 +42,20 @@ Setup the new Tor public bridge _my_bridge_
 
 ## Details
 
-The Tor bridges are deployed via an _Ansible_ role with a recent Debian OS.
-The scripts under [bin](./bin) works mostly only for the Hetzner cloud,
-similar applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
-As a local DNS resolver _unbound_ is expected.
-It needs to be configured in this way:
+Tor bridges are deployed via an _Ansible_ role, using a recent Debian OS.
+
+The scripts under [bin](./bin) works for the Hetzner cloud.
+Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
+That task configures for a Hetzner VPS a randomly choosen ipv6 address (global scope)
+from the given /64 subnet and preroutes all incoming TCPv6 connections to it.
+[update-dns.sh](./bin/update-dns.sh) expect _unbound_ as a local DNS resolver,
+configured in this way:
 
 ```config
 include: "/etc/unbound/hetzner-private.conf"
 include: "/etc/unbound/hetzner-public.conf"
 ```
 
-for [update-dns.sh](./bin/update-dns.sh) to work correctly.
 To create a new VPS _my_bridge_ at Hetzner in the project _my_project_, do:
 
 ```bash
@@ -67,11 +69,14 @@ Get the state
 ./site-info.yaml --limit my_bridge
 ```
 
-Store the bridge lines in a file under _/tmp_:
+Get the bridge line in _/tmp/public_bridge.line.txt_:
 
 ```bash
 ./site-bridgeline.yaml --limit my_bridge
 ```
+
+The Ansible role [info](./playbooks/roles/info/) a tmp dir for its output.
+That can be configured in [all.yaml](./inventory/group_vars/all.yaml#L16).
 
 ## Links
 
