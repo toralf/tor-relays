@@ -39,7 +39,7 @@
     src: torrc.j2
     dest: /etc/tor/torrc
   tags:
-    - torrc
+    - tor-torrc
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
@@ -84,4 +84,4 @@
     daemon_reload: yes
     enabled: yes
   tags:
-    - torrc
+    - tor-torrc

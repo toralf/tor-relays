@@ -4,6 +4,8 @@
     force_apt_get: true
     update_cache: yes
     upgrade: dist
+  tags:
+    - system-apt
 
 - name: Install needed software
   ansible.builtin.apt:
@@ -11,13 +13,18 @@
       - apt-transport-https
       - gpg
       - gpg-agent
+      - iptables-persistent
       - ntp
       - unattended-upgrades
+  tags:
+    - system-apt
 
 - name: Cleanup
   ansible.builtin.apt:
     autoclean: yes
     autoremove: yes
+  tags:
+    - system-apt
 
 - name: Configure auto upgrades
   ansible.builtin.copy:

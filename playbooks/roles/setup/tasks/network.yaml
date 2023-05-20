@@ -50,3 +50,23 @@
       - "all_ipv6_addresses"
     gather_timeout: 20
   failed_when: ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | length != 1
+
+- name: Flush chain PREROUTING
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    table: nat
+    chain: PREROUTING
+    flush: true
+
+- name: Preroute incoming TCP v6 to the global ipv6 address
+  ansible.builtin.iptables:
+    ip_version: ipv6
+    table: nat
+    chain: PREROUTING
+    protocol: tcp
+    destination_port: 443
+    to_destination: "{{ _ipv6 }}"
+    jump: DNAT
+
+- name: Persist IPv6 rules
+  ansible.builtin.command: "ip6tables-save > /etc/iptables/rules.v6"

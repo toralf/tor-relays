@@ -29,16 +29,16 @@
       group: root
       mode: "0644"
   block:
+    - name: System
+      ansible.builtin.import_tasks: system.yaml
+      tags:
+        - system
+
     - name: Network
       ansible.builtin.import_tasks: network.yaml
       when: ansible_bios_vendor == 'Hetzner'
       tags:
         - network
-
-    - name: System
-      ansible.builtin.import_tasks: system.yaml
-      tags:
-        - system
 
     - name: Timer
       ansible.builtin.import_tasks: timer.yaml
