@@ -13,6 +13,6 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_hostname }} Tor {{ tor_status.status.ExecMainStartTimestamp }} uptime {{ result.stdout }}"
+    line: "{{ ansible_hostname }} TorStart {{ tor_status.status.ExecMainStartTimestamp }} TorReload {{ tor_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
     regex: "^{{ ansible_hostname }} "
