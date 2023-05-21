@@ -10,18 +10,19 @@
   ansible.builtin.set_fact:
     _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
 
-- name: Dice ipv6 suffix values
+# avoid first 1024 addresses, especially <prefix>::1 till <prefix>::254
+- name: Dice ipv6 subnet values
   ansible.builtin.set_fact:
     _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
     _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'B' + result.stdout) }}"
     _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
     _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
 
-- name: Create ipv6 suffix
+- name: Compile ipv6 host part
   ansible.builtin.set_fact:
     _ipv6_suffix: "{{ _a }}.{{ _b }}.{{ _c }}.{{ _d }}"
 
-- name: Ensure ipv6 is re-set
+- name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
     _ipv6: "{{ _ipv6_prefix }}:{{ _ipv6_suffix | ansible.utils.ip4_hex(':') }}"
 
@@ -30,11 +31,11 @@
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
 
-- name: Ensure new ipv6 is set
+- name: Ensure global scope ipv6 is set
   ansible.builtin.lineinfile:
     create: yes
-    line: "    address {{ _ipv6 }}/64 dev eth0"
     path: "/etc/network/interfaces.d/50-cloud-init"
+    line: "    address {{ _ipv6 }}/64 dev eth0"
     regex: "^    address {{ _ipv6_prefix }}:"
 
 - name: Restart network service
@@ -44,7 +45,7 @@
     daemon_reload: yes
     enabled: yes
 
-- name: Gather ipv6
+- name: Gather ipv6 facts
   ansible.builtin.setup:
     gather_subset:
       - "!all"
@@ -52,14 +53,14 @@
     gather_timeout: 20
   failed_when: ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | length != 1
 
-- name: Flush table nat in chain PREROUTING
+- name: Flush table nat of chain PREROUTING
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     flush: true
 
-- name: Accept incoming TCP v6 to the global ipv6 address
+- name: Accept incoming TCP v6 to the global scope ipv6 address
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
@@ -68,13 +69,13 @@
     destination: "{{ _ipv6 }}"
     jump: ACCEPT
 
-- name: Preroute incoming TCP v6 (except ...::1 till ...::399) to the global ipv6 address
+- name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses)
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     protocol: tcp
-    destination: "! {{ _ipv6_prefix }}::/118"
+    destination: "! {{ _ipv6_prefix }}::/{{ item }}"
     to_destination: "{{ _ipv6 }}"
     jump: DNAT
 
