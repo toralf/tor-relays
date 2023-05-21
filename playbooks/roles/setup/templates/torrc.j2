@@ -11,6 +11,9 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 
+MetricsPort 127.0.0.1:9052
+MetricsPortPolicy accept 127.0.0.1
+
 {% for item in torrc_config %}
 {{ item.name }} {{ item.value }}
 {% endfor %}

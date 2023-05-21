@@ -41,6 +41,16 @@
   tags:
     - tor-torrc
 
+- name: Reload Tor service
+  ansible.builtin.systemd:
+    name: "tor"
+    state: reloaded
+    daemon_reload: yes
+    enabled: yes
+  tags:
+    - never
+    - tor-torrc
+
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
   ansible.builtin.lineinfile:
@@ -83,5 +93,3 @@
     state: restarted
     daemon_reload: yes
     enabled: yes
-  tags:
-    - tor-torrc
