@@ -11,5 +11,5 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 jobs=$((1 * $(nproc)))
 
 echo " add to ~/.ssh/known_hosts: "
-xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 {} "uname -a"
+xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -n -oStrictHostKeyChecking=accept-new -oConnectTimeout=1 -oConnectionAttempts=6 {} "uname -a"
 echo
