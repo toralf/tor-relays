@@ -76,8 +76,8 @@
     chain: PREROUTING
     protocol: tcp
     destination: "! {{ _ipv6_prefix }}::/118"
-    to_destination: "{{ _ipv6 }}"
     jump: DNAT
+    to_destination: "{{ _ipv6 }}"
 
 - name: Persist IPv6 rules
   ansible.builtin.shell: "/usr/sbin/ip6tables-save > /etc/iptables/rules.v6"
