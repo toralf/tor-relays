@@ -6,12 +6,25 @@
       - "all_ipv4_addresses"
     gather_timeout: 20
 
+- name: Get fingerprint
+  no_log: true
+  changed_when: false
+  ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint
+  register: result
+
+- name: Set fact
+  no_log: true
+  ansible.builtin.set_fact:
+    _fingerprint: "{{ result.stdout_lines[0] }}"
+
 - name: Get certificate
+  no_log: true
   changed_when: false
   ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: result
 
 - name: Set the cert
+  no_log: true
   ansible.builtin.set_fact:
     _cert: "{{ result.stdout_lines[0] }}"
 
@@ -19,7 +32,7 @@
   no_log: true
   delegate_to: localhost
   ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ hashed_fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
+    line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
     path: /tmp/{{ group_names[0] }}_bridgeline.txt
     create: yes
     mode: "0600"
