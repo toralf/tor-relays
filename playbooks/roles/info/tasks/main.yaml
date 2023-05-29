@@ -8,7 +8,6 @@
 - name: Set hashed-fingerprint
   ansible.builtin.import_tasks: hashed-fingerprint.yaml
   tags:
-    - bridgeline
     - bto
     - onionoo
     - wellknown
