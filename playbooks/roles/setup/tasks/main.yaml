@@ -10,6 +10,8 @@
 - name: Main
   module_defaults:
     ansible.builtin.apt:
+      autoclean: true
+      autoremove: true
       state: latest
       cache_valid_time: 600
     ansible.builtin.copy:

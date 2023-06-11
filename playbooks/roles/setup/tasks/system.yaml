@@ -1,11 +1,16 @@
 ---
-- name: Update Dist
+# https://www.debian.org/releases/bookworm/arm64/release-notes/ch-information.html#non-free-split
+- name: Configure apt hook for non-free firmware
+  ansible.builtin.lineinfile:
+    line: 'APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";'
+    path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf 
+    create: yes
+
+- name: Upgrade Dist
   ansible.builtin.apt:
     force_apt_get: true
-    update_cache: yes
+    update_cache: true
     upgrade: dist
-  tags:
-    - system-apt
 
 - name: Install needed software
   ansible.builtin.apt:
@@ -16,15 +21,6 @@
       - iptables-persistent
       - ntp
       - unattended-upgrades
-  tags:
-    - system-apt
-
-- name: Cleanup
-  ansible.builtin.apt:
-    autoclean: yes
-    autoremove: yes
-  tags:
-    - system-apt
 
 - name: Configure auto upgrades
   ansible.builtin.copy:
