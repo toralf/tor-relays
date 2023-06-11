@@ -10,12 +10,6 @@
   ansible.builtin.command: "sysctl --system"
   when: sysctl_state.changed
 
-- name: Configure repository "backports"
-  ansible.builtin.apt_repository:
-    filename: "backports"
-    repo: "deb http://mirror.hetzner.com/debian/packages {{ ansible_distribution_release }}-backports main contrib non-free"
-    state: present
-
 - name: Get Tor repository apt key
   ansible.builtin.apt_key:
     url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
@@ -33,6 +27,7 @@
       - tor
       - tor-geoipdb
       - deb.torproject.org-keyring
+      - obfs4proxy
 
 - name: Configure torrc
   ansible.builtin.template:
@@ -58,12 +53,6 @@
     path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
     create: yes
   when: obfs4_port < 1024
-
-- name: Install obfs4proxy
-  ansible.builtin.apt:
-    name:
-      - obfs4proxy
-    default_release: "{{ ansible_distribution_release }}-backports"
 
 - name: Create dirs to configure service to use privileged port
   ansible.builtin.file:
