@@ -2,7 +2,7 @@
 - name: Grep {{ log_warn }}
   changed_when: false
   ansible.builtin.shell: |
-    zgrep -H A 3 ' died' {{ log_warn }}* | tee
+    zgrep -H A 3 -e ' died' -e ' denied' -e 'obfs4' {{ log_warn }}* | tee
   register: result
 
 - name: Results
