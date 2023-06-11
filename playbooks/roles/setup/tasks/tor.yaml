@@ -21,31 +21,6 @@
     repo: "deb https://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main"
     state: present
 
-- name: Install Tor
-  ansible.builtin.apt:
-    name:
-      - tor
-      - tor-geoipdb
-      - deb.torproject.org-keyring
-      - obfs4proxy
-
-- name: Configure torrc
-  ansible.builtin.template:
-    src: torrc.j2
-    dest: /etc/tor/torrc
-  tags:
-    - tor-torrc
-
-- name: Reload Tor service
-  ansible.builtin.systemd:
-    name: "tor"
-    state: reloaded
-    daemon_reload: yes
-    enabled: yes
-  tags:
-    - never
-    - tor-torrc
-
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook for obfs4proxy
   ansible.builtin.lineinfile:
@@ -75,6 +50,19 @@
     - "tor@.service"
     - "tor.service.d"
   when: obfs4_port < 1024
+
+- name: Install Tor
+  ansible.builtin.apt:
+    name:
+      - tor
+      - tor-geoipdb
+      - deb.torproject.org-keyring
+      - obfs4proxy
+
+- name: Configure torrc
+  ansible.builtin.template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
 
 - name: Enable Tor service
   ansible.builtin.systemd:
