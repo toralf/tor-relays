@@ -58,7 +58,7 @@
     uname -r | cut -f 3 -d '-'
   register: _uname
 
-- name: Set linux_image_arch
+- name: Prepare check for a reboot
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"
 
