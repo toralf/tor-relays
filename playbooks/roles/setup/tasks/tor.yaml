@@ -29,6 +29,13 @@
     create: yes
   when: obfs4_port < 1024
 
+- name: Configure dpkg hook for obfs4proxy
+  ansible.builtin.lineinfile:
+    line: 'post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy'
+    path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
+    create: yes
+  when: obfs4_port < 1024
+
 - name: Create dirs to configure service to use privileged port
   ansible.builtin.file:
     state: directory
