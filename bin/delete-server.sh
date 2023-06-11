@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-set -euf
+set -eu
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
@@ -18,9 +18,9 @@ echo -n " stopping tor service(s) ..."
 xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -n {} "service tor stop &>/dev/null || true" 1>/dev/null
 echo
 
-echo -n " delete from ~/.ssh/known_hosts ... "
+echo -n " delete from ~/.ssh/known_hosts and tmp files ... "
 while read -r name; do
-  sed -i -e "/^$name /d" ~/.ssh/known_hosts
+  sed -i -e "/^$name /d" ~/.ssh/known_hosts ~/tmp/public_*
 done < <(xargs -n 1 <<<$*)
 echo
 
