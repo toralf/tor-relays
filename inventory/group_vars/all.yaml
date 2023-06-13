@@ -2,8 +2,8 @@
 log_notice: "/var/log/tor/notice.log"
 log_warn: "/var/log/tor/warn.log"
 
-ipv4: "{{ ansible_eth0.ipv4.address }}"
-ipv6: '{{ ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | map(attribute="address") | replace("''", "") }}'
+ipv4: "{{ ansible_default_ipv4.address }}"
+ipv6: '{{ ansible_default_ipv6.address }}'
 
 or_port: "{{ range(1024, 65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + ipv6) }}"
 

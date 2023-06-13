@@ -25,6 +25,7 @@ while read -r name; do
   set +e
   sed -i -e "/^${name} /d" ~/.ssh/known_hosts ~/tmp/public_{bto,clients,onionoo,uname,uptime,version}
   sed -i -e "/ # ${name}$/d" /tmp/public_bridgeline
+  rm -f $(dirname $0)/../.ansible_facts/${name}
   set -e
 done < <(xargs -n 1 <<<$*)
 echo

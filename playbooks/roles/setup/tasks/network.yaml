@@ -10,7 +10,7 @@
   ansible.builtin.set_fact:
     _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
 
-# avoid first 1024 addresses, especially <prefix>::1 till <prefix>::254
+# avoid [<prefix>::1] till [<prefix>::254], consider 0x254 == 596
 - name: Dice ipv6 subnet values
   ansible.builtin.set_fact:
     _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
@@ -32,11 +32,9 @@
     dest: /etc/cloud/cloud.cfg.d/
 
 - name: Ensure global scope ipv6 is set
-  ansible.builtin.lineinfile:
-    create: yes
-    path: "/etc/network/interfaces.d/50-cloud-init"
-    line: "    address {{ _ipv6 }}/64 dev eth0"
-    regex: "^    address {{ _ipv6_prefix }}:"
+  ansible.builtin.template:
+    src: 50-cloud-init.j2
+    dest: /etc/network/interfaces.d/50-cloud-init
 
 - name: Restart network service
   ansible.builtin.systemd:
@@ -45,13 +43,8 @@
     daemon_reload: yes
     enabled: yes
 
-- name: Gather ipv6 facts
+- name: Gather all facts again
   ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "all_ipv6_addresses"
-    gather_timeout: 20
-  failed_when: ansible_eth0.ipv6 | selectattr("scope", "eq", "global") | length != 1
 
 - name: Flush table nat of chain PREROUTING
   ansible.builtin.iptables:

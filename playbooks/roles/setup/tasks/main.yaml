@@ -1,11 +1,6 @@
 ---
-- name: Gather ipv4
+- name: Gather all facts
   ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "all_ipv4_addresses"
-      - "all_ipv6_addresses"
-    gather_timeout: 20
 
 - name: Main
   module_defaults:
