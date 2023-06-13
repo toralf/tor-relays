@@ -16,7 +16,7 @@ hash -r unbound
 
 [[ $# -eq 0 ]]
 project=$(hcloud context active)
-[[ -n $project ]]
+[[ -n ${project} ]]
 
 hconf=/etc/unbound/hetzner-${project}.conf
 
