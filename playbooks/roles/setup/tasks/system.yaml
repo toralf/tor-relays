@@ -3,7 +3,7 @@
 - name: Configure apt hook for non-free firmware
   ansible.builtin.lineinfile:
     line: 'APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";'
-    path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf 
+    path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
     create: yes
 
 - name: Upgrade Dist
@@ -43,6 +43,18 @@
     src: htoprc
     dest: /root/.config/htop/
 
+- name: Preserve old network device naming schema
+  ansible.builtin.lineinfile:
+    create: no
+    line: 'GRUB_CMDLINE_LINUX="net.ifnames=0"'
+    path: /etc/default/grub
+    regex: "^GRUB_CMDLINE_LINUX="
+  register: _grub
+
+- name: Regenerate grub menue
+  ansible.builtin.command: "update-grub"
+  when: _grub.changed
+
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto
@@ -54,7 +66,7 @@
     uname -r | cut -f 3 -d '-'
   register: _uname
 
-- name: Prepare check for a reboot
+- name: Set image arch variaböe
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"
 
