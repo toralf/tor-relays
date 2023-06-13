@@ -4,6 +4,7 @@
     gather_subset:
       - "!all"
       - "all_ipv4_addresses"
+      - "all_ipv6_addresses"
     gather_timeout: 20
 
 - name: Get fingerprint
@@ -12,7 +13,7 @@
   ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: result
 
-- name: Set fact
+- name: Set fp variable
   no_log: true
   ansible.builtin.set_fact:
     _fingerprint: "{{ result.stdout_lines[0] }}"
@@ -33,7 +34,7 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fingerprint }} {{ _cert }} iat-mode=0  # {{ ansible_hostname }}"
-    path: /tmp/{{ group_names[0] }}_bridgeline.txt
+    path: /tmp/{{ group_names[0] }}_bridgeline
     create: yes
     mode: "0600"
   with_items:
