@@ -3,9 +3,10 @@ log_notice: "/var/log/tor/notice.log"
 log_warn: "/var/log/tor/warn.log"
 
 ipv4: "{{ ansible_default_ipv4.address }}"
-ipv6: '{{ ansible_default_ipv6.address }}'
+ipv6: "{{ ansible_default_ipv6.address }}"
 
-or_port: "{{ range(1024, 65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + ipv6) }}"
+_x: "[{{ ipv6 }}]" # be backward compatible with old logic
+or_port: "{{ range(1024, 65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + _x) }}"
 
 torrc_generic:
   - name: "Log notice file"
