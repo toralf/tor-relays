@@ -43,13 +43,13 @@ done < <(xargs -n 1 <<<$*)
 echo
 if [[ -n ${ids} ]]; then
   echo -n " unprotected $(wc -l <<<${ids}) ip(s) ..."
-  if xargs -r -n 1 -P ${jobs} hcloud primary-ip update --auto-delete=true >/dev/null <<<${ids}; then
+  if xargs -r -n 1 -P ${jobs} hcloud primary-ip update --auto-delete=true <<<${ids}; then
     echo
   fi
 fi
 
 echo -n " deleting server(s) ..."
-if xargs -r -n 1 -P ${jobs} hcloud server delete >/dev/null <<<$*; then
+if xargs -r -n 1 -P ${jobs} hcloud server delete <<<$*; then
   echo
 fi
 
