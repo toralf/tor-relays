@@ -17,7 +17,7 @@ jobs=$((1 * $(nproc)))
 cax11_id=$(hcloud server-type list --output json | jq -cr '.[] | select(.name=="cax11") | .id') # prefer arm64
 cax11_locations=$(hcloud datacenter list --output json | jq -cr '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name')
 all_locations=$(hcloud location list --output json | jq -cr '.[].name')
-os_version=$(hcloud image list -t system -output columns=name | grep '^debian' | sort -n | tail -n 1)
+os_version=$(hcloud image list -t system --output columns=name | grep '^debian' | sort -n | tail -n 1)
 
 while read -r name; do
   loc=$(shuf -n 1 <<<${all_locations})
