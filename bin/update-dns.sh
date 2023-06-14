@@ -27,7 +27,7 @@ while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
-echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
+echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new >/dev/null
 
 (
   echo 'server:'
@@ -39,7 +39,7 @@ echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new 1>/dev/null
       printf "  local-data:     \"%-20s  A     %s\"\n" ${name} ${ip4}
       printf "  local-data-ptr: \"%-20s        %s\"\n" ${ip4} ${name}
     done
-) | sudo tee -a ${hconf}.new 1>/dev/null
+) | sudo tee -a ${hconf}.new 1/dev/null
 
 if ! sudo diff ${hconf} ${hconf}.new; then
   sudo cp ${hconf}.new ${hconf}
