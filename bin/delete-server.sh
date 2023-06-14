@@ -34,13 +34,15 @@ echo -n " collect protected ip(s) ..."
 ids=""
 while read -r name; do
   for v in ipv4 ipv6; do
-    id=" $(hcloud server describe ${name} --output=json | jq -cr "select (.public_net.${v}.blocked == true) | .public_net.${v}.id")"
+    id=$(hcloud server describe ${name} --output=json | jq -cr "select (.public_net.${v}.blocked == true) | .public_net.${v}.id")
     if [[ -n ${id} ]]; then
       ids+="${id} "
     fi
   done
 done < <(xargs -n 1 <<<$*)
+echo
 if [[ -n ${ids} ]]; then
+  echo -n " unprotected $(wc -l <<<${ids}) ip(s) ..."
   if xargs -r -n 1 -P ${jobs} hcloud primary-ip update --auto-delete=true >/dev/null <<<${ids}; then
     echo
   fi
