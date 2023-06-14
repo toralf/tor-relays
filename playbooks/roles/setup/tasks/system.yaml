@@ -50,10 +50,16 @@
     path: /etc/default/grub
     regex: "^GRUB_CMDLINE_LINUX="
   register: _grub
+  tags:
+    - never
+    - system-grub
 
 - name: Regenerate grub menue
   ansible.builtin.command: "update-grub"
   when: _grub.changed
+  tags:
+    - never
+    - system-grub
 
 - name: Gather the package facts
   ansible.builtin.package_facts:
@@ -83,5 +89,3 @@
     name: "core debug files"
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
-  tags:
-    - system-cron
