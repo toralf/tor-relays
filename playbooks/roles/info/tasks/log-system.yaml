@@ -2,7 +2,8 @@
 - name: Grep {{ log_system }}
   changed_when: false
   ansible.builtin.shell: |
-    zgrep -H -B 2 -A 4 -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* | grep -v -e 'ansible-ansible' -e '^--' | tee
+    zgrep -H -B 2 -A 4 -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* |
+    tail -n 50
   register: result
 
 - name: Results

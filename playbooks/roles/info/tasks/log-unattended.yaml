@@ -8,3 +8,4 @@
 - name: Results
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
+  when: result.stdout_lines | length > 0
