@@ -20,11 +20,11 @@ if xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -n -oConnectTimeout=2 -oConn
   sleep 5
 fi
 
-echo -n " delete from ~/.ssh/known_hosts and tmp files ... "
+echo -n " delete entries in ~/.ssh/known_hosts and tmp files and .ansible_facts ... "
 while read -r name; do
   set +e
-  sed -i -e "/^${name} /d" ~/.ssh/known_hosts ~/tmp/public_{bto,clients,onionoo,uname,uptime,version}
-  sed -i -e "/ # ${name}$/d" /tmp/public_bridgeline
+  sed -i -e "/^${name} /d" ~/.ssh/known_hosts ~/tmp/public_{bto,clients,onionoo,uname,uptime,version} 2>/dev/null
+  sed -i -e "/ # ${name}$/d" /tmp/public_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
   set -e
 done < <(xargs -n 1 <<<$*)
