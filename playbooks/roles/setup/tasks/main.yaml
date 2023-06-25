@@ -42,7 +42,14 @@
       tags:
         - timer
 
+    - name: Snowflake
+      ansible.builtin.import_tasks: snowflake.yaml
+      when: "'snowflake' in group_names"
+      tags:
+        - snowflake
+
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml
+      when: "'public' in group_names or 'private' in group_names"
       tags:
         - tor

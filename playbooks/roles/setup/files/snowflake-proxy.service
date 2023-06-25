@@ -1,0 +1,33 @@
+[Unit]
+Description=snowflake-proxy
+Documentation=man:snowflake-proxy
+Documentation=https://snowflake.torproject.org/
+After=network-online.target docker.socket firewalld.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/proxy -capacity 0
+User=snowflake
+Group=snowflake
+# https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
+ProtectSystem=strict
+ProtectHome=tmpfs
+PrivateTmp=true
+PrivateDevices=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+NoNewPrivileges=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_NETLINK
+RestrictNamespaces=true
+RestrictSUIDSGID=true
+CapabilityBoundingSet=
+ProtectProc=invisible
+PrivateUsers=true
+ProtectHostname=true
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

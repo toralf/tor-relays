@@ -1,0 +1,60 @@
+---
+# https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
+
+- name: Install required software
+  ansible.builtin.apt:
+    name:
+      - git
+      - golang
+
+- name: Add the user
+  ansible.builtin.user:
+    name: snowflake
+    create_home: true
+    state: present
+
+- name: Clone snowflake repo
+  ansible.builtin.git:
+    repo: https://git.torproject.org/pluggable-transports/snowflake.git
+    dest: /home/snowflake/repo
+  register: clone_git
+
+- name: Go get
+  ansible.builtin.command: go get
+  args:
+    chdir: /home/snowflake/repo/proxy
+  register: go_get
+  when: clone_git is changed
+
+- name: Go build
+  ansible.builtin.command: go build
+  args:
+    chdir: /home/{{ snowflake_user }}/repo/proxy
+  register: go_build
+  when: clone_git is changed
+
+- name: Copy binary file to /usr/bin/
+  ansible.builtin.copy:
+    src: /home/snowflake/repo/proxy/proxy
+    dest: /usr/bin/
+    mode: a+x
+    remote_src: yes
+
+- name: Add unit systemd
+  ansible.builtin.copy:
+    src: snowflake-proxy.service
+    dest: /etc/systemd/system/snowflake-proxy.service
+
+- name: Enable service snowflake-proxy
+  ansible.builtin.systemd:
+    name: snowflake-proxy
+    enabled: yes
+
+- name: Just force systemd to reread configs
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Start/restart service snowflake
+  ansible.builtin.service:
+    name: snowflake-proxy
+    state: restarted

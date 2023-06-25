@@ -42,7 +42,7 @@ Setup the new Tor public bridge _my_bridge_
 
 ## Details
 
-Tor bridges are deployed via an _Ansible_ role, using a recent Debian OS.
+Tor bridges are deployed via an _Ansible_ role using a recent Debian OS.
 
 The scripts under [bin](./bin) works for the Hetzner cloud.
 Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).

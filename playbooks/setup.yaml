@@ -1,7 +1,8 @@
 ---
 - name: Setup
   hosts:
-    - all
+    - public
+    - private
+    - snowflake
   roles:
     - role: setup
-    - role: info

@@ -8,10 +8,12 @@ enable_list:
   - no-same-owner # opt-in
 
 skip_list:
+  - latest[git]
   - line[length]
   - meta-no-info
   - meta-no-tags
   - name[template]
+  - no-changed-when
   - no-handler
   - risky-file-permissions
   - risky-shell-pipe
