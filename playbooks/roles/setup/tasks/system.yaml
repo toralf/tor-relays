@@ -68,11 +68,11 @@
 - name: Get current running kernel version
   changed_when: false
   ansible.builtin.shell: |
-    uname -v | cut -f 4 -d ' '
+    uname -v | grep -Eo '(Debian .*) ' | awk '{ print $2 }'
     uname -r | cut -f 3 -d '-'
   register: _uname
 
-- name: Set image arch variaböe
+- name: Set image arch variable
   ansible.builtin.set_fact:
     linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"
 
