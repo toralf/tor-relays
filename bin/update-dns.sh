@@ -19,15 +19,18 @@ project=$(hcloud context active)
 [[ -n ${project} ]]
 
 hconf=/etc/unbound/hetzner-${project}.conf
+if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
+  echo "unbound is not configured to use ${hconf}" >&2
+  exit 1
+fi
 
-trap Exit INT QUIT TERM EXIT
-
-# do not run this script parallel
+# do not change this file in parallel
 while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
 echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new >/dev/null
+trap Exit INT QUIT TERM EXIT
 
 (
   echo 'server:'
@@ -45,5 +48,5 @@ if ! sudo diff ${hconf} ${hconf}.new; then
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 else
-  echo " no DNS changes" >&2
+  echo " no DNS changes for ${hconf}" >&2
 fi
