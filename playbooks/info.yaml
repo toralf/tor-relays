@@ -5,6 +5,12 @@
   roles:
     - role: info
 
+- name: Info Snowflake
+  hosts:
+    - snowflake
+  roles:
+    - role: info-snowflake
+
 - name: Info Tor
   hosts:
     - public

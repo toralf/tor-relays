@@ -1,4 +1,9 @@
 ---
+- name: Clients
+  ansible.builtin.import_tasks: clients.yaml
+  tags:
+    - clients
+
 - name: Uptime
   ansible.builtin.import_tasks: uptime.yaml
   tags:

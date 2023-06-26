@@ -1,0 +1,14 @@
+---
+- name: Get clients values of the (up to) last 12 hours (sorted from newest to oldest)
+  changed_when: false
+  ansible.builtin.shell: >-
+    systemctl status snowflake-proxy | tac | grep -m 12 -Eo '(were .* connections)' | awk '{ print $2 }' | xargs
+  register: result
+
+- name: File results for clients
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ result.stdout }}"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_clients"
+    regex: "^{{ ansible_hostname }} "
