@@ -26,18 +26,7 @@
       group: root
       mode: "0644"
   block:
-    - name: System
-      ansible.builtin.import_tasks: system.yaml
+    - name: Tor
+      ansible.builtin.import_tasks: tor.yaml
       tags:
-        - system
-
-    - name: Network
-      ansible.builtin.import_tasks: network.yaml
-      when: ansible_bios_vendor == 'Hetzner'
-      tags:
-        - network
-
-    - name: Timer
-      ansible.builtin.import_tasks: timer.yaml
-      tags:
-        - timer
+        - tor

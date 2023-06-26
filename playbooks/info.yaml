@@ -1,7 +1,13 @@
 ---
 - name: Info
   hosts:
+    - all
+  roles:
+    - role: info
+
+- name: Info Tor
+  hosts:
     - public
     - private
   roles:
-    - role: info
+    - role: info-tor

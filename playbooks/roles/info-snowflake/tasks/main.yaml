@@ -1,0 +1,5 @@
+---
+- name: Uptime
+  ansible.builtin.import_tasks: uptime.yaml
+  tags:
+    - uptime

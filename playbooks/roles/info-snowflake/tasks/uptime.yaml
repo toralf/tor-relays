@@ -1,0 +1,18 @@
+---
+- name: Get Service Status
+  ansible.builtin.systemd:
+    name: snowflake-proxy
+  register: snowflake_status
+
+- name: Uptime
+  changed_when: false
+  ansible.builtin.command: "uptime -ps"
+  register: result
+
+- name: File results for uptime
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} SFStart {{ snowflake_status.status.ExecMainStartTimestamp }} SFReload {{ snowflake_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
+    regex: "^{{ ansible_hostname }} "

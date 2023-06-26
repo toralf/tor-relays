@@ -1,8 +1,19 @@
 ---
 - name: Setup
   hosts:
-    - public
-    - private
-    - snowflake
+    - all
   roles:
     - role: setup
+
+- name: Setup Snowflake
+  hosts:
+    - snowflake
+  roles:
+    - role: setup-snowflake
+
+- name: Setup Tor
+  hosts:
+    - public
+    - private
+  roles:
+    - role: setup-tor

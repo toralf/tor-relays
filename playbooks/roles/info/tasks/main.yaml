@@ -5,36 +5,6 @@
     state: directory
     mode: "0755"
 
-- name: Set hashed-fingerprint
-  ansible.builtin.import_tasks: hashed-fingerprint.yaml
-  tags:
-    - bto
-    - onionoo
-    - wellknown
-
-- name: Bridge Line
-  ansible.builtin.import_tasks: bridgeline.yaml
-  tags:
-    - never
-    - bridgeline
-
-- name: Bto
-  ansible.builtin.import_tasks: bto.yaml
-  tags:
-    - bto
-
-- name: Clients
-  ansible.builtin.import_tasks: clients.yaml
-  tags:
-    - clients
-
-- name: Log
-  ansible.builtin.import_tasks: log-notice.yaml
-  tags:
-    - log
-    - log-notice
-    - never
-
 - name: Log system
   ansible.builtin.import_tasks: log-system.yaml
   tags:
@@ -42,42 +12,7 @@
     - log-system
     - never
 
-- name: Log unattended
-  ansible.builtin.import_tasks: log-unattended.yaml
-  tags:
-    - log
-    - log-unattended
-    - never
-
-- name: Log warn
-  ansible.builtin.import_tasks: log-warn.yaml
-  tags:
-    - log
-    - log-warn
-    - never
-
-- name: Onionoo
-  ansible.builtin.import_tasks: onionoo.yaml
-  tags:
-    - onionoo
-
 - name: Uname
   ansible.builtin.import_tasks: uname.yaml
   tags:
     - uname
-
-- name: Uptime
-  ansible.builtin.import_tasks: uptime.yaml
-  tags:
-    - uptime
-
-- name: Version of Tor
-  ansible.builtin.import_tasks: version.yaml
-  tags:
-    - version
-
-- name: Wellknown
-  ansible.builtin.import_tasks: wellknown.yaml
-  tags:
-    - never
-    - wellknown
