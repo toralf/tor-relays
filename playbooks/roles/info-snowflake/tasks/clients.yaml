@@ -2,7 +2,7 @@
 - name: Get clients values of the (up to) last 12 hours (sorted from newest to oldest)
   changed_when: false
   ansible.builtin.shell: >-
-    systemctl status snowflake-proxy | tac | grep -m 12 -Eo '(were .* connections)' | awk '{ print $2 }' | xargs
+    journalctl -u snowflake-proxy | tac | grep -m 12 -Eo '(were .* connections)' | awk '{ print $2 }' | xargs
   register: result
 
 - name: File results for clients
