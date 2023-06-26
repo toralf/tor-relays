@@ -29,7 +29,7 @@
 - name: Go build
   ansible.builtin.command: go build
   args:
-    chdir: /home/{{ snowflake_user }}/repo/proxy
+    chdir: /home/snowflake/repo/proxy
   register: go_build
   when: clone_git is changed
 
