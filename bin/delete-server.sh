@@ -15,18 +15,22 @@ project=$(hcloud context active)
 jobs=$((1 * $(nproc)))
 
 echo -n " stopping tor service(s) ..."
-if xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -n -oConnectTimeout=2 -oConnectionAttempts=1 {} "service tor stop &>/dev/null >/dev/null || true"; then
+if xargs -n 1 <<<$* | xargs -r -P ${jobs} -I {} ssh -n -oConnectTimeout=1 -oConnectionAttempts=1 {} "service tor stop &>/dev/null >/dev/null || true"; then
   echo
-  sleep 5
 fi
 
-echo -n " delete entries in ~/.ssh/known_hosts and tmp files and .ansible_facts ... "
+echo -n " delete ssh hash(es) ... "
+if xargs -r -n 1 -P ${jobs} ssh-keygen -R <<<$*; then
+  echo
+fi
+
+echo -n " delete .ansible_facts and line(s) in tmp files ... "
 while read -r name; do
   set +e
-  sed -i -e "/^${name} /d" ~/.ssh/known_hosts ~/tmp/public_{bto,clients,onionoo,uname,uptime,version} 2>/dev/null
-  sed -i -e "/ # ${name}$/d" /tmp/public_bridgeline 2>/dev/null
-  rm -f $(dirname $0)/../.ansible_facts/${name}
+  sed -i -e "/^${name} /d" ~/tmp/${project}_* 2>/dev/null
+  sed -i -e "/ # ${name}$/d" /tmp/${project}_bridgeline 2>/dev/null
   set -e
+  rm -f $(dirname $0)/../.ansible_facts/${name}
 done < <(xargs -n 1 <<<$*)
 echo
 
@@ -42,13 +46,13 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*)
 echo
 if [[ -n ${ids} ]]; then
-  echo -n " unprotected $(wc -l <<<${ids}) ip(s) ..."
+  echo -n " unprotect $(wc -l <<<${ids}) ip(s) ..."
   if xargs -r -n 1 -P ${jobs} hcloud primary-ip update --auto-delete=true <<<${ids}; then
     echo
   fi
 fi
 
-echo -n " deleting server(s) ..."
+echo -n " delete server(s) ..."
 if xargs -r -n 1 -P ${jobs} hcloud server delete <<<$*; then
   echo
 fi
