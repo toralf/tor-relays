@@ -31,7 +31,7 @@ echo -e "\n collect protected ip(s) ..."
 ids=""
 while read -r name; do
   for v in ipv4 ipv6; do
-    id=$(hcloud server describe ${name} --output=json | jq -cr "select (.public_net.${v}.blocked == true) | .public_net.${v}.id")
+    id=$(hcloud server describe ${name} --output json | jq -cr "select (.public_net.${v}.blocked == true) | .public_net.${v}.id")
     if [[ -n ${id} ]]; then
       ids+="${id} "
     fi
