@@ -15,7 +15,7 @@ project=$(hcloud context active)
 jobs=$((1 * $(nproc)))
 
 echo -e "\n delete ssh hash(es) ... "
-xargs -r -n 1 -P ${jobs} ssh-keygen -R <<<$*
+xargs -r -n 1 -P 1 ssh-keygen -R <<<$* # no parallel, it is racy
 echo $?
 
 echo -e "\n delete .ansible_facts and line(s) in tmp files ... "
@@ -47,5 +47,5 @@ echo -e "\n delete server(s) ..."
 xargs -r -n 1 -P ${jobs} hcloud server delete <<<$*
 echo $?
 
-echo
+echo -e "\n remove from DNS ..."
 $(dirname $0)/update-dns.sh

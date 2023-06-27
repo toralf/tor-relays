@@ -30,10 +30,10 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*) |
   xargs -r -P ${jobs} -I {} bash -c "hcloud server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s {}"
 
-echo
+echo -e "\n add to DNS ..."
 $(dirname $0)/update-dns.sh
 
-echo -n ' wait 15 sec ...'
+echo -n ' wait 25 sec ...'
 sleep 15
 echo
 $(dirname $0)/add-to-known_hosts.sh $*
