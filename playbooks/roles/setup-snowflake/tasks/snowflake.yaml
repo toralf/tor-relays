@@ -11,11 +11,10 @@
   ansible.builtin.user:
     name: snowflake
     create_home: true
-    state: present
 
 - name: Clone snowflake repo
   ansible.builtin.git:
-    repo: https://git.torproject.org/pluggable-transports/snowflake.git
+    repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
   register: clone_git
 
