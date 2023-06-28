@@ -29,13 +29,6 @@
     - log-notice
     - never
 
-- name: Log unattended
-  ansible.builtin.import_tasks: log-unattended.yaml
-  tags:
-    - log
-    - log-unattended
-    - never
-
 - name: Log warn
   ansible.builtin.import_tasks: log-warn.yaml
   tags:

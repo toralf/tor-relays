@@ -5,7 +5,7 @@
     zgrep -H A 3 -e ' died' -e ' denied' -e 'obfs4' {{ log_warn }}* | tee
   register: result
 
-- name: Results
+- name: Results in {{ log_warn }}
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
   when: result.stdout_lines | length > 0

@@ -16,3 +16,10 @@
   ansible.builtin.import_tasks: uname.yaml
   tags:
     - uname
+
+- name: Log unattended
+  ansible.builtin.import_tasks: log-unattended.yaml
+  tags:
+    - log
+    - log-unattended
+    - never

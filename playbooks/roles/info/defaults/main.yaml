@@ -1,2 +1,5 @@
 ---
+log_lines: 10
+
+log_unattended: "/var/log/unattended-upgrades/unattended-upgrades-dpkg.log"
 log_system: "/var/log/kern.log"

@@ -6,7 +6,7 @@
     tail -n 50
   register: result
 
-- name: Results
+- name: Results in {{ log_system }}
   ansible.builtin.debug:
     var: result.stdout_lines
   when: result.stdout_lines | length > 0
