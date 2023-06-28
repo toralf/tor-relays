@@ -26,14 +26,14 @@ os_version=$(hcloud image list -t system --output columns=name | grep '^debian' 
 while read -r name; do
   loc=$(shuf -n 1 <<<${all_locations})
   [[ " ${cax11_locations} " =~ " ${loc} " ]] && model="cax11" || model="cpx11"
-  echo "--name ${name} --location ${loc} --type ${model}"
+  echo "hcloud server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${model}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -r -P ${jobs} -I {} bash -c "hcloud server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s {}"
+  xargs -r -P ${jobs} -I '{}' -t bash -c "{}"
 
 echo -e "\n add to DNS ..."
 $(dirname $0)/update-dns.sh
 
-echo -n ' wait 25 sec ...'
-sleep 15
+echo -e "\n wait 20 sec ..."
+sleep 20
 echo
 $(dirname $0)/add-to-known_hosts.sh $*
