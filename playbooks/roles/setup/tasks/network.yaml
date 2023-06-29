@@ -35,13 +35,15 @@
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
+  register: ipv6_state
 
 - name: Restart network service
   ansible.builtin.systemd:
     name: "networking"
     state: restarted
-    daemon_reload: yes
+    daemon_reload: true
     enabled: yes
+  when: ipv6_state.changed
 
 - name: Gather all facts again
   ansible.builtin.setup:
