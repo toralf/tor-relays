@@ -23,14 +23,14 @@
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_get
-  when: clone_git is changed
+  when: clone_git.changed
 
 - name: Go build
   ansible.builtin.command: go build
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_build
-  when: clone_git is changed
+  when: clone_git.changed
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
@@ -38,22 +38,18 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
+  register: proxy
 
 - name: Add unit systemd
   ansible.builtin.copy:
     src: snowflake-proxy.service
     dest: /etc/systemd/system/snowflake-proxy.service
+  register: snowflake_service
 
 - name: Enable service snowflake-proxy
-  ansible.builtin.systemd:
-    name: snowflake-proxy
-    enabled: yes
-
-- name: Just force systemd to reread configs
-  ansible.builtin.systemd:
-    daemon_reload: yes
-
-- name: Start/restart service snowflake
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted
+    daemon_reload: true
+    enabled: yes
+  when: proxy.changed or snowflake_service.changed
