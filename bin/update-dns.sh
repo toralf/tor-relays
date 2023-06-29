@@ -16,7 +16,7 @@ hash -r unbound
 
 [[ $# -eq 0 ]]
 project=$(hcloud context active)
-[[ -n ${project} ]]
+echo -e "\n using Hetzner project ${project:?}"
 
 hconf=/etc/unbound/hetzner-${project}.conf
 if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then

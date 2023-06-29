@@ -10,7 +10,7 @@ hash -r hcloud jq
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
-[[ -n ${project} ]]
+echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((1 * $(nproc)))
 
