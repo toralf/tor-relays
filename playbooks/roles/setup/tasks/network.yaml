@@ -48,12 +48,23 @@
 - name: Gather all facts again
   ansible.builtin.setup:
 
+- name: Save IPv6 rules temporary
+  ansible.builtin.shell: "/usr/sbin/ip6tables-save > /tmp/rules.v6"
+
+- name: Persist IPv6 rules
+  ansible.builtin.copy:
+    src: /tmp/rules.v6
+    dest: /etc/iptables/rules.v6
+    remote_src: yes
+  register: ipfilter
+
 - name: Flush table nat of chain PREROUTING
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     flush: true
+  when: ipfilter.changed
 
 - name: Accept incoming TCP v6 to the global scope ipv6 address
   ansible.builtin.iptables:
@@ -63,6 +74,7 @@
     protocol: tcp
     destination: "{{ _ipv6 }}"
     jump: ACCEPT
+  when: ipfilter.changed
 
 - name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses)
   ansible.builtin.iptables:
@@ -73,6 +85,4 @@
     destination: "! {{ _ipv6_prefix }}::/118"
     jump: DNAT
     to_destination: "{{ _ipv6 }}"
-
-- name: Persist IPv6 rules
-  ansible.builtin.shell: "/usr/sbin/ip6tables-save > /etc/iptables/rules.v6"
+  when: ipfilter.changed
