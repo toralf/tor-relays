@@ -48,8 +48,12 @@
 - name: Gather all facts again
   ansible.builtin.setup:
 
+# comment lines do contain date and time
 - name: Save IPv6 rules temporary
-  ansible.builtin.shell: "/usr/sbin/ip6tables-save > /tmp/rules.v6"
+  changed_when: false
+  ansible.builtin.shell: |
+    /usr/sbin/ip6tables-save |
+    grep -v '#' > /tmp/rules.v6
 
 - name: Persist IPv6 rules
   ansible.builtin.copy:
