@@ -12,25 +12,25 @@
     name: snowflake
     create_home: true
 
-- name: Clone snowflake repo
+- name: Clone or update snowflake repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
-  register: clone_git
+  register: git_repo
 
 - name: Go get
   ansible.builtin.command: go get
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_get
-  when: clone_git.changed
+  when: git_repo.changed
 
 - name: Go build
   ansible.builtin.command: go build
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_build
-  when: clone_git.changed
+  when: git_repo.changed
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
@@ -46,7 +46,7 @@
     dest: /etc/systemd/system/snowflake-proxy.service
   register: snowflake_service
 
-- name: Enable service snowflake-proxy
+- name: Restart service snowflake-proxy
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted
