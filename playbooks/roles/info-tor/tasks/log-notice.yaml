@@ -4,7 +4,7 @@
   ansible.builtin.command: /usr/bin/tail -n {{ log_lines }} {{ log_notice }}
   register: result
 
-- name: Results in {{ log_notice }}
+- name: Results of {{ log_notice }}
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
   when: result.stdout_lines | length > 0
