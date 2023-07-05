@@ -1,12 +1,12 @@
 ---
-- name: Grep {{ log_system }}
+- name: Grep system log since {{ log_system_since }}
   changed_when: false
   ansible.builtin.shell: |
-    zgrep -H -B 2 -A 4 -e 'BUG:' -e 'Call Trace:' -e 'oom-killer' -e 'RIP:' -e 'WARNING:' {{ log_system }}* |
-    tail -n 50
+    journalctl -k -g 'BUG:' -g 'Call Trace:' -g 'oom-killer' -g 'RIP:' -g 'WARNING:' -q --since "{{ log_system_since }}"
   register: result
+  failed_when: result.stderr_lines | length > 0
 
-- name: Results in {{ log_system }}
+- name: Findings of system log
   ansible.builtin.debug:
     var: result.stdout_lines
   when: result.stdout_lines | length > 0
