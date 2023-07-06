@@ -25,14 +25,12 @@
 - name: Log
   ansible.builtin.import_tasks: log-notice.yaml
   tags:
-    - log
     - log-notice
     - never
 
 - name: Log warn
   ansible.builtin.import_tasks: log-warn.yaml
   tags:
-    - log
     - log-warn
     - never
 

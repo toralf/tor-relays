@@ -4,6 +4,11 @@
   tags:
     - clients
 
+- name: Log proxy
+  ansible.builtin.import_tasks: log-proxy.yaml
+  tags:
+    - log-proxy
+
 - name: Uptime
   ansible.builtin.import_tasks: uptime.yaml
   tags:

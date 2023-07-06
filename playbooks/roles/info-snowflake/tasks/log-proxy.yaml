@@ -1,0 +1,11 @@
+---
+- name: Get proxy logs except clients
+  changed_when: false
+  ansible.builtin.shell: >-
+    journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -r -g '^[, there were .* connections]'
+  register: result
+
+- name: Results of log-proxy
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when: result.stdout_lines | length > 0
