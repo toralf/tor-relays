@@ -1,11 +1,11 @@
 ---
-- name: Grep {{ log_warn }}
+- name: Get last {{ log_lines }} lines of {{ log_warn }}
   changed_when: false
   ansible.builtin.shell: |
     zgrep -H A 3 -e ' died' -e ' denied' -e 'obfs4' {{ log_warn }}* | tee
   register: result
 
-- name: Results of {{ log_warn }}
+- name: Results of log-warn {{ log_lines }} last lines
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
   when: result.stdout_lines | length > 0
