@@ -34,12 +34,13 @@
 
 - name: Sysctl config
   ansible.builtin.copy:
-    src: 20-tor-relay.conf
+    src: 20tor-relay.conf
     dest: /etc/sysctl.d/
   register: sysctl_state
 
-- ansible.posix.sysctl:
-    reload: true
+- name: Sysctl reload
+  changed_when: false
+  ansible.builtin.command: "sysctl --system"
   when: sysctl_state.changed
 
 - name: Tweak readline
