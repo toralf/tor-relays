@@ -13,12 +13,16 @@
     create_home: true
 
 - name: Clone or update snowflake repo
+  become: yes
+  become_user: snowflake
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
   register: git_repo
 
 - name: Go get
+  become: yes
+  become_user: snowflake
   ansible.builtin.command: go get
   args:
     chdir: /home/snowflake/repo/proxy
@@ -26,6 +30,8 @@
   when: git_repo.changed
 
 - name: Go build
+  become: yes
+  become_user: snowflake
   ansible.builtin.command: go build
   args:
     chdir: /home/snowflake/repo/proxy
@@ -39,6 +45,12 @@
     mode: a+x
     remote_src: yes
   register: proxy
+
+- ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    value: '1' # debian bookworm default: 14886
+    sysctl_file: /etc/sysctl.d/30snowflake.conf
+    sysctl_set: true
 
 - name: Add unit systemd
   ansible.builtin.copy:

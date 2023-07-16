@@ -1,14 +1,4 @@
 ---
-- name: Sysctl config
-  ansible.builtin.copy:
-    src: 20-tor.conf
-    dest: /etc/sysctl.d/
-  register: sysctl_state
-
-- name: Sysctl reload
-  changed_when: false
-  ansible.builtin.command: "sysctl --system"
-  when: sysctl_state.changed
 
 - name: Get Tor repository apt key
   ansible.builtin.apt_key:

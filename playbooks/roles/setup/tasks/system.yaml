@@ -32,6 +32,17 @@
     src: 50unattended-upgrades
     dest: /etc/apt/apt.conf.d/
 
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20-tor-relay.conf
+    dest: /etc/sysctl.d/
+  register: sysctl_state
+
+- name: Sysctl reload
+  changed_when: false
+  ansible.builtin.command: "sysctl --system"
+  when: sysctl_state.changed
+
 - name: Tweak readline
   ansible.builtin.lineinfile:
     line: "set enable-bracketed-paste off"
@@ -61,6 +72,13 @@
     - never
     - system-grub
 
+- name: Ensure kernel crash dumps are made to /tmp
+  ansible.builtin.cron:
+    name: "core debug files"
+    special_time: reboot
+    job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
+
+# reboot if needed
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto
@@ -83,9 +101,3 @@
     pre_reboot_delay: 0
     post_reboot_delay: 35
   when: not _uname.stdout_lines[0] == ansible_facts.packages[linux_image_arch][0].version
-
-- name: Ensure kernel crash dumps are made to /tmp
-  ansible.builtin.cron:
-    name: "core debug files"
-    special_time: reboot
-    job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
