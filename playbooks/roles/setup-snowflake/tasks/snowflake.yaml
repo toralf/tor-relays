@@ -48,7 +48,7 @@
 
 - ansible.posix.sysctl:
     name: user.max_user_namespaces
-    value: '1' # debian bookworm default: 14886
+    value: "1" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/30snowflake.conf
     sysctl_set: true
 
