@@ -2,11 +2,11 @@
 - name: Get proxy logs except clients
   changed_when: false
   ansible.builtin.shell: >-
-    journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -g '^[, there were .* connections]'
+    journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -g '^[, there were .* connections]' -q
   register: result
   failed_when: result.stderr_lines | length > 0
 
 - name: Results of log-proxy since {{ log_proxy_since }}
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
-  when: result.stdout_lines | length > 0 and result.stdout_lines[0] != "-- No entries --"
+  when: result.stdout_lines | length > 0

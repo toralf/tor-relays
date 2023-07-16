@@ -2,11 +2,11 @@
 - name: Grep system log since {{ log_system_since }}
   changed_when: false
   ansible.builtin.shell: |
-    journalctl -k -g 'BUG:' -g 'Call Trace:' -g 'oom-killer' -g 'RIP:' -g 'WARNING:' --since "{{ log_system_since }}"
+    journalctl -k -g 'BUG:' -g 'Call Trace:' -g 'oom-killer' -g 'RIP:' -g 'WARNING:' --since "{{ log_system_since }}" -q
   register: result
   failed_when: result.stderr_lines | length > 0
 
 - name: Findings of log-system since {{ log_system_since }}
   ansible.builtin.debug:
     var: result.stdout_lines
-  when: result.stdout_lines | length > 0 and result.stdout_lines[0] != "-- No entries --"
+  when: result.stdout_lines | length > 0
