@@ -1,6 +1,6 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy Tor bridges ot Tor snowflake
+# A stack to deploy Tor bridges or Tor snowflake
 
 ## Quick start
 
@@ -40,11 +40,14 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
+For a snowflake relay just the last 2 steps are needed, the hostname has to be put into the `snowflake` group.
+
 ## Details
 
 The systems are deployed via an _Ansible_ role using a recent Debian OS.
 
 The scripts under [bin](./bin) works for the Hetzner cloud only.
+
 Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
 That task configures a randomly choosen ipv6 address (global scope)
 from the given /64 subnet and preroutes all incoming TCPv6 connections to it.
@@ -64,16 +67,10 @@ hcloud context use "my_project"
 ./bin/create-server.sh my_bridge
 ```
 
-Get the state
+Get its state
 
 ```bash
 ./site-info.yaml --limit my_bridge
-```
-
-Have the bridge line in _/tmp/public_bridge.line.txt_:
-
-```bash
-./site-bridgeline.yaml --limit my_bridge
 ```
 
 All other output goes to a tmp dir defined by the variable `tmp_dir` in [all.yaml](./inventory/group_vars/all.yaml).
