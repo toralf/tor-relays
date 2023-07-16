@@ -9,4 +9,4 @@
 - name: Results of log-proxy since {{ log_proxy_since }}
   ansible.builtin.debug:
     msg: "{{ result.stdout.split('\n') }}"
-  when: result.stdout_lines | length > 0
+  when: result.stdout_lines | length > 0 and result.stdout_lines[0] != "-- No entries --"
