@@ -46,6 +46,18 @@
     remote_src: yes
   register: proxy
 
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 30snowflake.conf
+    dest: /etc/sysctl.d/
+  register: sysctl_state
+
+- name: Restart sysctl
+  ansible.builtin.systemd:
+    name: "systemd-sysctl"
+    state: restarted
+  when: sysctl_state.changed
+
 - ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "1" # debian bookworm default: 14886
