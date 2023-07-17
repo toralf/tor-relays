@@ -15,7 +15,12 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((1 * $(nproc)))
 
 echo -e "\n delete ssh hash(es) ... "
-xargs -r -n 1 -P 1 ssh-keygen -R <<<$* # no parallel, it is racy
+# it is racy
+#xargs -r -n 1 -P ${jobs} ssh-keygen -R <<<$*
+while read -r name; do
+  sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts
+done < <(xargs -n 1 <<<$*)
+
 echo $?
 
 echo -e "\n delete .ansible_facts and line(s) in tmp files ... "
