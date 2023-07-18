@@ -15,11 +15,8 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((1 * $(nproc)))
 
 echo -e "\n delete ssh hash(es) ... "
-# it is racy
-#xargs -r -n 1 -P ${jobs} ssh-keygen -R <<<$*
-while read -r name; do
-  sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts
-done < <(xargs -n 1 <<<$*)
+# -P 1 b/c it is has no file locking
+xargs -r -n 1 -P ${jobs} ssh-keygen -R <<<$*
 
 echo $?
 
