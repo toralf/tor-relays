@@ -1,14 +1,14 @@
 version: 0.1
 cli:
-  version: 1.12.3
+  version: 1.13.0
 plugins:
   sources:
     - id: trunk
-      ref: v0.0.22
+      ref: v1.0.0
       uri: https://github.com/trunk-io/plugins
 lint:
   enabled:
-    - trufflehog@3.44.0
+    - trufflehog@3.45.2
     - git-diff-check
     - gitleaks@8.17.0
     - markdownlint@0.35.0
