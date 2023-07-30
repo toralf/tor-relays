@@ -10,7 +10,8 @@
   ansible.builtin.set_fact:
     _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
 
-# avoid [<prefix>::1] till [<prefix>::254], consider 0x254 == 596
+#  avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
+# and given the DNAT6 rule below this means to not use the lowest 10 bits
 - name: Dice ipv6 subnet values
   ansible.builtin.set_fact:
     _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
@@ -20,7 +21,7 @@
 
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6: "{{ _ipv6_prefix }}:{{ '%04X' % _a }}:{{ '%04X' % _b }}:{{ '%04X' % _c }}:{{ '%04X' % _d }}"
+    _ipv6: "{{ _ipv6_prefix }}:{{ '%4X' % _a }}:{{ '%4X' % _b }}:{{ '%4X' % _c }}:{{ '%4X' % _d }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
@@ -66,7 +67,7 @@
     destination: "{{ _ipv6 }}"
     jump: ACCEPT
 
-- name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses)
+- name: DNAT incoming TCP v6 to the global scope ipv6 address (except lowest 10 bits)
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
