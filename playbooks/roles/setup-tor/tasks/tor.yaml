@@ -11,41 +11,40 @@
     state: present
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Configure apt hook for obfs4proxy
-  ansible.builtin.lineinfile:
-    line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
-    path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
-    create: yes
+- name: Obfs4 port
   when: obfs4_port < 1024
+  block:
+    - name: Configure apt hook for obfs4proxy
+      ansible.builtin.lineinfile:
+        line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
+        path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
+        create: yes
 
-- name: Configure dpkg hook for obfs4proxy
-  ansible.builtin.lineinfile:
-    line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
-    path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
-    create: yes
-  when: obfs4_port < 1024
+    - name: Configure dpkg hook for obfs4proxy
+      ansible.builtin.lineinfile:
+        line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
+        path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
+        create: yes
 
-- name: Create dirs to configure service to use privileged port
-  ansible.builtin.file:
-    state: directory
-    path: "/etc/systemd/system/{{ item }}.d"
-    recurse: yes
-    mode: "0755"
-  with_items:
-    - "tor@default.service"
-    - "tor@.service"
-    - "tor.service.d"
-  when: obfs4_port < 1024
+    - name: Create dirs to configure service to use privileged port
+      ansible.builtin.file:
+        state: directory
+        path: "/etc/systemd/system/{{ item }}.d"
+        recurse: yes
+        mode: "0755"
+      with_items:
+        - "tor@default.service"
+        - "tor@.service"
+        - "tor.service.d"
 
-- name: Configure service to use privileged port
-  ansible.builtin.copy:
-    src: override_tor_service.conf
-    dest: "/etc/systemd/system/{{ item }}.d/override.conf"
-  with_items:
-    - "tor@default.service"
-    - "tor@.service"
-    - "tor.service.d"
-  when: obfs4_port < 1024
+    - name: Configure service to use privileged port
+      ansible.builtin.copy:
+        src: override_tor_service.conf
+        dest: "/etc/systemd/system/{{ item }}.d/override.conf"
+      with_items:
+        - "tor@default.service"
+        - "tor@.service"
+        - "tor.service.d"
 
 - name: Install Tor
   ansible.builtin.apt:
