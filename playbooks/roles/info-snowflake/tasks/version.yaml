@@ -1,0 +1,14 @@
+---
+- name: Tor version
+  changed_when: false
+  ansible.builtin.shell: >-
+    /usr/bin/proxy --version 2>&1 | cut -f 2- -d ' '
+  register: result
+
+- name: File results for version
+  delegate_to: localhost
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_hostname }} {{ result.stdout_lines[0] }}"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_version"
+    regex: "^{{ ansible_hostname }} "

@@ -13,3 +13,8 @@
   ansible.builtin.import_tasks: uptime.yaml
   tags:
     - uptime
+
+- name: Version of Snowflake
+  ansible.builtin.import_tasks: version.yaml
+  tags:
+    - version
