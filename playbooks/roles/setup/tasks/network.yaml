@@ -18,13 +18,9 @@
     _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
     _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
 
-- name: Compile ipv6 host part
-  ansible.builtin.set_fact:
-    _ipv6_suffix: "{{ _a }}.{{ _b }}.{{ _c }}.{{ _d }}"
-
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6: "{{ _ipv6_prefix }}:{{ _ipv6_suffix | ansible.utils.ip4_hex(':') }}"
+    _ipv6: "{{ _ipv6_prefix }}:{{ '%04X' % _a }}:{{ '%04X' % _b }}:{{ '%04X' % _c }}:{{ '%04X' % _d }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
