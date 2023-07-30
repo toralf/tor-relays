@@ -1,6 +1,6 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy Tor bridges or Tor snowflake
+# A stack to deploy Tor bridges (public, private or snowflake)
 
 ## Quick start
 
@@ -40,7 +40,7 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake relay just the last 2 steps are needed, the hostname has to be put into the `snowflake` group.
+For a snowflake bridge put its hostname into the `snowflake` group, the secrets aren't needed.
 
 ## Details
 
