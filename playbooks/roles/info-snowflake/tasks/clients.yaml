@@ -9,6 +9,6 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_hostname }} {{ result.stdout }}"
+    line: "{{ ansible_facts.hostname }} {{ result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_clients"
-    regex: "^{{ ansible_hostname }} "
+    regex: "^{{ ansible_facts.hostname }} "

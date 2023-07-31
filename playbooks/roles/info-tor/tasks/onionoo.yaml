@@ -10,10 +10,10 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_hostname }}
+    line: "{{ ansible_facts.hostname }}
       {{ result.json.bridges[0].bridgedb_distributor | default('n/a') }}
       {{ result.json.bridges[0].advertised_bandwidth | default('n/a') }}
       running: {{ result.json.bridges[0].running | default('n/a') }}
       blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
-    regex: "^{{ ansible_hostname }} "
+    regex: "^{{ ansible_facts.hostname }} "

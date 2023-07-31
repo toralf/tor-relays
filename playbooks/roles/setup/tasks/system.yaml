@@ -41,7 +41,6 @@
 - name: "Ensure sysctl is reloaded"
   become: true
   changed_when: true
-  listen: "reload sysctl"
   ansible.builtin.command:
     argv: ["sysctl", "--system"]
   when: sysctl_state.changed
@@ -88,10 +87,12 @@
 
 - name: Get current running kernel version
   changed_when: false
+  check_mode: false
   ansible.builtin.shell: |
     uname -v | grep -Eo '(Debian .*) ' | awk '{ print $2 }'
     uname -r | cut -f 3 -d '-'
   register: _uname
+  failed_when: _uname.stdout_lines | length != 2 or _uname.stderr_lines | length > 0
 
 - name: Set image arch variable
   ansible.builtin.set_fact:

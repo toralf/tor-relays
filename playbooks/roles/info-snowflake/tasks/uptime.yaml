@@ -6,13 +6,15 @@
 
 - name: Uptime
   changed_when: false
+  check_mode: false
   ansible.builtin.command: "uptime -ps"
   register: result
+  failed_when: result.stdout_lines | length != 1 or result.stderr_lines | length > 0
 
 - name: File results for uptime
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_hostname }} SFStart {{ snowflake_status.status.ExecMainStartTimestamp }} SFReload {{ snowflake_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"
+    line: "{{ ansible_facts.hostname }} SFStart {{ snowflake_status.status.ExecMainStartTimestamp }} SFReload {{ snowflake_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
-    regex: "^{{ ansible_hostname }} "
+    regex: "^{{ ansible_facts.hostname }} "

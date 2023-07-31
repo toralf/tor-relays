@@ -5,7 +5,7 @@
   delegate_to: localhost
   ansible.builtin.lineinfile:
     create: yes
-    line: "# {{ ansible_hostname }} "
+    line: "# {{ ansible_facts.hostname }} "
     path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
 - name: Ensure fingerprint is in wellknown file
@@ -14,4 +14,4 @@
     create: yes
     line: "{{ hashed_fingerprint }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_hashed-bridge-rsa-fingerprint.txt"
-    insertafter: "^# {{ ansible_hostname }} "
+    insertafter: "^# {{ ansible_facts.hostname }} "

@@ -3,8 +3,9 @@
   delegate_to: localhost
   changed_when: false
   ansible.builtin.shell: |
-    hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_hostname }} / { print $2 }'
+    hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_facts.hostname }} / { print $2 }'
   register: result
+  failed_when: result.stdout_lines | length != 1 or result.stderr_lines | length > 0
 
 - name: Get ipv6 prefix
   ansible.builtin.set_fact:
@@ -14,14 +15,14 @@
 # and given the DNAT6 rule below this means to not use the lowest 10 bits
 - name: Dice ipv6 subnet values
   ansible.builtin.set_fact:
-    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'A' + result.stdout) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'B' + result.stdout) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'C' + result.stdout) }}"
-    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_hostname + ipv4 + 'D' + result.stdout) }}"
+    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'A' + result.stdout) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'B' + result.stdout) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'C' + result.stdout) }}"
+    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'D' + result.stdout) }}"
 
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6: "{{ _ipv6_prefix }}:{{ '%4X' % _a }}:{{ '%4X' % _b }}:{{ '%4X' % _c }}:{{ '%4X' % _d }}"
+    _ipv6: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:

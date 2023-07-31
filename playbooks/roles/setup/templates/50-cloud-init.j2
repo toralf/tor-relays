@@ -3,10 +3,10 @@
 auto lo
 iface lo inet loopback
 
-auto {{ ansible_default_ipv6.interface }}
-iface {{ ansible_default_ipv6.interface }} inet dhcp
+auto {{ ansible_facts.default_ipv6.interface }}
+iface {{ ansible_facts.default_ipv6.interface }} inet dhcp
 
-iface {{ ansible_default_ipv6.interface }} inet6 static
-    address {{ _ipv6 }}/64 dev {{ ansible_default_ipv6.interface }}
+iface {{ ansible_facts.default_ipv6.interface }} inet6 static
+    address {{ _ipv6 }}/64 dev {{ ansible_facts.default_ipv6.interface }}
     dns-nameservers 2a01:4ff:ff00::add:1 2a01:4ff:ff00::add:2
     gateway fe80::1
