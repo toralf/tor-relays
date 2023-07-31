@@ -38,10 +38,12 @@
     dest: /etc/sysctl.d/
   register: sysctl_state
 
-- name: Restart sysctl
-  ansible.builtin.systemd:
-    name: "systemd-sysctl"
-    state: restarted
+- name: "Ensure sysctl is reloaded"
+  become: true
+  changed_when: true
+  listen: "reload sysctl"
+  ansible.builtin.command:
+    argv: ["sysctl", "--system"]
   when: sysctl_state.changed
 
 - name: Tweak readline
