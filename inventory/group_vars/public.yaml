@@ -1,7 +1,4 @@
 ---
-contact_info: ""
-nickname_prefix: ""
-
 torrc_public:
   - name: "PublishServerDescriptor"
     value: "bridge"

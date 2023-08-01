@@ -1,23 +1,21 @@
 ---
 # avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
 # so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
-- name: Dice ipv6 subnet values
-  ansible.builtin.set_fact:
-    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'A' + ipv6_prefix) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'B' + ipv6_prefix) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'C' + ipv6_prefix) }}"
-    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'D' + ipv6_prefix) }}"
-
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6: "{{ ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+    _ipv6_new: "{{ ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+  vars:
+    _a: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + ipv6_prefix) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + ipv6_prefix) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + ipv6_prefix) }}"
+    _d: "{{ range(1024,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + ipv6_prefix) }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
 
-- name: Ensure global scope ipv6 is set
+- name: Ensure global scope ipv6 is set to the desired one
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
@@ -53,7 +51,7 @@
     table: nat
     chain: PREROUTING
     protocol: tcp
-    destination: "{{ _ipv6 }}"
+    destination: "{{ _ipv6_new }}"
     jump: ACCEPT
 
 - name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses == lowest 10 bits)
@@ -64,7 +62,7 @@
     protocol: tcp
     destination: "! {{ ipv6_prefix }}::/118"
     jump: DNAT
-    to_destination: "{{ _ipv6 }}"
+    to_destination: "{{ _ipv6_new }}"
 
 - name: Save new ip6tables state
   community.general.iptables_state:

@@ -20,7 +20,7 @@ Setup the new Tor public bridge _my_bridge_
    contact_info: "me@my.net"
    nickname_prefix: "my_preferred_prefix"
    obfs4_port: 4711
-   seed_or_port: "a-really-random-string"
+   seed_local: "a-really-random-string"
    ```
 
 1. add the hostname _my_bridge_ to the host group `public`, i.e. into `inventory/systems.yaml`:

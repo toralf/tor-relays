@@ -30,5 +30,5 @@
     create: yes
     mode: "0600"
   with_items:
-    - "{{ ipv4 }}"
-    - "[{{ ipv6 }}]"
+    - "{{ ansible_facts.default_ipv4.address }}"
+    - "[{{ ansible_facts.default_ipv6.address }}]"
