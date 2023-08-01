@@ -36,10 +36,12 @@ done < <(xargs -n 1 <<<$*) |
 echo -e "\n add to DNS ..."
 $(dirname $0)/update-dns.sh
 
-echo -e "\n wait few sec ..."
-sleep 15
-if ! $(dirname $0)/add-to-known_hosts.sh $*; then
-  echo -e "\n wait again ..."
-  sleep 15
-  $(dirname $0)/add-to-known_hosts.sh $*
-fi
+while :; do
+  echo -e "\n wait 10 sec before getting ssh host key(s) ..."
+  sleep 10
+  if $(dirname $0)/add-to-known_hosts.sh $*; then
+    break
+  fi
+done
+
+echo
