@@ -6,7 +6,8 @@ BridgeRelay 1
 # obfs4 does not work with sandbox
 SandBox 0
 
-ORPort {{ or_port }}
+ORPort 127.0.0.1:auto
+AssumeReachable 1
 ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
