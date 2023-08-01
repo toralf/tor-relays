@@ -4,6 +4,7 @@ log_warn: "/var/log/tor/warn.log"
 
 ipv4: "{{ ansible_facts.default_ipv4.address }}"
 ipv6: "{{ ansible_facts.default_ipv6.address }}"
+ipv6_prefix: "{{ (ipv6 | split(':'))[0:4] | join(':') }}"
 
 or_port: "{{ range(1024, 65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + '[' + ipv6 + ']') }}"
 
