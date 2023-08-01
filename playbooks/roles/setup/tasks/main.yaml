@@ -33,7 +33,7 @@
 
     - name: Network
       ansible.builtin.import_tasks: network.yaml
-      when: ansible_facts.bios_vendor == 'Hetzner'
+      when: ansible_facts.bios_vendor == 'Hetzner' and ipv6 is match ("::1$")
       tags:
         - network
 

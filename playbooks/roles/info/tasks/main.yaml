@@ -10,7 +10,6 @@
   tags:
     - log
     - log-system
-    - never
 
 - name: Uname
   ansible.builtin.import_tasks: uname.yaml
@@ -22,4 +21,3 @@
   tags:
     - log
     - log-unattended
-    - never

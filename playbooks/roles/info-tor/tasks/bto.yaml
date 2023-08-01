@@ -1,7 +1,7 @@
 ---
 - name: Query bto
   ansible.builtin.uri:
-    url: "https://bridges.torproject.org/status?id={{ hashed_fingerprint }}"
+    url: "https://bridges.torproject.org/status?id={{ _hashed_fingerprint }}"
     return_content: yes
     status_code: [200, 404]
   register: result

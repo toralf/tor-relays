@@ -80,7 +80,6 @@
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
 
-# reboot if needed
 - name: Gather the package facts
   ansible.builtin.package_facts:
     manager: auto
@@ -94,10 +93,6 @@
   register: _uname
   failed_when: _uname.stdout_lines | length != 2 or _uname.stderr_lines | length > 0
 
-- name: Set image arch variable
-  ansible.builtin.set_fact:
-    linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"
-
 - name: Reboot into newer kernel if needed
   ansible.builtin.reboot:
     connect_timeout: 5
@@ -105,3 +100,5 @@
     pre_reboot_delay: 0
     post_reboot_delay: 35
   when: not _uname.stdout_lines[0] == ansible_facts.packages[linux_image_arch][0].version
+  vars:
+    linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"

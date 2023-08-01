@@ -2,27 +2,24 @@
 - name: Get ipv6 netmask
   delegate_to: localhost
   changed_when: false
+  check_mode: false
   ansible.builtin.shell: |
-    hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_facts.hostname }} / { print $2 }'
-  register: result
-  failed_when: result.stdout_lines | length != 1 or result.stderr_lines | length > 0
+    hcloud server list --output columns=name,ipv6 | awk '/^{{ ansible_facts.hostname }} / { print $2 }' | sed -e 's,::/64,,'
+  register: _ipv6_prefix
+  failed_when: _ipv6_prefix.stdout_lines | length != 1 or _ipv6_prefix.stderr_lines | length > 0
 
-- name: Get ipv6 prefix
-  ansible.builtin.set_fact:
-    _ipv6_prefix: "{{ result.stdout | replace('::/64', '') }}"
-
-#  avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
-# and given the DNAT6 rule below this means to not use the lowest 10 bits
+# avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
+# so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
 - name: Dice ipv6 subnet values
   ansible.builtin.set_fact:
-    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'A' + result.stdout) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'B' + result.stdout) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'C' + result.stdout) }}"
-    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'D' + result.stdout) }}"
+    _a: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'A' + _ipv6_prefix.stdout) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'B' + _ipv6_prefix.stdout) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'C' + _ipv6_prefix.stdout) }}"
+    _d: "{{ range(1024,65535) | random(seed=seed_or_port + ansible_facts.hostname + ipv4 + 'D' + _ipv6_prefix.stdout) }}"
 
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+    _ipv6: "{{ _ipv6_prefix.stdout }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
@@ -68,13 +65,13 @@
     destination: "{{ _ipv6 }}"
     jump: ACCEPT
 
-- name: DNAT incoming TCP v6 to the global scope ipv6 address (except lowest 10 bits)
+- name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses == lowest 10 bits)
   ansible.builtin.iptables:
     ip_version: ipv6
     table: nat
     chain: PREROUTING
     protocol: tcp
-    destination: "! {{ _ipv6_prefix }}::/118"
+    destination: "! {{ _ipv6_prefix.stdout }}::/118"
     jump: DNAT
     to_destination: "{{ _ipv6 }}"
 

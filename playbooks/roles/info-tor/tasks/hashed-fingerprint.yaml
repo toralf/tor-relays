@@ -6,4 +6,4 @@
 
 - name: Set fact
   ansible.builtin.set_fact:
-    hashed_fingerprint: "{{ result.stdout_lines[0] }}"
+    _hashed_fingerprint: "{{ result.stdout_lines[0] }}"

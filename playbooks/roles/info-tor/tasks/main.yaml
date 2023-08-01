@@ -26,13 +26,11 @@
   ansible.builtin.import_tasks: log-notice.yaml
   tags:
     - log-notice
-    - never
 
 - name: Log warn
   ansible.builtin.import_tasks: log-warn.yaml
   tags:
     - log-warn
-    - never
 
 - name: Onionoo
   ansible.builtin.import_tasks: onionoo.yaml
