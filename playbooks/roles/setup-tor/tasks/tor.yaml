@@ -7,7 +7,7 @@
 - name: Configure repository "tor"
   ansible.builtin.apt_repository:
     filename: "tor"
-    repo: "deb https://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main"
+    repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
     state: present
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
