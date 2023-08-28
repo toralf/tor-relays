@@ -14,6 +14,11 @@
       group: root
       mode: "0644"
   block:
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall
+        - snowflake
     - name: Snowflake
       ansible.builtin.import_tasks: snowflake.yaml
       tags:

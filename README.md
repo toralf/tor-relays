@@ -40,13 +40,13 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake bridge put its hostname into the `snowflake` group, the secrets aren't needed.
+For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
 
 ## Details
 
 The systems are deployed via an _Ansible_ role using a recent Debian OS.
 
-The scripts under [bin](./bin) works for the Hetzner cloud only.
+The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
 
 Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
 That task configures a randomly choosen ipv6 address (global scope)
@@ -55,9 +55,8 @@ from the given /64 subnet and preroutes all incoming TCPv6 connections to it.
 configured for each Hetzner project in this way:
 
 ```config
-include: "/etc/unbound/hetzner-private.conf"
-include: "/etc/unbound/hetzner-public.conf"
-include: "/etc/unbound/hetzner-snowflake.conf"
+include: "/etc/unbound/hetzner-<project>.conf"
+...
 ```
 
 To create a new VPS _my_bridge_ in the Hetzner project _my_project_, do:
@@ -73,7 +72,7 @@ Get its state
 ./site-info.yaml --limit my_bridge
 ```
 
-All other output goes to a tmp dir defined by the variable `tmp_dir` in [all.yaml](./inventory/group_vars/all.yaml).
+All other output goes to a tmp directory defined by the variable `tmp_dir` in [all.yaml](./inventory/group_vars/all.yaml).
 
 ## Links
 

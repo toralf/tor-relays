@@ -1,0 +1,46 @@
+#!/bin/bash
+#set -x
+# shellcheck disable=SC1083
+
+function stop() {
+  iptables -P INPUT ACCEPT
+  iptables -P OUTPUT ACCEPT
+
+  iptables -F
+  iptables -X
+  iptables -Z
+}
+
+function start() {
+  iptables -P INPUT DROP
+  iptables -P OUTPUT ACCEPT
+
+  # allow loopback
+  iptables -A INPUT --in-interface lo -m comment --comment "$(date -R)" -j ACCEPT
+
+  # make sure NEW incoming tcp connections are SYN packets
+  iptables -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+  iptables -A INPUT -m conntrack --ctstate INVALID -j DROP
+
+  # do not touch established connections
+  iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+  # ssh
+  iptables -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport 22 -j ACCEPT
+
+  # ratelimit ICMP echo
+  iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s -j ACCEPT
+  iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
+
+  # Tor public bridge
+  iptables -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ obfs4_port }} --syn -j ACCEPT
+}
+
+set -euf
+
+stop
+if $1; then
+  /usr/sbin/iptables-save >/etc/iptables/rules.v4
+else
+  stop
+fi
