@@ -33,7 +33,7 @@ function start() {
   iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
 
   # Tor snowflake
-  iptables -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} -j ACCEPT
+  iptables -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports $(awk '{ printf("%i:%i", $1, $2) }' </proc/sys/net/ipv4/ip_local_port_range) -j ACCEPT
 }
 
 set -euf
