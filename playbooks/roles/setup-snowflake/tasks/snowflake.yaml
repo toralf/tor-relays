@@ -58,7 +58,8 @@
     state: restarted
   when: sysctl_state.changed
 
-- ansible.posix.sysctl:
+- name: Set sysctl value
+  ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "1" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/30snowflake.conf

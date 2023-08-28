@@ -9,7 +9,7 @@
   ansible.builtin.template:
     src: firewall.sh.j2
     dest: /root/firewall.sh
-    mode: 0744
+    mode: "0744"
 
 - name: Start firewall
   become: true
