@@ -1,0 +1,33 @@
+---
+- name: Install needed dependencies for a Tor relay
+  ansible.builtin.apt:
+    name:
+      - iptables
+
+- name: Firewall start script
+  become: true
+  ansible.builtin.template:
+    src: firewall-start.sh.j2
+    dest: /root/firewall-start.sh
+    mode: 0744
+
+- name: Firewall stop script
+  become: true
+  ansible.builtin.copy:
+    src: firewall-stop.sh
+    dest: /root/firewall-stop.sh
+    mode: 0744
+
+- name: Clean firewall
+  become: true
+  ansible.builtin.shell: /root/firewall-stop.sh
+
+- name: Start firewall
+  become: true
+  ansible.builtin.shell: /root/firewall-start.sh
+  register: result
+
+- name: Stop firewall if start failed
+  become: true
+  ansible.builtin.shell: /root/firewall-stop.sh
+  when: result is failed

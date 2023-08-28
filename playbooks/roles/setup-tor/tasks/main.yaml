@@ -26,6 +26,11 @@
       group: root
       mode: "0644"
   block:
+    - name: Tor Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - tor
+        - tor-firewall
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml
       tags:
