@@ -1,4 +1,8 @@
 ---
+# goal:     enlarge the cost of a network scanner to unveil open ORPorts / obfs4 ports et. al
+# solution: randomize the global ipv6 address and DNAT6 all other own ipv6 adresses to the´is global one
+# gimmick:  avoid not only ::1, instead avoid ::1 till ::254 (hint: these are hex numbers: 0x254 == 596)
+#           given how the DNAT6 rule uses "destination" that means avoid to use the first 1024 addresses
 - name: Gather current ipv6
   ansible.builtin.setup:
     gather_subset:
