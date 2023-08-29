@@ -49,7 +49,8 @@
 - name: Set sysctl value
   ansible.posix.sysctl:
     name: user.max_user_namespaces
-    value: "10" # Debian bookworm default: 14886
+    # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
+    value: "2"
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
 
