@@ -1,9 +1,4 @@
 ---
-- name: Install needed dependencies
-  ansible.builtin.apt:
-    name:
-      - iptables
-
 - name: Firewall script
   ansible.builtin.template:
     src: firewall.sh.j2
