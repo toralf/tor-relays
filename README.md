@@ -30,9 +30,12 @@ Setup the new Tor public bridge _my_bridge_
    public:
      hosts:
        my_bridge:
+         additional_ports:
+           - "4242"
    ```
 
    For a private bridge just replace `public` with `private`, similar for `snowflake`.
+   The additional ports, if given, are opened by the firewall, i.e. one single port for _Quassel_ is given.
 
 1. deploy it
 

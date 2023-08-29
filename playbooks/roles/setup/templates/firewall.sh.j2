@@ -1,6 +1,6 @@
 #!/bin/bash
 #set -x
-# shellcheck disable=SC1083
+# shellcheck disable=SC1000-SC9999
 
 function stop() {
   iptables -P INPUT ACCEPT
@@ -32,8 +32,13 @@ function start() {
   iptables -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s -j ACCEPT
   iptables -A INPUT -p icmp --icmp-type echo-request -j DROP
 
-  # Tor snowflake
-  iptables -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports $(awk '{ printf("%i:%i", $1, $2) }' </proc/sys/net/ipv4/ip_local_port_range) -j ACCEPT
+  {% for __i in additional_ports %}
+  {% if ',' in __i or ':' in __i %}
+  iptables -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ __i }} --syn -j ACCEPT
+  {% else %}
+  iptables -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ __i }} --syn -j ACCEPT
+  {% endif %}
+  {% endfor %}
 }
 
 set -euf

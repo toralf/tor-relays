@@ -41,3 +41,8 @@
       ansible.builtin.import_tasks: timer.yaml
       tags:
         - timer
+
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall

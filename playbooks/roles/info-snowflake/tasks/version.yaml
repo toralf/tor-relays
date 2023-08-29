@@ -8,7 +8,7 @@
   failed_when: _proxy_version.stdout_lines | length != 1 or _proxy_version.stderr_lines | length > 0
 
 - name: Get HEAD of repository
-  become: yes
+  become: true
   become_user: snowflake
   changed_when: false
   check_mode: false

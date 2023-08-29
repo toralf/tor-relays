@@ -18,6 +18,7 @@
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+        - firewall-snowflake
         - snowflake
     - name: Snowflake
       ansible.builtin.import_tasks: snowflake.yaml

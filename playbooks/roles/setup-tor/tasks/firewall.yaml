@@ -1,16 +1,16 @@
 ---
-- name: Install needed dependencies
-  ansible.builtin.apt:
-    name:
-      - iptables
+- name: ACCEPT incoming TCP syn packet to ORPort
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    destination: "{{ ansible_facts.default_ipv4.address }}"
+    destination_port: "{{ obfs4_port }}"
+    ctstate: NEW
+    syn: match
+    jump: ACCEPT
 
-- name: Firewall script
-  become: true
-  ansible.builtin.template:
-    src: firewall.sh.j2
-    dest: /root/firewall.sh
-    mode: "0744"
-
-- name: Start firewall
-  become: true
-  ansible.builtin.shell: /root/firewall.sh start
+- name: Save new iptables state
+  community.general.iptables_state:
+    ip_version: ipv4
+    state: saved
+    path: /etc/iptables/rules.v4

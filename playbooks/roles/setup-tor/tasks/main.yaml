@@ -30,6 +30,7 @@
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+        - firewall-tor
         - tor
     - name: Tor
       ansible.builtin.import_tasks: tor.yaml

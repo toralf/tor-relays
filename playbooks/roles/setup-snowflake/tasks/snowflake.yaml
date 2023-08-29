@@ -13,7 +13,7 @@
     create_home: true
 
 - name: Clone or update snowflake repo
-  become: yes
+  become: true
   become_user: snowflake
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
@@ -21,7 +21,7 @@
   register: git_repo
 
 - name: Go get
-  become: yes
+  become: true
   become_user: snowflake
   ansible.builtin.command: go get
   args:
@@ -30,7 +30,7 @@
   when: git_repo.changed
 
 - name: Go build
-  become: yes
+  become: true
   become_user: snowflake
   ansible.builtin.command: go build
   args:

@@ -1,0 +1,16 @@
+---
+- name: Install needed dependencies
+  ansible.builtin.apt:
+    name:
+      - iptables
+
+- name: Firewall script
+  become: true
+  ansible.builtin.template:
+    src: firewall.sh.j2
+    dest: /root/firewall.sh
+    mode: "0744"
+
+- name: Start firewall
+  become: true
+  ansible.builtin.shell: /root/firewall.sh start
