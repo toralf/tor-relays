@@ -9,8 +9,14 @@
   ansible.builtin.template:
     src: firewall.sh.j2
     dest: /root/firewall.sh
-    mode: "0744"
+    mode: "0700"
 
 - name: Start firewall
   become: true
   ansible.builtin.shell: /root/firewall.sh start
+
+- name: Save new iptables state
+  community.general.iptables_state:
+    ip_version: ipv4
+    state: saved
+    path: /etc/iptables/rules.v4

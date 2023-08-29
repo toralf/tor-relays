@@ -2,7 +2,7 @@
 #set -x
 # shellcheck disable=SC1000-SC9999
 
-function stop() {
+function clearAll() {
   iptables -P INPUT ACCEPT
   iptables -P OUTPUT ACCEPT
 
@@ -11,7 +11,7 @@ function stop() {
   iptables -Z
 }
 
-function start() {
+function addRules() {
   iptables -P INPUT DROP
   iptables -P OUTPUT ACCEPT
 
@@ -43,9 +43,7 @@ function start() {
 
 set -euf
 
-stop
-if $1; then
-  /usr/sbin/iptables-save >/etc/iptables/rules.v4
-else
-  stop
+if [[ "$1" == "start" ]]; then
+  clearAll
+  addRules
 fi
