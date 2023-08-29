@@ -5,7 +5,6 @@
       - iptables
 
 - name: Firewall script
-  become: true
   ansible.builtin.template:
     src: firewall.sh.j2
     dest: /root/firewall.sh
@@ -13,7 +12,6 @@
   register: result
 
 - name: Start firewall
-  become: true
   ansible.builtin.shell: /root/firewall.sh start
   when: result.changed
 

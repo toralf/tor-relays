@@ -39,7 +39,6 @@
   register: sysctl_state
 
 - name: "Ensure sysctl is reloaded"
-  become: true
   changed_when: true
   ansible.builtin.command:
     argv: ["sysctl", "--system"]

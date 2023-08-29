@@ -1,11 +1,10 @@
 ---
-- name: ACCEPT incoming UDP to Snowflake
+- name: ACCEPT incoming UDP to (ephemeral ports of) Snowflake
   ansible.builtin.iptables:
     chain: INPUT
     protocol: udp
     destination: "{{ ansible_facts.default_ipv4.address }}"
-    #destination_ports: "32768:60999"
-    destination_ports: "1:65535"
+    destination_ports: "32768:60999" # /proc/sys/net/ipv4/ip_local_port_range
     jump: ACCEPT
   register: result
 

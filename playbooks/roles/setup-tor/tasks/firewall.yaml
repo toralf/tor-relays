@@ -1,5 +1,5 @@
 ---
-- name: ACCEPT incoming TCP syn packet to ORPort
+- name: ACCEPT incoming TCP syn packet to ORPort of Tor
   ansible.builtin.iptables:
     chain: INPUT
     protocol: tcp
