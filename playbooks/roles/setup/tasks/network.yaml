@@ -1,4 +1,8 @@
 ---
+- name: Set ipv6 prefix
+  ansible.builtin.set_fact:
+    ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+
 # avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
 # so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
 - name: Compile global scope ipv6 address
