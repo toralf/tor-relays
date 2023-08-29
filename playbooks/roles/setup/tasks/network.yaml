@@ -11,19 +11,19 @@
 
 - name: Set ipv6 prefix
   ansible.builtin.set_fact:
-    ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
-  failed_when: ipv6_prefix is match("fe80:")
+    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+  failed_when: _ipv6_prefix is match("fe80:")
 
 # avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
 # so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
-    _ipv6_new: "{{ ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+    _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   vars:
-    _a: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + ipv6_prefix) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + ipv6_prefix) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + ipv6_prefix) }}"
-    _d: "{{ range(1024,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + ipv6_prefix) }}"
+    _a: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
+    _d: "{{ range(1024,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
@@ -69,7 +69,7 @@
         table: nat
         chain: PREROUTING
         protocol: tcp
-        destination: "! {{ ipv6_prefix }}::/118"
+        destination: "! {{ _ipv6_prefix }}::/118"
         jump: DNAT
         to_destination: "{{ _ipv6_new }}"
     - name: Save new ip6tables state
