@@ -59,6 +59,13 @@
     src: torrc.j2
     dest: /etc/tor/torrc
 
+- name: Set sysctl value
+  ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    value: "0" # debian bookworm default: 14886
+    sysctl_file: /etc/sysctl.d/21tor-relay.conf
+    sysctl_set: true
+
 - name: Enable Tor service
   ansible.builtin.systemd:
     name: "tor"
