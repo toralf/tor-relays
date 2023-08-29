@@ -1,7 +1,14 @@
 ---
+- name: Gather current ipv6
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "all_ipv6_addresses"
+
 - name: Set ipv6 prefix
   ansible.builtin.set_fact:
     ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+  failed_when: ipv6_prefix is match("fe80:")
 
 # avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
 # so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
@@ -25,51 +32,45 @@
     dest: /etc/network/interfaces.d/50-cloud-init
   register: ipv6_state
 
-- name: Restart network service
-  ansible.builtin.systemd:
-    name: "networking"
-    state: restarted
-    daemon_reload: true
-    enabled: yes
+- name: New ipv6 address
+  block:
+    - name: Restart network service
+      ansible.builtin.systemd:
+        name: "networking"
+        state: restarted
+        daemon_reload: true
+        enabled: yes
+    - name: Gather ipv6 again
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "all_ipv6_addresses"
+    - name: Flush table nat of chain PREROUTING
+      ansible.builtin.iptables:
+        ip_version: ipv6
+        table: nat
+        chain: PREROUTING
+        flush: true
+    - name: ACCEPT incoming TCP v6 to the global scope ipv6 address
+      ansible.builtin.iptables:
+        ip_version: ipv6
+        table: nat
+        chain: PREROUTING
+        protocol: tcp
+        destination: "{{ _ipv6_new }}"
+        jump: ACCEPT
+    - name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses == lowest 10 bits)
+      ansible.builtin.iptables:
+        ip_version: ipv6
+        table: nat
+        chain: PREROUTING
+        protocol: tcp
+        destination: "! {{ ipv6_prefix }}::/118"
+        jump: DNAT
+        to_destination: "{{ _ipv6_new }}"
+    - name: Save new ip6tables state
+      community.general.iptables_state:
+        ip_version: ipv6
+        state: saved
+        path: /etc/iptables/rules.v6
   when: ipv6_state.changed
-
-- name: Gather all facts again
-  ansible.builtin.setup:
-
-- name: Save current ip6tables state
-  community.general.iptables_state:
-    ip_version: ipv6
-    state: saved
-    path: /etc/iptables/rules.v6
-
-- name: Flush table nat of chain PREROUTING
-  ansible.builtin.iptables:
-    ip_version: ipv6
-    table: nat
-    chain: PREROUTING
-    flush: true
-
-- name: ACCEPT incoming TCP v6 to the global scope ipv6 address
-  ansible.builtin.iptables:
-    ip_version: ipv6
-    table: nat
-    chain: PREROUTING
-    protocol: tcp
-    destination: "{{ _ipv6_new }}"
-    jump: ACCEPT
-
-- name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses == lowest 10 bits)
-  ansible.builtin.iptables:
-    ip_version: ipv6
-    table: nat
-    chain: PREROUTING
-    protocol: tcp
-    destination: "! {{ ipv6_prefix }}::/118"
-    jump: DNAT
-    to_destination: "{{ _ipv6_new }}"
-
-- name: Save new ip6tables state
-  community.general.iptables_state:
-    ip_version: ipv6
-    state: saved
-    path: /etc/iptables/rules.v6
