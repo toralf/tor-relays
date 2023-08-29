@@ -8,9 +8,11 @@
     ctstate: NEW
     syn: match
     jump: ACCEPT
+  register: result
 
 - name: Save new iptables state
   community.general.iptables_state:
     ip_version: ipv4
     state: saved
     path: /etc/iptables/rules.v4
+  when: result.changed

@@ -4,11 +4,14 @@
     chain: INPUT
     protocol: udp
     destination: "{{ ansible_facts.default_ipv4.address }}"
-    destination_ports: "32768:60999"
+    #destination_ports: "32768:60999"
+    destination_ports: "1:65535"
     jump: ACCEPT
+  register: result
 
 - name: Save new iptables state
   community.general.iptables_state:
     ip_version: ipv4
     state: saved
     path: /etc/iptables/rules.v4
+  when: result.changed
