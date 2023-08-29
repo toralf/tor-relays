@@ -1,6 +1,6 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy Tor bridges (public, private or snowflake)
+# A stack to deploy public and private Tor bridges or Snowflake
 
 ## Quick start
 
@@ -35,7 +35,7 @@ Setup the new Tor public bridge _my_bridge_
    ```
 
    For a private bridge just replace `public` with `private`, similar for `snowflake`.
-   The additional ports, if given, are opened by the firewall, i.e. one single port for _Quassel_ is given.
+   In the example the (optional) additional port to be opened by a firewall is needed for a _Quassel_ server.
 
 1. deploy it
 
@@ -43,14 +43,12 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
+For a snowflake bridge put its hostname into the `snowflake` group, no secrets (step 2) are needed.
 
 ## Details
 
 The systems are deployed via an _Ansible_ role using a recent Debian OS.
-
 The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
-
 Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
 That task configures a randomly choosen ipv6 address (global scope)
 from the given /64 subnet and preroutes all incoming TCPv6 connections to it.
