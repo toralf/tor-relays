@@ -1,5 +1,5 @@
 ---
-- name: Get proxy logs except clients
+- name: Get proxy logs except clients statistic messages
   changed_when: false
   ansible.builtin.shell: >-
     journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -q |
