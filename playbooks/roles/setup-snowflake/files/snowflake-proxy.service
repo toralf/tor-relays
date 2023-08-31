@@ -6,7 +6,7 @@ After=network-online.target docker.socket firewalld.service
 Wants=network-online.target
 
 [Service]
-ExecStart=/usr/bin/proxy
+ExecStart=/usr/bin/proxy -metrics
 User=snowflake
 Group=snowflake
 # https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
