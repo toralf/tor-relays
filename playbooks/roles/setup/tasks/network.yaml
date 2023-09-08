@@ -70,6 +70,7 @@
         chain: PREROUTING
         protocol: tcp
         destination: "! {{ _ipv6_prefix }}::/118"
+        destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
         jump: DNAT
         to_destination: "{{ _ipv6_new }}"
     - name: Save new ip6tables state
