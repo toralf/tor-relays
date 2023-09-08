@@ -35,7 +35,6 @@
       with_items:
         - "tor@default.service"
         - "tor@.service"
-        - "tor.service.d"
 
     - name: Configure service to use privileged port
       ansible.builtin.copy:
@@ -44,7 +43,6 @@
       with_items:
         - "tor@default.service"
         - "tor@.service"
-        - "tor.service.d"
 
 - name: Install Tor
   ansible.builtin.apt:
