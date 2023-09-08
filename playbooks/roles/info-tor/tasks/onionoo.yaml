@@ -8,6 +8,7 @@
 
 - name: File results for onionoo
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }}

@@ -13,6 +13,7 @@
 
 - name: File results for version
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }} {{ ansible_facts.packages['tor'][0].version }} {{ ansible_facts.packages['obfs4proxy'][0].version }} {{ result.stdout_lines[0] }}"

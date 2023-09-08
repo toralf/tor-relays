@@ -6,6 +6,7 @@
 
 - name: File results for uname
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }} {{ result.stdout }}"

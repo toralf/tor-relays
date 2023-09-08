@@ -8,6 +8,7 @@
 
 - name: File results for bto
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }} {{ result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"

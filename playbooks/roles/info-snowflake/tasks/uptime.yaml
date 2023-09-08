@@ -13,6 +13,7 @@
 
 - name: File results for uptime
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }} SFStart {{ snowflake_status.status.ExecMainStartTimestamp }} SFReload {{ snowflake_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"

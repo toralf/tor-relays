@@ -3,6 +3,7 @@
 # target file ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt
 - name: Ensure nickname is in wellknown file
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "# {{ ansible_facts.hostname }} "
@@ -10,6 +11,7 @@
 
 - name: Ensure fingerprint is in wellknown file
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ _hashed_fingerprint }}"

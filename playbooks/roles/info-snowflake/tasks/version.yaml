@@ -20,6 +20,7 @@
 
 - name: File results for version
   delegate_to: localhost
+  throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }} {{ _proxy_version.stdout_lines[0] }} {{ _git_version.stdout_lines[0] }}"
