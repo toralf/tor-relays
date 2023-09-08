@@ -13,5 +13,5 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ _hashed_fingerprint }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_hashed-bridge-rsa-fingerprint.txt"
+    path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
     insertafter: "^# {{ ansible_facts.hostname }} "
