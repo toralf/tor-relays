@@ -1,8 +1,8 @@
 ---
-# goal:     enlarge the cost of a network scanner to unveil open ORPorts / obfs4 ports et. al
-# solution: randomize the global ipv6 address and DNAT6 all other own ipv6 adresses to the´is global one
-# gimmick:  avoid not only ::1, instead avoid ::1 till ::254 (hint: these are hex numbers: 0x254 == 596)
-#           given how the DNAT6 rule uses "destination" that means avoid to use the first 1024 addresses
+# goal:     enlarge the cost of a network scanner for IPv6 to scan for an open obfsv4 port
+# solution:
+#           - randomize the global ipv6 address
+#           - route all possible ipv6 adresses to this global one if the dst port is *not* the obfsv4 port
 - name: Gather current ipv6
   ansible.builtin.setup:
     gather_subset:
@@ -14,8 +14,6 @@
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
   failed_when: _ipv6_prefix is match("fe80:")
 
-# avoid [<prefix>::1] till [<prefix>::254] (hint: these are hex numbers, e.g.: 0x254 == 596)
-# so given the DNAT6 rule below this means eventually to not use the first 1024 addresses
 - name: Compile global scope ipv6 address
   ansible.builtin.set_fact:
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
@@ -23,20 +21,22 @@
     _a: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
     _b: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
     _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
-    _d: "{{ range(1024,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
+    _d: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
 
 - name: Ensure that Hetzner network configurator is deactivated
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
+  when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Ensure global scope ipv6 is set to the desired one
+- name: Ensure global scope ipv6 is configured to the new desired one
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
   register: ipv6_state
+  when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: New ipv6 address
+- name: Use new ipv6 address in network filtering
   block:
     - name: Restart network service
       ansible.builtin.systemd:
@@ -63,13 +63,13 @@
         protocol: tcp
         destination: "{{ _ipv6_new }}"
         jump: ACCEPT
-    - name: DNAT incoming TCP v6 to the global scope ipv6 address (except first 1024 addresses == lowest 10 bits)
+    - name: DNAT incoming TCP v6 to the global scope ipv6 address (if dst port is not the obfsv4 port)
       ansible.builtin.iptables:
         ip_version: ipv6
         table: nat
         chain: PREROUTING
         protocol: tcp
-        destination: "! {{ _ipv6_prefix }}::/118"
+        destination: "! {{ _ipv6_new }}"
         destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
         jump: DNAT
         to_destination: "{{ _ipv6_new }}"

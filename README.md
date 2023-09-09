@@ -49,9 +49,8 @@ For a snowflake bridge put its hostname into the `snowflake` group, no secrets (
 
 The systems are deployed via an _Ansible_ role using a recent Debian OS.
 The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
-Same applies to the Ansible task [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
-That task configures a randomly choosen ipv6 address (global scope)
-from the given /64 subnet and preroutes all incoming TCPv6 connections to it.
+Same applies to few Ansible task in [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
+That task configures a randomly choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
 [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
 configured for each Hetzner project in this way:
 
