@@ -37,6 +37,11 @@
   when: ansible_facts.bios_vendor == 'Hetzner'
 
 - name: Use new ipv6 address in network filtering
+  module_defaults:
+    ansible.builtin.iptables:
+      ip_version: ipv6
+      table: nat
+      chain: PREROUTING
   block:
     - name: Restart network service
       ansible.builtin.systemd:
@@ -51,23 +56,14 @@
           - "all_ipv6_addresses"
     - name: Flush table nat of chain PREROUTING
       ansible.builtin.iptables:
-        ip_version: ipv6
-        table: nat
-        chain: PREROUTING
         flush: true
     - name: ACCEPT incoming TCP v6 to the global scope ipv6 address
       ansible.builtin.iptables:
-        ip_version: ipv6
-        table: nat
-        chain: PREROUTING
         protocol: tcp
         destination: "{{ _ipv6_new }}"
         jump: ACCEPT
     - name: DNAT incoming TCP v6 to the global scope ipv6 address (if dst port is not the obfsv4 port)
       ansible.builtin.iptables:
-        ip_version: ipv6
-        table: nat
-        chain: PREROUTING
         protocol: tcp
         destination: "! {{ _ipv6_new }}"
         destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
