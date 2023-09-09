@@ -1,8 +1,7 @@
 ---
-# goal:     enlarge the cost of a network scanner for IPv6 to scan for an open obfsv4 port
-# solution:
-#           - randomize the global ipv6 address
-#           - route all possible ipv6 adresses to this global one if the dst port is *not* the obfsv4 port
+# goal:     enlarge the cost of a network scanner for an IPv6 scan of an open obfs4 port
+# solution: - randomize the global ipv6 address and
+#           - re-route all incoming ipv6 traffic to it except if the TCPv6 destination port is the obfs4 port
 - name: Gather current ipv6
   ansible.builtin.setup:
     gather_subset:
@@ -36,7 +35,7 @@
   register: ipv6_state
   when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Use new ipv6 address in network filtering
+- name: Use new ipv6 address in PREROUTING
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6
@@ -54,21 +53,26 @@
         gather_subset:
           - "!all"
           - "all_ipv6_addresses"
-    - name: Flush table nat of chain PREROUTING
+    - name: Flush table nat
       ansible.builtin.iptables:
         flush: true
-    - name: ACCEPT incoming TCP v6 to the global scope ipv6 address
-      ansible.builtin.iptables:
-        protocol: tcp
-        destination: "{{ _ipv6_new }}"
-        jump: ACCEPT
-    - name: DNAT incoming TCP v6 to the global scope ipv6 address (if dst port is not the obfsv4 port)
+    - name: DNAT incoming TCP v6 except obfs4 port
       ansible.builtin.iptables:
         protocol: tcp
         destination: "! {{ _ipv6_new }}"
-        destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
         jump: DNAT
         to_destination: "{{ _ipv6_new }}"
+        destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
+    - name: DNAT non-TCP v6 incoming v6
+      ansible.builtin.iptables:
+        protocol: "{{ item }}"
+        destination: "! {{ _ipv6_new }}"
+        jump: DNAT
+        to_destination: "{{ _ipv6_new }}"
+      with_items:
+        - ipv6-icmp
+        - udp
+        - udplite
     - name: Save new ip6tables state
       community.general.iptables_state:
         ip_version: ipv6
