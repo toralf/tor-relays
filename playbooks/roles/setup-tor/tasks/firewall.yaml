@@ -5,7 +5,6 @@
     protocol: tcp
     destination: "{{ ansible_facts.default_ipv4.address }}"
     destination_port: "{{ obfs4_port }}"
-    ctstate: NEW
     syn: match
     jump: ACCEPT
   register: result
