@@ -23,7 +23,7 @@ Setup the new Tor public bridge _my_bridge_
    seed_local: "a-really-random-string"
    ```
 
-1. add the hostname _my_bridge_ to the host group `public`, i.e. into `inventory/systems.yaml`:
+1. add the hostname _my_bridge_ to the host group `public`, e.g. into `inventory/systems.yaml`:
 
    ```yaml
    ---
@@ -35,7 +35,7 @@ Setup the new Tor public bridge _my_bridge_
    ```
 
    For a private bridge just replace `public` with `private`, similar for `snowflake`.
-   In the example the (optional) additional port to be opened by a firewall is needed for a _Quassel_ server.
+   The additional port is optionally and would be opened by the firewall, i.e. for a _Quassel_ server.
 
 1. deploy it
 
@@ -43,26 +43,25 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake bridge put its hostname into the `snowflake` group, no secrets (step 2) are needed.
+For a snowflake bridge put its hostname into the `snowflake` group, step 2 can be skiped.
 
 ## Details
 
-The systems are deployed via an _Ansible_ role using a recent Debian OS.
+The systems are deployed via an _Ansible_ role.
 The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
-Same applies to few Ansible task in [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
-That task configures a randomly choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
+Same applies to few tasks of [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
+That task configures a randomly choosen ipv6 address for the reason documented [here](./playbooks/roles/setup/tasks/network.yaml#L2).
 [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
 configured for each Hetzner project in this way:
 
 ```config
 include: "/etc/unbound/hetzner-<project>.conf"
-...
 ```
 
-To create a new VPS _my_bridge_ in the Hetzner project _my_project_, do:
+To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
 
 ```bash
-hcloud context use "my_project"
+hcloud context use my_project
 ./bin/create-server.sh my_bridge
 ```
 
@@ -71,8 +70,6 @@ Get its state
 ```bash
 ./site-info.yaml --limit my_bridge
 ```
-
-All other output goes to a tmp directory defined by the variable `tmp_dir` in [all.yaml](./inventory/group_vars/all.yaml).
 
 ## Links
 
