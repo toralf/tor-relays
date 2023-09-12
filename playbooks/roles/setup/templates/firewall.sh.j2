@@ -7,9 +7,11 @@ function clearAll() {
   iptables -P INPUT ACCEPT
   iptables -P OUTPUT ACCEPT
 
-  iptables -F
-  iptables -X
-  iptables -Z
+  for table in filter nat; do
+    iptables -F -t $table
+    iptables -X -t $table
+    iptables -Z -t $table
+  done
 }
 
 function addRules() {

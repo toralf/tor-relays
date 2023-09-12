@@ -4,15 +4,12 @@
     src: firewall.sh.j2
     dest: /root/firewall.sh
     mode: "0700"
-  register: result
 
 - name: Start firewall
   ansible.builtin.shell: /root/firewall.sh start
-  when: result.changed
 
-- name: Save new iptables state
+- name: Save new iptables v4 state
   community.general.iptables_state:
     ip_version: ipv4
     state: saved
     path: /etc/iptables/rules.v4
-  when: result.changed

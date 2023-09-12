@@ -51,6 +51,7 @@ The systems are deployed via an _Ansible_ role.
 The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
 Same applies to few tasks of [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
 That task configures a randomly choosen ipv6 address for the reason documented [here](./playbooks/roles/setup/tasks/network.yaml#L2).
+The secret `seed_local` is needed to seed the RNG.
 [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
 configured for each Hetzner project in this way:
 
@@ -69,6 +70,12 @@ Get its state
 
 ```bash
 ./site-info.yaml --limit my_bridge
+```
+
+To scrape metrics by your Prometheus server you've to defined its ip address in the secrets:
+
+```yaml
+prometheus_server: "1.2.3.4"
 ```
 
 ## Links

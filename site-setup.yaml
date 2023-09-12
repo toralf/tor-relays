@@ -4,5 +4,3 @@
 ---
 - name: Import Setup
   import_playbook: playbooks/setup.yaml
-- name: Import Info
-  import_playbook: playbooks/info.yaml

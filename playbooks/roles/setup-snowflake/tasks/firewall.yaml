@@ -6,11 +6,38 @@
     destination: "{{ ansible_facts.default_ipv4.address }}"
     destination_ports: "32768:60999" # /proc/sys/net/ipv4/ip_local_port_range
     jump: ACCEPT
-  register: result
 
-- name: Save new iptables state
+- name: Enable Prometheus to scrape metrics from Snowflake
+  when: prometheus_server is defined
+  block:
+    - name: Allow Prometheus server to localhost
+      ansible.builtin.iptables:
+        chain: PREROUTING
+        table: nat
+        protocol: tcp
+        source: "{{ prometheus_server }}"
+        destination: "{{ ansible_facts.default_ipv4.address }}"
+        destination_port: 9999
+        jump: DNAT
+        to_destination: "127.0.0.1"
+    - name: Allow DNAT traffic to localhost
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: DNAT
+        source: "{{ prometheus_server }}"
+        destination: "127.0.0.1"
+        destination_port: 9999
+        jump: ACCEPT
+    - name: Allow routing to localhost
+      ansible.posix.sysctl:
+        name: net.ipv4.conf.all.route_localnet
+        value: "1"
+        sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
+        sysctl_set: true
+
+- name: Save new iptables v4 state
   community.general.iptables_state:
     ip_version: ipv4
     state: saved
     path: /etc/iptables/rules.v4
-  when: result.changed

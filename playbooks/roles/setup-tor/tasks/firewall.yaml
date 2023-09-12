@@ -7,11 +7,20 @@
     destination_port: "{{ obfs4_port }}"
     syn: match
     jump: ACCEPT
-  register: result
 
-- name: Save new iptables state
+- name: ACCEPT Prometheus server
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    source: "{{ prometheus_server }}"
+    destination: "{{ ansible_facts.default_ipv4.address }}"
+    destination_port: 9052
+    syn: match
+    jump: ACCEPT
+  when: prometheus_server is defined
+
+- name: Save new iptables v4 state
   community.general.iptables_state:
     ip_version: ipv4
     state: saved
     path: /etc/iptables/rules.v4
-  when: result.changed

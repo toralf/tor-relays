@@ -32,15 +32,16 @@
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
-  register: ipv6_state
-  when: ansible_facts.bios_vendor == 'Hetzner'
 
 - name: Use new ipv6 address in PREROUTING
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6
-      table: nat
       chain: PREROUTING
+      table: nat
+      destination: "! {{ _ipv6_new }}"
+      to_destination: "{{ _ipv6_new }}"
+      jump: DNAT
   block:
     - name: Restart network service
       ansible.builtin.systemd:
@@ -53,29 +54,19 @@
         gather_subset:
           - "!all"
           - "all_ipv6_addresses"
-    - name: Flush table nat
-      ansible.builtin.iptables:
-        flush: true
     - name: DNAT incoming TCP v6 except obfs4 port
       ansible.builtin.iptables:
         protocol: tcp
-        destination: "! {{ _ipv6_new }}"
-        jump: DNAT
-        to_destination: "{{ _ipv6_new }}"
         destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
-    - name: DNAT non-TCP v6 incoming v6
+    - name: DNAT incoming non-TCP v6
       ansible.builtin.iptables:
         protocol: "{{ item }}"
-        destination: "! {{ _ipv6_new }}"
-        jump: DNAT
-        to_destination: "{{ _ipv6_new }}"
       with_items:
         - ipv6-icmp
         - udp
         - udplite
-    - name: Save new ip6tables state
+    - name: Save new iptables v6 state
       community.general.iptables_state:
         ip_version: ipv6
         state: saved
         path: /etc/iptables/rules.v6
-  when: ipv6_state.changed
