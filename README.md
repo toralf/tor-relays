@@ -78,6 +78,8 @@ To scrape metrics by your Prometheus server you've to defined its ip address in 
 prometheus_server: "1.2.3.4"
 ```
 
+For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
+
 ## Links
 
 https://bridges.torproject.org/
