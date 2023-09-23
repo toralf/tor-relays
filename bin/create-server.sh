@@ -14,12 +14,12 @@ echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((1 * $(nproc)))
 
-ssh_key=${HCLOUD_SSH_KEY:-$(hcloud ssh-key list --output json | jq -cr '.[].name' | head -n 1)}
+ssh_key=${HCLOUD_SSH_KEY:-$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)}
 
 # c?x11 == 2 vCPU, prefer ARM (cax11) over AMD (cpx11)
-cax11_id=$(hcloud server-type list --output json | jq -cr '.[] | select(.name=="cax11") | .id')
-cax11_locations=$(hcloud datacenter list --output json | jq -cr '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name')
-all_locations=$(hcloud location list --output json | jq -cr '.[].name')
+cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
+cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name')
+all_locations=$(hcloud location list --output json | jq -r '.[].name')
 os_version=$(hcloud image list -t system --output columns=name | grep '^debian' | sort -u | tail -n 1)
 
 while read -r name; do
