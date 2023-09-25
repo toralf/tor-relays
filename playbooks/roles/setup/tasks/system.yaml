@@ -1,4 +1,10 @@
 ---
+- name: Create Ansible tmp dir for user root
+  ansible.builtin.file:
+    path: /root/.ansible/tmp
+    state: directory
+    mode: "0700"
+
 # https://www.debian.org/releases/bookworm/arm64/release-notes/ch-information.html#non-free-split
 - name: Configure apt hook for non-free firmware
   ansible.builtin.lineinfile:

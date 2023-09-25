@@ -12,12 +12,21 @@
     name: snowflake
     create_home: true
 
+- name: Create Ansible tmp dir for user snowflake
+  become: true
+  become_user: snowflake
+  ansible.builtin.file:
+    path: /home/snowflake/.ansible/tmp
+    state: directory
+    mode: "0700"
+
 - name: Clone or update snowflake repo
   become: true
   become_user: snowflake
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
+    version: "{{ snowflake_git_version }}"
   register: git_repo
 
 - name: Go get
@@ -35,8 +44,7 @@
   ansible.builtin.command: go build
   args:
     chdir: /home/snowflake/repo/proxy
-  register: go_build
-  when: git_repo.changed
+  when: go_get.changed
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
