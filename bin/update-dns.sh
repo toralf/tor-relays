@@ -47,7 +47,7 @@ trap Exit INT QUIT TERM EXIT
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ip4}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip4} "" ${name}
       if [[ ${include_ipv6} -eq 1 ]]; then
-        if ip6=$(ssh -n ${name} 'ip -6 a' | awk '/inet6 .* scope global/ { print $2 }' | cut -f 1 -d '/'); then
+        if ip6=$(ssh -4 -n ${name} 'ip -6 a' | awk '/inet6 .* scope global/ { print $2 }' | cut -f 1 -d '/'); then
           if [[ -n ${ip6} ]]; then
             printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ip6}
             printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip6} "" ${name}
