@@ -1,20 +1,20 @@
 ---
 # https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
-- name: Configure repository "snowflake"
-  ansible.builtin.apt_repository:
-    filename: "snowflake"
-    repo: "deb http://deb.debian.org/debian trixie main"
-    state: present
-
 - name: Install or update needed software
   ansible.builtin.apt:
-    state: present
     name:
       - git
 
+- name: Configure repository "snowflake"
+  ansible.builtin.apt_repository:
+    filename: "snowflake"
+    repo: "deb http://deb.debian.org/debian testing main"
+    state: present
+
 - name: Install or update needed software
   ansible.builtin.apt:
+    default_release: testing
     name:
       - golang
 
