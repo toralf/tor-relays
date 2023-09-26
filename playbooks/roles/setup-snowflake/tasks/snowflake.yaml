@@ -9,12 +9,13 @@
 - name: Configure repository "snowflake"
   ansible.builtin.apt_repository:
     filename: "snowflake"
-    repo: "deb http://deb.debian.org/debian testing main"
+    repo: "deb http://deb.debian.org/debian trixie main"
     state: present
+  when: not (ansible_facts.distribution_release is match ("trixie"))
 
 - name: Install or update needed software
   ansible.builtin.apt:
-    default_release: testing
+    default_release: trixie
     name:
       - golang
 
