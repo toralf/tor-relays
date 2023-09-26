@@ -1,19 +1,19 @@
 ---
 # https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
-- name: Install or update needed software
-  ansible.builtin.apt:
-    name:
-      - git
-
 - name: Configure repository "snowflake"
   ansible.builtin.apt_repository:
     filename: "snowflake"
     repo: "deb http://deb.debian.org/debian trixie main"
-    state: present
   when: not (ansible_facts.distribution_release is match ("trixie"))
 
 - name: Install or update needed software
+  ansible.builtin.apt:
+    update_cache: true
+    name:
+      - git
+
+- name: Install or update Go
   ansible.builtin.apt:
     default_release: trixie
     name:
@@ -22,7 +22,6 @@
 - name: Add the user
   ansible.builtin.user:
     name: snowflake
-    create_home: true
 
 - name: Create Ansible tmp dir for user snowflake
   become: true

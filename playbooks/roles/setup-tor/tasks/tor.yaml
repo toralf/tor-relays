@@ -43,6 +43,7 @@
 
 - name: Install or update Tor
   ansible.builtin.apt:
+    update_cache: true
     name:
       - tor
       - tor-geoipdb

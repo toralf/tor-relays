@@ -10,7 +10,6 @@
       cache_valid_time: 600
       default_release: "{{ ansible_facts.distribution_release }}"
       state: latest
-      update_cache: true
     ansible.builtin.copy:
       owner: root
       group: root
