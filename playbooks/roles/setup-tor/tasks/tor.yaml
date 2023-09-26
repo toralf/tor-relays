@@ -41,7 +41,7 @@
         - "tor@default.service"
         - "tor@.service"
 
-- name: Install Tor
+- name: Install or update Tor
   ansible.builtin.apt:
     name:
       - tor

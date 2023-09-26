@@ -18,7 +18,7 @@
     update_cache: true
     upgrade: dist
 
-- name: Install needed software
+- name: Install or update base software
   ansible.builtin.apt:
     name:
       - apt-transport-https
