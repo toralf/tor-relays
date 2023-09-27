@@ -12,10 +12,9 @@
     path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
     create: yes
 
-- name: Upgrade distribtion
+- name: Upgrade distribution
   ansible.builtin.apt:
     force_apt_get: true
-    update_cache: true
     upgrade: dist
 
 - name: Install or update base software

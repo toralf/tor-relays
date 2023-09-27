@@ -3,23 +3,21 @@
 
 - name: Configure repository "snowflake"
   ansible.builtin.apt_repository:
-    filename: "snowflake"
-    repo: "deb http://deb.debian.org/debian trixie main"
-  when: not (ansible_facts.distribution_release is match ("trixie"))
+    filename: "backports"
+    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-- name: Install or update needed software
+- name: Install or update base software
   ansible.builtin.apt:
-    update_cache: true
     name:
       - git
 
 - name: Install or update Go
   ansible.builtin.apt:
-    default_release: trixie
+    default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
       - golang
 
-- name: Add the user
+- name: Add the snowflake user
   ansible.builtin.user:
     name: snowflake
 
