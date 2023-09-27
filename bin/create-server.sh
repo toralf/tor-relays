@@ -16,7 +16,6 @@ jobs=$((1 * $(nproc)))
 
 ssh_key=${HCLOUD_SSH_KEY:-$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)}
 
-# c?x11 == 2 vCPU, prefer ARM (cax11) over AMD (cpx11)
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name')
 all_locations=$(hcloud location list --output json | jq -r '.[].name')
@@ -24,7 +23,8 @@ os_version=$(hcloud image list -t system --output columns=name | grep '^debian' 
 
 while read -r name; do
   loc=${HCLOUD_LOCATION:-$(shuf -n 1 <<<${all_locations})}
-  if [[ " ${cax11_locations} " =~ " ${loc} " ]]; then
+  # 2 vCPU, prefer ARM (cax11) over AMD (cpx11)
+  if [[ ${cax11_locations} =~ ${loc} ]]; then
     model="cax11"
   else
     model="cpx11"

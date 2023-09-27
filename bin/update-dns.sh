@@ -14,12 +14,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 hash -r unbound
 
-if [[ $# -eq 1 && $1 == "-6" ]]; then
-  include_ipv6=1
-else
-  include_ipv6=0
-fi
-
+[[ $# -ne 0 ]]
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
@@ -46,12 +41,10 @@ trap Exit INT QUIT TERM EXIT
     while read -r name ip4; do
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ip4}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip4} "" ${name}
-      if [[ ${include_ipv6} -eq 1 ]]; then
-        if ip6=$(ssh -4 -n ${name} 'ip -6 a' | awk '/inet6 .* scope global/ { print $2 }' | cut -f 1 -d '/'); then
-          if [[ -n ${ip6} ]]; then
-            printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ip6}
-            printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip6} "" ${name}
-          fi
+      if ip6=$(ssh -4 -n ${name} 'ip -6 a' | awk '/inet6 .* scope global/ { print $2 }' | cut -f 1 -d '/'); then
+        if [[ -n ${ip6} ]]; then
+          printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ip6}
+          printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip6} "" ${name}
         fi
       fi
     done
