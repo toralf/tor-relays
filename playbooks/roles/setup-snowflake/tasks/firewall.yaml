@@ -16,7 +16,6 @@
         table: nat
         protocol: tcp
         source: "{{ prometheus_server }}"
-        destination: "{{ ansible_facts.default_ipv4.address }}"
         destination_port: 9999
         jump: DNAT
         to_destination: "127.0.0.1"

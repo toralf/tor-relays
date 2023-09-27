@@ -33,6 +33,19 @@
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
 
+- name: Restart network service
+  ansible.builtin.systemd:
+    name: "networking"
+    state: restarted
+    daemon_reload: true
+    enabled: yes
+
+- name: Gather ipv6 again
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "all_ipv6_addresses"
+
 - name: Use new ipv6 address in PREROUTING
   module_defaults:
     ansible.builtin.iptables:
@@ -43,17 +56,11 @@
       to_destination: "{{ _ipv6_new }}"
       jump: DNAT
   block:
-    - name: Restart network service
-      ansible.builtin.systemd:
-        name: "networking"
-        state: restarted
-        daemon_reload: true
-        enabled: yes
-    - name: Gather ipv6 again
-      ansible.builtin.setup:
-        gather_subset:
-          - "!all"
-          - "all_ipv6_addresses"
+    - name: Flush IPv6 nat table
+      ansible.builtin.iptables:
+        table: nat
+        chain: PREROUTING
+        flush: yes
     - name: DNAT incoming TCP v6 except obfs4 port
       ansible.builtin.iptables:
         protocol: tcp

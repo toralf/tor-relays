@@ -3,7 +3,6 @@
   ansible.builtin.iptables:
     chain: INPUT
     protocol: tcp
-    destination: "{{ ansible_facts.default_ipv4.address }}"
     destination_port: "{{ obfs4_port }}"
     syn: match
     jump: ACCEPT
@@ -13,7 +12,6 @@
     chain: INPUT
     protocol: tcp
     source: "{{ prometheus_server }}"
-    destination: "{{ ansible_facts.default_ipv4.address }}"
     destination_port: 9052
     syn: match
     jump: ACCEPT
