@@ -9,7 +9,6 @@
       autoremove: true
       cache_valid_time: 600
       state: latest
-      update_cache: true
     ansible.builtin.copy:
       owner: root
       group: root

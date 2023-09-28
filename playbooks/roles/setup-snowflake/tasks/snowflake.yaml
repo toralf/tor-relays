@@ -6,14 +6,11 @@
     filename: "backports"
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-- name: Install or update base software
+- name: Install or update software
   ansible.builtin.apt:
+    update_cache: true
     name:
       - git
-
-- name: Install or update Go-1.21
-  ansible.builtin.apt:
-    name:
       - golang-1.21
 
 - name: Add the snowflake user
