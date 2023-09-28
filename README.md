@@ -1,10 +1,10 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy public and private Tor bridges or Snowflake
+# A stack to deploy public and private Tor bridges or Snowflake proxies
 
 ## Quick start
 
-Setup the new Tor public bridge _my_bridge_
+Setup a new Tor public bridge, i.e.: _my_bridge_
 
 1. clone this repo
 
@@ -13,7 +13,7 @@ Setup the new Tor public bridge _my_bridge_
    cd tor-relays
    ```
 
-1. create the file `secrets/local.yaml`, eg.:
+1. create the file `secrets/local.yaml`, e.g.:
 
    ```yaml
    ---
@@ -35,7 +35,7 @@ Setup the new Tor public bridge _my_bridge_
    ```
 
    For a private bridge just replace `public` with `private`, similar for `snowflake`.
-   The additional port is optionally and would be opened by the firewall, i.e. for a _Quassel_ server.
+   The additional port is optionally and will be opened by the firewall too, i.e. it is the port for a _Quassel_ server.
 
 1. deploy it
 
@@ -43,17 +43,17 @@ Setup the new Tor public bridge _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake bridge put its hostname into the `snowflake` group, step 2 can be skiped.
+For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
 
 ## Details
 
 The systems are deployed via an _Ansible_ role.
-The scripts under [bin](./bin) to create the VPS works for the Hetzner cloud only.
-Same applies to few tasks of [network.yaml](./playbooks/roles/setup/tasks/network.yaml).
-That task configures a randomly choosen ipv6 address for the reason documented [here](./playbooks/roles/setup/tasks/network.yaml#L2).
-The secret `seed_local` is needed to seed the RNG.
+The scripts under [bin](./bin) to create a VPS works for Hetzner cloud system.
+Same applies to one tasks in [network.yaml](./playbooks/roles/setup/tasks/network.yaml)
+which configures a randomly choosen ipv6 address for a reason documented [here](./playbooks/roles/setup/tasks/network.yaml#L2).
+The secret `seed_local` is needed to seed the RNG for that.
 [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
-configured for each Hetzner project in this way:
+configured for each Hetzner project (== _context_) in this way:
 
 ```config
 include: "/etc/unbound/hetzner-<project>.conf"
@@ -72,11 +72,13 @@ Get its state
 ./site-info.yaml --limit my_bridge
 ```
 
-To scrape metrics by your Prometheus server you've to defined its ip address in the secrets:
+To scrape metrics by a Prometheus server you've to defined its ip address in the secrets:
 
 ```yaml
 prometheus_server: "1.2.3.4"
 ```
+
+Its inbound requests will be routed to the localhost metrics port via DNAT.
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 
