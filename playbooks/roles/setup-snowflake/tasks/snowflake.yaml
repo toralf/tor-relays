@@ -12,6 +12,7 @@
     name:
       - git
       - golang-1.21
+  register: toolchain
 
 - name: Add the snowflake user
   ansible.builtin.user:
@@ -32,7 +33,7 @@
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
     version: "{{ snowflake_git_version }}"
-  register: git_repo
+  register: gitrepo
 
 - name: Go get
   become: true
@@ -41,7 +42,7 @@
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_get
-  when: git_repo.changed
+  when: toolchain.changed or gitrepo.changed
 
 - name: Go build
   become: true
