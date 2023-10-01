@@ -3,7 +3,7 @@
   ansible.builtin.uri:
     url: "https://onionoo.torproject.org/details?search={{ _hashed_fingerprint }}"
     return_content: yes
-    status_code: [200, 404]
+    status_code: [200, 404, 503]
   register: result
 
 - name: File results for onionoo
@@ -18,3 +18,4 @@
       blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
     regex: "^{{ ansible_facts.hostname }} "
+  when: result.status == 200
