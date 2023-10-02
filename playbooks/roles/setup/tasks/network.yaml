@@ -46,7 +46,7 @@
       - "!all"
       - "all_ipv6_addresses"
 
-- name: Prereoute all incoming ipv6 to the new IPv6 address
+- name: Prereoute incoming ipv6 to the new IPv6 address if needed
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6
