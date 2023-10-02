@@ -46,7 +46,7 @@
       - "!all"
       - "all_ipv6_addresses"
 
-- name: Use new ipv6 address in PREROUTING
+- name: Prereoute all incoming ipv6 to the new IPv6 address
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6
@@ -72,8 +72,9 @@
         - ipv6-icmp
         - udp
         - udplite
-    - name: Save new iptables v6 state
-      community.general.iptables_state:
-        ip_version: ipv6
-        state: saved
-        path: /etc/iptables/rules.v6
+
+- name: Save new iptables v6 state
+  community.general.iptables_state:
+    ip_version: ipv6
+    state: saved
+    path: /etc/iptables/rules.v6
