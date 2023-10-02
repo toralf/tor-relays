@@ -2,18 +2,20 @@
 # goal:     enlarge the cost of a network scanner for an IPv6 scan of an open obfs4 port
 # solution: - randomize the global ipv6 address and
 #           - re-route all incoming ipv6 traffic to it except if the TCPv6 destination port is the obfs4 port
-- name: Gather current ipv6
+- name: Gather ipv6 facts
   ansible.builtin.setup:
     gather_subset:
       - "!all"
       - "all_ipv6_addresses"
 
-- name: Set ipv6 prefix
+- name: Derive ipv6 prefix from current ipv6 address
   ansible.builtin.set_fact:
-    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+    _ipv6_prefix: "{{ (_ipv6_old | split(':'))[:4] | join(':') }}"
+  vars:
+    _ipv6_old: "{{ ansible_facts.eth0.ipv6 | selectattr('scope', 'eq', 'global') | map(attribute='address') | first }}"
   failed_when: _ipv6_prefix is match("fe80:")
 
-- name: Compile global scope ipv6 address
+- name: Compile new ipv6 address
   ansible.builtin.set_fact:
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   vars:
@@ -28,7 +30,7 @@
     dest: /etc/cloud/cloud.cfg.d/
   when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Ensure global scope ipv6 is configured to the new desired one
+- name: Ensure network interfaces are configured
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
@@ -40,13 +42,13 @@
     daemon_reload: true
     enabled: yes
 
-- name: Gather ipv6 again
+- name: Gather ipv6 facts again
   ansible.builtin.setup:
     gather_subset:
       - "!all"
       - "all_ipv6_addresses"
 
-- name: Prereoute incoming ipv6 to the new IPv6 address if needed
+- name: Prereoute incoming ipv6 traffic to the new ipv6 address if needed
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6
@@ -56,10 +58,9 @@
       to_destination: "{{ _ipv6_new }}"
       jump: DNAT
   block:
-    - name: Flush IPv6 nat table
+    - name: Flush ipv6 nat table
       ansible.builtin.iptables:
         table: nat
-        chain: PREROUTING
         flush: yes
     - name: DNAT incoming TCP v6 except obfs4 port
       ansible.builtin.iptables:
@@ -73,7 +74,7 @@
         - udp
         - udplite
 
-- name: Save new iptables v6 state
+- name: Save new iptables ipv6 state
   community.general.iptables_state:
     ip_version: ipv6
     state: saved
