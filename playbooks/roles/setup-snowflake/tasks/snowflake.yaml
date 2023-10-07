@@ -1,7 +1,7 @@
 ---
 # https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
-- name: Configure repository "snowflake"
+- name: Configure repository "backports"
   ansible.builtin.apt_repository:
     filename: "backports"
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
@@ -11,7 +11,7 @@
     update_cache: true
     name:
       - git
-      - golang-1.21
+      - "{{ go_package }}"
   register: toolchain
 
 - name: Add the snowflake user
@@ -38,7 +38,7 @@
 - name: Go get
   become: true
   become_user: snowflake
-  ansible.builtin.command: /usr/lib/go-1.21/bin/go get
+  ansible.builtin.command: "{{ go_path }} get"
   args:
     chdir: /home/snowflake/repo/proxy
   register: go_get
@@ -47,7 +47,7 @@
 - name: Go build
   become: true
   become_user: snowflake
-  ansible.builtin.command: /usr/lib/go-1.21/bin/go build
+  ansible.builtin.command: "{{ go_path }} build"
   args:
     chdir: /home/snowflake/repo/proxy
   when: go_get.changed
