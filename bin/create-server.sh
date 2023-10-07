@@ -31,17 +31,13 @@ while read -r name; do
   fi
   echo "hcloud server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${model}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -r -P ${jobs} -I '{}' -t bash -c "{}"
+  xargs -r -P ${jobs} -L 1 -t bash -c
 
 echo -e "\n add to DNS ..."
 $(dirname $0)/update-dns.sh
 
-while :; do
-  echo -e "\n wait 10 sec before getting ssh host key(s) ..."
+while ! $(dirname $0)/add-to-known_hosts.sh $*; do
+  echo -e "\n wait 10 sec before getting ssh host key(s) again ..."
   sleep 10
-  if $(dirname $0)/add-to-known_hosts.sh $*; then
-    break
-  fi
+  echo
 done
-
-echo

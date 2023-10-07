@@ -12,7 +12,6 @@
     name:
       - git
       - "{{ go_package }}"
-  register: toolchain
 
 - name: Add the snowflake user
   ansible.builtin.user:
@@ -33,28 +32,36 @@
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
     version: "{{ snowflake_git_version }}"
-  register: gitrepo
+    depth: 1
+    force: true
+
+- name: Apply patches
+  become: true
+  become_user: snowflake
+  ansible.builtin.shell: |
+    cd {{ snowflake_repo_dir }}
+    curl -q -s -o - {{ item }} | patch -p1
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ snowflake_patches }}"
 
 - name: Go get
   become: true
   become_user: snowflake
   ansible.builtin.command: "{{ go_path }} get"
   args:
-    chdir: /home/snowflake/repo/proxy
-  register: go_get
-  when: toolchain.changed or gitrepo.changed
+    chdir: "{{ snowflake_repo_dir }}/proxy"
 
 - name: Go build
   become: true
   become_user: snowflake
   ansible.builtin.command: "{{ go_path }} build"
   args:
-    chdir: /home/snowflake/repo/proxy
-  when: go_get.changed
+    chdir: "{{ snowflake_repo_dir }}/proxy"
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
-    src: /home/snowflake/repo/proxy/proxy
+    src: "{{ snowflake_repo_dir }}/proxy/proxy"
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
