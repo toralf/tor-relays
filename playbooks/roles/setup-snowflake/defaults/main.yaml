@@ -3,6 +3,12 @@ snowflake_repo_dir: /home/snowflake/repo
 snowflake_git_version: "HEAD"
 snowflake_patches:
   - https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/commit/ad79bfa13777ed820e6e9976bc8df413c5abe676.diff
+snowflake_patched_systems:
+  - buddelflink3
+  - drehrumbum3
+  - hoppel3
+  - igel3
+  - moppi3
 
 go_package: "golang-1.21"
 go_path: "/usr/lib/go-1.21/bin/go"

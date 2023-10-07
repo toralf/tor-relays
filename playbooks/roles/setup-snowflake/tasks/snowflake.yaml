@@ -40,10 +40,11 @@
   become_user: snowflake
   ansible.builtin.shell: |
     cd {{ snowflake_repo_dir }}
-    curl -q -s -o - {{ item }} | patch -p1
+    curl -s {{ item }} | patch -p 1
   loop_control:
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
+  when: ansible_facts.hostname in snowflake_patched_systems
 
 - name: Go get
   become: true
