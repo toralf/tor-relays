@@ -43,8 +43,6 @@ Setup a new Tor public bridge, i.e.: _my_bridge_
    ./site-setup.yaml --limit my_bridge
    ```
 
-For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
-
 ## Details
 
 The systems are deployed via an _Ansible_ role.
@@ -72,14 +70,14 @@ Get its state
 ./site-info.yaml --limit my_bridge
 ```
 
-To scrape metrics by a Prometheus server you've to defined its ip address in the secrets:
+For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
+The file `secrets/local.yaml` is the right place e.g. for a Prometheus ip address:
 
 ```yaml
 prometheus_server: "1.2.3.4"
 ```
 
 Its inbound requests will be routed to the localhost metrics port via DNAT.
-
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 
 ## Links

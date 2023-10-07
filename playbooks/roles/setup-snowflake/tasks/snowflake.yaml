@@ -1,11 +1,6 @@
 ---
 # https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
-- name: Configure repository "backports"
-  ansible.builtin.apt_repository:
-    filename: "backports"
-    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
-
 - name: Install or update software
   ansible.builtin.apt:
     update_cache: true
@@ -31,7 +26,7 @@
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
     dest: /home/snowflake/repo
-    version: "{{ snowflake_git_version }}"
+    version: "{{ git_version }}"
     depth: 1
     force: true
 
@@ -39,30 +34,30 @@
   become: true
   become_user: snowflake
   ansible.builtin.shell: |
-    cd {{ snowflake_repo_dir }}
+    cd {{ repo_dir }}
     curl -s {{ item }} | patch -p 1
   loop_control:
     label: "{{ item }}"
-  loop: "{{ snowflake_patches }}"
-  when: ansible_facts.hostname in snowflake_patched_systems
+  loop: "{{ patches }}"
+  when: ansible_facts.hostname in patched_systems
 
 - name: Go get
   become: true
   become_user: snowflake
   ansible.builtin.command: "{{ go_path }} get"
   args:
-    chdir: "{{ snowflake_repo_dir }}/proxy"
+    chdir: "{{ repo_dir }}/proxy"
 
 - name: Go build
   become: true
   become_user: snowflake
   ansible.builtin.command: "{{ go_path }} build"
   args:
-    chdir: "{{ snowflake_repo_dir }}/proxy"
+    chdir: "{{ repo_dir }}/proxy"
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
-    src: "{{ snowflake_repo_dir }}/proxy/proxy"
+    src: "{{ repo_dir }}/proxy/proxy"
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
@@ -79,7 +74,7 @@
   ansible.builtin.copy:
     src: snowflake-proxy.service
     dest: /etc/systemd/system/snowflake-proxy.service
-  register: snowflake_service
+  register: service
 
 - name: Restart service snowflake-proxy
   ansible.builtin.service:
@@ -87,4 +82,4 @@
     state: restarted
     daemon_reload: true
     enabled: yes
-  when: proxy.changed or snowflake_service.changed
+  when: proxy.changed or service.changed
