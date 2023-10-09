@@ -7,9 +7,6 @@ auto eth0
 iface eth0 inet dhcp
 
 iface eth0 inet6 static
-    address {{ _ipv6_new }}/64 dev eth0 nodad home
+    address {{ _ipv6_new }}/64 dev eth0
     dns-nameservers 2a01:4ff:ff00::add:1 2a01:4ff:ff00::add:2
     gateway fe80::1
-
-#iface eth0 inet6 static
-#    address {{ _ipv6_prefix }}::1/64 dev eth0 nodad
