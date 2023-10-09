@@ -5,5 +5,6 @@ go_path: "go"
 repo_dir: /home/snowflake/repo
 git_version: "HEAD"
 
+patch_base:
 patches:
 patched_systems:
