@@ -1,5 +1,5 @@
 ---
-# https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
+# derived from https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
 - name: Install or update software
   ansible.builtin.apt:
