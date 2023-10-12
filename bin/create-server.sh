@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
+# e.g. ./create-server.sh $(seq -w 0 9 | xargs -n 1 printf "foo%i ")
+
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -29,15 +31,18 @@ while read -r name; do
   else
     model="cpx11"
   fi
-  echo "hcloud server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${model}"
+  echo "server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${model}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -r -P ${jobs} -L 1 -t bash -c
+  xargs -r -P ${jobs} -L 1 -t hcloud
 
-echo -e "\n add to DNS ..."
+echo -e "\n add IPv6 to DNS ..."
 $(dirname $0)/update-dns.sh
 
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
-  echo -e "\n wait 10 sec before getting ssh host key(s) again ..."
-  sleep 10
+  echo -e "\n wait 5 sec before retry ..."
+  sleep 5
   echo
 done
+
+echo -e "\n add IPv6 to DNS ..."
+$(dirname $0)/update-dns.sh -6
