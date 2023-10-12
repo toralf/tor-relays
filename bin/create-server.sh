@@ -35,7 +35,7 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*) |
   xargs -r -P ${jobs} -L 1 -t hcloud
 
-echo -e "\n add IPv6 to DNS ..."
+echo -e "\n add IPv4 to DNS ..."
 $(dirname $0)/update-dns.sh
 
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
@@ -44,5 +44,5 @@ while ! $(dirname $0)/add-to-known_hosts.sh $*; do
   echo
 done
 
-echo -e "\n add IPv6 to DNS ..."
+echo -e "\n add IPv4 + IPv6 to DNS ..."
 $(dirname $0)/update-dns.sh -6
