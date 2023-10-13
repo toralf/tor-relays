@@ -23,7 +23,7 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*)
 
 echo -e "\n delete server(s) ..."
-xargs -r -n 1 -P ${jobs} hcloud server delete <<<$*
+xargs -r -P ${jobs} -n 1 hcloud server delete <<<$*
 
 echo -e "\n remove from DNS ..."
 $(dirname $0)/update-dns.sh

@@ -33,7 +33,7 @@ while read -r name; do
   fi
   echo "server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${model}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -r -P ${jobs} -L 1 -t hcloud
+  xargs -r -P ${jobs} -L 1 hcloud
 
 echo -e "\n add IPv4 to DNS ..."
 $(dirname $0)/update-dns.sh
