@@ -25,5 +25,7 @@ done < <(xargs -n 1 <<<$*)
 echo -e "\n delete server(s) ..."
 xargs -r -P ${jobs} -n 1 hcloud server delete <<<$*
 
-echo -e "\n remove from DNS ..."
+echo -e "\n update DNS IPv4 ..."
 $(dirname $0)/update-dns.sh
+echo -e "\n update DNS IPv6 ..."
+$(dirname $0)/update-dns.sh -6
