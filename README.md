@@ -71,6 +71,7 @@ Get its state
 ```
 
 For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
+
 The file `secrets/local.yaml` is the right place e.g. for a Prometheus ip address:
 
 ```yaml
@@ -78,7 +79,7 @@ prometheus_server: "1.2.3.4"
 ```
 
 Its inbound requests will be routed to the localhost metrics port via DNAT.
-For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
+For scraping metrics by Prometheus and Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 
 ## Links
 
