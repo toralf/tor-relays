@@ -4,7 +4,7 @@
 
 ## Quick start
 
-Setup a new Tor public bridge, i.e.: _my_bridge_
+To setup a new Tor public bridge, i.e.: _my_bridge_, do
 
 1. clone this repo
 
@@ -71,7 +71,6 @@ Get its state
 ```
 
 For a snowflake bridge put its hostname into the `snowflake` group, secrets aren't needed.
-
 The file `secrets/local.yaml` is the right place e.g. for a Prometheus ip address:
 
 ```yaml
@@ -80,6 +79,12 @@ prometheus_server: "1.2.3.4"
 
 Its inbound requests will be routed to the localhost metrics port via DNAT.
 For scraping metrics by Prometheus and Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
+The Prometheus _targets_ config value e.g. for Snowflake can be created by:
+
+```bash
+ hcloud server list |
+ grep -v NAME | awk '{ print $2 }' | sort | xargs | sed -e 's,^,[",' -e 's,$,:9999"],' -e 's, ,:9999"\, ",g'
+```
 
 ## Links
 
