@@ -3,7 +3,7 @@ torrc_public:
   - name: "PublishServerDescriptor"
     value: "bridge"
   - name: "Nickname"
-    value: "{{ (nickname_prefix + ansible_facts.hostname)[:19] }}"
+    value: "{{ nickname_prefix + ansible_facts.hostname }}"
   - name: "ContactInfo"
     value: "{{ contact_info }}"
 
