@@ -68,6 +68,7 @@ trap Exit INT QUIT TERM EXIT
 ) | sudo tee -a ${hconf}.new >/dev/null
 
 if ! sudo diff ${hconf} ${hconf}.new; then
+  echo -e "\n reloading DNS resolver" >&2
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 else

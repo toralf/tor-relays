@@ -14,18 +14,17 @@ echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((1 * $(nproc)))
 
-echo -e "\n delete known ssh key(s), .ansible_facts and line(s) in tmp files ... "
+echo -e "\n delete ssh key(s), ansible facts, DNS entries and ansible generated tmp files ... "
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/${project}_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/${project}_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
+  sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}-ipv{4,6}.conf
 done < <(xargs -n 1 <<<$*)
 
-echo -e "\n delete server(s) ..."
+echo -e "\n delete server(s) at Hetzner ..."
 xargs -r -P ${jobs} -n 1 hcloud server delete <<<$*
 
-echo -e "\n update DNS IPv4 ..."
-$(dirname $0)/update-dns.sh
-echo -e "\n update DNS IPv6 ..."
-$(dirname $0)/update-dns.sh -6
+echo -e "\n reloading DNS resolver" >&2
+sudo rc-service unbound reload
