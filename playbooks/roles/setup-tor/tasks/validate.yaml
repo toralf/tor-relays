@@ -4,4 +4,3 @@
     quiet: true
     that:
       - "(nickname_prefix + ansible_facts.hostname) | length <= 19"
-  when: '"private" in group_names or "public" in group_names'
