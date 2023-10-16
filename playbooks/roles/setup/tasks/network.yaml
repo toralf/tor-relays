@@ -1,7 +1,7 @@
 ---
-# goal:     enlarge the cost of a network scanner for an IPv6 scan of an open obfs4 port
-# solution: - randomize the global ipv6 address and
-#           - re-route all incoming ipv6 traffic to it except if the TCPv6 destination port is the obfs4 port
+# goal:     enlarge the cost of a network scanner for an IPv6 scan for an obfs4 port
+# solution: the default <prefix>::1 IPv6 address into a randomly choosen one and
+#           re-route all incoming ipv6 traffic to it except if the destination port is the obfs4 port
 - name: Gather ipv6 facts
   ansible.builtin.setup:
     gather_subset:
@@ -15,7 +15,7 @@
     _ipv6_old: "{{ ansible_facts.eth0.ipv6 | selectattr('scope', 'eq', 'global') | map(attribute='address') | first }}"
   failed_when: _ipv6_prefix is match("fe80:")
 
-- name: Compile new ipv6 address
+- name: Compile a pseudo-randomly choosen ipv6 address
   ansible.builtin.set_fact:
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   vars:
@@ -24,13 +24,13 @@
     _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
     _d: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
 
-- name: Ensure that Hetzner network configurator is deactivated
+- name: Deactivate the Hetzner network configurator
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
   when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Ensure network interfaces are configured
+- name: Configure network interfaces
   ansible.builtin.template:
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init

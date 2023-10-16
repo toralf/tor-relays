@@ -1,12 +1,4 @@
 ---
-- name: Ansible defaults
-  ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "all_ipv4_addresses"
-      - "all_ipv6_addresses"
-    gather_timeout: 20
-
 - name: Get fingerprint
   no_log: true
   changed_when: false

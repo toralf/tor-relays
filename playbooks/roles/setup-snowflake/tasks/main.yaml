@@ -1,7 +1,4 @@
 ---
-- name: Gather all facts
-  ansible.builtin.setup:
-
 - name: Main
   module_defaults:
     ansible.builtin.apt:

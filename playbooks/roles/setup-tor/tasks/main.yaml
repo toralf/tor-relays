@@ -1,7 +1,4 @@
 ---
-- name: Gather all facts
-  ansible.builtin.setup:
-
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
