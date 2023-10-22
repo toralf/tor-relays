@@ -32,6 +32,11 @@
   tags:
     - log-warn
 
+- name: Log err
+  ansible.builtin.import_tasks: log-err.yaml
+  tags:
+    - log-err
+
 - name: Onionoo
   ansible.builtin.import_tasks: onionoo.yaml
   tags:

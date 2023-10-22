@@ -1,0 +1,12 @@
+---
+- name: Check error log
+  changed_when: false
+  ansible.builtin.shell: >-
+    grep -h -v -e 'opening new log file.' {{ log_err }}.1 {{ log_err }} 2>/dev/null
+  register: result
+  failed_when: result.stderr_lines | length > 0
+
+- name: Results of error log check
+  ansible.builtin.debug:
+    msg: "{{ result.stdout.split('\n') }}"
+  when: result.stdout_lines | length > 0
