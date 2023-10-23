@@ -1,5 +1,5 @@
 ---
-# derived from https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
+# inspired by https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
 - name: Install or update software
   ansible.builtin.apt:
@@ -31,6 +31,7 @@
     version: "{{ _version }}"
     depth: 1
     force: true
+  register: __repo
 
 - name: Apply patches
   become: true
@@ -42,6 +43,7 @@
     label: "{{ item }}"
   loop: "{{ patches }}"
   when: ansible_facts.hostname in patched_systems
+  register: __patch
 
 - name: Go get
   become: true
@@ -49,6 +51,7 @@
   ansible.builtin.command: "{{ go_path }} get"
   args:
     chdir: "{{ repo_dir }}/proxy"
+  when: __repo.changed or __patch.changed
 
 - name: Go build
   become: true
@@ -63,7 +66,7 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: proxy
+  register: __proxy
 
 - name: Set sysctl value
   ansible.posix.sysctl:
@@ -76,7 +79,7 @@
   ansible.builtin.copy:
     src: snowflake-proxy.service
     dest: /etc/systemd/system/snowflake-proxy.service
-  register: service
+  register: __service
 
 - name: Restart service snowflake-proxy
   ansible.builtin.service:
@@ -84,4 +87,4 @@
     state: restarted
     daemon_reload: true
     enabled: yes
-  when: proxy.changed or service.changed
+  when: __proxy.changed or __service.changed
