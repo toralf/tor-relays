@@ -18,12 +18,7 @@ hash -r unbound
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-ipv="ipv4"
-if [[ ${1-} == '-6' ]]; then
-  ipv="ipv6"
-fi
-
-hconf=/etc/unbound/hetzner-${project}-${ipv}.conf
+hconf=/etc/unbound/hetzner-${project}.conf
 if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   echo "unbound is not configured to use ${hconf}" >&2
   exit 1
@@ -43,27 +38,14 @@ trap Exit INT QUIT TERM EXIT
   hcloud server list --output columns=name,ipv4,ipv6 |
     grep -v '^NAME' |
     sort -n |
-    while read -r name ip4 ip6; do
-      if [[ ${ipv} == "ipv4" ]]; then
-        printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ip4}
-        printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip4} "" ${name}
-      elif [[ ${ipv} == "ipv6" ]]; then
-        # get the current IPv6 address
-        if ip6=$(
-          set -o pipefail
-          ssh -4 -n ${name} 'ip -6 a' | awk '/inet6 .* scope global/ { print $2 }' | cut -f 1 -d '/' -s
-        ); then
-          prefix=$(sed -e 's,:/64,,' <<<$ip6)
-          if [[ -n ${ip6} && ${ip6} =~ ${prefix} ]]; then
-            printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ip6}
-            printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ip6} "" ${name}
-          else
-            echo " something wrong: '${name}' '${ip6}' '${prefix}'" >&2
-          fi
-        else
-          echo " something wrong: '${name}' '${ip6}'" >&2
-        fi
-      fi
+    while read -r name ipv4 ipv6; do
+      # IPv4
+      printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
+      printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
+      # IPv6
+      ipv6_address=$(sed -e 's,/64,1,' <<<$ipv6)
+      printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6_address}
+      printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6_address} "" ${name}
     done
 ) | sudo tee -a ${hconf}.new >/dev/null
 

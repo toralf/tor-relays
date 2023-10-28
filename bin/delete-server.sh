@@ -20,7 +20,7 @@ while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/${project}_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/${project}_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
-  sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}-ipv{4,6}.conf
+  sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
 echo -e "\n delete server(s) at Hetzner ..."

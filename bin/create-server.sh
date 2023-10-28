@@ -27,7 +27,7 @@ locations=${HCLOUD_LOCATION:-${all_locations}}
 
 while read -r name; do
   loc=$(xargs -n 1 <<<${locations} | shuf -n 1)
-  if [[ " ${cax11_locations} " =~ ${loc} ]]; then
+  if [[ ${cax11_locations} =~ ${loc} ]]; then
     type="cax11"
   else
     type="cpx11"
@@ -36,15 +36,11 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*) |
   xargs -r -P ${jobs} -L 1 hcloud
 
-echo -e "\n update DNS IPv4 ..."
+echo -e "\n update DNS ..."
 $(dirname $0)/update-dns.sh
 
 echo -e "\n adding to ~/.ssh/known_hosts ..."
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
-  echo -en "\n wait few sec before retry ..."
   sleep 10
-  echo
+  echo -en "\n wait few sec before retry ..."
 done
-
-echo -e "\n update DNS IPv6 ..."
-$(dirname $0)/update-dns.sh -6
