@@ -6,7 +6,7 @@
     update_cache: true
     name:
       - git
-      - "{{ go_package }}"
+      - "{{ snowflake_go_package }}"
 
 - name: Add the snowflake user
   ansible.builtin.user:
@@ -20,46 +20,48 @@
     group: snowflake
     mode: "0700"
 
-- name: Run as user snowflake
-  block:
-    become: true
-    become_user: snowflake
+- name: Clone or update repo
+  become: true
+  become_user: snowflake
+  vars:
+    __version: "{{ (ansible_facts.hostname in snowflake_patched_systems) | ternary(snowflake_patch_base, snowflake_git_version) }}"
+  ansible.builtin.git:
+    repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+    dest: "{{ snowflake_repo_dir }}"
+    version: "{{ __version }}"
+    force: true
+  register: __repo
 
-    - name: Clone or update repo
-      vars:
-        _version: "{{ (ansible_facts.hostname in patched_systems and patch_base | length > 0) | ternary(patch_base, git_version) }}"
-      ansible.builtin.git:
-        repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake
-        dest: /home/snowflake/repo
-        version: "{{ _version }}"
-        depth: 1
-        force: true
-      register: __repo
+- name: Apply snowflake_patches
+  become: true
+  become_user: snowflake
+  ansible.builtin.shell: |
+    cd {{ snowflake_repo_dir }}
+    curl -s {{ item }} | patch -p 1
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ snowflake_patches }}"
+  when: ansible_facts.hostname in snowflake_patched_systems
+  register: __patch
 
-    - name: Apply patches
-      ansible.builtin.shell: |
-        cd {{ repo_dir }}
-        curl -s {{ item }} | patch -p 1
-      loop_control:
-        label: "{{ item }}"
-      loop: "{{ patches }}"
-      when: ansible_facts.hostname in patched_systems
-      register: __patch
+- name: Go get
+  become: true
+  become_user: snowflake
+  ansible.builtin.command: "{{ snowflake_go_path }} get"
+  args:
+    chdir: "{{ snowflake_repo_dir }}/proxy"
+  when: __repo.changed or __patch.changed
 
-    - name: Go get
-      ansible.builtin.command: "{{ go_path }} get"
-      args:
-        chdir: "{{ repo_dir }}/proxy"
-      when: __repo.changed or __patch.changed
-
-    - name: Go build
-      ansible.builtin.command: "{{ go_path }} build"
-      args:
-        chdir: "{{ repo_dir }}/proxy"
+- name: Go build
+  become: true
+  become_user: snowflake
+  ansible.builtin.command: "{{ snowflake_go_path }} build"
+  args:
+    chdir: "{{ snowflake_repo_dir }}/proxy"
 
 - name: Copy binary file to /usr/bin/
   ansible.builtin.copy:
-    src: "{{ repo_dir }}/proxy/proxy"
+    src: "{{ snowflake_repo_dir }}/proxy/proxy"
     dest: /usr/bin/
     mode: a+x
     remote_src: yes

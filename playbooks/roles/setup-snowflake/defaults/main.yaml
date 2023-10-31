@@ -1,10 +1,9 @@
 ---
-go_package: "golang"
-go_path: "go"
+snowflake_go_package: "golang"
+snowflake_go_path: "go"
 
-repo_dir: "/home/snowflake/repo"
-git_version: "HEAD"
+snowflake_git_version: "HEAD"
 
-patch_base: ""
-patches: []
-patched_systems: []
+snowflake_patch_base: ""
+snowflake_patches: []
+snowflake_patched_systems: []

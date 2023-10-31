@@ -14,15 +14,15 @@
   check_mode: false
   ansible.builtin.command: git describe --always # noqa: command-instead-of-module
   args:
-    chdir: /home/snowflake/repo
-  register: _git_version
-  failed_when: _git_version.stdout_lines | length != 1 or _git_version.stderr_lines | length > 0
+    chdir: "{{ snowflake_repo_dir }}"
+  register: __snowflake_version
+  failed_when: __snowflake_version.stdout_lines | length != 1 or __snowflake_version.stderr_lines | length > 0
 
 - name: File results for version
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ _proxy_version.stdout_lines[0] }} {{ _git_version.stdout_lines[0] }}"
+    line: "{{ ansible_facts.hostname }} {{ _proxy_version.stdout_lines[0] }} {{ __snowflake_version.stdout_lines[0] }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_version"
     regex: "^{{ ansible_facts.hostname }} "
