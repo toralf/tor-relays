@@ -1,8 +1,8 @@
 ---
-- name: Clients
-  ansible.builtin.import_tasks: clients.yaml
+- name: Connections
+  ansible.builtin.import_tasks: connections.yaml
   tags:
-    - clients
+    - connections
 
 - name: Log proxy
   ansible.builtin.import_tasks: log-proxy.yaml

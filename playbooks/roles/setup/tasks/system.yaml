@@ -96,7 +96,6 @@
 
 - name: Get current running kernel version
   changed_when: false
-  check_mode: false
   ansible.builtin.shell: |
     uname -v | grep -Eo '(Debian .*) ' | awk '{ print $2 }'
     uname -r | cut -f 3 -d '-'

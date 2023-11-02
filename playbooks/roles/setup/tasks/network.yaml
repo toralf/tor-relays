@@ -1,7 +1,7 @@
 ---
-# goal:     enlarge the cost of a network scanner for an IPv6 scan for an obfs4 port
-# solution: the default <prefix>::1 IPv6 address into a randomly choosen one and
-#           re-route all incoming ipv6 traffic to it except if the destination port is the obfs4 port
+# goal:     enlarge the cost of a network scanner for an IPv6 scan of the obfs4 port
+# solution: set the default <prefix>::1 IPv6 address to arbitrarily choosen address
+#           and re-route incoming ipv6 traffic to it, exception: the destination port is the obfs4 port
 - name: Gather ipv6 facts
   ansible.builtin.setup:
     gather_subset:
