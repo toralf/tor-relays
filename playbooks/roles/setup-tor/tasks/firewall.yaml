@@ -1,5 +1,5 @@
 ---
-- name: ACCEPT incoming TCP syn packet to obfs4 port
+- name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:
     chain: INPUT
     protocol: tcp
@@ -7,12 +7,12 @@
     syn: match
     jump: ACCEPT
 
-- name: ACCEPT Prometheus server
+- name: ACCEPT TCP from Prometheus server to metrics port
   ansible.builtin.iptables:
     chain: INPUT
     protocol: tcp
     source: "{{ prometheus_server }}"
-    destination_port: 9052
+    destination_port: "{{ tor_metrics_port }}"
     syn: match
     jump: ACCEPT
   when: prometheus_server is defined

@@ -13,12 +13,13 @@ ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 
 {% if prometheus_server is defined %}
-MetricsPort {{ ansible_facts.default_ipv4.address}}:9052
+MetricsPort {{ ansible_facts.default_ipv4.address}}:{{ tor_metrics_port }}
 MetricsPortPolicy accept {{ prometheus_server }}
+MetricsPortPolicy accept {{ ansible_facts.default_ipv4.address }}
 {% else %}
-MetricsPort 9052
-{% endif %}
+MetricsPort 127.0.0.1:{{ tor_metrics_port }}
 MetricsPortPolicy accept 127.0.0.1
+{% endif %}
 
 {% for item in torrc_config %}
 {{ item.name }} {{ item.value }}
