@@ -85,8 +85,7 @@ For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tre
 The Prometheus _targets_ config value e.g. for Snowflake can be created by:
 
 ```bash
- hcloud server list |
- grep -v NAME | awk '{ print $2 }' | sort | xargs | sed -e 's,^,[",' -e 's,$,:9999"],' -e 's, ,:9999"\, ",g'
+port=9999; hcloud server list | awk '! /NAME/ { print $2 }' | sort | xargs | sed -e 's,^,[",' -e 's,$,:'$port'"],' -e 's, ,:'$port'"\, ",g'
 ```
 
 ## Links
