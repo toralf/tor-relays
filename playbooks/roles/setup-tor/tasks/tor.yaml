@@ -27,19 +27,13 @@
     - name: Create dirs to configure service to use privileged port
       ansible.builtin.file:
         state: directory
-        path: "/etc/systemd/system/{{ item }}.d"
+        path: "/etc/systemd/system/tor@default.service.d"
         recurse: yes
         mode: "0755"
-      with_items:
-        - "tor@default.service"
-        - "tor@.service"
     - name: Configure service to use privileged port
       ansible.builtin.copy:
         src: override_tor_service.conf
-        dest: "/etc/systemd/system/{{ item }}.d/override.conf"
-      with_items:
-        - "tor@default.service"
-        - "tor@.service"
+        dest: "/etc/systemd/system/tor@default.service.d/override.conf"
 
 - name: Install or update Tor
   ansible.builtin.apt:
