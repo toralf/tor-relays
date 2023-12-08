@@ -41,6 +41,7 @@ $(dirname $0)/update-dns.sh
 
 echo -e "\n adding to ~/.ssh/known_hosts ..."
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
-  sleep 10
   echo -en "\n wait few sec before retry ..."
+  sleep 10
+  echo
 done
