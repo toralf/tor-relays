@@ -16,23 +16,22 @@ echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((1 * $(nproc)))
 
-# prefer ARM (cax11) over AMD (cpx11), if available in the choosen location
+# choose both ARM (cax11) and AMD (cpx11) systems
+# 3 of 5 location provide currently ARM, prefer a 50:50 distribution of AMD and ARM:   3/5 x 5/6 = 1/2
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
 all_locations=$(hcloud location list --output json | jq -r '.[].name')
-os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1)
-
-ssh_key=${HCLOUD_SSH_KEY:-$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)}
-locations=${HCLOUD_LOCATION:-${all_locations}}
+os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
+ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 while read -r name; do
-  loc=$(xargs -n 1 <<<${locations} | shuf -n 1)
-  if [[ ${cax11_locations} =~ ${loc} ]]; then
+  loc=$(xargs -n 1 <<<${all_locations} | shuf -n 1) # dice a location
+  if [[ ${cax11_locations} =~ ${loc} && $((RANDOM % 6)) -lt 5 ]]; then
     type="cax11"
   else
     type="cpx11"
   fi
-  echo "server create --image ${os_version} --ssh-key ${ssh_key} --poll-interval 2s --name ${name} --location ${loc} --type ${type}"
+  echo "server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --poll-interval 2s --name ${name} --location ${HCLOUD_LOCATION:-$loc} --type ${HCLOUD_TYPE:-$type}"
 done < <(xargs -n 1 <<<$*) |
   xargs -r -P ${jobs} -L 1 hcloud
 
