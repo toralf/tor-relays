@@ -13,6 +13,4 @@ torrc_generic:
 
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
 
-additional_ports: []
-
 prometheus_server:

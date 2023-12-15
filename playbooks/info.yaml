@@ -13,7 +13,7 @@
 
 - name: Info Tor
   hosts:
-    - public
     - private
+    - public
   roles:
     - role: info-tor

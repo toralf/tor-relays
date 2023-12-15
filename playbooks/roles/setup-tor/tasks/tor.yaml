@@ -14,26 +14,27 @@
 - name: Obfs4 port
   when: obfs4_port < 1024
   block:
+    # the hooks have to be removed before obfs4proxy itself
     - name: Configure apt hook for obfs4proxy
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
         path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
         create: yes
-    - name: Configure dpkg hook for obfs4proxy
+    - name: Configure dpkg hook for obfs4proxy to use privileged port
       ansible.builtin.lineinfile:
         line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
         path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
         create: yes
-    - name: Create dirs to configure service to use privileged port
+    - name: Create dir to configure Tor to use privileged port
       ansible.builtin.file:
         state: directory
-        path: "/etc/systemd/system/tor@default.service.d"
+        path: /etc/systemd/system/tor@default.service.d
         recurse: yes
         mode: "0755"
-    - name: Configure service to use privileged port
+    - name: Configure Tor to use privileged port
       ansible.builtin.copy:
         src: override_tor_service.conf
-        dest: "/etc/systemd/system/tor@default.service.d/override.conf"
+        dest: /etc/systemd/system/tor@default.service.d/override.conf
 
 - name: Install or update Tor
   ansible.builtin.apt:
