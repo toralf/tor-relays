@@ -1,5 +1,5 @@
 ---
-- name: Firewall script
+- name: Create initial firewall script
   ansible.builtin.template:
     src: firewall.sh.j2
     dest: /root/firewall.sh
@@ -7,6 +7,16 @@
 
 - name: Start firewall
   ansible.builtin.shell: /root/firewall.sh start
+
+- name: ACCEPT TCP from Prometheus server to metrics port
+  ansible.builtin.iptables:
+    chain: INPUT
+    protocol: tcp
+    source: "{{ prometheus_server }}"
+    destination_port: "{{ metrics_port }}"
+    syn: match
+    jump: ACCEPT
+  when: (prometheus_server is defined) and (metrics_port is defined) and (metrics_port > 0) and (metrics_port < 2**16)
 
 - name: Save new iptables v4 state
   community.general.iptables_state:
