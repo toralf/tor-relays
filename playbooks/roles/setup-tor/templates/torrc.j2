@@ -13,11 +13,11 @@ ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 
 {% if prometheus_server is defined %}
-MetricsPort {{ ansible_facts.default_ipv4.address}}:{{ tor_metrics_port }}
+MetricsPort {{ ansible_facts.default_ipv4.address}}:{{ metrics_port }}
 MetricsPortPolicy accept {{ prometheus_server }}
 MetricsPortPolicy accept {{ ansible_facts.default_ipv4.address }}
 {% else %}
-MetricsPort 127.0.0.1:{{ tor_metrics_port }}
+MetricsPort 127.0.0.1:{{ metrics_port }}
 MetricsPortPolicy accept 127.0.0.1
 {% endif %}
 

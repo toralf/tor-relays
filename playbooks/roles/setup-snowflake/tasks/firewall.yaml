@@ -16,7 +16,7 @@
         table: nat
         protocol: tcp
         source: "{{ prometheus_server }}"
-        destination_port: "{{ snowflake_metrics_port }}"
+        destination_port: "{{ metrics_port }}"
         jump: DNAT
         to_destination: "127.0.0.1"
     - name: Allow DNAT traffic to localhost
@@ -26,7 +26,7 @@
         ctstate: DNAT
         source: "{{ prometheus_server }}"
         destination: "127.0.0.1"
-        destination_port: "{{ snowflake_metrics_port }}"
+        destination_port: "{{ metrics_port }}"
         jump: ACCEPT
     - name: Allow routing to localhost
       ansible.posix.sysctl:

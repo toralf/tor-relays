@@ -13,4 +13,8 @@ torrc_generic:
 
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
 
+# if configured then the firewall allow incoming connections to the metrics_port from this ip
 prometheus_server:
+
+# choose a non-default per host if needed
+metrics_port: 0

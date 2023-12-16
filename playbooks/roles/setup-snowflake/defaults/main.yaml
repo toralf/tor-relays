@@ -7,5 +7,3 @@ snowflake_go_path: "go"
 snowflake_patch_base: ""
 snowflake_patches: []
 snowflake_patched_systems: []
-
-snowflake_metrics_port: 9999
