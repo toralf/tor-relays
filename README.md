@@ -40,10 +40,11 @@ To setup a new Tor public bridge, i.e.: _my_bridge_,
    ./site-setup.yaml --limit my_bridge
    ```
 
-1. get its state by
+1. get its states by
 
    ```bash
    ./site-info.yaml --limit my_bridge
+   grep my_bridge ~/tmp/public_*
    ```
 
 Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
