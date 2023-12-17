@@ -1,6 +1,6 @@
 ---
-metrics_port: 9999
-
 snowflake_go_package: "golang-1.21"
 snowflake_go_path: "/usr/lib/go-1.21/bin/go"
 snowflake_repo_dir: "/home/snowflake/snowflake"
+
+metrics_port: 9999
