@@ -4,7 +4,8 @@
 
 ## Quick start
 
-To setup a new Tor public bridge, i.e.: _my_bridge_, do
+The deployment is made by an _Ansible_.
+To setup a new Tor public bridge, i.e.: _my_bridge_,
 
 1. clone this repo
 
@@ -13,29 +14,25 @@ To setup a new Tor public bridge, i.e.: _my_bridge_, do
    cd tor-relays
    ```
 
-1. create the file `secrets/local.yaml`, e.g.:
+1. create (once) the file `secrets/local.yaml`, e.g.:
 
    ```yaml
    ---
-   # Tor bridges
-   contact_info: "me@my.net"
-   nickname_prefix: "my_preferred_prefix"
-   obfs4_port: 4711
-
-   # Common
    seed_local: "a-really-random-string"
    ```
 
-1. add the hostname _my_bridge_ to the Ansible host group `public`, e.g. into `inventory/systems.yaml`:
+1. configure the hostname _my_bridge_, e.g. in `inventory/systems.yaml`:
 
    ```yaml
    ---
    public:
+     vars:
+       contact_info: "me@my.net"
+       nickname_prefix: "my_preferred_prefix"
+       obfs4_port: 4711
      hosts:
        my_bridge:
    ```
-
-   For a private bridge replace `public` with `private`, similar applies for `snowflake`.
 
 1. deploy it
 
@@ -43,61 +40,36 @@ To setup a new Tor public bridge, i.e.: _my_bridge_, do
    ./site-setup.yaml --limit my_bridge
    ```
 
+1. get its state by
+
+   ```bash
+   ./site-info.yaml --limit my_bridge
+   ```
+
+Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
+
 ## Details
 
-The systems are deployed via an _Ansible_ role.
-The task [network.yaml](./playbooks/roles/setup/tasks/network.yaml)
-configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
-The secret `seed_local` is needed to seed the PRNG for that.
-
-The scripts under [bin](./bin) to create a VPS works only for Hetzner.
-To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
-
-```bash
-hcloud context use my_project
-./bin/create-server.sh my_bridge
-```
-
-Get its state
-
-```bash
-./site-info.yaml --limit my_bridge
-```
-
-[update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
-configured for each Hetzner project (_hcloud_ uses the term _context_ for a project) in this way:
-
-```config
-include: "/etc/unbound/hetzner-<project>.conf"
-```
-
-The file `secrets/local.yaml` would be a good place for the ip address of a Prometheus server, if used:
+By setting
 
 ```yaml
-prometheus_server: "1.2.3.4"
+prometheus_node_exporter: true
 ```
 
-If this is and `metrics_port` is defined, e.g.:
-
-```yaml
-public:
-  vars:
-    metrics_port: 9052
-  hosts:
-```
-
-then both the service and the network filter is configured
-to allow scraping metrics.
-For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
-The Prometheus config value _targets_ can be created i.e. for metrics port 9999 by:
+for a host and defining the ip address of a Prometheus server
+(e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+the _Prometheus node exporter_ is installed
+and configured to deliver metrics at port 9100 of the ipv4 address of the host.
+The Prometheus config value _targets_ can be created (i.e. for metrics port 9999) e.g. by:
 
 ```bash
 ./site-info.yaml --tags metrics-port
 grep -h ":9999" ~/tmp/*_metrics_port | sort | xargs | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
 ```
 
+For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 To deploy additional software, i.e. _quassel_,
-define something like this in your inventory:
+define something like this in the inventory:
 
 ```yaml
 my_group:
@@ -109,18 +81,32 @@ my_group:
         - "quassel-core"
 ```
 
-By setting
+Ansible role ([network.yaml](./playbooks/roles/setup/tasks/network.yaml))
+configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
+For that the secret _seed_local_ is needed to seed the PRNG.
 
-```yaml
-prometheus_node_exporter: true
+## Misc
+
+The scripts under [bin](./bin) work for the Hetzner Cloud.
+To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
+
+```bash
+hcloud context use my_project
+./bin/create-server.sh my_bridge
 ```
 
-for a host the node exporter is installed and configured to deliver metrics at the ipv4 address at port 9100.
+The script [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
+configured for the appropriate Hetzner project (_hcloud_ uses the term _"context"_ for a project) like:
+
+```config
+include: "/etc/unbound/hetzner-<project>.conf"
+```
 
 ## Links
 
-https://bridges.torproject.org/
-
-https://snowflake.torproject.org/
-
-https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
+- https://bridges.torproject.org
+- https://snowflake.torproject.org
+- https://www.ansible.com
+- https://github.com/prometheus/node_exporter
+- https://grafana.com
+- https://github.com/NLnetLabs/unbound
