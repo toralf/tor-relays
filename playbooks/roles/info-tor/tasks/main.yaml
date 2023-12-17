@@ -6,7 +6,7 @@
     - onionoo
     - wellknown
 
-- name: Bridge Line
+- name: Bridge line
   ansible.builtin.import_tasks: bridgeline.yaml
   tags:
     - never

@@ -1,5 +1,5 @@
 ---
-- name: Get Service Status
+- name: Get service status
   ansible.builtin.systemd:
     name: snowflake-proxy
   register: snowflake_status
