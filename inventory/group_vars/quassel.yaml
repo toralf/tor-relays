@@ -3,3 +3,5 @@ additional_ports:
   - "4242"
 additional_software:
   - "quassel-core"
+
+prometheus_node_exporter: true
