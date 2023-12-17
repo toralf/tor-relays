@@ -17,7 +17,7 @@
 - name: Install Prometheus node exporter
   ansible.builtin.apt:
     name:
-      - "prometheus-node-exporter"
+      - prometheus-node-exporter
 
 - name: Configure Prometheus node exporter to listen to (filtered) ipv4 address only
   ansible.builtin.lineinfile:
@@ -28,7 +28,7 @@
 
 - name: Restart Prometheus node exporter
   ansible.builtin.systemd:
-    name: "prometheus-node-exporter.service"
+    name: "prometheus-node-exporter"
     state: restarted
     daemon_reload: true
     enabled: yes

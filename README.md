@@ -77,28 +77,45 @@ The file `secrets/local.yaml` would be a good place for the ip address of a Prom
 prometheus_server: "1.2.3.4"
 ```
 
-If set then the network is configured to route incoming TCP inbound packets of that address
-to the metrics port of the service at _localhost_.
-For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
-The Prometheus _targets_ config value e.g. for Snowflake can be created by:
+If this is and `metrics_port` is defined, e.g.:
 
-```bash
-port=9999; hcloud server list | awk '! /NAME/ { print $2 }' | sort | xargs | sed -e 's,^,[",' -e 's,$,:'$port'"],' -e 's, ,:'$port'"\, ",g'
+```yaml
+public:
+  vars:
+    metrics_port: 9052
+  hosts:
 ```
 
-To deploy additional software, i.e. _quassel_ + _prometheus node exporter_ onto _elster3_,
+then both the service and the network filter is configured
+to allow scraping metrics.
+For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
+The Prometheus config value _targets_ can be created i.e. for metrics port 9999 by:
+
+```bash
+./site-info.yaml --tags metrics-port
+grep -h ":9999" ~/tmp/*_metrics_port | sort | xargs | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+```
+
+To deploy additional software, i.e. _quassel_,
 define something like this in your inventory:
 
 ```yaml
-quassel:
+my_group:
   hosts:
-    elster3:
+    my_host:
       additional_ports:
         - "4242"
       additional_software:
         - "quassel-core"
-      prometheus_node_exporter: true
 ```
+
+By setting
+
+```yaml
+prometheus_node_exporter: true
+```
+
+for a host the node exporter is installed and configured to deliver metrics at the ipv4 address at port 9100.
 
 ## Links
 

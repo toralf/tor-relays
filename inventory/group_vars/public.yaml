@@ -8,5 +8,3 @@ torrc_public:
     value: "{{ contact_info }}"
 
 torrc_config: "{{ torrc_generic + torrc_public }}"
-
-metrics_port: 9052
