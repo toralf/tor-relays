@@ -86,22 +86,18 @@ The Prometheus _targets_ config value e.g. for Snowflake can be created by:
 port=9999; hcloud server list | awk '! /NAME/ { print $2 }' | sort | xargs | sed -e 's,^,[",' -e 's,$,:'$port'"],' -e 's, ,:'$port'"\, ",g'
 ```
 
-To deploy additional software, create an own host group, i.e. _quassel_
+To deploy additional software, i.e. _quassel_ + _prometheus node exporter_ onto _elster3_,
+define something like this in your inventory:
 
 ```yaml
 quassel:
   hosts:
-    elster:
-```
-
-and the appropriate inventory `quassel.yaml`:
-
-```yaml
----
-additional_ports:
-  - "4242"
-additional_software:
-  - "quassel-core"
+    elster3:
+      additional_ports:
+        - "4242"
+      additional_software:
+        - "quassel-core"
+      prometheus_node_exporter: true
 ```
 
 ## Links
