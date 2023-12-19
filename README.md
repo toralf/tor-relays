@@ -4,7 +4,6 @@
 
 ## Quick start
 
-The deployment is made by an _Ansible_.
 To setup a new Tor public bridge at an existing Debian system with the hostname _my_bridge_, do
 
 1. clone this repo
@@ -47,9 +46,12 @@ To setup a new Tor public bridge at an existing Debian system with the hostname 
    grep my_bridge ~/tmp/public_*
    ```
 
+Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
+
+The deployment is made by _Ansible_. 
+
 ## Details
 
-Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
 Add something like `metrics_port: 1234` to expose Tor metrics.
 The firewall is configured to allow the Prometheus server only to scrape metrics from _ipv4 address:metrics_port_.
 By setting
