@@ -48,7 +48,7 @@ To setup a new Tor public bridge at an existing Debian system with the hostname 
 
 Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
 
-The deployment is made by _Ansible_. 
+The deployment is made by _Ansible_.
 
 ## Details
 
@@ -85,13 +85,13 @@ my_group:
         - "quassel-core"
 ```
 
-Ansible role ([network.yaml](./playbooks/roles/setup/tasks/network.yaml))
+The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
 configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
 For that the secret _seed_local_ is needed to seed the PRNG.
 
 ## Misc
 
-The scripts under [bin](./bin) work for the Hetzner Cloud.
+The scripts under [./bin](./bin) work for the Hetzner Cloud.
 To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
 
 ```bash
@@ -99,7 +99,7 @@ hcloud context use my_project
 ./bin/create-server.sh my_bridge
 ```
 
-The script [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
+The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
 configured for the appropriate Hetzner project (_hcloud_ uses the term _"context"_ for a project) like:
 
 ```config
