@@ -1,12 +1,17 @@
 ---
 # inspired by https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
 
-- name: Install or update software
+- name: Install or update Git
   ansible.builtin.apt:
     update_cache: true
     name:
       - git
-      - "{{ snowflake_go_package }}"
+
+- name: Install or update Go
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}-backports"
+    name:
+      - golang-go
 
 - name: Add the snowflake user
   ansible.builtin.user:
@@ -47,7 +52,7 @@
 - name: Go get
   become: true
   become_user: snowflake
-  ansible.builtin.command: "{{ snowflake_go_path }} get"
+  ansible.builtin.command: "go get"
   args:
     chdir: "{{ snowflake_repo_dir }}/proxy"
   when: __repo.changed or __patch.changed
@@ -55,11 +60,11 @@
 - name: Go build
   become: true
   become_user: snowflake
-  ansible.builtin.command: "{{ snowflake_go_path }} build"
+  ansible.builtin.command: "go build"
   args:
     chdir: "{{ snowflake_repo_dir }}/proxy"
 
-- name: Copy binary file to /usr/bin/
+- name: Copy binary file
   ansible.builtin.copy:
     src: "{{ snowflake_repo_dir }}/proxy/proxy"
     dest: /usr/bin/

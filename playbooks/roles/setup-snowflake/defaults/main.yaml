@@ -1,9 +1,5 @@
 ---
 snowflake_git_version: "HEAD"
-
-snowflake_go_package: "golang"
-snowflake_go_path: "go"
-
 snowflake_patch_base: ""
 snowflake_patches: []
 snowflake_patched_systems: []
