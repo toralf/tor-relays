@@ -12,7 +12,7 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/obfs4proxy
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 
-{% if metrics_port is defined %}
+{% if (metrics_port is defined) and (metrics_port > 0) and (metrics_port < 2**16) %}
 {% if prometheus_server is defined %}
 MetricsPort {{ ansible_facts.default_ipv4.address}}:{{ metrics_port }}
 MetricsPortPolicy accept {{ prometheus_server }}
