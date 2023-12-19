@@ -53,7 +53,8 @@ The deployment is made by _Ansible_.
 ## Details
 
 Add something like `metrics_port: 1234` to expose Tor metrics.
-The firewall is configured to allow the Prometheus server only to scrape metrics from _ipv4 address:metrics_port_.
+A configured Prometheus server (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+is allowed to scrape metrics from _ipv4 address:metrics_port_.
 By setting
 
 ```yaml
@@ -61,8 +62,7 @@ prometheus_node_exporter: true
 ```
 
 for a system the _Prometheus node exporter_ is installed and configured to deliver metrics at _ipv4-address:9100/metrics_.
-If a Prometheus server ip defined (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-then that ip is allowed to scrape metrics.
+If a Prometheus server ip defined then that ip is allowed to scrape those metrics.
 The value _targets_ (used in the Prometheus server config file) can be created - i.e. for metrics port 9999 - by:
 
 ```bash
