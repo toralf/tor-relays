@@ -44,4 +44,3 @@
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
-      when: (prometheus_server is defined) and (prometheus_node_exporter is true)

@@ -1,34 +1,37 @@
 ---
-- name: ACCEPT TCP from Prometheus server to metrics port
-  ansible.builtin.iptables:
-    chain: INPUT
-    protocol: tcp
-    source: "{{ prometheus_server }}"
-    destination_port: 9100
-    syn: match
-    jump: ACCEPT
-
-- name: Save new iptables v4 state
-  community.general.iptables_state:
-    ip_version: ipv4
-    state: saved
-    path: /etc/iptables/rules.v4
+- name: Allow Prometheus to reach metrics port
+  when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4)
+  block:
+    - name: ACCEPT TCP from Prometheus server to metrics port
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        source: "{{ prometheus_server }}"
+        destination_port: 9100
+        syn: match
+        jump: ACCEPT
+    - name: Save new iptables v4 state
+      community.general.iptables_state:
+        ip_version: ipv4
+        state: saved
+        path: /etc/iptables/rules.v4
 
 - name: Install Prometheus node exporter
-  ansible.builtin.apt:
-    name:
-      - prometheus-node-exporter
-
-- name: Configure Prometheus node exporter to listen to (filtered) ipv4 address only
-  ansible.builtin.lineinfile:
-    create: no
-    line: 'ARGS="--web.listen-address={{ ansible_facts.default_ipv4.address }}:9100"'
-    path: /etc/default/prometheus-node-exporter
-    regex: "^ARGS="
-
-- name: Restart Prometheus node exporter
-  ansible.builtin.systemd:
-    name: "prometheus-node-exporter"
-    state: restarted
-    daemon_reload: true
-    enabled: yes
+  when: prometheus_node_exporter is true
+  block:
+    - name: Install Prometheus node exporter
+      ansible.builtin.apt:
+        name:
+          - prometheus-node-exporter
+    - name: Configure Prometheus node exporter to listen to (filtered) ipv4 address only
+      ansible.builtin.lineinfile:
+        create: no
+        line: 'ARGS="--web.listen-address={{ ansible_facts.default_ipv4.address }}:9100"'
+        path: /etc/default/prometheus-node-exporter
+        regex: "^ARGS="
+    - name: Restart Prometheus node exporter
+      ansible.builtin.systemd:
+        name: "prometheus-node-exporter"
+        state: restarted
+        daemon_reload: true
+        enabled: yes
