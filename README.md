@@ -60,11 +60,10 @@ By setting
 prometheus_node_exporter: true
 ```
 
-for a system and having a Prometheus server ip defined (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-a _Prometheus node exporter_ is installed
-and configured to deliver metrics at _ipv4-address:9100/metrics_.
-
-The value _targets_ used in the Prometheus server config file can be created (i.e. for metrics port 9999) by:
+for a system the _Prometheus node exporter_ is installed and configured to deliver metrics at _ipv4-address:9100/metrics_.
+If a Prometheus server ip defined (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+then that ip is allowed to scrape metrics.
+The value _targets_ (used in the Prometheus server config file) can be created - i.e. for metrics port 9999 - by:
 
 ```bash
 ./site-info.yaml --tags metrics-port
