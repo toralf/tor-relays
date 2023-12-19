@@ -5,7 +5,7 @@
 ## Quick start
 
 The deployment is made by an _Ansible_.
-To setup a new Tor public bridge, i.e.: _my_bridge_,
+To setup a new Tor public bridge at an existing Debian system with the hostname _my_bridge_, do
 
 1. clone this repo
 
@@ -21,7 +21,7 @@ To setup a new Tor public bridge, i.e.: _my_bridge_,
    seed_local: "a-really-random-string"
    ```
 
-1. configure the hostname _my_bridge_, e.g. in `inventory/systems.yaml`:
+1. configure the system, e.g. in `inventory/systems.yaml`:
 
    ```yaml
    ---
@@ -47,9 +47,12 @@ To setup a new Tor public bridge, i.e.: _my_bridge_,
    grep my_bridge ~/tmp/public_*
    ```
 
+## Details
+
 Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
 
-## Details
+Add something like `metrics_port: 1234` to expose Tor metrics.
+The firewall is configured to allow the Prometheus server only to scrape metrics from _ipv4 address:metrics_port_.
 
 By setting
 
@@ -57,15 +60,15 @@ By setting
 prometheus_node_exporter: true
 ```
 
-for a host and defining the ip address of a Prometheus server
+and heving the ip address of a Prometheus server defined
 (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-the _Prometheus node exporter_ is installed
-and configured to deliver metrics at port 9100 of the ipv4 address of the host.
-The Prometheus config value _targets_ can be created (i.e. for metrics port 9999) e.g. by:
+then the _Prometheus node exporter_ is installed
+and configured to deliver metrics at _ipv4 address:9100/metrics_.
+The value _targets_ used in the Prometheus server config file can be created (i.e. for metrics port 9999) by:
 
 ```bash
 ./site-info.yaml --tags metrics-port
-grep -h ":9999" ~/tmp/*_metrics_port | sort | xargs | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+grep -h ":9999" ~/tmp/*_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
 ```
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
