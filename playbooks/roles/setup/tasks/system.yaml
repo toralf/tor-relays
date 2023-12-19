@@ -19,7 +19,6 @@
 
 - name: Upgrade distribution
   ansible.builtin.apt:
-    update_cache: true
     upgrade: dist
 
 - name: Install or update base software

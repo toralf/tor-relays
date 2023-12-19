@@ -3,7 +3,6 @@
 
 - name: Install or update Git
   ansible.builtin.apt:
-    update_cache: true
     name:
       - git
 
