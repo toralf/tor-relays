@@ -10,7 +10,7 @@
 - name: Enable Prometheus to scrape metrics from Snowflake
   when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4) and (metrics_port is defined) and (metrics_port > 0) and (metrics_port < 2**16)
   block:
-    - name: Allow Prometheus server to localhost
+    - name: Forward traffic of Prometheus server to localhost
       ansible.builtin.iptables:
         chain: PREROUTING
         table: nat
@@ -19,7 +19,7 @@
         destination_port: "{{ metrics_port }}"
         jump: DNAT
         to_destination: "127.0.0.1"
-    - name: Allow DNAT traffic to localhost
+    - name: Allow DNAT traffic from Prometheuserver to localhost
       ansible.builtin.iptables:
         chain: INPUT
         protocol: tcp
@@ -28,7 +28,7 @@
         destination: "127.0.0.1"
         destination_port: "{{ metrics_port }}"
         jump: ACCEPT
-    - name: Allow routing to localhost
+    - name: Allow (pre-)routing to localhost
       ansible.posix.sysctl:
         name: net.ipv4.conf.all.route_localnet
         value: "1"

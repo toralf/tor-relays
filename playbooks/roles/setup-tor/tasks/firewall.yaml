@@ -8,7 +8,7 @@
     syn: match
     jump: ACCEPT
 
-- name: ACCEPT TCP from Prometheus server to metrics port
+- name: ACCEPT TCP from Prometheus server to Tor metrics port
   when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4) and (metrics_port is defined) and (metrics_port > 0) and (metrics_port < 2**16)
   ansible.builtin.iptables:
     chain: INPUT
