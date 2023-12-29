@@ -53,26 +53,34 @@ The deployment is made by _Ansible_.
 ## Details
 
 Add something like `metrics_port: 1234` to expose Tor metrics.
-A configured Prometheus server (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-is allowed to scrape metrics from _ipv4 address:metrics_port_.
-By setting
+better is to choose a pseudo-random value, e.g.:
+
+```yaml
+snowflake:
+  vars:
+    metrics_port: "{{ range(10000,32000) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+```
+
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+then the appropriate iptables rules are created allowed to scrape metrics from `ipv4 address:metrics_port`.
+The value _targets_ (used in the Prometheus server config file) can be created by:
+
+```bash
+./site-info.yaml --tags metrics-port
+cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+```
+
+A _Prometheus node exporter_ is installed and configured to deliver metrics at `ipv4 address:metrics_port`
+by setting for a system:
 
 ```yaml
 prometheus_node_exporter: true
 ```
 
-for a system the _Prometheus node exporter_ is installed and configured to deliver metrics at _ipv4-address:9100/metrics_.
-If a Prometheus server ip defined then that ip is allowed to scrape those metrics.
-The value _targets_ (used in the Prometheus server config file) can be created - i.e. for metrics port 9999 - by:
-
-```bash
-./site-info.yaml --tags metrics-port
-grep -h ":9999" ~/tmp/*_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
-```
+If a Prometheus server ip defined then that ip is configured to allow scrapeing metrics from the node exporter port 9100.
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
-To deploy additional software, i.e. _quassel_,
-define something like this in the inventory:
+To deploy additional software, i.e. _quassel_, define something like this in the inventory:
 
 ```yaml
 my_group:
