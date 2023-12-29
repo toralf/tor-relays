@@ -1,5 +1,5 @@
 ---
-- name: File results for Metrics port
+- name: File results for Tor metrics port
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
@@ -7,3 +7,14 @@
     line: "{{ ansible_facts.hostname}}:{{ metrics_port }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_metrics_port"
     regex: "^{{ ansible_facts.hostname }}:"
+  when: (metrics_port is defined) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
+
+- name: File results for Prometheus node exporter metrics port
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ ansible_facts.hostname }}:9100"
+    path: "{{ tmp_dir }}/node_metrics_port"
+    regex: "^{{ ansible_facts.hostname }}:"
+  when: (prometheus_node_exporter is defined) and (prometheus_node_exporter is true)

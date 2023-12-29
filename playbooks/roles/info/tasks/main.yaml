@@ -24,4 +24,3 @@
   ansible.builtin.import_tasks: metrics-port.yaml
   tags:
     - metrics-port
-  when: metrics_port is defined
