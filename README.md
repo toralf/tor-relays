@@ -70,7 +70,8 @@ For that the secret _seed_local_ is needed to seed the PRNG.
 
 ## Metrics
 
-Configure `metrics_port` to expose Tor metrics, e.g. by choosing a pseudo-random value:
+Configure `metrics_port` to expose Tor metrics at `ipv4 address:metrics_port`.
+To avoid values like `9052` or `9999` choose a pseudo-random value like:
 
 ```yaml
 snowflake:
