@@ -8,15 +8,33 @@
     syn: match
     jump: ACCEPT
 
-- name: ACCEPT TCP from Prometheus server to Tor metrics port
+- name: Enable Prometheus to scrape metrics
   when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4) and (metrics_port is defined) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
-  ansible.builtin.iptables:
-    chain: INPUT
-    protocol: tcp
-    source: "{{ prometheus_server }}"
-    destination_port: "{{ metrics_port }}"
-    syn: match
-    jump: ACCEPT
+  block:
+    - name: Preroute traffic of Prometheus server
+      ansible.builtin.iptables:
+        chain: PREROUTING
+        table: nat
+        protocol: tcp
+        source: "{{ prometheus_server }}"
+        destination_port: "{{ metrics_port }}"
+        jump: DNAT
+        to_destination: "127.0.0.1:9052"
+    - name: Allow DNAT traffic from Prometheus server
+      ansible.builtin.iptables:
+        chain: INPUT
+        protocol: tcp
+        ctstate: DNAT
+        source: "{{ prometheus_server }}"
+        destination: "127.0.0.1"
+        destination_port: 9052
+        jump: ACCEPT
+    - name: Allow (pre-)routing to localhost
+      ansible.posix.sysctl:
+        name: net.ipv4.conf.all.route_localnet
+        value: "1"
+        sysctl_file: /etc/sysctl.d/21tor-relay.conf
+        sysctl_set: true
 
 - name: Save new iptables v4 state
   community.general.iptables_state:

@@ -50,36 +50,8 @@ Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for
 
 The deployment is made by _Ansible_.
 
-## Details
+## Additional software
 
-Add something like `metrics_port: 1234` to expose Tor metrics.
-better is to choose a pseudo-random value, e.g.:
-
-```yaml
-snowflake:
-  vars:
-    metrics_port: "{{ range(10000,32000) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
-```
-
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-then the appropriate iptables rules are created allowed to scrape metrics from `ipv4 address:metrics_port`.
-The value _targets_ (used in the Prometheus server config file) can be created by:
-
-```bash
-./site-info.yaml --tags metrics-port
-cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
-```
-
-A _Prometheus node exporter_ is installed and configured to deliver metrics at `ipv4 address:metrics_port`
-by setting for a system:
-
-```yaml
-prometheus_node_exporter: true
-```
-
-If a Prometheus server ip defined then that ip is configured to allow scrapeing metrics from the node exporter port 9100.
-
-For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 To deploy additional software, i.e. _quassel_, define something like this in the inventory:
 
 ```yaml
@@ -95,6 +67,35 @@ my_group:
 The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
 configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
 For that the secret _seed_local_ is needed to seed the PRNG.
+
+## Metrics
+
+Configure `metrics_port` to expose Tor metrics, e.g. by choosing a pseudo-random value:
+
+```yaml
+snowflake:
+  vars:
+    metrics_port: "{{ range(10000,32000) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+```
+
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+then its ip address is configured to allow scraping metrics.
+The value _targets_ (used in the Prometheus server config file) can be created by:
+
+```bash
+./site-info.yaml --tags metrics-port
+cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+```
+
+A _Prometheus node exporter_ is installed and configured to deliver metrics at `ipv4 address:9100` by defining:
+
+```yaml
+prometheus_node_exporter: true
+```
+
+If a Prometheus server ip defined then its ip address is configured to allow scraping metrics from port 9100.
+
+For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 
 ## Misc
 
