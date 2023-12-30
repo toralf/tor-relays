@@ -4,7 +4,7 @@
 
 ## Quick start
 
-To setup a new Tor public bridge at an existing Debian system with the hostname _my_bridge_, do
+To setup a new Tor public bridge at an existing recent Debian system (i.e. with the hostname _my_bridge_), do
 
 1. clone this repo
 
@@ -50,7 +50,13 @@ Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for
 
 The deployment is made by _Ansible_.
 
-## Additional software
+## Details
+
+The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
+configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
+For that the secret _seed_local_ is needed to seed the PRNG.
+
+### Additional software
 
 To deploy additional software, i.e. _quassel_, define something like this in the inventory:
 
@@ -64,14 +70,10 @@ my_group:
         - "quassel-core"
 ```
 
-The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
-configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
-For that the secret _seed_local_ is needed to seed the PRNG.
+### Metrics
 
-## Metrics
-
-Configure `metrics_port` to expose Tor metrics at `ipv4 address:metrics_port`.
-To avoid values like `9052` or `9999` choose a pseudo-random value like:
+Configure `metrics_port` to expose Tor relay/Snowflake metrics at `ipv4 address:metrics_port`.
+To prefer a pseudo-random value (instead `9999` for Snowflake) define something like:
 
 ```yaml
 snowflake:
@@ -80,25 +82,26 @@ snowflake:
 ```
 
 If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
-then its ip address is configured to allow scraping metrics.
-The value _targets_ (used in the Prometheus server config file) can be created by:
+then its ip address is configured to allow scraping Tor metrics.
 
-```bash
-./site-info.yaml --tags metrics-port
-cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
-```
-
-A _Prometheus node exporter_ is installed and configured to deliver metrics at `ipv4 address:9100` by defining:
+A _Prometheus node exporter_ is installed and configured at `ipv4 address:9100` by defining:
 
 ```yaml
 prometheus_node_exporter: true
 ```
 
-If a Prometheus server ip defined then its ip address is configured to allow scraping metrics from port 9100.
+If a Prometheus server ip defined then its ip address is configured to allow scraping node metrics.
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 
-## Misc
+### Misc
+
+The value _targets_ (used in the Prometheus server config file) can be created e.g. by:
+
+```bash
+./site-info.yaml --tags metrics-port
+cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+```
 
 The scripts under [./bin](./bin) work for the Hetzner Cloud.
 To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
