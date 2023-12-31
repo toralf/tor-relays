@@ -1,5 +1,5 @@
 ---
-# inspired by https://github.com/nvjacobo/snowflake/blob/main/tasks/debian-bookworm.yml
+# https://community.torproject.org/relay/setup/snowflake/standalone/
 
 - name: Install or update Git
   ansible.builtin.apt:
@@ -34,7 +34,6 @@
     dest: "{{ snowflake_repo_dir }}"
     version: "{{ __version }}"
     force: true
-  register: __repo
 
 - name: Apply snowflake patches
   become: true
@@ -46,15 +45,6 @@
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
   when: ansible_facts.hostname in snowflake_patched_systems
-  register: __patch
-
-- name: Go get
-  become: true
-  become_user: snowflake
-  ansible.builtin.command: "go get"
-  args:
-    chdir: "{{ snowflake_repo_dir }}/proxy"
-  when: __repo.changed or __patch.changed
 
 - name: Go build
   become: true
