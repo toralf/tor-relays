@@ -24,7 +24,7 @@ if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   exit 1
 fi
 
-# do not change the resolver file in parallel
+# do not change the resolver config file in parallel
 while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
@@ -42,7 +42,7 @@ trap Exit INT QUIT TERM EXIT
       # IPv4
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
-      # IPv6
+      # IPv6: optimistic approach: do assume that <prefix>::1 works
       ipv6_address=$(sed -e 's,/64,1,' <<<$ipv6)
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6_address}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6_address} "" ${name}
