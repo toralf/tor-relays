@@ -27,7 +27,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    public:
      vars:
        contact_info: "me@my.net"
-       nickname_prefix: "my_preferred_prefix"
+       nickname: "{{ 'MyPrefix' + ansible_facts.hostname }}"
        obfs4_port: 4711
      hosts:
        my_bridge:

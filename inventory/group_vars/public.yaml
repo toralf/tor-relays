@@ -12,11 +12,11 @@ torrc_generic:
     value: "{{ log_err }}"
 
 torrc_public:
+  - name: "ContactInfo"
+    value: "{{ contact_info | default('') }}"
+  - name: "Nickname"
+    value: "{{ nickname | default('') }}"
   - name: "PublishServerDescriptor"
     value: "bridge"
-  - name: "Nickname"
-    value: "{{ nickname_prefix + ansible_facts.hostname }}"
-  - name: "ContactInfo"
-    value: "{{ contact_info }}"
 
 torrc_config: "{{ torrc_generic + torrc_public }}"

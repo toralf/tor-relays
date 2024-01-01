@@ -21,5 +21,7 @@ MetricsPortPolicy accept {{ prometheus_server }}
 {% endif %}
 
 {% for item in torrc_config %}
+{% if item.value != '' %}
 {{ item.name }} {{ item.value }}
+{% endif %}
 {% endfor %}
