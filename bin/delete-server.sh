@@ -12,7 +12,7 @@ hash -r hcloud jq
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((1 * $(nproc)))
+jobs=$((2 * $(nproc)))
 
 echo -e "\n delete ssh key(s), ansible facts, DNS entries and ansible generated tmp files ... "
 while read -r name; do

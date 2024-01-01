@@ -8,7 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-jobs=$((1 * $(nproc)))
+jobs=$((2 * $(nproc)))
 
 for i in $*; do
   grep -q -m 1 "^$i " ~/.ssh/known_hosts || echo ${i}

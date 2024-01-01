@@ -14,7 +14,7 @@ hash -r hcloud jq
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((1 * $(nproc)))
+jobs=$((2 * $(nproc)))
 
 # choose both ARM (cax11) and AMD (cpx11) systems
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
