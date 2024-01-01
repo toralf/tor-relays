@@ -10,7 +10,7 @@
   become: true
   become_user: snowflake
   changed_when: false
-  ansible.builtin.command: git describe --tags --always # noqa: command-instead-of-module
+  ansible.builtin.command: git describe --tags --always --long --dirty # noqa: command-instead-of-module
   args:
     chdir: "{{ snowflake_repo_dir }}"
   register: __snowflake_version

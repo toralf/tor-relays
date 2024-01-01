@@ -24,18 +24,16 @@
     group: snowflake
     mode: "0700"
 
-- name: Clone or update repo
+- name: Prepare repo
   become: true
   become_user: snowflake
-  vars:
-    __version: "{{ (ansible_facts.hostname in snowflake_patched_systems) | ternary(snowflake_patch_base, snowflake_git_version) }}"
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     dest: "{{ snowflake_repo_dir }}"
-    version: "{{ __version }}"
+    version: "{{ (snowflake_patch_base != snowflake_git_version) | ternary(snowflake_patch_base, snowflake_git_version) }}"
     force: true
 
-- name: Apply snowflake patches
+- name: Apply patches
   become: true
   become_user: snowflake
   ansible.builtin.shell: |
@@ -44,16 +42,15 @@
   loop_control:
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
-  when: ansible_facts.hostname in snowflake_patched_systems
 
-- name: Go build
+- name: Build proxy
   become: true
   become_user: snowflake
   ansible.builtin.command: "go build"
   args:
     chdir: "{{ snowflake_repo_dir }}/proxy"
 
-- name: Copy binary file
+- name: Copy proxy
   ansible.builtin.copy:
     src: "{{ snowflake_repo_dir }}/proxy/proxy"
     dest: /usr/bin/
@@ -61,20 +58,20 @@
     remote_src: yes
   register: __proxy
 
-- name: Set sysctl value
+- name: Limit amount of user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "2" # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
 
-- name: Add unit systemd
+- name: Add systemd unit
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
   register: __service
 
-- name: Restart service snowflake-proxy
+- name: Restart Snowflake service
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted

@@ -58,7 +58,7 @@ For that the secret _seed_local_ is needed to seed the PRNG.
 
 ### Additional software
 
-To deploy additional software, i.e. _quassel_, define something like this in the inventory:
+To deploy additional software, i.e. the quassel server, define something like this in the inventory:
 
 ```yaml
 my_group:
@@ -69,6 +69,34 @@ my_group:
       additional_software:
         - "quassel-core"
 ```
+
+### Snowflake patching
+
+As default _HEAD_ of _main_ is deployed. With a host group _my_sf_group_ like
+
+```yaml
+my_sf_group:
+  vars:
+    snowflake_patch_base: "my-base"
+    snowflake_patches:
+      - https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/merge_requests/225.diff
+  hosts:
+    my_patched_sf:
+```
+
+and adding it to the main Snowflake group:
+
+```yaml
+snowflake:
+  vars:
+  ...
+  hosts:
+  ...
+  children:
+    my_sf_group:
+```
+
+this can be changed (i.e. for the system _my_patched_sf_).
 
 ### Metrics
 
