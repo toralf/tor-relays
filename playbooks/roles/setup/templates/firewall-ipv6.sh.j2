@@ -7,7 +7,7 @@ function clearAll() {
   $ipt -P INPUT ACCEPT
   $ipt -P OUTPUT ACCEPT
 
-  for table in filter nat; do
+  for table in filter; do
     $ipt -F -t $table
     $ipt -X -t $table
     $ipt -Z -t $table
