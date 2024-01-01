@@ -4,12 +4,16 @@
     - all
   roles:
     - role: info
+  tags:
+    - info
 
 - name: Info Snowflake
   hosts:
     - snowflake
   roles:
     - role: info-snowflake
+  tags:
+    - info-snowflake
 
 - name: Info Tor
   hosts:
@@ -17,3 +21,5 @@
     - public
   roles:
     - role: info-tor
+  tags:
+    - info-tor
