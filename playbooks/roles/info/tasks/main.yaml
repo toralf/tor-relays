@@ -5,15 +5,15 @@
     state: directory
     mode: "0755"
 
+- name: Firewall
+  ansible.builtin.import_tasks: firewall.yaml
+  tags:
+    - firewall
+
 - name: Log system
   ansible.builtin.import_tasks: log-system.yaml
   tags:
     - log-system
-
-- name: Uname
-  ansible.builtin.import_tasks: uname.yaml
-  tags:
-    - uname
 
 - name: Log unattended
   ansible.builtin.import_tasks: log-unattended.yaml
@@ -24,3 +24,8 @@
   ansible.builtin.import_tasks: metrics-port.yaml
   tags:
     - metrics-port
+
+- name: Uname
+  ansible.builtin.import_tasks: uname.yaml
+  tags:
+    - uname

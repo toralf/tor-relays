@@ -1,4 +1,11 @@
 ---
+- name: Install or update firewall related packages
+  ansible.builtin.apt:
+    name:
+      - conntrack
+      - iptables
+      - iptables-persistent
+
 - name: Create initial firewall script
   ansible.builtin.template:
     src: firewall.sh.j2

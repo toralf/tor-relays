@@ -27,8 +27,6 @@
       - apt-transport-https
       - gpg
       - gpg-agent
-      - iptables
-      - iptables-persistent
       - ntp
       - unattended-upgrades
 
