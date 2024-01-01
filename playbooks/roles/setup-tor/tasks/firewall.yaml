@@ -2,11 +2,16 @@
 - name: ACCEPT TCP to obfs4 port
   when: (obfs4_port > 0) and (obfs4_port < 2**16)
   ansible.builtin.iptables:
+    ip_version: "{{ 'ip' + item }}"
     chain: INPUT
+    table: filter
     protocol: tcp
     destination_port: "{{ obfs4_port }}"
     syn: match
     jump: ACCEPT
+  with_items:
+    - "v4"
+    - "v6"
 
 - name: Enable Prometheus to scrape metrics
   when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4) and (metrics_port is defined) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
@@ -36,8 +41,11 @@
         sysctl_file: /etc/sysctl.d/21tor-relay.conf
         sysctl_set: true
 
-- name: Save new iptables v4 state
+- name: Save new iptables
   community.general.iptables_state:
-    ip_version: ipv4
+    ip_version: "{{ 'ip' + item }}"
     state: saved
-    path: /etc/iptables/rules.v4
+    path: "{{ '/etc/iptables/rules.' + item }}"
+  with_items:
+    - "v4"
+    - "v6"

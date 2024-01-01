@@ -8,15 +8,24 @@
 
 - name: Create initial firewall script
   ansible.builtin.template:
-    src: firewall.sh.j2
-    dest: /root/firewall.sh
+    src: "{{ 'firewall-ip' + item + '.sh.j2' }}"
+    dest: "{{ '/root/firewall-ip' + item + '.sh' }}"
     mode: "0700"
+  with_items:
+    - "v4"
+    - "v6"
 
 - name: Start firewall
-  ansible.builtin.shell: /root/firewall.sh start
+  ansible.builtin.shell: "{{ '/root/firewall-ip' + item + '.sh' }} start"
+  with_items:
+    - "v4"
+    - "v6"
 
-- name: Save new iptables v4 state
+- name: Save new iptables
   community.general.iptables_state:
-    ip_version: ipv4
+    ip_version: "{{ 'ip' + item }}"
     state: saved
-    path: /etc/iptables/rules.v4
+    path: "{{ '/etc/iptables/rules.' + item }}"
+  with_items:
+    - "v4"
+    - "v6"
