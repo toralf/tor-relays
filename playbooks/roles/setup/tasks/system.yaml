@@ -46,7 +46,7 @@
 
 - name: Sysctl config
   ansible.builtin.copy:
-    src: 20tor-relay.conf
+    src: 20tor-system.conf
     dest: /etc/sysctl.d/
   register: sysctl_state
 
