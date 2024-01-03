@@ -4,7 +4,7 @@
   ansible.builtin.shell: >-
     /usr/bin/proxy --version 2>&1 | cut -f 2- -d ' '
   register: _proxy_version
-  failed_when: _proxy_version.stdout_lines | length != 1 or _proxy_version.stderr_lines | length > 0
+  failed_when: (_proxy_version.stdout_lines | length != 1) or (_proxy_version.stderr_lines | length > 0)
 
 - name: Get HEAD of repository
   become: true
@@ -14,14 +14,14 @@
   args:
     chdir: "{{ snowflake_repo_dir }}"
   register: _git_version
-  failed_when: _git_version.stdout_lines | length != 1 or _git_version.stderr_lines | length > 0
+  failed_when: (_git_version.stdout_lines | length != 1) or (_git_version.stderr_lines | length > 0)
 
 - name: Go version
   changed_when: false
   ansible.builtin.shell: >-
     go version 2>&1 | cut -f 3 -d ' '
   register: _go_version
-  failed_when: _go_version.stdout_lines | length != 1 or _go_version.stderr_lines | length > 0
+  failed_when: (_go_version.stdout_lines | length != 1) or (_go_version.stderr_lines | length > 0)
 
 - name: File results for version
   delegate_to: localhost

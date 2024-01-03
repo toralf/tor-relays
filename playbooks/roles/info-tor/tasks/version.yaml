@@ -10,6 +10,7 @@
     grep -m 1 '^Tor version' |
     awk '{ print $3 }'
   register: result
+  failed_when: (result.stdout_lines | length != 1) or (result.stderr_lines | length > 0)
 
 - name: File results for version
   delegate_to: localhost
