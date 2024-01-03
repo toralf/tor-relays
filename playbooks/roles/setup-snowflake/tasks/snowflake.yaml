@@ -72,7 +72,6 @@
   register: __service
 
 - name: Restart Snowflake service
-  throttle: 1
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted

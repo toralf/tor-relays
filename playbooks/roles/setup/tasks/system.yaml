@@ -105,7 +105,6 @@
   failed_when: (_uname.stdout_lines | length != 2) or (_uname.stderr_lines | length > 0)
 
 - name: Reboot into newer kernel if needed
-  throttle: 1
   ansible.builtin.reboot:
     connect_timeout: 5
     reboot_timeout: 120
