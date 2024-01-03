@@ -4,14 +4,14 @@
   changed_when: false
   ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: _fingerprint
-  failed_when: _fingerprint.stdout_lines | length != 1 or _fingerprint.stderr_lines | length > 0
+  failed_when: (_fingerprint.stdout_lines | length != 1) or (_fingerprint.stderr_lines | length > 0)
 
 - name: Get certificate
   no_log: true
   changed_when: false
   ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: _cert
-  failed_when: _cert.stdout_lines | length != 1 or _cert.stderr_lines | length > 0
+  failed_when: (_cert.stdout_lines | length != 1) or (_cert.stderr_lines | length > 0)
 
 - name: File results for bridgeline
   no_log: true
