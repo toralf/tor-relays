@@ -102,14 +102,15 @@
     uname -v | grep -Eo '(Debian .*) ' | awk '{ print $2 }'
     uname -r | cut -f 3 -d '-'
   register: _uname
-  failed_when: _uname.stdout_lines | length != 2 or _uname.stderr_lines | length > 0
+  failed_when: "_uname.stdout_lines | length != 2) or (_uname.stderr_lines | length > 0)
 
 - name: Reboot into newer kernel if needed
+  throttle: 1
   ansible.builtin.reboot:
     connect_timeout: 5
     reboot_timeout: 120
     pre_reboot_delay: 0
     post_reboot_delay: 35
-  when: not _uname.stdout_lines[0] == ansible_facts.packages[linux_image_arch][0].version
+  when: _uname.stdout_lines[0] != ansible_facts.packages[linux_image_arch][0].version
   vars:
     linux_image_arch: "linux-image-{{ _uname.stdout_lines[1] }}"

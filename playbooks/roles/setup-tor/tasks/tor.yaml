@@ -14,7 +14,7 @@
 - name: Obfs4 port
   when: obfs4_port < 1024
   block:
-    # the hooks have to be removed before obfs4proxy itself
+    # Hint: in case of a remove the hooks have to be removed before obfs4proxy
     - name: Configure apt hook for obfs4proxy
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
@@ -57,6 +57,7 @@
     sysctl_set: true
 
 - name: Enable Tor service
+  throttle: 1
   ansible.builtin.systemd:
     name: "tor"
     state: restarted
