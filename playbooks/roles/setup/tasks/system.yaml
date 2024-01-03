@@ -102,7 +102,7 @@
     uname -v | grep -Eo '(Debian .*) ' | awk '{ print $2 }'
     uname -r | cut -f 3 -d '-'
   register: _uname
-  failed_when: "_uname.stdout_lines | length != 2) or (_uname.stderr_lines | length > 0)
+  failed_when: (_uname.stdout_lines | length != 2) or (_uname.stderr_lines | length > 0)
 
 - name: Reboot into newer kernel if needed
   throttle: 1
