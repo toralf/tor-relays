@@ -128,7 +128,7 @@ The value _targets_ (used in the Prometheus server config file) can be created e
 
 ```bash
 ./site-info.yaml --tags metrics-port
-cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,^,[",' -e 's,$,"],' -e 's, ,"\, ",g'
+cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
 ```
 
 The scripts under [./bin](./bin) work for the Hetzner Cloud.
