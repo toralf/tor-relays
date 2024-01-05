@@ -1,4 +1,3 @@
 ---
 snowflake_git_version: "HEAD"
-snowflake_patch_base: "{{ snowflake_git_version }}"
 snowflake_patches: []

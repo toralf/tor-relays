@@ -30,7 +30,7 @@
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     dest: "{{ snowflake_repo_dir }}"
-    version: "{{ (snowflake_patch_base != snowflake_git_version) | ternary(snowflake_patch_base, snowflake_git_version) }}"
+    version: "{{ snowflake_git_version }}"
     force: true
 
 - name: Apply patches

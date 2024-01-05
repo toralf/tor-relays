@@ -77,7 +77,7 @@ As default _HEAD_ of _main_ is deployed. With a host group _my_sf_group_ like
 ```yaml
 my_sf_group:
   vars:
-    snowflake_patch_base: "my-base"
+    snowflake_git_version: "<commit-ish>"
     snowflake_patches:
       - https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/merge_requests/225.diff
   hosts:
