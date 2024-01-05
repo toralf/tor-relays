@@ -23,7 +23,7 @@
   register: _go_version
   failed_when: (_go_version.stdout_lines | length != 1) or (_go_version.stderr_lines | length > 0)
 
-- name: File results for version
+- name: File _results for version
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

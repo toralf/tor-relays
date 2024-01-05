@@ -1,5 +1,5 @@
 ---
-- name: File results for Tor metrics port
+- name: File _results for Tor metrics port
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
@@ -9,7 +9,7 @@
     regex: "^{{ ansible_facts.hostname }}:"
   when: (metrics_port is defined) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
 
-- name: File results for Prometheus node exporter metrics port
+- name: File _results for Prometheus node exporter metrics port
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

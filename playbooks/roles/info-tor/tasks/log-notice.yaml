@@ -4,9 +4,9 @@
   ansible.builtin.shell: >-
     grep -h -v -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
     tail -n {{ log_lines }}
-  register: result
+  register: _result
 
 - name: Results of log-notice {{ log_lines }} last lines
   ansible.builtin.debug:
-    msg: "{{ result.stdout.split('\n') }}"
-  when: result.stdout_lines | length > 0
+    msg: "{{ _result.stdout.split('\n') }}"
+  when: _result.stdout_lines | length > 0

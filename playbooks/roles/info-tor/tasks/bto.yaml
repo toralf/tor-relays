@@ -4,14 +4,14 @@
     url: "https://bridges.torproject.org/status?id={{ _hashed_fingerprint }}"
     return_content: yes
     status_code: [200, 404, 503]
-  register: result
+  register: _result
 
-- name: File results for bto
+- name: File _results for bto
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
+    line: "{{ ansible_facts.hostname }} {{ _result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_bto"
     regex: "^{{ ansible_facts.hostname }} "
-  when: result.status == 200
+  when: _result.status == 200

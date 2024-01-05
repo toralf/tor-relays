@@ -13,7 +13,7 @@
   register: _cert
   failed_when: (_cert.stdout_lines | length != 1) or (_cert.stderr_lines | length > 0)
 
-- name: File results for bridgeline
+- name: File _results for bridgeline
   no_log: true
   delegate_to: localhost
   throttle: 1

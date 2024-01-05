@@ -4,18 +4,18 @@
     url: "https://onionoo.torproject.org/details?search={{ _hashed_fingerprint }}"
     return_content: yes
     status_code: [200, 404, 503]
-  register: result
+  register: _result
 
-- name: File results for onionoo
+- name: File _results for onionoo
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ ansible_facts.hostname }}
-      {{ result.json.bridges[0].bridgedb_distributor | default('n/a') }}
-      {{ result.json.bridges[0].advertised_bandwidth | default('n/a') }}
-      running: {{ result.json.bridges[0].running | default('n/a') }}
-      blocklist: {{ result.json.bridges[0].blocklist | default([]) | join(',') }}"
+      {{ _result.json.bridges[0].bridgedb_distributor | default('n/a') }}
+      {{ _result.json.bridges[0].advertised_bandwidth | default('n/a') }}
+      running: {{ _result.json.bridges[0].running | default('n/a') }}
+      blocklist: {{ _result.json.bridges[0].blocklist | default([]) | join(',') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
     regex: "^{{ ansible_facts.hostname }} "
-  when: result.status == 200
+  when: _result.status == 200

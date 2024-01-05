@@ -7,14 +7,14 @@
 - name: Uptime
   changed_when: false
   ansible.builtin.command: "uptime -ps"
-  register: result
-  failed_when: (result.stdout_lines | length != 1) or (result.stderr_lines | length > 0)
+  register: _result
+  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
 
-- name: File results for uptime
+- name: File _results for uptime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} TorStart {{ tor_status.status.ExecMainStartTimestamp }} TorReload {{ tor_status.status.StateChangeTimestamp }} uptime {{ result.stdout }}"
+    line: "{{ ansible_facts.hostname }} TorStart {{ tor_status.status.ExecMainStartTimestamp }} TorReload {{ tor_status.status.StateChangeTimestamp }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
     regex: "^{{ ansible_facts.hostname }} "

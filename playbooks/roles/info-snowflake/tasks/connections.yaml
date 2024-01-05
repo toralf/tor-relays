@@ -3,13 +3,13 @@
   changed_when: false
   ansible.builtin.shell: >-
     journalctl -u snowflake-proxy --since "1 hour ago" -r -g ', there were .* connections' -q | tail -n 30 | awk '{ print $14 }' | xargs
-  register: result
+  register: _result
 
-- name: File results for connections
+- name: File _results for connections
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ result.stdout }}"
+    line: "{{ ansible_facts.hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_connections"
     regex: "^{{ ansible_facts.hostname }} "

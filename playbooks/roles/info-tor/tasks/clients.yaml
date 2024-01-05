@@ -8,13 +8,13 @@
     grep -Po ' \d+ ' |
     tac |
     xargs
-  register: result
+  register: _result
 
-- name: File results for clients
+- name: File _results for clients
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ result.stdout }}"
+    line: "{{ ansible_facts.hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_clients"
     regex: "^{{ ansible_facts.hostname }} "

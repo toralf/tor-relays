@@ -56,7 +56,7 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: __proxy
+  register: _proxy
 
 - name: Limit amount of user namespaces
   ansible.posix.sysctl:
@@ -69,7 +69,7 @@
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
-  register: __service
+  register: _service
 
 - name: Restart Snowflake service
   ansible.builtin.service:
@@ -77,4 +77,4 @@
     state: restarted
     daemon_reload: true
     enabled: yes
-  when: __proxy.changed or __service.changed
+  when: _proxy.changed or _service.changed

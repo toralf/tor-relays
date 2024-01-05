@@ -3,10 +3,10 @@
   changed_when: false
   ansible.builtin.shell: |
     journalctl -g 'BUG:' -g 'Call Trace:' -g 'oom-kill' -g 'RIP:' -g 'WARNING:' -g 'OOM' -g 'status=9/KILL' -g '.service: Failed' --since "{{ log_system_since }}" -q
-  register: result
-  failed_when: result.stderr_lines | length > 0
+  register: _result
+  failed_when: _result.stderr_lines | length > 0
 
 - name: Findings of log-system since {{ log_system_since }}
   ansible.builtin.debug:
-    var: result.stdout_lines
-  when: result.stdout_lines | length > 0
+    var: _result.stdout_lines
+  when: _result.stdout_lines | length > 0
