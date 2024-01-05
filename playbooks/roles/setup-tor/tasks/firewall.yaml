@@ -14,7 +14,7 @@
     - "v6"
 
 - name: Enable Prometheus to scrape metrics
-  when: (prometheus_server is defined) and (prometheus_server is ansible.utils.ipv4) and (metrics_port is defined) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
+  when: (prometheus_server is ansible.utils.ipv4) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
   block:
     - name: Preroute traffic of Prometheus server
       ansible.builtin.iptables:

@@ -10,7 +10,7 @@
   register: _result
   failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
 
-- name: File _results for uptime
+- name: File uptime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

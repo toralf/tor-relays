@@ -6,7 +6,7 @@
     status_code: [200, 404, 503]
   register: _result
 
-- name: File _results for onionoo
+- name: File onionoo
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

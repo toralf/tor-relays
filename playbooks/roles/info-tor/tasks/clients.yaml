@@ -10,7 +10,7 @@
     xargs
   register: _result
 
-- name: File _results for clients
+- name: File clients
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

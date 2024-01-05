@@ -4,7 +4,7 @@
   ansible.builtin.command: "uname -rv"
   register: _result
 
-- name: File _results for uname
+- name: File uname
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

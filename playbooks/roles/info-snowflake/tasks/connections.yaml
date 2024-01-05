@@ -5,7 +5,7 @@
     journalctl -u snowflake-proxy --since "1 hour ago" -r -g ', there were .* connections' -q | tail -n 30 | awk '{ print $14 }' | xargs
   register: _result
 
-- name: File _results for connections
+- name: File connections
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
