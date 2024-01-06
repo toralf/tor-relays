@@ -20,11 +20,11 @@ MetricsPortPolicy accept {{ prometheus_server }}
 {% endif %}
 {% endif %}
 
+{% if defined bridge_distribution %}
+BridgeDistribution {{ bridge_distribution }}
+{% endif %}
 {% for item in torrc_config %}
 {% if item.value != '' %}
 {{ item.name }} {{ item.value }}
 {% endif %}
 {% endfor %}
-{% if defined bridge_distribution %}
-BridgeDistribution {{ bridge_distribution }}
-{% endif %}
