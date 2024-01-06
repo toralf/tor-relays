@@ -4,5 +4,5 @@ metrics_port: 0
 prometheus_node_exporter: false
 prometheus_server: ""
 
-# lcoal tmp directory
+# local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
