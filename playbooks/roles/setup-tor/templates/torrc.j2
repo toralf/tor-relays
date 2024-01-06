@@ -25,3 +25,6 @@ MetricsPortPolicy accept {{ prometheus_server }}
 {{ item.name }} {{ item.value }}
 {% endif %}
 {% endfor %}
+{% if defined bridge_distribution %}
+BridgeDistribution {{ bridge_distribution }}
+{% endif %}
