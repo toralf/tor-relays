@@ -13,7 +13,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd tor-relays
    ```
 
-1. create a seed (to feed a PRNG), e.g.in `secrets/local.yaml` in `secrets/local.yaml`:
+1. create a seed, e.g. in `secrets/local.yaml`:
 
    ```yaml
    ---
@@ -73,7 +73,7 @@ my_group:
 
 ### Snowflake patching
 
-As default _HEAD_ of _main_) is deployed. With a host group _my_sf_group_ like
+As default _HEAD_ (of _main_) is deployed. With a host group _my_sf_group_ like
 
 ```yaml
 my_sf_group:
