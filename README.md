@@ -13,14 +13,14 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd tor-relays
    ```
 
-1. create (once) the file `secrets/local.yaml`, e.g.:
+1. create a seed (to feed a PRNG), e.g.in `secrets/local.yaml` in `secrets/local.yaml`:
 
    ```yaml
    ---
    seed_local: "a-really-random-string"
    ```
 
-1. configure the system, e.g. in `inventory/systems.yaml`:
+1. add the system to the inventory, e.g. in `inventory/systems.yaml`:
 
    ```yaml
    ---
@@ -39,7 +39,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    ./site-setup.yaml --limit my_bridge
    ```
 
-1. get its states by
+1. get its states:
 
    ```bash
    ./site-info.yaml --limit my_bridge
@@ -48,22 +48,23 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
 Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
 
+## Details
+
 The deployment is made by _Ansible_.
 
-## Details
+### IPv6
 
 The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
 configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
-For that the secret _seed_local_ is needed to seed the PRNG.
 
 ### Additional software
 
-To deploy additional software, i.e. the quassel server, define something like this in the inventory:
+To deploy additional software to your system, i.e. a _Quassel_ server, define it in the inventory, e.g. by:
 
 ```yaml
 my_group:
   hosts:
-    my_host:
+    my_system:
       additional_ports:
         - "4242"
       additional_software:
@@ -72,7 +73,7 @@ my_group:
 
 ### Snowflake patching
 
-As default _HEAD_ of _main_ is deployed. With a host group _my_sf_group_ like
+As default _HEAD_ of _main_) is deployed. With a host group _my_sf_group_ like
 
 ```yaml
 my_sf_group:
@@ -97,11 +98,12 @@ snowflake:
 ```
 
 this can be changed (i.e. for the system _my_patched_sf_).
+Similar applies to the variable _snowflake_patches_.
 
 ### Metrics
 
-Configure `metrics_port` to expose Tor relay/Snowflake metrics at `ipv4 address:metrics_port`.
-To prefer a pseudo-random value (instead `9999` for Snowflake) define something like:
+Configure `metrics_port` to expose Tor or Snowflake metrics at `ipv4 address:metrics_port`.
+IMO a pseudo-random value (instead the default `9999` for Snowflake or `9052`` for Tor respectively) should be preferrred, e.g. by:
 
 ```yaml
 snowflake:
