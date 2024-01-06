@@ -6,3 +6,5 @@ prometheus_server: ""
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
+
+unstable_kernel_version: ""

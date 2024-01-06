@@ -91,6 +91,23 @@
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
 
+- name: Install unstable kernel
+  when: unstable_kernel_version != ""
+  block:
+    - name: Configure repository "unstable"
+      ansible.builtin.apt_repository:
+        filename: "unstable"
+        repo: "deb http://deb.debian.org/debian unstable main"
+    - name: Apt pinning
+      ansible.builtin.copy:
+        src: apt-preferences
+        dest: /etc/apt/preferences
+    - name: Install or update unstable kernel
+      ansible.builtin.apt:
+        default_release: unstable
+        name:
+          - "linux-image-{{ unstable_kernel_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
+
 - name: Check if reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
