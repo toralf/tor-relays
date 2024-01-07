@@ -40,7 +40,7 @@
     name: "networking"
     state: restarted
     daemon_reload: true
-    enabled: yes
+    enabled: true
 
 - name: Gather ipv6 facts again
   ansible.builtin.setup:
