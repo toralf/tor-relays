@@ -11,11 +11,11 @@
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
 # https://www.debian.org/releases/bookworm/arm64/release-notes/ch-information.html#non-free-split
-- name: Configure apt hook for non-free firmware
-  ansible.builtin.lineinfile:
-    line: 'APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";'
-    path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
-    create: yes
+# - name: Configure apt hook for non-free firmware
+#   ansible.builtin.lineinfile:
+#     line: 'APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";'
+#     path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
+#     create: yes
 
 - name: Upgrade distribution
   ansible.builtin.apt:
@@ -92,7 +92,7 @@
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
 
 - name: Install unstable kernel
-  when: unstable_kernel_version != ""
+  when: unstable_kernel_version
   block:
     - name: Configure repository "unstable"
       ansible.builtin.apt_repository:
@@ -107,6 +107,7 @@
         default_release: unstable
         name:
           - "linux-image-{{ unstable_kernel_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
+      register: _kernel
 
 - name: Check if reboot is required
   ansible.builtin.stat:
@@ -118,5 +119,5 @@
     connect_timeout: 5
     reboot_timeout: 120
     pre_reboot_delay: 0
-    post_reboot_delay: 35
-  when: _stat_reboot.stat.exists
+    post_reboot_delay: 25
+  when: _stat_reboot.stat.exists or _kernel.changed

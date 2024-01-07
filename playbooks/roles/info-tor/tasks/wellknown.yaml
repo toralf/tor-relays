@@ -1,7 +1,7 @@
 ---
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 # target file ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt
-- name: Ensure nickname is in wellknown file
+- name: Ensure hostname is in wellknown file
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

@@ -1,0 +1,97 @@
+---
+- name: Git Install or update Git
+  ansible.builtin.apt:
+    name:
+      - git
+
+- name: Git Install or update toolchain
+  ansible.builtin.apt:
+    name:
+      - automake
+      - build-essential
+      - libevent-dev
+      - libssl-dev
+      - zlib1g-dev
+
+- name: Git Add the Tor user
+  ansible.builtin.user:
+    name: tor
+
+- name: Git Create Ansible tmp dir for user tor
+  ansible.builtin.file:
+    path: /home/tor/.ansible/tmp
+    state: directory
+    owner: tor
+    group: tor
+    mode: "0700"
+
+- name: Git Prepare repo
+  become: true
+  become_user: tor
+  ansible.builtin.git:
+    repo: https://gitlab.torproject.org/tpo/core/tor.git/
+    dest: /home/tor/tor
+    version: "{{ tor_git_version }}"
+    force: true
+
+- name: Git Apply patches
+  become: true
+  become_user: tor
+  ansible.builtin.shell: |
+    cd /home/tor/tor
+    curl -s {{ item }} | patch -p 1
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ tor_patches }}"
+
+- name: Git Build Tor
+  become: true
+  become_user: tor
+  ansible.builtin.shell: |
+    set -e
+    ./autogen.sh
+    ./configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib/tor --datarootdir=/usr/share \
+      --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests
+    make -j2
+  args:
+    chdir: "/home/tor/tor"
+
+- name: Git Copy Tor
+  ansible.builtin.copy:
+    src: "/home/tor/tor/src/app/tor"
+    dest: /usr/bin/
+    mode: a+x
+    remote_src: yes
+  register: _binary
+
+- name: Git Create /etc/tor
+  ansible.builtin.file:
+    path: /etc/tor/
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Git Create system directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: tor
+    group: tor
+    mode: u=rwx,g=s,o=
+  with_items:
+    - /var/lib/tor/
+    - /var/log/tor/
+
+- name: Git Add systemd unit
+  ansible.builtin.copy:
+    src: tor.service
+    dest: /etc/systemd/system/
+  register: _service
+
+- name: Git Set sysctl value
+  ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    value: "2" # debian bookworm default: 14886
+    sysctl_file: /etc/sysctl.d/21tor-relay.conf
+    sysctl_set: true

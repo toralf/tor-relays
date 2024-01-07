@@ -1,8 +1,8 @@
 ---
 - name: Get Service Status
   ansible.builtin.systemd:
-    name: tor@default.service
-  register: tor_status
+    name: tor
+  register: _service
 
 - name: Uptime
   changed_when: false
@@ -15,6 +15,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} TorStart {{ tor_status.status.ExecMainStartTimestamp }} TorReload {{ tor_status.status.StateChangeTimestamp }} uptime {{ _result.stdout }}"
+    line: "{{ ansible_facts.hostname }} TorStart {{ _service.status.ExecMainStartTimestamp | default('n/a') }} TorReload {{ _service.status.StateChangeTimestamp | default('n/a') }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
     regex: "^{{ ansible_facts.hostname }} "

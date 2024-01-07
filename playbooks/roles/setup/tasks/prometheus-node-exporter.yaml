@@ -1,6 +1,6 @@
 ---
 - name: Allow Prometheus to reach node exporter metrics port
-  when: (prometheus_node_exporter is true) and (prometheus_server is ansible.utils.ipv4)
+  when: prometheus_server | default('') is ansible.utils.ipv4
   block:
     - name: ACCEPT TCP from Prometheus server to metrics port
       ansible.builtin.iptables:
@@ -17,7 +17,6 @@
         path: /etc/iptables/rules.v4
 
 - name: Install Prometheus node exporter
-  when: prometheus_node_exporter is true
   block:
     - name: Install Prometheus node exporter
       ansible.builtin.apt:

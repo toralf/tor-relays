@@ -1,6 +1,6 @@
 ---
-- name: Ensure nickname length fits
+- name: Check nickname length
   ansible.builtin.assert:
     quiet: true
     that:
-      - "(nickname_prefix + ansible_facts.hostname) | length <= 19"
+      - "nickname | default('') | length <= 19"

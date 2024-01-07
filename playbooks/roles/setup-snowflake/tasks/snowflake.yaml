@@ -29,7 +29,7 @@
   become_user: snowflake
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
-    dest: "{{ snowflake_repo_dir }}"
+    dest: /home/snowflake/snowflake
     version: "{{ snowflake_git_version }}"
     force: true
 
@@ -37,7 +37,7 @@
   become: true
   become_user: snowflake
   ansible.builtin.shell: |
-    cd {{ snowflake_repo_dir }}
+    cd /home/snowflake/snowflake
     curl -s {{ item }} | patch -p 1
   loop_control:
     label: "{{ item }}"
@@ -48,15 +48,15 @@
   become_user: snowflake
   ansible.builtin.command: "go build"
   args:
-    chdir: "{{ snowflake_repo_dir }}/proxy"
+    chdir: "/home/snowflake/snowflake/proxy"
 
 - name: Copy proxy
   ansible.builtin.copy:
-    src: "{{ snowflake_repo_dir }}/proxy/proxy"
+    src: "/home/snowflake/snowflake/proxy/proxy"
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: _proxy
+  register: _binary
 
 - name: Limit amount of user namespaces
   ansible.posix.sysctl:
@@ -76,5 +76,11 @@
     name: snowflake-proxy
     state: restarted
     daemon_reload: true
-    enabled: yes
-  when: _proxy.changed or _service.changed
+    enabled: true
+  when: _binary.changed or _service.changed
+
+- name: Ensure Snowflake service is started
+  ansible.builtin.service:
+    name: snowflake-proxy
+    state: started
+    daemon_reload: true

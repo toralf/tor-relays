@@ -3,3 +3,5 @@ log_lines: 10
 
 log_unattended: "/var/log/unattended-upgrades/unattended-upgrades-dpkg.log"
 log_system_since: "3 days ago"
+
+metrics_port: 0

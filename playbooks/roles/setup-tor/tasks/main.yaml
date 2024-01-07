@@ -33,7 +33,26 @@
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
-    - name: Tor
-      ansible.builtin.import_tasks: tor.yaml
+    - name: Debian
+      when: tor_vendor == "debian"
+      ansible.builtin.import_tasks: tor-debian.yaml
       tags:
         - tor
+        - tor-debian
+    - name: Git
+      when: tor_vendor == "git"
+      ansible.builtin.import_tasks: tor-git.yaml
+      tags:
+        - tor
+        - tor-git
+    - name: Git
+      ansible.builtin.import_tasks: tor-config.yaml
+      tags:
+        - tor
+        - tor-config
+    - name: Lyrebird
+      when: (tor_vendor == "git") and (obfs4_port > 0) and (obfs4_port < 2**16)
+      ansible.builtin.import_tasks: tor-lyrebird.yaml
+      tags:
+        - tor
+        - tor-lyrebird

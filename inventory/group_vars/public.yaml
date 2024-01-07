@@ -1,22 +1,17 @@
 ---
-log_notice: "/var/log/tor/notice.log"
-log_warn: "/var/log/tor/warn.log"
-log_err: "/var/log/tor/err.log"
-
-torrc_generic:
+torrc_config:
+  - name: "BridgeDistribution"
+    value: "{{ bridge_distribution | default('any') }}"
+  - name: "ContactInfo"
+    value: "{{ contact_info | default('') }}"
   - name: "Log notice file"
     value: "{{ log_notice }}"
   - name: "Log warn file"
     value: "{{ log_warn }}"
   - name: "Log err file"
     value: "{{ log_err }}"
-
-torrc_public:
-  - name: "ContactInfo"
-    value: "{{ contact_info | default('') }}"
   - name: "Nickname"
     value: "{{ nickname | default('') }}"
   - name: "PublishServerDescriptor"
     value: "bridge"
 
-torrc_config: "{{ torrc_generic + torrc_public }}"

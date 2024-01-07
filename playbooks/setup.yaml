@@ -4,16 +4,12 @@
     - all
   roles:
     - role: setup
-  tags:
-    - setup
 
 - name: Setup Snowflake
   hosts:
     - snowflake
   roles:
     - role: setup-snowflake
-  tags:
-    - setup-snowflake
 
 - name: Setup Tor
   hosts:
@@ -21,5 +17,3 @@
     - private
   roles:
     - role: setup-tor
-  tags:
-    - setup-tor

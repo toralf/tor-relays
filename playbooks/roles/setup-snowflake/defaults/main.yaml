@@ -1,3 +1,5 @@
 ---
+metrics_port: 0
+
 snowflake_git_version: "HEAD"
 snowflake_patches: []

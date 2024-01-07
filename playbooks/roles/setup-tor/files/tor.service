@@ -1,0 +1,16 @@
+[Unit]
+Description=Tor
+Documentation=man:tor
+Documentation=https://www.torproject.org/
+After=network-online.target docker.socket firewalld.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/tor
+User=tor
+Group=tor
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target

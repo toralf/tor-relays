@@ -1,64 +1,53 @@
 ---
-- name: Get Tor repository apt key
+- name: Debian Get Tor repository apt key
   ansible.builtin.apt_key:
     url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
     state: present
 
-- name: Configure repository "tor"
+- name: Debian Configure repository "torproject"
   ansible.builtin.apt_repository:
     filename: "torproject"
     repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
     state: present
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Obfs4 port
-  when: obfs4_port < 1024
+- name: Debian Obfs4 port
+  when: (obfs4_port > 0) and (obfs4_port < 2**16) and (obfs4_port < 1024)
   block:
     # Hint: in case of a remove the hooks have to be removed before obfs4proxy
-    - name: Configure apt hook for obfs4proxy
+    - name: Debian Configure apt hook for obfs4proxy
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
         path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
         create: yes
-    - name: Configure dpkg hook for obfs4proxy to use privileged port
+    - name: Debian Configure dpkg hook for obfs4proxy to use privileged port
       ansible.builtin.lineinfile:
         line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
         path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
         create: yes
-    - name: Create dir to configure Tor to use privileged port
+    - name: Debian Create dir to configure Tor to use privileged port
       ansible.builtin.file:
         state: directory
         path: /etc/systemd/system/tor@default.service.d
         recurse: yes
         mode: "0755"
-    - name: Configure Tor to use privileged port
+    - name: Debian Configure Tor to use privileged port
       ansible.builtin.copy:
         src: override_tor_service.conf
         dest: /etc/systemd/system/tor@default.service.d/override.conf
 
-- name: Install or update Tor
+- name: Debian Install or update Tor
   ansible.builtin.apt:
     name:
       - tor
       - tor-geoipdb
       - deb.torproject.org-keyring
       - obfs4proxy
+  register: _binary
 
-- name: Configure torrc
-  ansible.builtin.template:
-    src: torrc.j2
-    dest: /etc/tor/torrc
-
-- name: Set sysctl value
+- name: Debian Set sysctl value
   ansible.posix.sysctl:
     name: user.max_user_namespaces
-    value: "0" # debian bookworm default: 14886
+    value: "0" # Debian  bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-
-- name: Enable Tor service
-  ansible.builtin.systemd:
-    name: "tor"
-    state: restarted
-    daemon_reload: true
-    enabled: yes

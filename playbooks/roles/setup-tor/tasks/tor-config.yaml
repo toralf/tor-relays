@@ -1,0 +1,21 @@
+---
+- name: Configure torrc
+  ansible.builtin.template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
+  register: _torrc
+
+- name: Restart Tor service
+  ansible.builtin.service:
+    name: tor
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  when: (_binary.changed | default(false)) or _torrc.changed or (_service.changed | default(false))
+
+- name: Ensure Tor service is started
+  ansible.builtin.service:
+    name: tor
+    state: started
+    daemon_reload: true
+    enabled: true

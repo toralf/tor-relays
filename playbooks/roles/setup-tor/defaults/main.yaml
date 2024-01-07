@@ -3,8 +3,13 @@ log_notice: "/var/log/tor/notice.log"
 log_warn: "/var/log/tor/warn.log"
 log_err: "/var/log/tor/err.log"
 
-log_lines: 10
+lyrebird_git_version: "HEAD"
+lyrebird_patches: []
+
+metrics_port: 0
 
 obfs4_port: 0
 
+tor_git_version: "HEAD"
+tor_patches: []
 tor_vendor: "git"

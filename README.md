@@ -20,14 +20,12 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    seed_local: "a-really-random-string"
    ```
 
-1. add the system to the inventory, e.g. in `inventory/systems.yaml`:
+1. add the system to the inventory and configure at least the obfs4 port, e.g. in `inventory/systems.yaml`:
 
    ```yaml
    ---
    public:
      vars:
-       contact_info: "me@my.net"
-       nickname: "{{ 'MyPrefix' + ansible_facts.hostname }}"
        obfs4_port: 4711
      hosts:
        my_bridge:
@@ -111,7 +109,7 @@ snowflake:
     metrics_port: "{{ range(10000,32000) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"` in _secrets/local.yaml_ or _inventory/all.yaml_)
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`)
 then its ip address is configured to allow scraping Tor metrics.
 
 A _Prometheus node exporter_ is installed and configured at `ipv4 address:9100` by defining:
@@ -130,7 +128,7 @@ The value _targets_ (used in the Prometheus server config file) can be created e
 
 ```bash
 ./site-info.yaml --tags metrics-port
-cat ~/tmp/snowflake_metrics_port | sort | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
+sort ~/tmp/public_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
 ```
 
 The scripts under [./bin](./bin) work for the Hetzner Cloud.

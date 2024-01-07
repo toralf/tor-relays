@@ -10,11 +10,11 @@ hash -r hcloud jq
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}"
+echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-echo -e "\n delete ssh key(s), ansible facts, DNS entries and ansible generated tmp files ... "
+echo -e " deleting ... "
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/${project}_* 2>/dev/null

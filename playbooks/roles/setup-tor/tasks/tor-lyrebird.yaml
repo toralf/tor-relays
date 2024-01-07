@@ -1,0 +1,47 @@
+---
+- name: Install or update Go for Lyrebird
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}-backports"
+    name:
+      - golang-go
+
+- name: Prepare Lyrebird repo
+  become: true
+  become_user: tor
+  ansible.builtin.git:
+    repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
+    dest: /home/tor/lyrebird
+    version: "{{ lyrebird_git_version }}"
+    force: true
+
+- name: Apply patches
+  become: true
+  become_user: tor
+  ansible.builtin.shell: |
+    cd /home/tor/lyrebird
+    curl -s {{ item }} | patch -p 1
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ lyrebird_patches }}"
+
+- name: Build Lyrebird
+  become: true
+  become_user: tor
+  ansible.builtin.command: "go build ./cmd/lyrebird"
+  args:
+    chdir: "/home/tor/lyrebird"
+
+- name: Copy Lyrebird
+  ansible.builtin.copy:
+    src: "/home/tor/lyrebird/lyrebird"
+    dest: /usr/bin/
+    mode: a+x
+    remote_src: yes
+  register: _binary
+
+- name: Set Linux capabilities on Lyrebird
+  community.general.capabilities:
+    path: /usr/bin/lyrebird
+    capability: cap_net_bind_service=+ep
+    state: present
+  when: _binary.changed
