@@ -36,13 +36,6 @@
     daemon_reload: true
     enabled: true
 
-- name: Gather ipv6 facts again
-  ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "all_ipv6_addresses"
-      - "default_ipv6"
-
 - name: Prereoute incoming ipv6 traffic to the new ipv6 address if needed
   module_defaults:
     ansible.builtin.iptables:
