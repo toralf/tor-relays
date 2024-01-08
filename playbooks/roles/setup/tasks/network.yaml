@@ -13,10 +13,10 @@
   ansible.builtin.set_fact:
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   vars:
-    _a: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
-    _d: "{{ range(0,65535) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
+    _a: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
+    _b: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
+    _c: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
+    _d: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
 
 - name: Deactivate the Hetzner network configurator
   ansible.builtin.copy:

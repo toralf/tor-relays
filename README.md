@@ -17,7 +17,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
    ```yaml
    ---
-   seed_local: "a-really-random-string"
+   seed_address: "a-really-random-string"
    ```
 
 1. add the system to the inventory and configure at least the obfs4 port, e.g. in `inventory/systems.yaml`:
@@ -106,7 +106,7 @@ IMO a pseudo-random value (instead the default `9999` for Snowflake or `9052`` f
 ```yaml
 snowflake:
   vars:
-    metrics_port: "{{ range(10000,32000) | random(seed=seed_local + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+    metrics_port: "{{ range(10000,32000) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
 If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`)
