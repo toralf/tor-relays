@@ -20,3 +20,8 @@
       ansible.builtin.import_tasks: snowflake.yaml
       tags:
         - snowflake
+    - name: Snowflake config
+      ansible.builtin.import_tasks: snowflake-config.yaml
+      tags:
+        - snowflake
+        - snowflake-config
