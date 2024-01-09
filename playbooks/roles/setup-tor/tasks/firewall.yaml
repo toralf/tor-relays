@@ -41,7 +41,7 @@
         sysctl_file: /etc/sysctl.d/21tor-relay.conf
         sysctl_set: true
 
-- name: Save new iptables
+- name: Save iptables state
   community.general.iptables_state:
     ip_version: "{{ 'ip' + item }}"
     state: saved

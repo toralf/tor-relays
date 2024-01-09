@@ -2,21 +2,27 @@
 # goal:     enlarge the cost of a network scanner for an IPv6 scan of the obfs4 port
 # solution: set the default <prefix>::1 IPv6 address to arbitrarily choosen address
 #           and re-route incoming ipv6 traffic to it, exception: the destination port is the obfs4 port
-- name: Derive ipv6 prefix from current ipv6 address
-  ansible.builtin.set_fact:
-    _ipv6_prefix: "{{ (_ipv6_old | split(':'))[:4] | join(':') }}"
-  vars:
-    _ipv6_old: "{{ ansible_facts.eth0.ipv6 | selectattr('scope', 'eq', 'global') | map(attribute='address') | first }}"
-  failed_when: _ipv6_prefix is match("fe80:")
+- name: Gather ipv6 facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all"
+      - "all_ipv6_addresses"
+      - "default_ipv6"
+  failed_when: ansible_facts.default_ipv6.address is match "::1"
 
-- name: Compile a pseudo-randomly choosen ipv6 address
-  ansible.builtin.set_fact:
-    _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+- name: Configure new ipv6 address
   vars:
-    _a: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
-    _b: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
-    _c: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
-    _d: "{{ range(0,65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
+    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+    _a: "{{ range(0, 65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
+    _b: "{{ range(0, 65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
+    _c: "{{ range(0, 65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
+    _d: "{{ range(0, 65535) | random(seed=seed_address + ansible_facts.hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
+    _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+  ansible.builtin.template:
+    src: 50-cloud-init.j2
+    dest: /etc/network/interfaces.d/50-cloud-init
+  register: _cloud_init
+  failed_when: _ipv6_prefix is match("fe80:") or _ipv6_prefix == "::1"
 
 - name: Deactivate the Hetzner network configurator
   ansible.builtin.copy:
@@ -24,51 +30,19 @@
     dest: /etc/cloud/cloud.cfg.d/
   when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Configure network interfaces
-  ansible.builtin.template:
-    src: 50-cloud-init.j2
-    dest: /etc/network/interfaces.d/50-cloud-init
-
-- name: Restart network service
-  ansible.builtin.systemd:
-    name: "networking"
-    state: restarted
-    daemon_reload: true
-    enabled: true
-
-- name: Prereoute incoming ipv6 traffic to the new ipv6 address if needed
-  module_defaults:
-    ansible.builtin.iptables:
-      ip_version: ipv6
-      chain: PREROUTING
-      table: nat
-      destination: "! {{ _ipv6_new }}"
-      to_destination: "{{ _ipv6_new }}"
-      jump: DNAT
+- name: Act on changed ipv6
+  when: _cloud_init.changed
   block:
-    - name: Flush ipv6 nat table
-      ansible.builtin.iptables:
-        table: nat
-        flush: yes
-    - name: DNAT incoming TCP v6 except obfs4 port
-      when: obfs4_port is defined
-      ansible.builtin.iptables:
-        protocol: tcp
-        destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
-    - name: DNAT incoming TCP v6
-      when: obfs4_port is not defined
-      ansible.builtin.iptables:
-        protocol: tcp
-    - name: DNAT incoming non-TCP v6
-      ansible.builtin.iptables:
-        protocol: "{{ item }}"
-      with_items:
-        - ipv6-icmp
-        - udp
-        - udplite
-
-- name: Save new iptables ipv6 state
-  community.general.iptables_state:
-    ip_version: ipv6
-    state: saved
-    path: /etc/iptables/rules.v6
+    - name: Restart network service
+      ansible.builtin.systemd:
+        name: "networking"
+        state: restarted
+        daemon_reload: true
+        enabled: true
+    - name: Gather ipv6 facts
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "all_ipv6_addresses"
+          - "default_ipv6"
+      failed_when: ansible_facts.default_ipv6.address is search "::1$" or ansible_facts.default_ipv6.address is match "::1"

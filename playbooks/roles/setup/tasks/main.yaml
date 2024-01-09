@@ -38,18 +38,6 @@
       ansible.builtin.import_tasks: network.yaml
       tags:
         - network
-    - name: Gather ipv6 facts
-      ansible.builtin.setup:
-        gather_subset:
-          - "!all"
-          - "all_ipv6_addresses"
-          - "default_ipv6"
-      tags:
-        - network
-    - name: Timer
-      ansible.builtin.import_tasks: timer.yaml
-      tags:
-        - timer
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
       tags:
@@ -59,3 +47,7 @@
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
+    - name: Timer
+      ansible.builtin.import_tasks: timer.yaml
+      tags:
+        - timer
