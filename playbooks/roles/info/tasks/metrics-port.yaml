@@ -14,7 +14,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }}:9100"
+    line: '{{ (prometheus_server is ansible.utils.ipv4) | ternary(ansible_facts.hostname,"127.0.0.1") }}:9100'
     path: "{{ tmp_dir }}/node_metrics_port"
     regex: "^{{ ansible_facts.hostname }}:"
   when: prometheus_node_exporter is true
