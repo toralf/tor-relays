@@ -1,5 +1,6 @@
 ---
 - name: Gather the package facts
+  when: tor_vendor != 'git'
   ansible.builtin.package_facts:
     manager: auto
 
