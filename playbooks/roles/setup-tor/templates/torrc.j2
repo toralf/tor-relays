@@ -19,7 +19,7 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 {% if (metrics_port | int > 0) and (metrics_port | int < 2**16) %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
-{% if prometheus_server | default('') is ansible.utils.ipv4 %}
+{% if prometheus_server is ansible.utils.ipv4 %}
 MetricsPortPolicy accept {{ prometheus_server }}
 {% endif %}
 {% endif %}

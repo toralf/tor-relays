@@ -3,7 +3,8 @@
   changed_when: false
   ansible.builtin.shell: >-
     journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -q |
-    grep -v -e  ', there were .* connections' -e ': sctp ERROR: .* stream 1 not found' -e ' Proxy connection closed'
+    grep -v -e  ', there were .* connections' -e ': sctp ERROR: .* stream 1 not found' -e ' Proxy connection closed' |
+    tail -n {{ log_lines }}
   register: _result
   failed_when: _result.stderr_lines | length > 0
 

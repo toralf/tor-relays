@@ -10,6 +10,8 @@ metrics_port: 0
 
 obfs4_port: 0
 
+prometheus_server: ""
+
 tor_git_version: "HEAD"
 tor_patches: []
 tor_vendor: "git"

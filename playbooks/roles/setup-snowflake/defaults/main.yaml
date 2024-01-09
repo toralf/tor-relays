@@ -1,5 +1,7 @@
 ---
 metrics_port: 0
 
+prometheus_server: ""
+
 snowflake_git_version: "HEAD"
 snowflake_patches: []
