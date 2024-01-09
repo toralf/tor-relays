@@ -2,6 +2,7 @@
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
+    - always
     - validate
 
 - name: Main
@@ -51,7 +52,7 @@
         - tor
         - tor-config
     - name: Lyrebird
-      when: (tor_vendor == "git") and (obfs4_port > 0) and (obfs4_port < 2**16)
+      when: tor_vendor == "git" and obfs4_port is defined
       ansible.builtin.import_tasks: tor-lyrebird.yaml
       tags:
         - tor

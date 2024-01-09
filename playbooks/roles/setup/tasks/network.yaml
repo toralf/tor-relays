@@ -51,12 +51,12 @@
         table: nat
         flush: yes
     - name: DNAT incoming TCP v6 except obfs4 port
-      when: (obfs4_port > 0) and (obfs4_port < 2**16)
+      when: obfs4_port is defined
       ansible.builtin.iptables:
         protocol: tcp
         destination_ports: "1:{{ obfs4_port - 1 }},{{ obfs4_port + 1 }}:65535"
     - name: DNAT incoming TCP v6
-      when: not ((obfs4_port > 0) and (obfs4_port < 2**16))
+      when: obfs4_port is not defined
       ansible.builtin.iptables:
         protocol: tcp
     - name: DNAT incoming non-TCP v6

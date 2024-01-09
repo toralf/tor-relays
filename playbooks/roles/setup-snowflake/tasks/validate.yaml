@@ -6,20 +6,6 @@
     that:
       - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
 
-- name: Validate nickname
-  when: nickname is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "nickname | default('') | length <= 19"
-
-- name: Validate obfs4_port
-  when: obfs4_port is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "(obfs4_port | int > 0) and (obfs4_port | int < 2**16)"
-
 - name: Validate prometheus_server
   when: prometheus_server is defined
   ansible.builtin.assert:

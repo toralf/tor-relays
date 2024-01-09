@@ -1,6 +1,6 @@
 ---
 - name: Allow Prometheus to reach node exporter metrics port
-  when: prometheus_server is ansible.utils.ipv4
+  when: prometheus_server is defined
   block:
     - name: ACCEPT TCP from Prometheus server to metrics port
       ansible.builtin.iptables:
@@ -25,7 +25,7 @@
     - name: Configure Prometheus node exporter to listen only at ipv4:9100
       ansible.builtin.lineinfile:
         create: no
-        line: 'ARGS="--web.listen-address={{ (prometheus_server is ansible.utils.ipv4) | ternary(ansible_facts.default_ipv4.address,"127.0.0.1") }}:9100"'
+        line: 'ARGS="--web.listen-address={{ (prometheus_server is defined) | ternary(ansible_facts.default_ipv4.address,"127.0.0.1") }}:9100"'
         path: /etc/default/prometheus-node-exporter
         regex: "^ARGS="
     - name: Restart Prometheus node exporter

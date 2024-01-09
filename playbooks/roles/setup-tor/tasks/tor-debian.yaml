@@ -12,7 +12,7 @@
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Debian Obfs4 port
-  when: (obfs4_port > 0) and (obfs4_port < 2**16) and (obfs4_port < 1024)
+  when: obfs4_port is defined and obfs4_port < 1024
   block:
     # Hint: in case of a remove the hooks have to be removed before obfs4proxy
     - name: Debian Configure apt hook for obfs4proxy

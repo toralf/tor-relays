@@ -1,13 +1,13 @@
 # torrc
 # {{ ansible_managed }}
 
+BridgeRelay 1
+
 {% if tor_vendor == "git" %}
 DataDirectory /var/lib/tor
 {% endif %}
 
-BridgeRelay 1
-
-{% if (obfs4_port > 0) and (obfs4_port < 2**16) %}
+{% if obfs4_port is defined %}
 SandBox 0
 ORPort 127.0.0.1:auto
 AssumeReachable 1
@@ -16,10 +16,10 @@ ServerTransportPlugin obfs4 exec /usr/bin/{{ (tor_vendor == 'git') | ternary('ly
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 {% endif %}
 
-{% if (metrics_port | int > 0) and (metrics_port | int < 2**16) %}
+{% if metrics_port is defined %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
-{% if prometheus_server is ansible.utils.ipv4 %}
+{% if prometheus_server is defined %}
 MetricsPortPolicy accept {{ prometheus_server }}
 {% endif %}
 {% endif %}

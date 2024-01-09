@@ -1,6 +1,6 @@
 ---
 - name: ACCEPT TCP to obfs4 port
-  when: (obfs4_port > 0) and (obfs4_port < 2**16)
+  when: obfs4_port is defined
   ansible.builtin.iptables:
     ip_version: "{{ 'ip' + item }}"
     chain: INPUT
@@ -14,7 +14,7 @@
     - "v6"
 
 - name: Enable Prometheus to scrape metrics
-  when: (prometheus_server is ansible.utils.ipv4) and (metrics_port | int > 0) and (metrics_port | int < 2**16)
+  when: prometheus_server is defined and metrics_port is defined
   block:
     - name: Preroute traffic of Prometheus server
       ansible.builtin.iptables:

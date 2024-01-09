@@ -2,8 +2,4 @@
 additional_ports: []
 additional_software: []
 
-obfs4_port: 0
-
-prometheus_server: ""
-
 unstable_kernel_version: ""
