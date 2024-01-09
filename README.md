@@ -10,17 +10,20 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
    ```bash
    git clone https://github.com/toralf/tor-relays.git
-   cd tor-relays
+   cd ./tor-relays
    ```
 
-1. create a seed, e.g. in `secrets/local.yaml`:
+1. create a seed, e.g.:
 
-   ```yaml
+   ```bash
+   cat <<EOF >> secrets/local.yaml
    ---
-   seed_address: "a-really-random-string"
+   seed_address: "$(dd if=/dev/random | base64 | cut -c 1-32 | head -n 1)"
+
+   EOF
    ```
 
-1. add the system to the inventory and configure at least the obfs4 port, e.g. in `inventory/systems.yaml`:
+1. add the system to the inventory and configure at least an obfs4 port, i.e. in `inventory/systems.yaml`:
 
    ```yaml
    ---
@@ -52,8 +55,8 @@ The deployment is made by _Ansible_.
 
 ### IPv6
 
-The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml))
-configures an arbitrarily choosen ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
+The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml)) uses `seed_addrees` to
+configure an random ipv6 address (for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason).
 
 ### Additional software
 

@@ -38,8 +38,9 @@
   become: true
   become_user: tor
   ansible.builtin.shell: |
-    cd /home/tor/tor
     curl -s {{ item }} | patch -p 1
+  args:
+    chdir: /home/tor/tor
   loop_control:
     label: "{{ item }}"
   loop: "{{ tor_patches }}"
@@ -54,11 +55,11 @@
       --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests
     make -j2
   args:
-    chdir: "/home/tor/tor"
+    chdir: /home/tor/tor
 
 - name: Git Copy Tor
   ansible.builtin.copy:
-    src: "/home/tor/tor/src/app/tor"
+    src: /home/tor/tor/src/app/tor
     dest: /usr/bin/
     mode: a+x
     remote_src: yes

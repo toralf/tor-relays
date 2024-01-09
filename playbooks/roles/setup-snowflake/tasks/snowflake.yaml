@@ -37,8 +37,9 @@
   become: true
   become_user: snowflake
   ansible.builtin.shell: |
-    cd /home/snowflake/snowflake
     curl -s {{ item }} | patch -p 1
+  args:
+    chdir: /home/snowflake/snowflake
   loop_control:
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
@@ -48,11 +49,11 @@
   become_user: snowflake
   ansible.builtin.command: "go build"
   args:
-    chdir: "/home/snowflake/snowflake/proxy"
+    chdir: /home/snowflake/snowflake/proxy
 
 - name: Copy proxy
   ansible.builtin.copy:
-    src: "/home/snowflake/snowflake/proxy/proxy"
+    src: /home/snowflake/snowflake/proxy/proxy
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
