@@ -2,14 +2,6 @@
 # goal:     enlarge the cost of a network scanner for an IPv6 scan of the obfs4 port
 # solution: set the default <prefix>::1 IPv6 address to arbitrarily choosen address
 #           and re-route incoming ipv6 traffic to it, exception: the destination port is the obfs4 port
-- name: Gather ipv6 facts
-  ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "all_ipv6_addresses"
-      - "default_ipv6"
-  failed_when: ansible_facts.default_ipv6.address is match "::1"
-
 - name: Configure new ipv6 address
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
@@ -22,7 +14,15 @@
     src: 50-cloud-init.j2
     dest: /etc/network/interfaces.d/50-cloud-init
   register: _cloud_init
-  failed_when: _ipv6_prefix is match("fe80:") or _ipv6_prefix == "::1"
+
+- name: Restart network service
+  ansible.builtin.systemd:
+    name: "networking"
+    state: restarted
+    daemon_reload: true
+    enabled: true
+  register: _service
+  when: _cloud_init.changed
 
 - name: Deactivate the Hetzner network configurator
   ansible.builtin.copy:
@@ -30,19 +30,12 @@
     dest: /etc/cloud/cloud.cfg.d/
   when: ansible_facts.bios_vendor == 'Hetzner'
 
-- name: Act on changed ipv6
-  when: _cloud_init.changed
-  block:
-    - name: Restart network service
-      ansible.builtin.systemd:
-        name: "networking"
-        state: restarted
-        daemon_reload: true
-        enabled: true
-    - name: Gather ipv6 facts
-      ansible.builtin.setup:
-        gather_subset:
-          - "!all"
-          - "all_ipv6_addresses"
-          - "default_ipv6"
-      failed_when: ansible_facts.default_ipv6.address is search "::1$" or ansible_facts.default_ipv6.address is match "::1"
+- name: Check ipv6
+  changed_when: false
+  ansible.builtin.command: ip -6 a
+  register: _result
+  failed_when: (_result.stderr_lines | length > 0)
+
+- name: Gather ipv6 facts again
+  ansible.builtin.setup:
+  failed_when: (ansible_facts.default_ipv6.address is match "fe80:") or (ansible_facts.default_ipv6.address is match "::1")
