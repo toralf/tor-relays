@@ -1,7 +1,7 @@
 ---
 - name: Get last {{ log_lines }} lines of {{ log_warn }}
   changed_when: false
-  ansible.builtin.shell: >-
+  ansible.builtin.shell: |
     grep -h -v -e 'opening .*log file.' -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_warn }}.1 {{ log_warn }} 2>/dev/null |
     tail -n {{ log_lines }}
   register: _result

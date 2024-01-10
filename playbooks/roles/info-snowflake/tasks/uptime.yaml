@@ -6,7 +6,7 @@
 
 - name: Uptime
   changed_when: false
-  ansible.builtin.command: "uptime -ps"
+  ansible.builtin.command: uptime -ps
   register: _result
   failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
 

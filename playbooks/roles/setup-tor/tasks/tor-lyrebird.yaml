@@ -17,8 +17,8 @@
 - name: Apply patches
   become: true
   become_user: tor
-  ansible.builtin.shell: curl -s {{ item }} | patch -p 1
-  args:
+  ansible.builtin.shell:
+    cmd: curl -s {{ item }} | patch -p 1
     chdir: /home/tor/lyrebird
   loop_control:
     label: "{{ item }}"
@@ -27,8 +27,8 @@
 - name: Build Lyrebird
   become: true
   become_user: tor
-  ansible.builtin.command: go build ./cmd/lyrebird
-  args:
+  ansible.builtin.command:
+    cmd: go build ./cmd/lyrebird
     chdir: /home/tor/lyrebird
 
 - name: Copy Lyrebird

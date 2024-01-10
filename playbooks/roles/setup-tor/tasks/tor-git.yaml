@@ -37,9 +37,8 @@
 - name: Git Apply patches
   become: true
   become_user: tor
-  ansible.builtin.shell: |
-    curl -s {{ item }} | patch -p 1
-  args:
+  ansible.builtin.shell:
+    cmd: curl -s {{ item }} | patch -p 1
     chdir: /home/tor/tor
   loop_control:
     label: "{{ item }}"
@@ -48,13 +47,13 @@
 - name: Git Build Tor
   become: true
   become_user: tor
-  ansible.builtin.shell: |
-    set -e
-    ./autogen.sh
-    ./configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib/tor --datarootdir=/usr/share \
-      --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests
-    make -j2
-  args:
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+      ./autogen.sh
+      ./configure --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc --localstatedir=/var/lib/tor --datarootdir=/usr/share \
+        --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests
+      make -j2
     chdir: /home/tor/tor
 
 - name: Git Copy Tor

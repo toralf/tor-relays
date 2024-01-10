@@ -1,7 +1,7 @@
 ---
 - name: Get last {{ log_lines }} lines from {{ log_unattended }}
   changed_when: false
-  ansible.builtin.shell: >-
+  ansible.builtin.shell: |
     grep -v -e 'Reading database' -e '^$' {{ log_unattended }} |
     tail -n {{ log_lines }}
   register: _result

@@ -36,9 +36,8 @@
 - name: Apply patches
   become: true
   become_user: snowflake
-  ansible.builtin.shell: |
-    curl -s {{ item }} | patch -p 1
-  args:
+  ansible.builtin.shell:
+    cmd: curl -s {{ item }} | patch -p 1
     chdir: /home/snowflake/snowflake
   loop_control:
     label: "{{ item }}"
@@ -47,8 +46,8 @@
 - name: Build proxy
   become: true
   become_user: snowflake
-  ansible.builtin.command: "go build"
-  args:
+  ansible.builtin.command:
+    cmd: go build
     chdir: /home/snowflake/snowflake/proxy
 
 - name: Copy proxy

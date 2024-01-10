@@ -6,7 +6,7 @@
 
 - name: Tor version
   changed_when: false
-  ansible.builtin.shell: >-
+  ansible.builtin.shell: |
     tor --version |
     grep -m 1 '^Tor version' |
     awk '{ print $3 }'
