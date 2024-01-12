@@ -113,17 +113,34 @@ Configure `metrics_port` to expose Prometheus Node exporter, Tor and Snowflake m
 ```yaml
 snowflake:
   vars:
-    metrics_port: "{{ range(10000,64000) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+    metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
 Configure an appropriate `seed_metrics` similar to `seed_address`.
-An NGinx is used as a reverse proxy to encrypt the data on transit.
-No HTTP Basic Auth is therefore needed to be configured.
-The firewall allows the Prometheus server to scrape metrics.
+An NGinx is used as a reverse proxy to encrypt the metrics data on transit.
+The firewall allows only the Prometheus server to scrape metrics.
+No HTTP Basic Auth is therefore needed.
 A _Prometheus node exporter_ is installed by defining:
 
 ```yaml
 prometheus_node_exporter: true
+```
+
+A Prometheus config would contain somethin like:
+
+```yaml
+  - job_name: "Tor-Bridge-Public"
+    scheme: https
+    tls_config:
+      insecure_skip_verify: true
+    metrics_path: "/metrics-relay"
+    static_configs:
+      - targets: ["a:12345", ...]
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*):(.*)'
+        replacement: '${1}'
+        target_label: instance
 ```
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
