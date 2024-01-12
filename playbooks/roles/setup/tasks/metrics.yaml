@@ -1,0 +1,36 @@
+---
+- name: Install or update NGINX
+  ansible.builtin.apt:
+    name:
+      - nginx
+
+- name: Check if key does exist
+  ansible.builtin.stat:
+    path: /etc/ssl/private/nginx-selfsigned.key
+  register: _key
+
+- name: Check if crt does exist
+  ansible.builtin.stat:
+    path: /etc/ssl/certs/nginx-selfsigned.crt
+  register: _crt
+
+- name: Generate SSL certificate
+  when: not _key.stat.exists or not _crt.stat.exists
+  ansible.builtin.command: |
+    openssl req -x509 -nodes -days 3650 -newkey rsa:4096 \
+      -keyout /etc/ssl/private/nginx-selfsigned.key \
+      -out /etc/ssl/certs/nginx-selfsigned.crt \
+      -subj "/C=AB/O=cdefgh/OU=ijklmn/CN=*.snakeoil.com"
+
+- name: Configure NGINX
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/conf.d/nginx.conf
+    mode: "0644"
+
+- name: Restart NGINX
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    daemon_reload: true
+    enabled: true

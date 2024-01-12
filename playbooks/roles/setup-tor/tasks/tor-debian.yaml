@@ -12,7 +12,7 @@
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Debian Obfs4 port
-  when: obfs4_port is defined and obfs4_port < 1024
+  when: obfs4_port is defined and (obfs4_port | int < 1024)
   block:
     # Hint: in case of a remove the hooks have to be removed before obfs4proxy
     - name: Debian Configure apt hook for obfs4proxy
@@ -39,10 +39,10 @@
 - name: Debian Install or update Tor
   ansible.builtin.apt:
     name:
-      - tor
-      - tor-geoipdb
       - deb.torproject.org-keyring
       - obfs4proxy
+      - tor
+      - tor-geoipdb
   register: _binary
 
 - name: Debian Set sysctl value

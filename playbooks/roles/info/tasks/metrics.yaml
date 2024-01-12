@@ -1,0 +1,10 @@
+---
+- name: File metrics port
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ inventory_hostname}}:{{ metrics_port }}"
+    path: "{{ tmp_dir }}/{{ group_names[0] }}_metrics_port"
+    regex: "^{{ inventory_hostname }}:"
+  when: metrics_port is defined

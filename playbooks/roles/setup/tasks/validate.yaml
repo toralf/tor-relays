@@ -1,7 +1,16 @@
 ---
+- name: Validate metrics_port
+  when: metrics_port is defined
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
+      - "prometheus_server is defined"
+
 - name: Validate prometheus_server
   when: prometheus_server is defined
   ansible.builtin.assert:
     quiet: true
     that:
+      - "metrics_port is defined"
       - "prometheus_server is ansible.utils.ipv4"

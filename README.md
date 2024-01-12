@@ -23,7 +23,9 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    EOF
    ```
 
-1. add the system to the inventory and configure at least an obfs4 port, i.e. in `inventory/systems.yaml`:
+   or run something similar, e.g. `pwgen 32`.
+
+1. add the system to the inventory and configure an obfs4 port, i.e. in `inventory/systems.yaml`:
 
    ```yaml
    ---
@@ -34,13 +36,15 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
        my_bridge:
    ```
 
+So the section [Metrics](#metrics) below for using a pseudo-random port for obfs4 analogous to a metrics port.
+
 1. deploy it
 
    ```bash
    ./site-setup.yaml --limit my_bridge
    ```
 
-1. get its states:
+1. get stats:
 
    ```bash
    ./site-info.yaml --limit my_bridge
@@ -52,11 +56,10 @@ Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for
 ## Details
 
 The deployment is made by _Ansible_.
-
-### IPv6
-
-The Ansible role (in [network.yaml](./playbooks/roles/setup/tasks/network.yaml)) uses `seed_addrees` to
-configure an random ipv6 address (for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason).
+The firewall does not contains DDoS capabilities.
+For that please take a look at the [torutils](https://github.com/toralf/torutils) repository.
+The Ansible role uses `seed_address` to
+configure an random ipv6 address for [this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
 
 ### Additional software
 
@@ -103,25 +106,25 @@ Similar applies to the variable _snowflake_patches_.
 
 ### Metrics
 
-Configure `metrics_port` to expose Tor or Snowflake metrics at `ipv4 address:metrics_port`.
-IMO a pseudo-random value (instead the default `9999` for Snowflake or `9052`` for Tor respectively) should be preferrred, e.g. by:
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`)
+then its ip address is configured to allow scraping Tor metrics.
+Configure `metrics_port` to expose Prometheus Node exporter, Tor and Snowflake metrics at `https://<ipv4 address>:<metrics_port>/metrics-<node|relay|snowflake>`respectively.
 
 ```yaml
 snowflake:
   vars:
-    metrics_port: "{{ range(10000,32000) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+    metrics_port: "{{ range(10000,64000) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`)
-then its ip address is configured to allow scraping Tor metrics.
-
-A _Prometheus node exporter_ is installed and configured at `ipv4 address:9100` by defining:
+Configure an appropriate `seed_metrics` similar to `seed_address`.
+An NGinx is used as a reverse proxy to encrypt the data on transit.
+No HTTP Basic Auth is therefore needed to be configured.
+The firewall allows the Prometheus server to scrape metrics.
+A _Prometheus node exporter_ is installed by defining:
 
 ```yaml
 prometheus_node_exporter: true
 ```
-
-If a Prometheus server ip defined then its ip address is configured to allow scraping node metrics.
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
 

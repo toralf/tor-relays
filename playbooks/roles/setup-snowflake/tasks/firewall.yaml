@@ -12,34 +12,6 @@
     - "v4"
     - "v6"
 
-- name: Enable Prometheus to scrape metrics
-  when: prometheus_server is defined and metrics_port is defined
-  block:
-    - name: Preroute traffic of Prometheus server
-      ansible.builtin.iptables:
-        chain: PREROUTING
-        table: nat
-        protocol: tcp
-        source: "{{ prometheus_server }}"
-        destination_port: "{{ metrics_port }}"
-        jump: DNAT
-        to_destination: "127.0.0.1:9999"
-    - name: Allow DNAT traffic from Prometheus server
-      ansible.builtin.iptables:
-        chain: INPUT
-        protocol: tcp
-        ctstate: DNAT
-        source: "{{ prometheus_server }}"
-        destination: "127.0.0.1"
-        destination_port: 9999
-        jump: ACCEPT
-    - name: Allow (pre-)routing to localhost
-      ansible.posix.sysctl:
-        name: net.ipv4.conf.all.route_localnet
-        value: "1"
-        sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
-        sysctl_set: true
-
 - name: Save iptables state
   community.general.iptables_state:
     ip_version: "{{ 'ip' + item }}"

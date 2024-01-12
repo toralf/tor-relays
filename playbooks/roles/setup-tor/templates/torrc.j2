@@ -4,24 +4,20 @@
 BridgeRelay 1
 
 {% if tor_vendor == "git" %}
+# if self-compiled then do not rely on compile-time configure option
 DataDirectory /var/lib/tor
 {% endif %}
 
-{% if obfs4_port is defined %}
 SandBox 0
 ORPort 127.0.0.1:auto
 AssumeReachable 1
 ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ (tor_vendor == 'git') | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
-{% endif %}
 
 {% if metrics_port is defined %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
-{% if prometheus_server is defined %}
-MetricsPortPolicy accept {{ prometheus_server }}
-{% endif %}
 {% endif %}
 
 {% for item in torrc_config %}

@@ -1,11 +1,4 @@
 ---
-- name: Validate metrics_port
-  when: metrics_port is defined
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
-
 - name: Validate nickname
   when: nickname is defined
   ansible.builtin.assert:
@@ -14,15 +7,15 @@
       - "nickname | default('') | length <= 19"
 
 - name: Validate obfs4_port
-  when: obfs4_port is defined
   ansible.builtin.assert:
     quiet: true
     that:
+      - "obfs4_port is defined"
       - "(obfs4_port | int > 0) and (obfs4_port | int < 2**16)"
 
-- name: Validate prometheus_server
-  when: prometheus_server is defined
+- name: Validate metrics_port
+  when: metrics_port is defined
   ansible.builtin.assert:
     quiet: true
     that:
-      - "prometheus_server is ansible.utils.ipv4"
+      - metrics_port != obfs4_port

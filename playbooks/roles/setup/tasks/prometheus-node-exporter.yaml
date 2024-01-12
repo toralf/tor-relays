@@ -1,19 +1,19 @@
 ---
 - name: Install Prometheus node exporter
-  block:
-    - name: Install Prometheus node exporter
-      ansible.builtin.apt:
-        name:
-          - prometheus-node-exporter
-    - name: Configure Prometheus node exporter to listen only at ipv4:9100
-      ansible.builtin.lineinfile:
-        create: no
-        line: 'ARGS="--web.listen-address={{ (prometheus_server is defined) | ternary(ansible_facts.default_ipv4.address,"127.0.0.1") }}:9100"'
-        path: /etc/default/prometheus-node-exporter
-        regex: "^ARGS="
-    - name: Restart Prometheus node exporter
-      ansible.builtin.systemd:
-        name: "prometheus-node-exporter"
-        state: restarted
-        daemon_reload: true
-        enabled: true
+  ansible.builtin.apt:
+    name:
+      - prometheus-node-exporter
+
+- name: Configure Prometheus node exporter
+  ansible.builtin.lineinfile:
+    create: no
+    line: 'ARGS="--web.listen-address=127.0.0.1:9100"'
+    path: /etc/default/prometheus-node-exporter
+    regex: "^ARGS="
+
+- name: Restart Prometheus node exporter
+  ansible.builtin.systemd:
+    name: "prometheus-node-exporter"
+    state: restarted
+    daemon_reload: true
+    enabled: true

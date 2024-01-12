@@ -79,7 +79,7 @@
     - system-grub
 
 - name: Regenerate grub menue
-  ansible.builtin.command: "update-grub"
+  ansible.builtin.command: update-grub
   when: _grub.changed
   tags:
     - never

@@ -7,7 +7,7 @@ function clearAll() {
   $ipt -P INPUT ACCEPT
   $ipt -P OUTPUT ACCEPT
 
-  for table in filter; do
+  for table in filter nat; do
     $ipt -F -t $table
     $ipt -X -t $table
     $ipt -Z -t $table
@@ -37,13 +37,14 @@ function addRules() {
   $ipt -A INPUT -p ipv6-icmp --icmpv6-type echo-request -j DROP
   $ipt -A INPUT -p ipv6-icmp -j ACCEPT
 
-  {% for __i in additional_ports %}
-  {% if ',' in __i or ':' in __i %}
+  # any additional ports
+{% for __i in additional_ports %}
+{% if ',' in __i or ':' in __i %}
   $ipt -A INPUT -p tcp --match multiport --dports {{ __i }} --syn -j ACCEPT
-  {% else %}
+{% else %}
   $ipt -A INPUT -p tcp --dport {{ __i }} --syn -j ACCEPT
-  {% endif %}
-  {% endfor %}
+{% endif %}
+{% endfor %}
 }
 
 #######################################################################

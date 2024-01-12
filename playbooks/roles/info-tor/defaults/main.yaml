@@ -5,6 +5,4 @@ log_notice: "/var/log/tor/notice.log"
 log_warn: "/var/log/tor/warn.log"
 log_err: "/var/log/tor/err.log"
 
-obfs4_port: 0
-
 tor_vendor: "git"
