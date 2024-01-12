@@ -1,8 +1,14 @@
 ---
-- name: Install or update Nginx_crtfile
+- name: Install or update Nginx
   ansible.builtin.apt:
     name:
       - nginx
+  register: _installed
+
+- name: miau
+  when: group_names is contains('snowflake')
+  debug:
+    msg: "jo"
 
 - name: Check if key does exist
   ansible.builtin.stat:
@@ -31,7 +37,7 @@
   register: _configfile
 
 - name: Restart Nginx
-  when: _cert.changed or _configfile.changed
+  when: _installed.changed or _cert.changed or _configfile.changed
   ansible.builtin.service:
     name: nginx
     state: restarted

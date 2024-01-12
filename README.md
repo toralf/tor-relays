@@ -129,18 +129,18 @@ prometheus_node_exporter: true
 A Prometheus config would contain somethin like:
 
 ```yaml
-  - job_name: "Tor-Bridge-Public"
-    scheme: https
-    tls_config:
-      insecure_skip_verify: true
-    metrics_path: "/metrics-relay"
-    static_configs:
-      - targets: ["a:12345", ...]
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: '(.*):(.*)'
-        replacement: '${1}'
-        target_label: instance
+- job_name: "Tor-Bridge-Public"
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
+  metrics_path: "/metrics-relay"
+  static_configs:
+    - targets: ["a:12345", ...]
+  relabel_configs:
+    - source_labels: [__address__]
+      regex: "(.*):(.*)"
+      replacement: "${1}"
+      target_label: instance
 ```
 
 For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
