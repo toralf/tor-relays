@@ -117,7 +117,7 @@ snowflake:
 ```
 
 Configure an appropriate `seed_metrics` similar to `seed_address`.
-An NGinx is used as a reverse proxy to encrypt the metrics data on transit.
+An Nginx is used as a reverse proxy to encrypt the metrics data on transit.
 The firewall allows only the Prometheus server to scrape metrics.
 No HTTP Basic Auth is therefore needed.
 A _Prometheus node exporter_ is installed by defining:
