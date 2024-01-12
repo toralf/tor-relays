@@ -4,9 +4,9 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname}}:{{ metrics_port }}"
+    line: "{{ inventory_hostname}}:{{ metrics_port }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_metrics_port"
-    regex: "^{{ ansible_facts.hostname }}:"
+    regex: "^{{ inventory_hostname }}:"
   when: metrics_port is defined
 
 - name: File Prometheus node exporter metrics port
@@ -14,7 +14,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: '{{ (prometheus_server is defined) | ternary(ansible_facts.hostname,"127.0.0.1") }}:9100'
+    line: '{{ (prometheus_server is defined) | ternary(inventory_hostname,"127.0.0.1") }}:9100'
     path: "{{ tmp_dir }}/node_metrics_port"
-    regex: "^{{ ansible_facts.hostname }}:"
+    regex: "^{{ inventory_hostname }}:"
   when: prometheus_node_exporter is true

@@ -2,5 +2,5 @@
 
 [Timer]
 OnCalendar=
-OnCalendar=*-*-* {{ 24 | random(seed=ansible_facts.hostname) }}:10
+OnCalendar=*-*-* {{ 24 | random(seed=inventory_hostname) }}:10
 RandomizedDelaySec={{ 49 * 60 }}

@@ -11,7 +11,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ _result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
+    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_bto"
-    regex: "^{{ ansible_facts.hostname }} "
+    regex: "^{{ inventory_hostname }} "
   when: _result.status == 200

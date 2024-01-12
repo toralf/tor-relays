@@ -18,7 +18,7 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fingerprint.stdout_lines[0] }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ ansible_facts.hostname }}"
+    line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(obfs4_port) }} {{ _fingerprint.stdout_lines[0] }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
     path: /tmp/{{ group_names[0] }}_bridgeline
     create: yes
     mode: "0600"

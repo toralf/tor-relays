@@ -6,7 +6,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "# {{ ansible_facts.hostname }} "
+    line: "# {{ inventory_hostname }} "
     path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
 - name: Ensure fingerprint is in wellknown file
@@ -16,4 +16,4 @@
     create: yes
     line: "{{ _hashed_fingerprint }}"
     path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
-    insertafter: "^# {{ ansible_facts.hostname }} "
+    insertafter: "^# {{ inventory_hostname }} "

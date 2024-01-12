@@ -13,6 +13,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_connections"
-    regex: "^{{ ansible_facts.hostname }} "
+    regex: "^{{ inventory_hostname }} "

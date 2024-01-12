@@ -25,6 +25,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} {{ ansible_facts.packages['tor'][0].version | default('n/a') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('n/a') }} {{ _tor.stdout_lines[0] }}  {{ _proxy.stdout_lines[0] }}"
+    line: "{{ inventory_hostname }} {{ ansible_facts.packages['tor'][0].version | default('n/a') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('n/a') }} {{ _tor.stdout_lines[0] }}  {{ _proxy.stdout_lines[0] }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_version"
-    regex: "^{{ ansible_facts.hostname }} "
+    regex: "^{{ inventory_hostname }} "

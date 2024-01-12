@@ -11,11 +11,11 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }}
+    line: "{{ inventory_hostname }}
       {{ _result.json.bridges[0].bridgedb_distributor | default('n/a') }}
       {{ _result.json.bridges[0].advertised_bandwidth | default('n/a') }}
       running: {{ _result.json.bridges[0].running | default('n/a') }}
       blocklist: {{ _result.json.bridges[0].blocklist | default([]) | join(',') }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
-    regex: "^{{ ansible_facts.hostname }} "
+    regex: "^{{ inventory_hostname }} "
   when: _result.status == 200

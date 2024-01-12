@@ -15,6 +15,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ ansible_facts.hostname }} SFStart {{ _service.status.ExecMainStartTimestamp }} SFReload {{ _service.status.StateChangeTimestamp }} uptime {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} SFStart {{ _service.status.ExecMainStartTimestamp }} SFReload {{ _service.status.StateChangeTimestamp }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
-    regex: "^{{ ansible_facts.hostname }} "
+    regex: "^{{ inventory_hostname }} "
