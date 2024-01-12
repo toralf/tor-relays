@@ -5,6 +5,7 @@
     quiet: true
     that:
       - "nickname | default('') | length <= 19"
+      - "nickname | regex_search('^[a-zA-Z0-9]+$')"
 
 - name: Validate obfs4_port
   ansible.builtin.assert:
