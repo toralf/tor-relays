@@ -3,7 +3,7 @@
 
 BridgeRelay 1
 
-{% if tor_vendor == "git" %}
+{% if tor_build_from_source %}
 # if self-compiled then do not rely on compile-time configure option
 DataDirectory /var/lib/tor
 {% endif %}
@@ -12,7 +12,7 @@ SandBox 0
 ORPort 127.0.0.1:auto
 AssumeReachable 1
 ExtORPort auto
-ServerTransportPlugin obfs4 exec /usr/bin/{{ (tor_vendor == 'git') | ternary('lyrebird', 'obfs4proxy') }}
+ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ obfs4_port }}
 
 {% if metrics_port is defined %}

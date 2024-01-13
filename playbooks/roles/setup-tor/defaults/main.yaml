@@ -8,4 +8,4 @@ lyrebird_patches: []
 
 tor_git_version: "HEAD"
 tor_patches: []
-tor_vendor: "git"
+tor_build_from_source: true

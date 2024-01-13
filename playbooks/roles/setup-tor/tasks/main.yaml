@@ -35,19 +35,19 @@
       tags:
         - firewall
     - name: Debian
-      when: tor_vendor == "debian"
+      when: tor_build_from_source is false
       ansible.builtin.import_tasks: tor-debian.yaml
       tags:
         - tor
         - tor-debian
     - name: Git
-      when: tor_vendor == "git"
+      when: tor_build_from_source
       ansible.builtin.import_tasks: tor-git.yaml
       tags:
         - tor
         - tor-git
     - name: Lyrebird
-      when: tor_vendor == "git" and obfs4_port is defined
+      when: tor_build_from_source
       ansible.builtin.import_tasks: tor-lyrebird.yaml
       tags:
         - tor
