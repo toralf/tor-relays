@@ -10,17 +10,6 @@
     filename: "backports"
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-# https://www.debian.org/releases/bookworm/arm64/release-notes/ch-information.html#non-free-split
-# - name: Configure apt hook for non-free firmware
-#   ansible.builtin.lineinfile:
-#     line: 'APT::Get::Update::SourceListWarnings::NonFreeFirmware "false";'
-#     path: /etc/apt/apt.conf.d/no-bookworm-firmware.conf
-#     create: yes
-
-- name: Upgrade distribution
-  ansible.builtin.apt:
-    upgrade: dist
-
 - name: Install or update base software
   ansible.builtin.apt:
     name:
