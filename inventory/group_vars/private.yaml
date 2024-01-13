@@ -9,4 +9,4 @@ torrc_config:
   - name: "Log err file"
     value: "{{ log_err }}"
   - name: "PublishServerDescriptor"
-    value: "0" # 1 when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved
+    value: "0" # "bridge" when https://gitlab.torproject.org/tpo/core/tor/-/issues/40584 is solved

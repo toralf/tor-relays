@@ -3,11 +3,6 @@
 
 BridgeRelay 1
 
-{% if tor_build_from_source %}
-# if self-compiled then do not rely on compile-time configure option
-DataDirectory /var/lib/tor
-{% endif %}
-
 SandBox 0
 ORPort 127.0.0.1:auto
 AssumeReachable 1
