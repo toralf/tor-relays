@@ -26,21 +26,17 @@
     mode: "0700"
 
 - name: Git Prepare repo
-  become: true
-  become_user: tor
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git/
-    dest: /home/tor/tor
+    dest: /root/tor
     version: "{{ tor_git_version }}"
     force: true
   register: _repo
 
 - name: Git Apply patches
-  become: true
-  become_user: tor
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
-    chdir: /home/tor/tor
+    chdir: /root/tor
   loop_control:
     label: "{{ item }}"
   loop: "{{ tor_patches }}"
@@ -48,8 +44,6 @@
 
 - name: Git Build Tor
   when: _repo.changed or _patch.changed
-  become: true
-  become_user: tor
   ansible.builtin.shell:
     cmd: |
       set -e
@@ -59,7 +53,7 @@
           --disable-systemd --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests \
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --enable-module-relay
       make -j2
-    chdir: /home/tor/tor
+    chdir: /root/tor
   register: _build
 
 - name: Git Create system directories
@@ -73,12 +67,20 @@
     - /var/lib/tor/
     - /var/log/tor/
 
+# test if Tor service needs a restart
+- name: Copy Tor binary
+  ansible.builtin.copy:
+    src: /root/tor/src/app/tor
+    dest: /usr/bin/
+    remote_src: yes
+    mode: "0755"
+  register: _binary
+
 - name: Git Install Tor
-  when: _build.changed
+  when: _binary.changed
   ansible.builtin.shell:
     cmd: make install
-    chdir: /home/tor/tor
-  register: _binary
+    chdir: /root/tor
 
 - name: Git Add systemd unit
   ansible.builtin.copy:

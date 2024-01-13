@@ -33,7 +33,7 @@
 
 - name: Copy Lyrebird
   ansible.builtin.copy:
-    src: "/home/tor/lyrebird/lyrebird"
+    src: /home/tor/lyrebird/lyrebird
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
