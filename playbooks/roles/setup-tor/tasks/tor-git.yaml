@@ -73,7 +73,7 @@
     src: /root/tor/src/app/tor
     dest: /usr/bin/
     remote_src: yes
-    mode: "0755"
+    mode: a+x
   register: _binary
 
 - name: Git Install Tor
