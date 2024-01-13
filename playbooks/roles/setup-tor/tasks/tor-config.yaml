@@ -10,8 +10,7 @@
     name: tor
     state: restarted
     daemon_reload: true
-    enabled: true
-  when: (_binary.changed | default(false)) or _config.changed or (_service.changed | default(false))
+  when: (_binary.changed | default(false)) or (_plugin.changed | default(false)) or _config.changed or (_service.changed | default(false))
 
 - name: Ensure Tor service is started
   ansible.builtin.service:

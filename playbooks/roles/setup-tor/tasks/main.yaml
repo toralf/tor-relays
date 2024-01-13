@@ -46,14 +46,14 @@
       tags:
         - tor
         - tor-git
-    - name: Git
-      ansible.builtin.import_tasks: tor-config.yaml
-      tags:
-        - tor
-        - tor-config
     - name: Lyrebird
       when: tor_vendor == "git" and obfs4_port is defined
       ansible.builtin.import_tasks: tor-lyrebird.yaml
       tags:
         - tor
         - tor-lyrebird
+    - name: Git
+      ansible.builtin.import_tasks: tor-config.yaml
+      tags:
+        - tor
+        - tor-config

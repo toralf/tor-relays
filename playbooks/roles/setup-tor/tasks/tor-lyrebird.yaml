@@ -37,11 +37,11 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: _binary
+  register: _plugin
 
 - name: Set Linux capabilities on Lyrebird
   community.general.capabilities:
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
     state: present
-  when: _binary.changed
+  when: _plugin.changed
