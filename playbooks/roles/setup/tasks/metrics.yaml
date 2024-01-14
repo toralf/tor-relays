@@ -5,17 +5,12 @@
       - nginx
   register: _installed
 
-- name: miau
-  when: group_names is contains('snowflake')
-  debug:
-    msg: "jo"
-
-- name: Check if key does exist
+- name: Check if key file does exist
   ansible.builtin.stat:
     path: /etc/ssl/private/nginx-selfsigned-metrics.key
   register: _keyfile
 
-- name: Check if crt does exist
+- name: Check if crt file does exist
   when: _keyfile.stat.exists
   ansible.builtin.stat:
     path: /etc/ssl/certs/nginx-selfsigned-metrics.crt
