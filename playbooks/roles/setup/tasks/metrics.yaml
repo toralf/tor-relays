@@ -16,6 +16,7 @@
   register: _keyfile
 
 - name: Check if crt does exist
+  when: _keyfile.stat.exists
   ansible.builtin.stat:
     path: /etc/ssl/certs/nginx-selfsigned-metrics.crt
   register: _crtfile
