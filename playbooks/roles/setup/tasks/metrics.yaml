@@ -26,7 +26,7 @@
 
 - name: Configure Nginx
   ansible.builtin.template:
-    src: nginx.conf.j2
+    src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
     mode: "0644"
   register: _configfile
