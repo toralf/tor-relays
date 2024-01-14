@@ -20,6 +20,7 @@
       - unattended-upgrades
 
 - name: Install or update additional software
+  when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 
