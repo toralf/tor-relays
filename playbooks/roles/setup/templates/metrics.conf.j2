@@ -26,6 +26,7 @@ server {
 {% endif %}
 
   ssl_protocols TLSv1.3;
+  ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/ssl/certs/nginx-selfsigned-metrics.crt;
   ssl_certificate_key /etc/ssl/private/nginx-selfsigned-metrics.key;
 
