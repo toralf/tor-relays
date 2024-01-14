@@ -12,21 +12,21 @@
 
 - name: Check if key does exist
   ansible.builtin.stat:
-    path: /etc/ssl/private/nginx-selfsigned.key
+    path: /etc/ssl/private/nginx-selfsigned-metric.key
   register: _keyfile
 
 - name: Check if crt does exist
   ansible.builtin.stat:
-    path: /etc/ssl/certs/nginx-selfsigned.crt
+    path: /etc/ssl/certs/nginx-selfsigned-metrics.crt
   register: _crtfile
 
 - name: Generate SSL certificate
   when: not _keyfile.stat.exists or not _crtfile.stat.exists
   ansible.builtin.command: |
-    openssl req -x509 -nodes -days 3650 -newkey rsa:4096 \
-      -keyout /etc/ssl/private/nginx-selfsigned.key \
-      -out /etc/ssl/certs/nginx-selfsigned.crt \
-      -subj "/C=AB/O=cdefgh/OU=ijklmn/CN=*.snakeoil.com"
+    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+      -keyout /etc/ssl/private/nginx-selfsigned-metrics.key \
+      -out /etc/ssl/certs/nginx-selfsigned-metrics.crt \
+      -subj "/C=/O=/OU=/CN="
   register: _cert
 
 - name: Configure Nginx

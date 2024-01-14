@@ -18,7 +18,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    ```bash
    cat <<EOF >> secrets/local.yaml
    ---
-   seed_address: "$(dd if=/dev/random | base64 | cut -c 1-32 | head -n 1)"
+   seed_address: "$(dd if=/dev/urandom | base64 | head -c 32)"
 
    EOF
    ```
@@ -55,7 +55,7 @@ See the section [Metrics](#metrics) below how to configure a pseudo-random port 
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
 The Ansible role uses `seed_address` to configure an random ipv6 address for
-[this](./playbooks/roles/setup/tasks/network.yaml#L2)  reason.
+[this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
 
 ### Additional software
 
@@ -74,8 +74,8 @@ my_group:
 ### Compiling from source
 
 As default _HEAD_ (of branch _main_) is referenced.
-A dedicated branch can be used instead by the variable _<...>_git_version_.
-Furthermore _<...>_patches_ can hold additional patches (referenced by an URL) which will be applied on top of the branch.
+A dedicated branch can be used instead by the variable _<...>\_git_version_.
+Furthermore _<...>\_patches_ can hold additional patches (referenced by an URL) which will be applied on top of the branch.
 
 ### Metrics
 

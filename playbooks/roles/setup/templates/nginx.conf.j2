@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 server {
-  listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl;
+  listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
 
 {% if prometheus_node_exporter is true %}
   location = /metrics-node {
@@ -20,6 +20,6 @@ server {
 {% endif %}
 
   ssl_protocols TLSv1.3;
-  ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
-  ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+  ssl_certificate /etc/ssl/certs/nginx-selfsigned-metrics.crt;
+  ssl_certificate_key /etc/ssl/private/nginx-selfsigned-metrics.key;
 }
