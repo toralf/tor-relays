@@ -12,7 +12,7 @@
 
 - name: Check if key does exist
   ansible.builtin.stat:
-    path: /etc/ssl/private/nginx-selfsigned-metric.key
+    path: /etc/ssl/private/nginx-selfsigned-metrics.key
   register: _keyfile
 
 - name: Check if crt does exist
