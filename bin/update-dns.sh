@@ -39,6 +39,10 @@ trap Exit INT QUIT TERM EXIT
     grep -v '^NAME' |
     sort -n |
     while read -r name ipv4 ipv6; do
+      if [[ -z ${name} ]]; then
+        echo "Bummer!" >&2
+        exit 1
+      fi
       # IPv4
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
@@ -49,7 +53,7 @@ trap Exit INT QUIT TERM EXIT
     done
 ) | sudo tee -a ${hconf}.new >/dev/null
 
-if ! sudo diff ${hconf} ${hconf}.new; then
+if ! sudo diff -q ${hconf} ${hconf}.new; then
   echo -e "\n reloading DNS resolver" >&2
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload

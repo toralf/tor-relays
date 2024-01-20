@@ -24,17 +24,22 @@ os_version=$(hcloud image list --type system --output columns=name | grep '^debi
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 while read -r name; do
+  if [[ -z ${name} ]]; then
+    echo "Bummer!" >&2
+    exit 1
+  fi
+
   loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1) # dice a location
   if [[ " ${cax11_locations} " =~ " ${loc} " && $((RANDOM % 2)) -eq 0 ]]; then
     type="cax11"
   else
     type="cpx11"
   fi
-  echo "server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --poll-interval 2s --name ${name} --location $loc --type ${HCLOUD_TYPE:-$type}"
+  echo "--poll-interval 2s server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --name ${name} --location $loc --type ${HCLOUD_TYPE:-$type}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -r -P ${jobs} -L 1 hcloud
+  xargs -t -r -P ${jobs} -L 1 hcloud 1>/dev/null
 
-echo -e "\n update DNS ..."
+echo -e "\n updating DNS ..."
 $(dirname $0)/update-dns.sh
 
 echo -e "\n adding to ~/.ssh/known_hosts ..."

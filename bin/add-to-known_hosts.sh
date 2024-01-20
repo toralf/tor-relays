@@ -11,6 +11,6 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 jobs=$((2 * $(nproc)))
 
 for i in $*; do
-  grep -q -m 1 "^$i " ~/.ssh/known_hosts || echo ${i}
+  grep -q -m 1 "^$i " ~/.ssh/known_hosts || true
 done |
-  xargs -r -P ${jobs} -I '{}' ssh -n -oStrictHostKeyChecking=accept-new -oConnectTimeout=2 {} "uname -a"
+  xargs -r -P ${jobs} -I '{}' ssh -n -oStrictHostKeyChecking=accept-new -oConnectTimeout=2 {} "uname -a" 2>/dev/null
