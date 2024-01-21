@@ -16,7 +16,6 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# choose 50:50 of ARM (cax11) and AMD (cpx11) systems
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
 all_locations=$(hcloud location list --output json | jq -r '.[].name')
@@ -29,13 +28,24 @@ while read -r name; do
     exit 1
   fi
 
-  loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1) # dice a location
-  if [[ " ${cax11_locations} " =~ " ${loc} " && $((RANDOM % 2)) -eq 0 ]]; then
-    type="cax11"
+  if [[ -n ${HCLOUD_TYPE} ]]; then
+    type=${HCLOUD_TYPE}
+    if [[ ${type} == "cax11" ]]; then
+      loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$cax11_locations} | shuf -n 1)
+    else
+      loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1)
+    fi
   else
-    type="cpx11"
+    loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1)
+    # 50:50 if possible
+    if [[ " ${cax11_locations} " =~ " ${loc} " && $((RANDOM % 2)) -eq 0 ]]; then
+      type="cax11" # ARM
+    else
+      type="cpx11" # AMD
+    fi
   fi
-  echo "--poll-interval 2s server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --name ${name} --location $loc --type ${HCLOUD_TYPE:-$type}"
+
+  echo "--poll-interval 2s server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --name ${name} --location ${loc} --type ${type}"
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud 1>/dev/null
 
