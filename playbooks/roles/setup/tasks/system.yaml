@@ -57,24 +57,6 @@
     src: htoprc
     dest: /root/.config/htop/
 
-- name: Preserve old network device naming schema
-  ansible.builtin.lineinfile:
-    create: no
-    line: 'GRUB_CMDLINE_LINUX="net.ifnames=0"'
-    path: /etc/default/grub
-    regex: "^GRUB_CMDLINE_LINUX="
-  register: _grub
-  tags:
-    - never
-    - system-grub
-
-- name: Regenerate grub menue
-  ansible.builtin.command: update-grub
-  when: _grub.changed
-  tags:
-    - never
-    - system-grub
-
 - name: Ensure kernel crash dumps are made to /tmp
   ansible.builtin.cron:
     name: "core debug files"
@@ -98,16 +80,22 @@
         name:
           - "linux-image-{{ unstable_kernel_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
       register: _kernel
+      tags:
+        - update-unstable-kernel
 
 - name: Check if reboot is required
   ansible.builtin.stat:
     path: /var/run/reboot-required
   register: _stat_reboot
+  tags:
+    - update-unstable-kernel
 
-- name: Reboot into newer kernel if needed
+- name: Reboot if needed
   ansible.builtin.reboot:
     connect_timeout: 5
-    reboot_timeout: 120
+    reboot_timeout: 60
     pre_reboot_delay: 0
     post_reboot_delay: 25
   when: _stat_reboot.stat.exists or _kernel.changed
+  tags:
+    - update-unstable-kernel

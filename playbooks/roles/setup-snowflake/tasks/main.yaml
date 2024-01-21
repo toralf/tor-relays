@@ -1,4 +1,11 @@
 ---
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+  tags:
+    - facts
+    - snowflake-config
+
 - name: Main
   module_defaults:
     ansible.builtin.apt:

@@ -1,8 +1,14 @@
 ---
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+  tags:
+    - facts
+    - tor-config
+
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
-    - always
     - validate
 
 - name: Main

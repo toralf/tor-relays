@@ -1,3 +1,12 @@
 ---
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
+
+# metrics_port depends on up-to-date ip addresses (even for info playbooks, not only during setup)
+facts_subset:
+  - "!all"
+  - "!min"
+  - "all_ipv4_addresses"
+  - "all_ipv6_addresses"
+  - "default_ipv4"
+  - "default_ipv6"

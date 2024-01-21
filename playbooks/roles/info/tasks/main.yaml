@@ -1,4 +1,11 @@
 ---
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+  tags:
+    - facts
+    - metrics
+
 - name: "Ensure that the tmp dir does exist: {{ tmp_dir }}"
   ansible.builtin.file:
     path: "{{ tmp_dir }}"
