@@ -31,12 +31,12 @@ while read -r name; do
   if [[ -n ${HCLOUD_TYPE} ]]; then
     type=${HCLOUD_TYPE}
     if [[ ${type} == "cax11" ]]; then
-      loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$cax11_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
     else
-      loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
     fi
   else
-    loc=$(xargs -n 1 <<<${HCLOUD_ALL_LOCATIONS:-$all_locations} | shuf -n 1)
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
     # 50:50 if possible
     if [[ " ${cax11_locations} " =~ " ${loc} " && $((RANDOM % 2)) -eq 0 ]]; then
       type="cax11" # ARM
@@ -45,7 +45,7 @@ while read -r name; do
     fi
   fi
 
-  echo "--poll-interval 2s server create --image ${HCLOUD_OS_VERSION:-$os_version} --ssh-key ${HCLOUD_SSH_KEY:-$ssh_key} --name ${name} --location ${loc} --type ${type}"
+  echo "--poll-interval 2s server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud 1>/dev/null
 
