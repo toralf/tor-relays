@@ -11,6 +11,7 @@
   with_items:
     - "v4"
     - "v6"
+  register: _firewall
 
 - name: Save iptables state
   community.general.iptables_state:
@@ -20,3 +21,4 @@
   with_items:
     - "v4"
     - "v6"
+  when: _firewall.changed
