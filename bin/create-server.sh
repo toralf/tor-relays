@@ -28,7 +28,7 @@ while read -r name; do
     exit 1
   fi
 
-  if [[ -n ${HCLOUD_TYPE:-} ]]; then
+  if [[ -n ${HCLOUD_TYPE-} ]]; then
     type=${HCLOUD_TYPE}
     if [[ ${type} == "cax11" ]]; then
       loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
