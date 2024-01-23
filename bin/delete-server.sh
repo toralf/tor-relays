@@ -24,7 +24,12 @@ while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/${project}_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/${project}_bridgeline 2>/dev/null
-  sed -i -e "/^  *${name}:$/d" $(dirname $0)/../inventory/*.yaml 2>/dev/null
+  if grep -q "^    ${name}:$" $(dirname $0)/../inventory/*.yaml 2>/dev/null; then
+    # delete host from inventory only if it has no specific vars
+    if ! grep -A 1 "^    ${name}:$" $(dirname $0)/../inventory/*.yaml | tail -n 1 | grep -q '^      '; then
+      sed -i -e "/^    ${name}:$/d" $(dirname $0)/../inventory/*.yaml
+    fi
+  fi
   rm -f $(dirname $0)/../.ansible_facts/${name}
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
