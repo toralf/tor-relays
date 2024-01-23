@@ -1,4 +1,11 @@
 ---
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+  tags:
+    - facts
+    - bridgeline
+
 - name: Set hashed-fingerprint
   ansible.builtin.import_tasks: hashed-fingerprint.yaml
   tags:
