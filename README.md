@@ -18,7 +18,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    ```bash
    cat <<EOF >> secrets/local.yaml
    ---
-   seed_address: "$(dd if=/dev/urandom | base64 | head -c 32)"
+   seed_address: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
 
    EOF
    ```
