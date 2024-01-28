@@ -96,7 +96,7 @@
 
 - name: Reboot if needed
   ansible.builtin.reboot:
-    connect_timeout: 5
+    connect_timeout: 2
     reboot_timeout: 60
     pre_reboot_delay: 0
     post_reboot_delay: 20
