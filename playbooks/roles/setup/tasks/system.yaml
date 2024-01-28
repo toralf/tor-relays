@@ -66,7 +66,7 @@
 - name: Install unstable kernel
   when: unstable_kernel_version
   block:
-    - name: Configure repository "unstable"
+    - name: Configure repository "{{ unstable_kernel_repo }}"
       ansible.builtin.apt_repository:
         filename: "{{ unstable_kernel_repo }}"
         repo: "deb http://deb.debian.org/debian {{ unstable_kernel_repo }} main"
@@ -74,14 +74,18 @@
       ansible.builtin.copy:
         src: apt-preferences
         dest: /etc/apt/preferences
-    - name: Install or update unstable kernel
+    - name: Gather facts for "{{ unstable_kernel_repo }}" kernel
+      ansible.builtin.setup:
+        gather_subset:
+          - cmdline
+    - name: Install or update "{{ unstable_kernel_repo }}" kernel
       ansible.builtin.apt:
         default_release: "{{ unstable_kernel_repo }}"
         name:
           - "linux-image-{{ unstable_kernel_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
       register: _kernel
-      tags:
-        - unstable-kernel-version
+  tags:
+    - unstable-kernel-version
 
 - name: Check if reboot is required
   ansible.builtin.stat:
