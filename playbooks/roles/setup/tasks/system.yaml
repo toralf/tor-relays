@@ -99,7 +99,7 @@
     connect_timeout: 5
     reboot_timeout: 60
     pre_reboot_delay: 0
-    post_reboot_delay: 25
+    post_reboot_delay: 20
   when: _stat_reboot.stat.exists or _kernel.changed
   tags:
     - kernel
