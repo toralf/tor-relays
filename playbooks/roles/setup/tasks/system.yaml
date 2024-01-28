@@ -63,14 +63,14 @@
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
 
-- name: Install unstable kernel
-  when: kernel_version and kernel_repo
+- name: Setup "{{ kernel_repo }}" kernel
+  when: kernel_version != "" and kernel_repo != ""
   block:
     - name: Configure repository "{{ kernel_repo }}"
       ansible.builtin.apt_repository:
         filename: "{{ kernel_repo }}"
         repo: "deb http://deb.debian.org/debian {{ kernel_repo }} main"
-    - name: Apt pinning
+    - name: Apt pinning for "{{ kernel_repo }}" kernel
       ansible.builtin.copy:
         src: apt-preferences
         dest: /etc/apt/preferences
