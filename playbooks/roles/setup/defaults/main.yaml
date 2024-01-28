@@ -2,5 +2,5 @@
 additional_ports: []
 additional_software: []
 
-unstable_kernel_version: ""
-unstable_kernel_repo: "unstable" # or "experimental"
+kernel_version: ""
+kernel_repo: "unstable"
