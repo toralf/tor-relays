@@ -1,17 +1,4 @@
 ---
-# https://community.torproject.org/relay/setup/snowflake/standalone/
-
-- name: Install or update Git
-  ansible.builtin.apt:
-    name:
-      - git
-
-- name: Install or update Go
-  ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}-backports"
-    name:
-      - golang-go
-
 - name: Add the snowflake user
   ansible.builtin.user:
     name: snowflake
@@ -24,7 +11,7 @@
     group: snowflake
     mode: "0700"
 
-- name: Prepare repo
+- name: Prepare snowflake repo
   become: true
   become_user: snowflake
   ansible.builtin.git:
@@ -33,7 +20,7 @@
     version: "{{ snowflake_git_version }}"
     force: true
 
-- name: Apply patches
+- name: Apply snowflake patches
   become: true
   become_user: snowflake
   ansible.builtin.shell:
@@ -43,14 +30,14 @@
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
 
-- name: Build proxy
+- name: Build snowflake
   become: true
   become_user: snowflake
   ansible.builtin.command:
     cmd: go build
     chdir: /home/snowflake/snowflake/proxy
 
-- name: Copy proxy
+- name: Copy snowflake
   ansible.builtin.copy:
     src: /home/snowflake/snowflake/proxy/proxy
     dest: /usr/bin/

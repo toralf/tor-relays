@@ -63,3 +63,12 @@
       ansible.builtin.import_tasks: timer.yaml
       tags:
         - timer
+    - name: Kernel
+      when: kernel_repo != ""
+      ansible.builtin.import_tasks: kernel.yaml
+      tags:
+        - kernel
+    - name: Reboot
+      ansible.builtin.import_tasks: reboot.yaml
+      tags:
+        - reboot

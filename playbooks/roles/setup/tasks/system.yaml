@@ -5,15 +5,11 @@
     state: directory
     mode: "0700"
 
-- name: Configure repository "backports"
-  ansible.builtin.apt_repository:
-    filename: "backports"
-    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
-
 - name: Install or update base software
   ansible.builtin.apt:
     name:
       - apt-transport-https
+      - git
       - gpg
       - gpg-agent
       - ntp
@@ -23,6 +19,17 @@
   when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Configure repository "backports"
+  ansible.builtin.apt_repository:
+    filename: "backports"
+    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+
+- name: Install or update Go
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}-backports"
+    name:
+      - golang-go
 
 - name: Configure auto upgrades
   ansible.builtin.copy:
@@ -62,44 +69,3 @@
     name: "core debug files"
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
-
-- name: Setup "{{ kernel_repo }}" kernel
-  when: kernel_version != "" and kernel_repo != ""
-  block:
-    - name: Configure repository "{{ kernel_repo }}"
-      ansible.builtin.apt_repository:
-        filename: "{{ kernel_repo }}"
-        repo: "deb http://deb.debian.org/debian {{ kernel_repo }} main"
-    - name: Apt pinning for "{{ kernel_repo }}" kernel
-      ansible.builtin.copy:
-        src: apt-preferences
-        dest: /etc/apt/preferences
-    - name: Gather facts for "{{ kernel_repo }}" kernel
-      ansible.builtin.setup:
-        gather_subset:
-          - cmdline
-    - name: Install or update "{{ kernel_repo }}" kernel
-      ansible.builtin.apt:
-        default_release: "{{ kernel_repo }}"
-        name:
-          - "linux-image-{{ kernel_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
-      register: _kernel
-  tags:
-    - kernel
-
-- name: Check if reboot is required
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: _stat_reboot
-  tags:
-    - kernel
-
-- name: Reboot if needed
-  ansible.builtin.reboot:
-    connect_timeout: 2
-    reboot_timeout: 60
-    pre_reboot_delay: 0
-    post_reboot_delay: 20
-  when: _stat_reboot.stat.exists or _kernel.changed
-  tags:
-    - kernel

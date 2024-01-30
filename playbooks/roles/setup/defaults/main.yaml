@@ -3,4 +3,4 @@ additional_ports: []
 additional_software: []
 
 kernel_version: ""
-kernel_repo: "" # e.g. "unstable" or "experimental"
+kernel_repo: ""

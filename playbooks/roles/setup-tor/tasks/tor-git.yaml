@@ -1,10 +1,5 @@
 ---
-- name: Git Install or update Git
-  ansible.builtin.apt:
-    name:
-      - git
-
-- name: Git Install or update toolchain
+- name: Install or update toolchain
   ansible.builtin.apt:
     name:
       - automake
@@ -13,11 +8,11 @@
       - libssl-dev
       - zlib1g-dev
 
-- name: Git Add the Tor user
+- name: Add the Tor user
   ansible.builtin.user:
     name: tor
 
-- name: Git Create Ansible tmp dir for user tor
+- name: Create Ansible tmp dir for user tor
   ansible.builtin.file:
     path: /home/tor/.ansible/tmp
     state: directory
@@ -25,7 +20,7 @@
     group: tor
     mode: "0700"
 
-- name: Git Prepare repo
+- name: Prepare repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git/
     dest: /root/tor
@@ -33,7 +28,7 @@
     force: true
   register: _repo
 
-- name: Git Apply patches
+- name: Apply patches
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/tor
@@ -42,7 +37,7 @@
   loop: "{{ tor_patches }}"
   register: _patch
 
-- name: Git Build Tor
+- name: Build Tor
   when: _repo.changed or _patch.changed
   ansible.builtin.shell:
     cmd: |
@@ -56,7 +51,7 @@
     chdir: /root/tor
   register: _build
 
-- name: Git Create system directories
+- name: Create system directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -76,19 +71,19 @@
     mode: a+x
   register: _binary
 
-- name: Git Install Tor
+- name: Install Tor
   when: _binary.changed
   ansible.builtin.shell:
     cmd: make install
     chdir: /root/tor
 
-- name: Git Add systemd unit
+- name: Add systemd unit
   ansible.builtin.copy:
     src: tor.service
     dest: /etc/systemd/system/
   register: _service
 
-- name: Git Set sysctl value
+- name: Set sysctl value
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "2" # debian bookworm default: 14886
