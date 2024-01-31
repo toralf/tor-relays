@@ -5,6 +5,10 @@
     state: directory
     mode: "0700"
 
+- name: Upgrade distribution
+  ansible.builtin.apt:
+    upgrade: dist
+
 - name: Install or update base software
   ansible.builtin.apt:
     name:
