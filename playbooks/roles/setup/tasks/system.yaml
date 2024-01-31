@@ -36,10 +36,9 @@
   register: _sysctl_state
 
 - name: "Ensure sysctl is reloaded"
-  changed_when: true
-  ansible.builtin.command:
-    argv: ["sysctl", "--system"]
   when: _sysctl_state.changed
+  changed_when: true
+  ansible.builtin.command: sysctl --system
 
 - name: Tweak readline
   ansible.builtin.lineinfile:
