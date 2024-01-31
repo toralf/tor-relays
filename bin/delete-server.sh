@@ -8,7 +8,11 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 hash -r hcloud
 
-[[ $# -ne 0 ]]
+if [[ $# -eq 0 ]]; then
+  echo "no arguments given" >&2
+  exit 1
+fi
+
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}\n"
 
@@ -16,11 +20,6 @@ jobs=$((2 * $(nproc)))
 
 echo -e " deleting config(s) ..."
 while read -r name; do
-  if [[ -z ${name} ]]; then
-    echo "Bummer!" >&2
-    exit 1
-  fi
-
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/${project}_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/${project}_bridgeline 2>/dev/null
