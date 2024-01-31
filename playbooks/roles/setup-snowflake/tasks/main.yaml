@@ -23,10 +23,17 @@
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+
+    - name: Tools
+      ansible.builtin.import_tasks: tools.yaml
+      tags:
+        - tools
+
     - name: Snowflake
       ansible.builtin.import_tasks: snowflake.yaml
       tags:
         - snowflake
+
     - name: Snowflake config
       ansible.builtin.import_tasks: snowflake-config.yaml
       tags:

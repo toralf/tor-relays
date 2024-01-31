@@ -41,33 +41,40 @@
       ansible.builtin.import_tasks: system.yaml
       tags:
         - system
+
     - name: Network
       ansible.builtin.import_tasks: network.yaml
       tags:
         - network
+
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+
     - name: Prometheus node exporter
       when: prometheus_node_exporter is true
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
+
     - name: metrics
       when: prometheus_server is defined
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
+
     - name: Timer
       ansible.builtin.import_tasks: timer.yaml
       tags:
         - timer
+
     - name: Kernel
-      when: kernel_repo != ""
+      when: kernel_repo != "" and kernel_version != ""
       ansible.builtin.import_tasks: kernel.yaml
       tags:
         - kernel
+
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
       tags:

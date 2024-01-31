@@ -35,15 +35,18 @@
       ansible.builtin.iptables:
         table: nat
         flush: yes
+
     - name: DNAT TCP v6 except obfs4 port
       when: obfs4_port is defined
       ansible.builtin.iptables:
         protocol: tcp
         destination_ports: "1:{{ obfs4_port | int - 1 }},{{ obfs4_port | int  + 1 }}:65535"
+
     - name: DNAT TCP v6
       when: obfs4_port is not defined
       ansible.builtin.iptables:
         protocol: tcp
+
     - name: DNAT non-TCP v6
       ansible.builtin.iptables:
         protocol: "{{ item }}"

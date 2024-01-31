@@ -1,0 +1,16 @@
+---
+- name: Install or update base software
+  ansible.builtin.apt:
+    name:
+      - git
+
+- name: Configure repository "backports"
+  ansible.builtin.apt_repository:
+    filename: "backports"
+    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+
+- name: Install or update Go
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}-backports"
+    name:
+      - golang-go

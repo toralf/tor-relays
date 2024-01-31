@@ -14,3 +14,19 @@
     that:
       - "metrics_port is defined"
       - "prometheus_server is ansible.utils.ipv4"
+
+- name: Validate kernel_repo
+  when: kernel_repo != ""
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "kernel_version is defined"
+      - 'kernel_version != ""'
+
+- name: Validate kernel_version
+  when: kernel_version != ""
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "kernel_repo is defined"
+      - 'kernel_repo != ""'
