@@ -47,9 +47,18 @@
           --localstatedir=/var/lib --datarootdir=/usr/share \
           --disable-systemd --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests \
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --enable-module-relay
-      make -j2
+      make -j$(nproc)
     chdir: /root/tor
   register: _build
+
+# test if Tor service needs a restart
+- name: Copy Tor binary
+  ansible.builtin.copy:
+    src: /root/tor/src/app/tor
+    dest: /usr/bin/
+    remote_src: yes
+    mode: a+x
+  register: _binary
 
 - name: Create system directories
   ansible.builtin.file:
@@ -62,26 +71,21 @@
     - /var/lib/tor/
     - /var/log/tor/
 
-# test if Tor service needs a restart
-- name: Copy Tor binary
-  ansible.builtin.copy:
-    src: /root/tor/src/app/tor
-    dest: /usr/bin/
-    remote_src: yes
-    mode: a+x
-  register: _binary
-
 - name: Install Tor
   when: _binary.changed
   ansible.builtin.shell:
     cmd: make install
     chdir: /root/tor
 
+- name: Add apparmor config
+  ansible.builtin.copy:
+    src: system_tor
+    dest: /etc/apparmor.d/
+
 - name: Add systemd unit
   ansible.builtin.copy:
     src: tor.service
     dest: /etc/systemd/system/
-  register: _service
 
 - name: Set sysctl value
   ansible.posix.sysctl:
