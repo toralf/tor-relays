@@ -10,4 +10,4 @@ tor_git_version: "HEAD"
 tor_patches: []
 tor_build_from_source: true
 
-tor_force_restart: false
+force_restart: false

@@ -19,7 +19,7 @@
     state: restarted
     daemon_reload: true
     enabled: true
-  when: _sysctl.changed or _service.changed or (_binary.changed | default(false))
+  when: force_restart or _sysctl.changed or _service.changed
 
 - name: Ensure Snowflake service is started
   ansible.builtin.service:

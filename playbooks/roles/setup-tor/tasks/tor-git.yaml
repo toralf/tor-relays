@@ -93,3 +93,8 @@
     value: "2" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
+
+- name: Set fact
+  when: _binary.changed
+  ansible.builtin.set_fact:
+    force_restart: true

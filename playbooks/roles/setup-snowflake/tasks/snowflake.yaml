@@ -44,3 +44,8 @@
     mode: a+x
     remote_src: yes
   register: _binary
+
+- name: Set fact
+  when: _binary.changed
+  ansible.builtin.set_fact:
+    force_restart: true
