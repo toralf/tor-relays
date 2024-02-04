@@ -2,5 +2,5 @@
 additional_ports: []
 additional_software: []
 
-kernel_version: ""
-kernel_repo: ""
+kernel_debian_version: ""
+kernel_debian_repo: ""

@@ -69,11 +69,11 @@
       tags:
         - timer
 
-    - name: Kernel
-      when: kernel_repo != "" and kernel_version != ""
-      ansible.builtin.import_tasks: kernel.yaml
+    - name: Kernel Debian
+      when: kernel_debian_repo != "" and kernel_debian_version != ""
+      ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
-        - kernel
+        - kernel-debian
 
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
