@@ -34,7 +34,7 @@
   changed_when: false
   ansible.builtin.command: ip -6 a
   register: _result
-  failed_when: (_result.stderr_lines | length > 0)
+  failed_when: _result.stderr_lines | length > 0
 
 - name: Gather facts
   ansible.builtin.setup:

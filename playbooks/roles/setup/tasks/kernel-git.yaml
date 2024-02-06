@@ -14,29 +14,24 @@
       - libncurses5-dev
       - libssl-dev
 
-- name: Check existance of local repo
-  ansible.builtin.stat:
-    path: /root/linux
-  register: _repo_is_cloned
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
 
-- name: Check for low RAM
-  when: _repo_is_cloned.stat.exists is false
-  block:
-    - name: Gather facts
-      ansible.builtin.setup:
-        gather_subset:
-          - hardware
+- name: Init repo if low RAM
+  when: ansible_facts.memtotal_mb < 3000
+  ansible.builtin.shell:
+    cmd: |
+      set -e
 
-    - name: Quirk for low RAM
-      when: ansible_facts.memtotal_mb < 3000
-      ansible.builtin.shell:
-        cmd: |
-          set -e
-
-          git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git /root/linux
-          cd ./linux
-          git fetch --unshallow
-        chdir: /root
+      git clone --depth=1 {{ kernel_git_repo }} /root/linux &&\
+        cd ./linux &&\
+        git config gc.auto 0 &&\
+        git fetch --unshallow &&\
+        git pull
+    chdir: /root
+    creates: /root/linux/
 
 - name: Init or update linux repo
   ansible.builtin.git:
@@ -44,7 +39,6 @@
     dest: /root/linux
     version: "{{ kernel_git_version }}"
     force: true
-  register: _repo
 
 - name: "Create or update src for {{ kernel_git_revision }}"
   ansible.builtin.shell:
@@ -57,7 +51,9 @@
 
 - name: Apply patches
   ansible.builtin.shell:
-    cmd: curl -s {{ item }} | patch -p 1
+    cmd: |
+      curl -s {{ item }} |
+        patch -p 1
     chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
   loop_control:
     label: "{{ item }}"
@@ -73,10 +69,9 @@
       fi
 
       # ARM cax11 had spurious issues with -j 2
-      make -j $(nproc) || make -j 1
-      make install
-      make modules_install
-
-      update-initramfs -u
-      touch /var/run/reboot-required
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 2000) | int }} &&\
+        make install &&\
+        make modules_install &&\
+        update-initramfs -u &&\
+        touch /var/run/reboot-required
     chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
