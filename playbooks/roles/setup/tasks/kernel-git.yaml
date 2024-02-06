@@ -1,0 +1,82 @@
+---
+- name: Install or update toolchain
+  ansible.builtin.apt:
+    name:
+      - bc
+      - bison
+      - build-essential
+      - cpio
+      - dwarves
+      - flex
+      - git
+      - kmod
+      - libelf-dev
+      - libncurses5-dev
+      - libssl-dev
+
+- name: Check existance of local repo
+  ansible.builtin.stat:
+    path: /root/linux
+  register: _repo_is_cloned
+
+- name: Check for low RAM
+  when: _repo_is_cloned.stat.exists is false
+  block:
+    - name: Gather facts
+      ansible.builtin.setup:
+        gather_subset:
+          - hardware
+
+    - name: Quirk for low RAM
+      when: ansible_facts.memtotal_mb < 3000
+      ansible.builtin.shell:
+        cmd: |
+          set -e
+
+          git clone --depth=1 git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git /root/linux
+          cd ./linux
+          git fetch --unshallow
+        chdir: /root
+
+- name: Init or update linux repo
+  ansible.builtin.git:
+    repo: "{{ kernel_git_repo }}"
+    dest: /root/linux
+    version: "{{ kernel_git_version }}"
+    force: true
+  register: _repo
+
+- name: "Create or update src for {{ kernel_git_revision }}"
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+
+      git archive "{{ kernel_git_revision }}" --prefix linux-"{{ kernel_git_revision }}/" |
+        (cd /usr/src/; sudo tar -xf-)
+    chdir: /root/linux
+
+- name: Apply patches
+  ansible.builtin.shell:
+    cmd: curl -s {{ item }} | patch -p 1
+    chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
+  loop_control:
+    label: "{{ item }}"
+  loop: "{{ kernel_git_patches }}"
+
+- name: "Build kernel {{ kernel_git_revision }}"
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+
+      if [ ! -s .config ]; then
+        yes '' | make localmodconfig
+      fi
+
+      # ARM cax11 had spurious issues with -j 2
+      make -j $(nproc) || make -j 1
+      make install
+      make modules_install
+
+      update-initramfs -u
+      touch /var/run/reboot-required
+    chdir: "/usr/src/linux-{{ kernel_git_revision }}/"

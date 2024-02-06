@@ -75,6 +75,12 @@
       tags:
         - kernel-debian
 
+    - name: Kernel Git
+      when: kernel_git_revision != ""
+      ansible.builtin.import_tasks: kernel-git.yaml
+      tags:
+        - kernel-git
+
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
       tags:

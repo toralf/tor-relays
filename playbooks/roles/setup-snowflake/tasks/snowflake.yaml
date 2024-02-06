@@ -11,7 +11,7 @@
     group: snowflake
     mode: "0700"
 
-- name: Prepare snowflake repo
+- name: Init or update repo
   become: true
   become_user: snowflake
   ansible.builtin.git:

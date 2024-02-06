@@ -16,6 +16,7 @@
       - gpg
       - gpg-agent
       - ntp
+      - psmisc
       - unattended-upgrades
 
 - name: Install or update additional software

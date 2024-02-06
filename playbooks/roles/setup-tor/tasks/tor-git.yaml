@@ -1,5 +1,5 @@
 ---
-- name: Install or update toolchain
+- name: Install or update toolchain for Tor build
   ansible.builtin.apt:
     name:
       - automake
@@ -20,7 +20,7 @@
     group: tor
     mode: "0700"
 
-- name: Prepare repo
+- name: Init or update repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git/
     dest: /root/tor
@@ -49,7 +49,6 @@
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --enable-module-relay
       make -j$(nproc)
     chdir: /root/tor
-  register: _build
 
 # test if Tor service needs a restart
 - name: Copy Tor binary
