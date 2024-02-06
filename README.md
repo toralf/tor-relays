@@ -50,7 +50,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 ## Details
 
 The deployment is made by _Ansible_.
-Replace _public_ with _private_ for a private Tor bridge or with _snowflake_ for the _Snowflake standlone proxy_.
+Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge ot a _Snowflake standlone proxy_ respectively.
 See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
@@ -79,10 +79,9 @@ Furthermore _<...>\_patches_ can hold additional patches (referenced by an URL) 
 
 ### Metrics
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`)
-then it is allowed in the firewall to scrape Tor metrics.
-An Nginx is deployed to encrypt the metrics data on transit (acting as a reverse proxy).
-The firewall allows only the Prometheus server to scrape metrics.
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then it is allowed in the firewall to scrape Tor metrics.
+An Nginx is deployed to encrypt the metrics data on transit.
+A firewall rule allows only the Prometheus server ip address to scrape metrics.
 No HTTP Basic Auth is therefore needed.
 
 A _Prometheus node exporter_ is installed by defining `prometheus_node_exporter: true`.
