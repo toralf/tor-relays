@@ -19,17 +19,17 @@
     gather_subset:
       - hardware
 
-- name: Init repo if low RAM
+- name: Init repo quirk for small RAM
   when: ansible_facts.memtotal_mb < 3000
   ansible.builtin.shell:
     cmd: |
       set -e
 
-      git clone --depth=1 {{ kernel_git_repo }} /root/linux &&\
-        cd ./linux &&\
-        git config gc.auto 0 &&\
-        git fetch --unshallow &&\
-        git pull
+      git clone --depth=1 {{ kernel_git_repo }}
+      cd ./linux
+      git config gc.auto 0
+      git config pack.threads 1
+      git fetch --tags
     chdir: /root
     creates: /root/linux/
 
@@ -43,8 +43,6 @@
 - name: "Create or update src for {{ kernel_git_revision }}"
   ansible.builtin.shell:
     cmd: |
-      set -e
-
       git archive "{{ kernel_git_revision }}" --prefix linux-"{{ kernel_git_revision }}/" |
         (cd /usr/src/; sudo tar -xf-)
     chdir: /root/linux
@@ -68,10 +66,9 @@
         yes '' | make localmodconfig
       fi
 
-      # ARM cax11 had spurious issues with -j 2
-      make -j {{ 1 + (ansible_facts.memtotal_mb / 2000) | int }} &&\
-        make install &&\
-        make modules_install &&\
-        update-initramfs -u &&\
-        touch /var/run/reboot-required
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
+      make install
+      make modules_install
+      update-initramfs -u
+      touch /var/run/reboot-required
     chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
