@@ -34,6 +34,11 @@ function addRules() {
   $ipt -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s -j ACCEPT
   $ipt -A INPUT -p icmp --icmp-type echo-request -j DROP
 
+{% if obfs4_port is defined %}
+  # obfs4 port
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos-{{ obfs4_port }} --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
+{%endif %}
+
 {% if metrics_port is defined and prometheus_server is defined %}
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
