@@ -50,6 +50,7 @@
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
       tags:
+        - never
         - firewall
 
     - name: Prometheus node exporter
