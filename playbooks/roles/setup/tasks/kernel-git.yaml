@@ -21,7 +21,7 @@
       - hardware
 
 - name: Quirk for linux repo for small RAM
-  when: ansible_facts.memtotal_mb < 3000
+  when: ansible_facts.memtotal_mb < 2048
   ansible.builtin.shell:
     cmd: |
       set -e
@@ -67,9 +67,8 @@
     cmd: |
       set -e
 
-      if [ ! -s .config ]; then
-        yes '' | make localmodconfig
-      fi
+      yes '' | make localmodconfig
+      sed -i -e 's,^# CONFIG_LOCALVERSION_AUTO is not set$,CONFIG_LOCALVERSION_AUTO=y,' .config
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
       make install
