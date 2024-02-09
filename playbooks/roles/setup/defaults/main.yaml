@@ -7,5 +7,6 @@ kernel_debian_repo: ""
 
 kernel_git_version: "HEAD"
 kernel_git_repo: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
+kernel_git_repo_dir: "/root/linux"
 kernel_git_revision: "" # e.g. "v6.7.3"
 kernel_git_patches: []

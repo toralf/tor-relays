@@ -19,24 +19,25 @@
     gather_subset:
       - hardware
 
-- name: Init repo quirk for small RAM
+- name: Quirk for linux repo for small RAM
   when: ansible_facts.memtotal_mb < 3000
   ansible.builtin.shell:
     cmd: |
       set -e
 
-      git clone --depth=1 {{ kernel_git_repo }}
-      cd ./linux
-      git config gc.auto 0
-      git config pack.threads 1
+      git config --global gc.auto 0
+      git config --global pack.threads 1
+
+      git clone --depth=1 {{ kernel_git_repo }} {{ kernel_git_repo_dir }}
+      cd {{ kernel_git_repo_dir }}
       git fetch --tags
-    chdir: /root
-    creates: /root/linux/
+    chdir: "/root"
+    creates: "{{ kernel_git_repo_dir }}"
 
 - name: Init or update linux repo
   ansible.builtin.git:
     repo: "{{ kernel_git_repo }}"
-    dest: /root/linux
+    dest: "{{ kernel_git_repo_dir }}"
     version: "{{ kernel_git_version }}"
     force: true
 
@@ -45,7 +46,7 @@
     cmd: |
       git archive "{{ kernel_git_revision }}" --prefix linux-"{{ kernel_git_revision }}/" |
         (cd /usr/src/; sudo tar -xf-)
-    chdir: /root/linux
+    chdir: "{{ kernel_git_repo_dir }}"
 
 - name: Apply patches
   ansible.builtin.shell:
