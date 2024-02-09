@@ -11,7 +11,8 @@
     group: snowflake
     mode: "0700"
 
-- name: Init or update repo
+- name: Init or update repo for Snowflake
+  when: not ansible_check_mode
   become: true
   become_user: snowflake
   ansible.builtin.git:
@@ -31,6 +32,7 @@
   loop: "{{ snowflake_patches }}"
 
 - name: Build snowflake
+  when: not ansible_check_mode
   become: true
   become_user: snowflake
   ansible.builtin.command:
@@ -38,6 +40,7 @@
     chdir: /home/snowflake/snowflake/proxy
 
 - name: Copy snowflake
+  when: not ansible_check_mode
   ansible.builtin.copy:
     src: /home/snowflake/snowflake/proxy/proxy
     dest: /usr/bin/

@@ -14,14 +14,15 @@
   register: _service
 
 - name: Restart Snowflake service
+  when: not ansible_check_mode and (force_restart or _sysctl.changed or _service.changed)
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted
     daemon_reload: true
     enabled: true
-  when: force_restart or _sysctl.changed or _service.changed
 
 - name: Ensure Snowflake service is started
+  when: not ansible_check_mode
   ansible.builtin.service:
     name: snowflake-proxy
     state: started

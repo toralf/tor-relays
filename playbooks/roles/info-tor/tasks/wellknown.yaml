@@ -10,6 +10,7 @@
     path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
 - name: Ensure fingerprint is in wellknown file
+  when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

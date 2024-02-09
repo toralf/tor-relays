@@ -1,5 +1,6 @@
 ---
-- name: Init or update repo
+- name: Init or update repo of Lyrebird
+  when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     dest: /root/lyrebird
@@ -15,11 +16,13 @@
   loop: "{{ lyrebird_patches }}"
 
 - name: Build Lyrebird
+  when: not ansible_check_mode
   ansible.builtin.command:
     cmd: go build ./cmd/lyrebird
     chdir: /root/lyrebird
 
 - name: Copy Lyrebird
+  when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/lyrebird/lyrebird
     dest: /usr/bin/

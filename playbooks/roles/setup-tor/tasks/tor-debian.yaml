@@ -40,6 +40,7 @@
         dest: /etc/systemd/system/tor@default.service.d/override.conf
 
 - name: Install or update Tor
+  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - deb.torproject.org-keyring

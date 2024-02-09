@@ -6,13 +6,14 @@
   register: _config
 
 - name: Restart Tor service
+  when: not ansible_check_mode and (force_restart or _config.changed)
   ansible.builtin.service:
     name: tor
     state: restarted
     daemon_reload: true
-  when: force_restart or _config.changed
 
 - name: Ensure Tor service is started
+  when: not ansible_check_mode
   ansible.builtin.service:
     name: tor
     state: started

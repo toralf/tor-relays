@@ -10,6 +10,7 @@
     upgrade: dist
 
 - name: Install or update base software
+  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - apt-transport-https

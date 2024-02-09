@@ -1,5 +1,6 @@
 ---
 - name: Install or update toolchain for Snowflake build
+  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - git
@@ -10,6 +11,7 @@
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
 - name: Install or update Go for Snowflake build
+  when: not ansible_check_mode
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
