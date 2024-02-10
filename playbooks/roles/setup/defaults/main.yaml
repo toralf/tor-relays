@@ -3,9 +3,9 @@ additional_ports: []
 additional_software: []
 
 kernel_debian_version: ""
-kernel_debian_repo: ""
+kernel_debian_repo: "" # "experimental"
 
-kernel_git_version: "HEAD"
+kernel_git_version: "HEAD" # usually the default branch
 kernel_git_repo: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
 kernel_git_repo_dir: "/root/linux"
 kernel_git_revision: "" # e.g. "v6.7.3"
