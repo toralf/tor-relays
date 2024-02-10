@@ -76,6 +76,11 @@
       tags:
         - kernel-debian
 
+    - name: Swap
+      ansible.builtin.import_tasks: swap.yaml
+      tags:
+        - swap
+
     - name: Kernel Git
       when: kernel_git_revision != ""
       ansible.builtin.import_tasks: kernel-git.yaml

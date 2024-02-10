@@ -1,0 +1,27 @@
+---
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+
+- name: Create swap file
+  when: ansible_facts.memtotal_mb < 4096
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      if ! grep -q "/swapfile" /etc/fstab; then
+        echo "/swapfile  none  swap  defaults  0  0" >> /etc/fstab
+      fi
+      swapon /swapfile
+    creates: /swapfile
+
+- name: Set sysctl swappiness
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "5" # only use swap space when 95% or more of physical RAM is used up
+    sysctl_file: /etc/sysctl.d/21tor-generic.conf
+    sysctl_set: true
