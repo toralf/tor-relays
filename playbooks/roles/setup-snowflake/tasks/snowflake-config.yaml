@@ -1,5 +1,5 @@
 ---
-- name: Limit amount of user namespaces
+- name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "2" # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287

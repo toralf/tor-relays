@@ -1,5 +1,5 @@
 ---
-# goal:     enlarge the cost of a network scanner for an IPv6 scan of the obfs4 port
+# goal:     enlarge the cost of a network scanner for an IPv6 scan of e.g. the obfs4 port
 # solution: set the default <prefix>::1 IPv6 address to arbitrarily choosen address
 #           and re-route incoming ipv6 traffic to it, exception: the destination port is the obfs4 port
 - name: Configure new ipv6 address
@@ -28,7 +28,6 @@
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
-  when: ansible_facts.bios_vendor == 'Hetzner'
 
 - name: Get ipv6
   changed_when: false

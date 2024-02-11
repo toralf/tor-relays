@@ -49,7 +49,7 @@
       - tor-geoipdb
   register: _binary
 
-- name: Set sysctl value
+- name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     value: "0" # Debian  bookworm default: 14886

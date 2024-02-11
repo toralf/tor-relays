@@ -14,8 +14,11 @@
   ansible.builtin.apt:
     name:
       - apt-transport-https
+      - cron
       - gpg
       - gpg-agent
+      - htop
+      - net-tools
       - ntp
       - psmisc
       - unattended-upgrades

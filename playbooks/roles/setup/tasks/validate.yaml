@@ -1,18 +1,23 @@
 ---
+- name: Validate ipv6
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is defined"
+      #- "ansible_facts.default_ipv6.address is not match('fe80::')"
+
 - name: Validate metrics_port
-  when: metrics_port is defined
+  when: metrics_port is defined and metrics_port != ""
   ansible.builtin.assert:
     quiet: true
     that:
       - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
-      - "prometheus_server is defined"
 
 - name: Validate prometheus_server
-  when: prometheus_server is defined
+  when: prometheus_server is defined and prometheus_server != ""
   ansible.builtin.assert:
     quiet: true
     that:
-      - "metrics_port is defined"
       - "prometheus_server is ansible.utils.ipv4"
 
 - name: Validate kernel_debian_repo

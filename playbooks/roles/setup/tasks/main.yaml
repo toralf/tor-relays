@@ -6,10 +6,12 @@
     - facts
     - firewall
     - metrics
+    - validate
 
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
+    - always
     - validate
 
 - name: Main
@@ -42,15 +44,15 @@
       tags:
         - system
 
-    - name: Network
-      ansible.builtin.import_tasks: network.yaml
+    - name: IPv6
+      when: ansible_facts.bios_vendor == 'Hetzner'
+      ansible.builtin.import_tasks: ipv6.yaml
       tags:
-        - network
+        - ipv6
 
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
       tags:
-        - never
         - firewall
 
     - name: Prometheus node exporter
@@ -60,7 +62,7 @@
         - prometheus-node-exporter
 
     - name: metrics
-      when: prometheus_server is defined
+      when: metrics_port is defined and metrics_port != "" and prometheus_server is defined and prometheus_server != ""
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics

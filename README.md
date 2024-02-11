@@ -55,7 +55,7 @@ See the section [Metrics](#metrics) below how to configure a pseudo-random port 
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
 The Ansible role uses `seed_address` to configure an random ipv6 address for
-[this](./playbooks/roles/setup/tasks/network.yaml#L2) reason.
+[this](./playbooks/roles/setup/tasks/ipv6.yaml#L2) reason.
 
 ### Additional software
 

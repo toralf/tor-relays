@@ -15,7 +15,7 @@
       - "(obfs4_port | int > 0) and (obfs4_port | int < 2**16)"
 
 - name: Validate metrics_port
-  when: metrics_port is defined
+  when: metrics_port is defined and metrics_port != ""
   ansible.builtin.assert:
     quiet: true
     that:
