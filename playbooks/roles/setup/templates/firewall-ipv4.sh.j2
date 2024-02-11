@@ -61,4 +61,6 @@ ipt=/sbin/iptables
 if [[ $1 == "start" ]]; then
   clearAll
   addRules
+else
+  $1
 fi

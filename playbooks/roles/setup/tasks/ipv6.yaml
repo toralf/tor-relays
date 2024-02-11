@@ -1,7 +1,13 @@
 ---
 # goal:     enlarge the cost of a network scanner for an IPv6 scan of e.g. the obfs4 port
-# solution: set the default <prefix>::1 IPv6 address to arbitrarily choosen address
-#           and re-route incoming ipv6 traffic to it, exception: the destination port is the obfs4 port
+# solution: set the default IPv6 address (<prefix>::1) to an arbitrarily choosen value
+
+- name: Validate public available ipv6
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is defined"
+
 - name: Configure new ipv6 address
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"

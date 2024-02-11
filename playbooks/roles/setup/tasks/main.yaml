@@ -44,6 +44,11 @@
       tags:
         - system
 
+    - name: Swap
+      ansible.builtin.import_tasks: swap.yaml
+      tags:
+        - swap
+
     - name: IPv6
       when: ansible_facts.bios_vendor == 'Hetzner'
       ansible.builtin.import_tasks: ipv6.yaml
@@ -77,11 +82,6 @@
       ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
         - kernel-debian
-
-    - name: Swap
-      ansible.builtin.import_tasks: swap.yaml
-      tags:
-        - swap
 
     - name: Kernel Git
       when: kernel_git_revision != ""

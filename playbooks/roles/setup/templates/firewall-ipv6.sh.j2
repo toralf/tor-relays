@@ -19,7 +19,9 @@ function addRules() {
 
   # allow loopback
   $ipt -A INPUT --in-interface lo -m comment --comment "$(date -R)" -j ACCEPT
-  $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::1 -j ACCEPT
+
+  # IPv6 Multicast
+  $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::/96 -j ACCEPT
 
   # make sure NEW incoming tcp connections are SYN packets
   $ipt -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
@@ -35,6 +37,10 @@ function addRules() {
   $ipt -A INPUT -p ipv6-icmp --icmpv6-type echo-request -m limit --limit 6/s -j ACCEPT
   $ipt -A INPUT -p ipv6-icmp --icmpv6-type echo-request -j DROP
   $ipt -A INPUT -p ipv6-icmp -j ACCEPT
+
+  # DHCPv6
+  $ipt -A INPUT -p udp --sport 547 -j ACCEPT
+  $ipt -A INPUT -p udp --dport 546 -j ACCEPT
 
 {% if obfs4_port is defined %}
   # obfs4 port
@@ -59,4 +65,6 @@ ipt=/sbin/ip6tables
 if [[ $1 == "start" ]]; then
   clearAll
   addRules
+else
+  $1
 fi
