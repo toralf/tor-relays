@@ -6,6 +6,7 @@
     mode: "0700"
 
 - name: Deactivate ssh login via password
+  changed_when: false
   ansible.builtin.shell:
     cmd: |
       if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
