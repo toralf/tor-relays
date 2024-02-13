@@ -3,6 +3,10 @@
 # solution: set the default IPv6 address (<prefix>::1) to an arbitrarily choosen value
 #           and re-route incoming ipv6 traffic to it (exception: the destination port is the obfs4 port)
 
+- name: Gather facts for ipv6
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+
 - name: Validate public available ipv6
   ansible.builtin.assert:
     quiet: true

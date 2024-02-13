@@ -4,7 +4,7 @@
     quiet: true
     that:
       - "ansible_facts.default_ipv6.address is defined"
-      #- "ansible_facts.default_ipv6.address is not match('fe80::')"
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
 - name: Validate metrics_port
   when: metrics_port is defined and metrics_port != ""

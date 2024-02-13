@@ -17,8 +17,7 @@
 
 - name: Gather facts
   ansible.builtin.setup:
-    gather_subset:
-      - hardware
+    gather_subset: "{{ facts_subset }}"
 
 - name: Quirk for linux repo for small RAM
   when: ansible_facts.memtotal_mb < 2048

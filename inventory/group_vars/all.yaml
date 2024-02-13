@@ -2,7 +2,7 @@
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
 
-# metrics_port depends on up-to-date ip addresses (even for info playbooks, not only during setup)
+# facts cache is not updated if a tag is given or hosts are limited
 facts_subset:
   - "!all"
   - "!min"
@@ -10,3 +10,5 @@ facts_subset:
   - "all_ipv6_addresses"
   - "default_ipv4"
   - "default_ipv6"
+  - "devices"
+  - "hardware"
