@@ -3,10 +3,8 @@
   ansible.builtin.setup:
     gather_subset: "{{ facts_subset }}"
   tags:
+    - always
     - facts
-    - firewall
-    - metrics
-    - validate
 
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
@@ -93,3 +91,8 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
+
+  rescue:
+    - name: Rescue setup
+      ansible.builtin.debug:
+        msg: "Setup failed"

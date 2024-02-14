@@ -9,13 +9,6 @@
     src: apt-preferences
     dest: /etc/apt/preferences
 
-- name: Gather facts for "{{ kernel_debian_repo }}" kernel
-  ansible.builtin.setup:
-    gather_subset:
-      - cmdline
-  tags:
-    - facts
-
 - name: Install or update "{{ kernel_debian_repo }}" kernel
   ansible.builtin.apt:
     default_release: "{{ kernel_debian_repo }}"

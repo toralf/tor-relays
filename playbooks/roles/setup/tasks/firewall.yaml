@@ -1,8 +1,4 @@
 ---
-- name: Gather facts for firewall
-  ansible.builtin.setup:
-    gather_subset: "{{ facts_subset }}"
-
 - name: Create firewall script
   ansible.builtin.template:
     src: "{{ 'firewall-ip' + item + '.sh.j2' }}"
@@ -49,10 +45,11 @@
         - ipv6-icmp
         - udp
         - udplite
+
   rescue:
-    - name: Print when errors
+    - name: Rescue firewall
       ansible.builtin.debug:
-        msg: "Prereoute failed"
+        msg: "Prerouting failed"
 
 - name: Save iptables state
   community.general.iptables_state:

@@ -1,11 +1,4 @@
 ---
-- name: Gather facts
-  ansible.builtin.setup:
-    gather_subset: "{{ facts_subset }}"
-  tags:
-    - facts
-    - snowflake-config
-
 - name: Main
   module_defaults:
     ansible.builtin.apt:
@@ -38,3 +31,8 @@
       ansible.builtin.import_tasks: snowflake-config.yaml
       tags:
         - snowflake-config
+
+  rescue:
+    - name: Rescue setup
+      ansible.builtin.debug:
+        msg: "Setup Snowflake failed"

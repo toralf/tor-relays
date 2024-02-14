@@ -1,11 +1,4 @@
 ---
-- name: Gather facts
-  ansible.builtin.setup:
-    gather_subset: "{{ facts_subset }}"
-  tags:
-    - facts
-    - tor-config
-
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
@@ -70,3 +63,8 @@
       ansible.builtin.import_tasks: tor-config.yaml
       tags:
         - tor-config
+
+  rescue:
+    - name: Rescue setup
+      ansible.builtin.debug:
+        msg: "Setup Tor failed"

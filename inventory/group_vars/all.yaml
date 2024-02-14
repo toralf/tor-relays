@@ -8,6 +8,7 @@ facts_subset:
   - "!min"
   - "all_ipv4_addresses"
   - "all_ipv6_addresses"
+  - "cmdline"
   - "default_ipv4"
   - "default_ipv6"
   - "devices"

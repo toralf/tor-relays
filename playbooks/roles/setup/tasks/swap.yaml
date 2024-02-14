@@ -1,9 +1,4 @@
 ---
-- name: Gather facts
-  ansible.builtin.setup:
-    gather_subset:
-      - hardware
-
 - name: Create swap file
   when: ansible_facts.memtotal_mb < 4096
   ansible.builtin.shell:
