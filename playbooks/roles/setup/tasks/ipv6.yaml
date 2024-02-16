@@ -1,7 +1,6 @@
 ---
 # goal:     enlarge the cost of a network scanner for an IPv6 scan of e.g. the obfs4 port
 # solution: set the default IPv6 address (<prefix>::1) to an arbitrarily choosen value
-#           and re-route incoming ipv6 traffic to it (exception: the destination port is the obfs4 port)
 
 - name: Configure new ipv6 address
   vars:

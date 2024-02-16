@@ -3,8 +3,7 @@
   ansible.builtin.setup:
     gather_subset: "{{ facts_subset }}"
   tags:
-    - facts
-    - metrics
+    - always
 
 - name: "Ensure that the tmp dir does exist: {{ tmp_dir }}"
   ansible.builtin.file:

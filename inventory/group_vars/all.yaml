@@ -12,4 +12,5 @@ facts_subset:
   - "default_ipv4"
   - "default_ipv6"
   - "devices"
+  - "dns"
   - "hardware"

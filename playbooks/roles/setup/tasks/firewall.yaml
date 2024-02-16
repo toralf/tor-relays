@@ -16,7 +16,7 @@
     - "v6"
 
 - name: Prereoute incoming ipv6 traffic
-  when: ansible_facts.bios_vendor == 'Hetzner'
+  when: ansible_facts.default_ipv6.prefix < 128
   module_defaults:
     ansible.builtin.iptables:
       ip_version: ipv6

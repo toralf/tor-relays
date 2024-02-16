@@ -3,10 +3,11 @@
 auto lo
 iface lo inet loopback
 
-auto eth0
-iface eth0 inet dhcp
+auto {{ ansible_facts.default_ipv4.interface }}
+iface {{ ansible_facts.default_ipv4.interface }} inet dhcp
 
-iface eth0 inet6 static
-    address {{ _ipv6_new }}/64 dev eth0
-    dns-nameservers 2a01:4ff:ff00::add:1 2a01:4ff:ff00::add:2
+iface {{ ansible_facts.default_ipv6.interface }} inet6 static
+    address {{ _ipv6_new }}/{{ ansible_facts.default_ipv6.prefix }} dev {{ ansible_facts.default_ipv6.interface }}
+    dns-nameservers{% for ns in ansible_facts.dns.nameservers %}{% if ns is search ':' %} {{ ns }}{% endif %}{% endfor %}
+
     gateway fe80::1
