@@ -1,3 +1,4 @@
 ---
 # https://www.checkov.io/2.Basics/Suppressing%20and%20Skipping%20Policies.html
 skip-check:
+  - CKV2_ANSIBLE_3 # high  Ensure block is handling task errors properly

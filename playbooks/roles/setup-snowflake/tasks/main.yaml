@@ -31,8 +31,3 @@
       ansible.builtin.import_tasks: snowflake-config.yaml
       tags:
         - snowflake-config
-
-  rescue:
-    - name: Rescue setup
-      ansible.builtin.debug:
-        msg: "Setup Snowflake failed"

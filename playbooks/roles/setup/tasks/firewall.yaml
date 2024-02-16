@@ -46,11 +46,6 @@
         - udp
         - udplite
 
-  rescue:
-    - name: Rescue firewall
-      ansible.builtin.debug:
-        msg: "Prerouting failed"
-
 - name: Save iptables state
   community.general.iptables_state:
     ip_version: "{{ 'ip' + item }}"

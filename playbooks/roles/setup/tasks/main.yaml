@@ -89,8 +89,3 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
-
-  rescue:
-    - name: Rescue setup
-      ansible.builtin.debug:
-        msg: "Setup failed"

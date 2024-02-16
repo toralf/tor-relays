@@ -62,8 +62,3 @@
       ansible.builtin.import_tasks: tor-config.yaml
       tags:
         - tor-config
-
-  rescue:
-    - name: Rescue setup
-      ansible.builtin.debug:
-        msg: "Setup Tor failed"
