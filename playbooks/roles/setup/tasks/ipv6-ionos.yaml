@@ -2,7 +2,7 @@
 - name: Generate a pseudo.randomly choosen ipv6 address
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
-    _a: "{{ (ansible_facts.default_ipv6.address | split(':'))[5] | default('0') }}"
+    _a: "{{ (ansible_facts.default_ipv6.address | split(':'))[4] | default('0') }}"
     _b: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
     _c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
     _d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
