@@ -50,12 +50,11 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 ## Details
 
 The deployment is made by _Ansible_.
-Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge ot a _Snowflake standlone proxy_ respectively.
+Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge of a _Snowflake standlone proxy_ respectively.
 See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
-The Ansible role uses `seed_address` to configure an random ipv6 address for
-[this](./playbooks/roles/setup/tasks/ipv6.yaml#L2) reason.
+The Ansible role uses `seed_address` to configure an random ipv6 address for Hetzner systems or to display it (e.g. for IONOS).
 
 ### Additional software
 

@@ -47,7 +47,13 @@
 
     - name: IPv6
       when: ansible_facts.bios_vendor == 'Hetzner'
-      ansible.builtin.import_tasks: ipv6.yaml
+      ansible.builtin.import_tasks: ipv6-hetzner.yaml
+      tags:
+        - ipv6
+
+    - name: IPv6
+      when: ansible_facts.bios_vendor == 'SeaBIOS'
+      ansible.builtin.import_tasks: ipv6-ionos.yaml
       tags:
         - ipv6
 
@@ -77,13 +83,13 @@
       when: kernel_debian_repo != "" and kernel_debian_version != ""
       ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
-        - kernel-debian
+        - kernel
 
     - name: Kernel Git
       when: kernel_git_revision != ""
       ansible.builtin.import_tasks: kernel-git.yaml
       tags:
-        - kernel-git
+        - kernel
 
     - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
