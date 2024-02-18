@@ -36,7 +36,7 @@
 - name: Obfs4 port
   when: obfs4_port | int < 1024
   block:
-    # Hint: to remove these hooks the obfs4proxy has to be removed before
+    # Hint: to remove these hooks the proxy has to be removed before
     - name: Configure apt hook for obfs4proxy
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
@@ -48,3 +48,11 @@
         line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
         path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
         create: yes
+
+    - name: Override systemd defaults for Tor
+      ansible.builtin.blockinfile:
+        create: true
+        dest: /etc/systemd/system/tor@default.service.d/override.conf
+        content: |
+          [Service]
+          NoNewPrivileges=no
