@@ -1,5 +1,5 @@
 ---
-- name: Generate a pseudo.randomly choosen ipv6 address
+- name: Generate a pseudo-random choosen ipv6 address
   failed_when: ansible_facts.default_ipv6.prefix != "64"
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"

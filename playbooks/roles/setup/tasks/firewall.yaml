@@ -15,37 +15,6 @@
     - "v4"
     - "v6"
 
-- name: Prereoute incoming ipv6 traffic
-  when: ansible_facts.default_ipv6.prefix != "128"
-  module_defaults:
-    ansible.builtin.iptables:
-      ip_version: ipv6
-      chain: PREROUTING
-      table: nat
-      destination: "! {{ ansible_facts.default_ipv6.address }}"
-      to_destination: "{{ ansible_facts.default_ipv6.address }}"
-      jump: DNAT
-  block:
-    - name: Flush ipv6 nat table
-      ansible.builtin.iptables:
-        table: nat
-        flush: yes
-
-    - name: DNAT TCP v6 except obfs4 port
-      vars:
-        _ports: '{{ (obfs4_port is defined) | ternary("1:" ~ (obfs4_port | int - 1) ~ "," ~ (obfs4_port | int  + 1) ~ ":65535", "1:65535") }}'
-      ansible.builtin.iptables:
-        protocol: tcp
-        destination_ports: "{{ _ports }}"
-
-    - name: DNAT non-TCP v6
-      ansible.builtin.iptables:
-        protocol: "{{ item }}"
-      with_items:
-        - ipv6-icmp
-        - udp
-        - udplite
-
 - name: Save iptables state
   community.general.iptables_state:
     ip_version: "{{ 'ip' + item }}"

@@ -21,7 +21,7 @@ function addRules() {
   $ipt -A INPUT --in-interface lo -m comment --comment "$(date -R)" -j ACCEPT
 
   # IPv6 Multicast
-  $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::/96 -j ACCEPT
+  $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::/80 -j ACCEPT
 
   # make sure NEW incoming tcp connections are SYN packets
   $ipt -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
@@ -41,11 +41,6 @@ function addRules() {
   # DHCPv6
   $ipt -A INPUT -p udp --sport 547 -j ACCEPT
   $ipt -A INPUT -p udp --dport 546 -j ACCEPT
-
-{% if obfs4_port is defined %}
-  # obfs4 port
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 64 --hashlimit-name tor-ddos6-{{ obfs4_port }} --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
-{%endif %}
 
   # any additional ports
 {% for __i in additional_ports %}

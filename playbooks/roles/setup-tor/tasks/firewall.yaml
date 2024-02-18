@@ -1,4 +1,17 @@
 ---
+- name: DDoS of obfs4 port
+  vars:
+    _ipv4_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos-{{ obfs4_port }}  --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
+    _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6-{{ obfs4_port }} --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
+  ansible.builtin.shell:
+    cmd: |
+      if ! iptables -C {{ _ipv4_cmd }} &>/dev/null; then
+        iptables -A {{ _ipv4_cmd }}
+      fi
+      if ! ip6tables -C {{ _ipv6_cmd }} &>/dev/null; then
+        ip6tables -A {{ _ipv6_cmd }}
+      fi
+
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:
     ip_version: "{{ 'ip' + item }}"
@@ -12,6 +25,30 @@
     - "v4"
     - "v6"
   register: _firewall
+
+- name: Prereoute incoming ipv6 traffic
+  when: ansible_facts.default_ipv6.prefix != "128"
+  module_defaults:
+    ansible.builtin.iptables:
+      ip_version: ipv6
+      chain: PREROUTING
+      table: nat
+      destination: "! {{ ansible_facts.default_ipv6.address }}"
+      to_destination: "{{ ansible_facts.default_ipv6.address }}"
+      jump: DNAT
+  block:
+    - name: DNAT TCP v6 except obfs4 port
+      ansible.builtin.iptables:
+        protocol: tcp
+        destination_ports: "1:{{ obfs4_port | int - 1 }},{{ obfs4_port | int + 1 }}:65535"
+
+    - name: DNAT non-TCP v6
+      ansible.builtin.iptables:
+        protocol: "{{ item }}"
+      with_items:
+        - ipv6-icmp
+        - udp
+        - udplite
 
 - name: Save iptables state
   community.general.iptables_state:
