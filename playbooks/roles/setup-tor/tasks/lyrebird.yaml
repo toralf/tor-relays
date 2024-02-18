@@ -30,9 +30,15 @@
     remote_src: yes
   register: _plugin
 
+# for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and probably more
 - name: Set Linux capabilities on Lyrebird
   community.general.capabilities:
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
     state: present
   when: _plugin.changed
+
+- name: Set fact
+  when: _plugin.changed
+  ansible.builtin.set_fact:
+    force_restart: true

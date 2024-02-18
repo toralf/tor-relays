@@ -54,9 +54,9 @@
 
     - name: Lyrebird
       when: tor_build_from_source
-      ansible.builtin.import_tasks: tor-lyrebird.yaml
+      ansible.builtin.import_tasks: lyrebird.yaml
       tags:
-        - tor-lyrebird
+        - lyrebird
 
     - name: Git
       ansible.builtin.import_tasks: tor-config.yaml

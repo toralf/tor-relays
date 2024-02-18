@@ -49,10 +49,10 @@
           --localstatedir=/var/lib --datarootdir=/usr/share \
           --disable-systemd --disable-asciidoc --disable-html-manual --disable-module-dirauth --disable-unittests \
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --enable-module-relay
-      make -j$(nproc)
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
     chdir: /root/tor
 
-# test if Tor service needs a restart
+# test if Tor needs to be restarted
 - name: Copy Tor binary
   when: not ansible_check_mode
   ansible.builtin.copy:

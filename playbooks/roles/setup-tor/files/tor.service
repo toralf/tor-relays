@@ -14,19 +14,18 @@ RestartSec=5s
 LimitNOFILE=65536
 
 # Hardening
-NoNewPrivileges=yes
 AppArmorProfile=-system_tor
-NoNewPrivileges=yes
+CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE CAP_DAC_READ_SEARCH
+NoNewPrivileges=no
+PrivateDevices=no
 PrivateTmp=yes
-PrivateDevices=yes
 ProtectHome=yes
 ProtectSystem=full
 ReadOnlyDirectories=/
 ReadWriteDirectories=-/proc
+ReadWriteDirectories=-/run
 ReadWriteDirectories=-/var/lib/tor
 ReadWriteDirectories=-/var/log/tor
-ReadWriteDirectories=-/run
-CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE CAP_DAC_READ_SEARCH
 
 [Install]
 WantedBy=multi-user.target
