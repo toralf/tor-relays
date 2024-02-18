@@ -37,7 +37,7 @@
   when: obfs4_port | int < 1024
   block:
     # Hint: to remove these hooks the obfs4proxy has to be removed before
-    - name: Debian Configure apt hook for obfs4proxy
+    - name: Configure apt hook for obfs4proxy
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
         path: /etc/apt/apt.conf.d/99-obfs4proxy-capability

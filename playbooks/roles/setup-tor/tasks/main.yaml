@@ -58,7 +58,7 @@
       tags:
         - lyrebird
 
-    - name: Git
-      ansible.builtin.import_tasks: tor-config.yaml
+    - name: Config
+      ansible.builtin.import_tasks: config.yaml
       tags:
-        - tor-config
+        - config
