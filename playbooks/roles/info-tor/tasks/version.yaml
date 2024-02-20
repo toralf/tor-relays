@@ -9,7 +9,7 @@
   ansible.builtin.shell: >-
     tor --version |
     grep -m 1 '^Tor version' |
-    awk '{ print $3 }'
+    awk '{ print $3, $4 }'
   register: _tor
   failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
 

@@ -8,7 +8,7 @@
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
-    - always
+    - validate
 
 - name: Main
   module_defaults:
