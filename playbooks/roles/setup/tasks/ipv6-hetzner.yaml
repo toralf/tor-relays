@@ -26,7 +26,7 @@
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
 
-- name: Get ipv6
+- name: Check that ipv6 is up again
   changed_when: false
   ansible.builtin.command: ip -6 a
   register: _result
