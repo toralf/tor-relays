@@ -54,7 +54,7 @@ Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge of 
 See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
-The Ansible role uses `seed_address` to configure an random ipv6 address for Hetzner systems or to display it (e.g. for IONOS).
+The Ansible role uses `seed_address` to configure an random ipv6 address at a Hetzner systems or to display a proposed one (e.g.for IONOS).
 
 ### Additional software
 
@@ -70,21 +70,21 @@ my_group:
         - "quassel-core"
 ```
 
-### Compiling from source
+### Compiling Tor + obfs4 proxy or Snowflake from source instead using the Debian packages
 
-As default _HEAD_ (of branch _main_) is referenced.
-A dedicated branch can be used instead by the variable _<...>\_git_version_.
-Furthermore _<...>\_patches_ can hold additional patches (referenced by an URL) which will be applied on top of the branch.
+As default _HEAD_ (of branch _main_) is taken.
+A dedicated branch can be defined by the variable _<...>\_git_version_.
+Furthermore _<...>\_patches_ holds additional patches (referenced by an URL) which will be applied on top of the branch.
 
 ### Metrics
 
 If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then it is allowed in the firewall to scrape Tor metrics.
 An Nginx is deployed to encrypt the metrics data on transit.
-A firewall rule allows only the Prometheus server ip address to scrape metrics.
-No HTTP Basic Auth is therefore needed.
+A firewall rule allows only the Prometheus server ip address as an inbound.
+No HTTP BasicAuth is therefore needed.
 
 A _Prometheus node exporter_ is installed by defining `prometheus_node_exporter: true`.
-Configure a random `metrics_port` (using an an appropriate `seed_metrics` similar to `seed_address`)
+Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
 to expose Prometheus Node exporter, Tor and Snowflake metrics
 at https://_address_:_metrics_port_/metrics-_node|relay|snowflake_ respectively, e.g.:
 
@@ -94,7 +94,7 @@ snowflake:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
-A Prometheus config file would looks similar to this:
+A Prometheus config file could look like this:
 
 ```yaml
 - job_name: "Tor-Bridge-Public"
@@ -111,7 +111,7 @@ A Prometheus config file would looks similar to this:
       target_label: instance
 ```
 
-For Grafana dashboards take a look [here](https://github.com/toralf/torutils/tree/main/dashboards).
+For Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
 
