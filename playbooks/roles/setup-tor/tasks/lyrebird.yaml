@@ -5,9 +5,10 @@
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     dest: /root/lyrebird
     version: "{{ lyrebird_git_version }}"
+    bare: true
     force: true
 
-- name: Apply Lyrebird patches
+- name: Apply patches of Lyrebird
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/lyrebird
