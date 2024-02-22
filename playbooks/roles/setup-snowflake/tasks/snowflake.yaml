@@ -11,19 +11,16 @@
     group: snowflake
     mode: "0700"
 
-- name: Init or update repo for Snowflake
+- name: Init or update repo of Snowflake
   when: not ansible_check_mode
-  become: true
-  become_user: snowflake
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     dest: /home/snowflake/snowflake
     version: "{{ snowflake_git_version }}"
+    bare: true
     force: true
 
-- name: Apply snowflake patches
-  become: true
-  become_user: snowflake
+- name: Apply patches of Snowflake
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /home/snowflake/snowflake
@@ -31,15 +28,13 @@
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
 
-- name: Build snowflake
+- name: Build Snowflake
   when: not ansible_check_mode
-  become: true
-  become_user: snowflake
   ansible.builtin.command:
     cmd: go build
     chdir: /home/snowflake/snowflake/proxy
 
-- name: Copy snowflake
+- name: Install Snowflake
   when: not ansible_check_mode
   ansible.builtin.copy:
     src: /home/snowflake/snowflake/proxy/proxy
