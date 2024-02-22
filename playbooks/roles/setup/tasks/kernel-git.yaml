@@ -15,30 +15,16 @@
       - libncurses5-dev
       - libssl-dev
 
-- name: Quirk for linux repo for small RAM
-  when: ansible_facts.memtotal_mb < 2048
-  ansible.builtin.shell:
-    cmd: |
-      set -e
-
-      git config --global gc.auto 0
-      git config --global pack.threads 1
-
-      git clone --depth=1 {{ kernel_git_repo }} {{ kernel_git_repo_dir }}
-      cd {{ kernel_git_repo_dir }}
-      git fetch --tags
-    chdir: "/root"
-    creates: "{{ kernel_git_repo_dir }}"
-
-- name: Init or update repo of linux
+- name: Init or update repo of Linux
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: "{{ kernel_git_repo }}"
     dest: "{{ kernel_git_repo_dir }}"
     version: "{{ kernel_git_version }}"
+    bare: true
     force: true
 
-- name: "Create or update src for {{ kernel_git_revision }}"
+- name: "Create or update {{ kernel_git_revision }}"
   when: not ansible_check_mode
   ansible.builtin.shell:
     cmd: |
@@ -56,7 +42,7 @@
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
 
-- name: "Build kernel {{ kernel_git_revision }}"
+- name: "Build Linux {{ kernel_git_revision }}"
   when: not ansible_check_mode
   ansible.builtin.shell:
     cmd: |
