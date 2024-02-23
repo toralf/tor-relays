@@ -27,7 +27,6 @@
     repo: https://gitlab.torproject.org/tpo/core/tor.git/
     dest: /root/tor
     version: "{{ tor_git_version }}"
-    bare: true
     force: true
   register: _repo
 

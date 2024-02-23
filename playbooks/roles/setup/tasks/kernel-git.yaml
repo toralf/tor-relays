@@ -15,20 +15,19 @@
       - libncurses5-dev
       - libssl-dev
 
-- name: Init or update repo of Linux
+- name: Init or update (bare) repo of Linux
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: "{{ kernel_git_repo }}"
     dest: "{{ kernel_git_repo_dir }}"
-    version: "{{ kernel_git_version }}"
     bare: true
     force: true
 
-- name: "Create or update {{ kernel_git_revision }}"
+- name: "Create or update {{ kernel_git_version }}"
   when: not ansible_check_mode
   ansible.builtin.shell:
     cmd: |
-      git archive "{{ kernel_git_revision }}" --prefix linux-"{{ kernel_git_revision }}/" |
+      git archive "{{ kernel_git_version }}" --prefix linux-"{{ kernel_git_version }}/" |
         (cd /usr/src/; sudo tar -xf-)
     chdir: "{{ kernel_git_repo_dir }}"
 
@@ -37,12 +36,12 @@
     cmd: |
       curl -s {{ item }} |
         patch -p 1
-    chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
+    chdir: "/usr/src/linux-{{ kernel_git_version }}/"
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
 
-- name: "Build Linux {{ kernel_git_revision }}"
+- name: "Build Linux {{ kernel_git_version }}"
   when: not ansible_check_mode
   ansible.builtin.shell:
     cmd: |
@@ -56,4 +55,4 @@
       make modules_install
       update-initramfs -u
       touch /var/run/reboot-required
-    chdir: "/usr/src/linux-{{ kernel_git_revision }}/"
+    chdir: "/usr/src/linux-{{ kernel_git_version }}/"

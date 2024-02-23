@@ -15,15 +15,14 @@
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
-    dest: /home/snowflake/snowflake
+    dest: /root/snowflake
     version: "{{ snowflake_git_version }}"
-    bare: true
     force: true
 
 - name: Apply patches of Snowflake
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
-    chdir: /home/snowflake/snowflake
+    chdir: /root/snowflake
   loop_control:
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
@@ -32,12 +31,12 @@
   when: not ansible_check_mode
   ansible.builtin.command:
     cmd: go build
-    chdir: /home/snowflake/snowflake/proxy
+    chdir: /root/snowflake/proxy
 
 - name: Install Snowflake
   when: not ansible_check_mode
   ansible.builtin.copy:
-    src: /home/snowflake/snowflake/proxy/proxy
+    src: /root/snowflake/proxy/proxy
     dest: /usr/bin/
     mode: a+x
     remote_src: yes

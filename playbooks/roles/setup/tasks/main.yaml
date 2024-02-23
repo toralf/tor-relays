@@ -86,7 +86,7 @@
         - kernel
 
     - name: Kernel Git
-      when: kernel_git_revision != ""
+      when: kernel_git_version != ""
       ansible.builtin.import_tasks: kernel-git.yaml
       tags:
         - kernel
