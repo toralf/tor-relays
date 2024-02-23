@@ -18,8 +18,8 @@
 - name: Init or update (bare) repo of Linux
   when: not ansible_check_mode
   ansible.builtin.git:
-    repo: "{{ kernel_git_repo }}"
-    dest: "{{ kernel_git_repo_dir }}"
+    repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+    dest: /root/linux
     bare: true
     force: true
 
@@ -29,14 +29,12 @@
     cmd: |
       git archive "{{ kernel_git_version }}" --prefix linux-"{{ kernel_git_version }}/" |
         (cd /usr/src/; sudo tar -xf-)
-    chdir: "{{ kernel_git_repo_dir }}"
+    chdir: /root/linux
 
 - name: Apply patches
   ansible.builtin.shell:
-    cmd: |
-      curl -s {{ item }} |
-        patch -p 1
-    chdir: "/usr/src/linux-{{ kernel_git_version }}/"
+    cmd: curl -s {{ item }} | patch -p 1
+    chdir: "/usr/src/linux-{{ kernel_git_version }}"
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"

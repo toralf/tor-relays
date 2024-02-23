@@ -6,8 +6,8 @@ log_err: "/var/log/tor/err.log"
 lyrebird_git_version: "HEAD"
 lyrebird_patches: []
 
+tor_build_from_source: true
 tor_git_version: "HEAD"
 tor_patches: []
-tor_build_from_source: true
 
 force_restart: false

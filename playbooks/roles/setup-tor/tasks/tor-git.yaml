@@ -24,7 +24,7 @@
 - name: Init or update repo of Tor
   when: not ansible_check_mode
   ansible.builtin.git:
-    repo: https://gitlab.torproject.org/tpo/core/tor.git/
+    repo: https://gitlab.torproject.org/tpo/core/tor.git
     dest: /root/tor
     version: "{{ tor_git_version }}"
     force: true
