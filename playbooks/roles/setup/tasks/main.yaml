@@ -35,24 +35,25 @@
       group: root
       mode: "0644"
   block:
-    - name: System
-      ansible.builtin.import_tasks: system.yaml
+    - name: Base
+      ansible.builtin.import_tasks: base.yaml
       tags:
-        - system
+        - base
 
-    - name: Swap
-      ansible.builtin.import_tasks: swap.yaml
+    - name: System Debian
+      when: ansible_facts.distribution == "Debian"
+      ansible.builtin.import_tasks: system-debian.yaml
       tags:
-        - swap
+        - system-debian
 
-    - name: IPv6
-      when: ansible_facts.bios_vendor == 'Hetzner'
+    - name: IPv6 Hetzner
+      when: ansible_facts.system_vendor == 'Hetzner'
       ansible.builtin.import_tasks: ipv6-hetzner.yaml
       tags:
         - ipv6
 
-    - name: IPv6
-      when: ansible_facts.bios_vendor == 'SeaBIOS'
+    - name: IPv6 IONOS
+      when: ansible_facts.system_vendor == 'QEMU'
       ansible.builtin.import_tasks: ipv6-ionos.yaml
       tags:
         - ipv6

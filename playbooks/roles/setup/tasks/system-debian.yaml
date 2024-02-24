@@ -1,0 +1,36 @@
+---
+- name: Upgrade distribution
+  ansible.builtin.apt:
+    upgrade: dist
+
+- name: Install or update base software
+  when: not ansible_check_mode
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - conntrack
+      - cron
+      - gpg
+      - gpg-agent
+      - htop
+      - iptables
+      - iptables-persistent
+      #- net-tools
+      - ntp
+      - psmisc
+      - unattended-upgrades
+
+- name: Install or update additional software
+  when: additional_software | length > 0
+  ansible.builtin.apt:
+    name: "{{ additional_software }}"
+
+- name: Configure auto upgrades
+  ansible.builtin.copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/
+
+- name: Configure unattended upgrades
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/

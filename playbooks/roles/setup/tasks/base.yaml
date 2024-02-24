@@ -22,42 +22,6 @@
 
       service sshd reload
 
-- name: Upgrade distribution
-  ansible.builtin.apt:
-    upgrade: dist
-
-- name: Install or update base software
-  when: not ansible_check_mode
-  ansible.builtin.apt:
-    name:
-      - apt-transport-https
-      - conntrack
-      - cron
-      - gpg
-      - gpg-agent
-      - htop
-      - iptables
-      - iptables-persistent
-      #- net-tools
-      - ntp
-      - psmisc
-      - unattended-upgrades
-
-- name: Install or update additional software
-  when: additional_software | length > 0
-  ansible.builtin.apt:
-    name: "{{ additional_software }}"
-
-- name: Configure auto upgrades
-  ansible.builtin.copy:
-    src: 20auto-upgrades
-    dest: /etc/apt/apt.conf.d/
-
-- name: Configure unattended upgrades
-  ansible.builtin.copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/
-
 - name: Sysctl config
   ansible.builtin.copy:
     src: 20tor-system.conf
@@ -85,3 +49,25 @@
     name: "core debug files"
     special_time: reboot
     job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
+
+- name: Create swap file
+  when: ansible_facts.memtotal_mb < 4096
+  ansible.builtin.shell:
+    cmd: |
+      set -e
+
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      if ! grep -q "/swapfile" /etc/fstab; then
+        echo "/swapfile  none  swap  defaults  0  0" >> /etc/fstab
+      fi
+      swapon /swapfile
+    creates: /swapfile
+
+- name: Set sysctl swappiness
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: "5" # only use swap space when 95% or more of physical RAM is used up
+    sysctl_file: /etc/sysctl.d/21tor-generic.conf
+    sysctl_set: true
