@@ -1,16 +1,16 @@
 ---
 - name: DDoS of obfs4 port
+  changed_when: _ddos_rule.stderr is search("Bad rule")
   vars:
     _ipv4_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos-{{ obfs4_port }}  --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
     _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6-{{ obfs4_port }} --hashlimit-above 10/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
   ansible.builtin.shell:
     cmd: |
-      if ! iptables -C {{ _ipv4_cmd }} &>/dev/null; then
-        iptables -A {{ _ipv4_cmd }}
-      fi
-      if ! ip6tables -C {{ _ipv6_cmd }} &>/dev/null; then
-        ip6tables -A {{ _ipv6_cmd }}
-      fi
+      set -e
+
+      iptables  -C {{ _ipv4_cmd }} || iptables  -A {{ _ipv4_cmd }}
+      ip6tables -C {{ _ipv6_cmd }} || ip6tables -A {{ _ipv6_cmd }}
+  register: _ddos_rule
 
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:
