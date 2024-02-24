@@ -1,8 +1,6 @@
 ---
-- name: Gather the package facts
-  when: tor_build_from_source is false
+- name: Gather installed package
   ansible.builtin.package_facts:
-    manager: auto
 
 - name: Tor version
   changed_when: false
