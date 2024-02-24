@@ -13,14 +13,6 @@
   ansible.builtin.user:
     name: tor
 
-- name: Create Ansible tmp dir for user tor
-  ansible.builtin.file:
-    path: /home/tor/.ansible/tmp
-    state: directory
-    owner: tor
-    group: tor
-    mode: "0700"
-
 - name: Init or update repo of Tor
   when: not ansible_check_mode
   ansible.builtin.git:
