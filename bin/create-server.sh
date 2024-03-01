@@ -22,6 +22,8 @@ all_locations=$(hcloud location list --output json | jq -r '.[].name')
 os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
+now=$EPOCHSECONDS
+
 while read -r name; do
   if [[ -z ${name} ]]; then
     echo "Bummer!" >&2
@@ -52,9 +54,15 @@ done < <(xargs -n 1 <<<$*) |
 echo -e "\n updating DNS ..."
 $(dirname $0)/update-dns.sh
 
+diff=$((EPOCHSECONDS - now))
+if [[ $diff -lt 30 ]]; then
+  echo -en "\n wait $diff sec before continue ..."
+  sleep $((30 - diff))
+fi
+
 echo -e "\n adding to ~/.ssh/known_hosts ..."
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
-  echo -en "\n wait few sec before retry ..."
+  echo -e "\n wait 10 sec before retry ..."
   sleep 10
   echo
 done
