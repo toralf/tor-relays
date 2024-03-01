@@ -9,11 +9,7 @@ enable_list:
 
 skip_list:
   - command-instead-of-module
-  - command-instead-of-shell
   - latest[git]
-  - line[length]
-  - meta-no-info
-  - meta-no-tags
   - name[casing]
   - name[template]
   - no-changed-when
@@ -21,5 +17,3 @@ skip_list:
   - risky-file-permissions
   - risky-shell-pipe
   - var-naming[no-role-prefix]
-  - yaml[line-length]
-  - yaml[truthy]

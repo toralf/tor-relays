@@ -76,7 +76,7 @@
 
 - name: Install Tor
   when: _binary.changed
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: make install
     chdir: /root/tor
 

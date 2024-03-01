@@ -13,8 +13,8 @@
 
 - name: Proxy version
   changed_when: false
-  ansible.builtin.shell: >-
-    /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version
+  ansible.builtin.command:
+    cmd: /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version
   register: _proxy
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 

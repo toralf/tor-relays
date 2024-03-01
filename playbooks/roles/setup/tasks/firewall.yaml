@@ -9,7 +9,7 @@
     - "v6"
 
 - name: Reset firewall
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: "{{ '/root/firewall-ip' + item + '.sh' }} start"
   with_items:
     - "v4"
