@@ -64,13 +64,13 @@
         - firewall
 
     - name: Prometheus node exporter
-      when: prometheus_node_exporter is defined and prometheus_node_exporter
+      when: prometheus_node_exporter
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
 
     - name: metrics
-      when: (metrics_port is defined and metrics_port) or (prometheus_node_exporter is defined and prometheus_node_exporter)
+      when: metrics_port or prometheus_node_exporter
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics

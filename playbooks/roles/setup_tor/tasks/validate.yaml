@@ -1,10 +1,9 @@
 ---
 - name: Validate nickname
-  when: nickname is defined
   ansible.builtin.assert:
     quiet: true
     that:
-      - "nickname | default('') | length <= 19"
+      - "nickname | length <= 19"
       - "nickname | regex_search('^[a-zA-Z0-9]+$')"
 
 - name: Validate obfs4_port
@@ -15,7 +14,7 @@
       - "(obfs4_port | int > 0) and (obfs4_port | int < 2**16)"
 
 - name: Validate metrics_port
-  when: metrics_port is defined and metrics_port
+  when: metrics_port
   ansible.builtin.assert:
     quiet: true
     that:
