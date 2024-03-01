@@ -9,5 +9,3 @@ lyrebird_patches: []
 tor_build_from_source: true
 tor_git_version: "HEAD"
 tor_patches: []
-
-force_restart: false

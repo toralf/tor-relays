@@ -4,6 +4,7 @@
   ansible.builtin.apt:
     name:
       - nginx
+  notify: "restart nginx"
 
 - name: Check if key file does exist
   ansible.builtin.stat:
@@ -22,22 +23,17 @@
       -keyout /etc/ssl/private/nginx-selfsigned-metrics.key \
       -out /etc/ssl/certs/nginx-selfsigned-metrics.crt \
       -subj "/C=/O=/OU=/CN="
+  notify: "restart nginx"
 
 - name: Configure Nginx
   ansible.builtin.template:
     src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
     mode: "0644"
+  notify: "restart nginx"
 
 - name: Remove Nginx default listener
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-
-- name: Restart Nginx
-  when: not ansible_check_mode
-  ansible.builtin.service:
-    name: nginx
-    state: restarted
-    daemon_reload: true
-    enabled: true
+  notify: "restart nginx"

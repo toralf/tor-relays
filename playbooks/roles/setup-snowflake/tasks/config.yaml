@@ -5,25 +5,10 @@
     value: "2" # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
-  register: _sysctl
+  notify: "restart service"
 
 - name: Add systemd unit
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
-  register: _service
-
-- name: Restart Snowflake service
-  when: not ansible_check_mode and (force_restart or _sysctl.changed or _service.changed)
-  ansible.builtin.service:
-    name: snowflake-proxy
-    state: restarted
-    daemon_reload: true
-    enabled: true
-
-- name: Ensure Snowflake service is started
-  when: not ansible_check_mode
-  ansible.builtin.service:
-    name: snowflake-proxy
-    state: started
-    daemon_reload: true
+  notify: "restart service"

@@ -64,13 +64,13 @@
         - firewall
 
     - name: Prometheus node exporter
-      when: prometheus_node_exporter is true
+      when: prometheus_node_exporter is defined and prometheus_node_exporter
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
 
     - name: metrics
-      when: metrics_port is defined and metrics_port != "" and prometheus_server is defined and prometheus_server != ""
+      when: (metrics_port is defined and metrics_port) or (prometheus_node_exporter is defined and prometheus_node_exporter)
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
@@ -81,18 +81,18 @@
         - timer
 
     - name: Kernel Debian
-      when: kernel_debian_repo != "" and kernel_debian_version != ""
+      when: kernel_debian_repo and kernel_debian_version
       ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
         - kernel
 
     - name: Kernel Git
-      when: kernel_git_version != ""
+      when: kernel_git_version
       ansible.builtin.import_tasks: kernel-git.yaml
       tags:
         - kernel
 
-    - name: Reboot
-      ansible.builtin.import_tasks: reboot.yaml
-      tags:
-        - reboot
+- name: Check if reboot is required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  notify: "reboot required"

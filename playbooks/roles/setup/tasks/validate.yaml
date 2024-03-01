@@ -7,31 +7,31 @@
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
 - name: Validate metrics_port
-  when: metrics_port is defined and metrics_port != ""
+  when: metrics_port is defined and metrics_port
   ansible.builtin.assert:
     quiet: true
     that:
       - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
 
 - name: Validate prometheus_server
-  when: prometheus_server is defined and prometheus_server != ""
+  when: prometheus_server is defined and prometheus_server
   ansible.builtin.assert:
     quiet: true
     that:
       - "prometheus_server is ansible.utils.ipv4"
 
 - name: Validate kernel_debian_repo
-  when: kernel_debian_repo != ""
+  when: kernel_debian_repo
   ansible.builtin.assert:
     quiet: true
     that:
       - "kernel_debian_version is defined"
-      - 'kernel_debian_version != ""'
+      - "kernel_debian_version"
 
 - name: Validate kernel_debian_version
-  when: kernel_debian_version != ""
+  when: kernel_debian_version
   ansible.builtin.assert:
     quiet: true
     that:
       - "kernel_debian_repo is defined"
-      - 'kernel_debian_repo != ""'
+      - "kernel_debian_repo"

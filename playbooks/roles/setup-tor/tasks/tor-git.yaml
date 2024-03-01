@@ -52,21 +52,6 @@
       make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
     chdir: /root/tor
 
-# test at Tor restart needed
-- name: Install Tor binary
-  when: not ansible_check_mode
-  ansible.builtin.copy:
-    src: /root/tor/src/app/tor
-    dest: /usr/bin/
-    remote_src: yes
-    mode: a+x
-  register: _binary
-
-- name: Set fact
-  when: _binary.changed
-  ansible.builtin.set_fact:
-    force_restart: true
-
 - name: Create system directories
   ansible.builtin.file:
     path: "{{ item }}"
@@ -78,6 +63,17 @@
     - /var/lib/tor/
     - /var/log/tor/
 
+# test if Tor restart is needed
+- name: Install Tor binary
+  when: not ansible_check_mode
+  ansible.builtin.copy:
+    src: /root/tor/src/app/tor
+    dest: /usr/bin/
+    remote_src: yes
+    mode: a+x
+  register: _binary
+  notify: "restart service"
+
 - name: Install Tor
   when: _binary.changed
   ansible.builtin.shell:
@@ -88,11 +84,13 @@
   ansible.builtin.copy:
     src: system_tor
     dest: /etc/apparmor.d/
+  notify: "restart service"
 
 - name: Add systemd unit
   ansible.builtin.copy:
     src: tor.service
     dest: /etc/systemd/system/
+  notify: "restart service"
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
@@ -100,3 +98,4 @@
     value: "2" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
+  notify: "restart service"

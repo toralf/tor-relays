@@ -1,0 +1,16 @@
+---
+- name: Reboot if required
+  listen: "reboot required"
+  ansible.builtin.reboot:
+    connect_timeout: 2
+    reboot_timeout: 60
+    pre_reboot_delay: 0
+    post_reboot_delay: 20
+
+- name: Restart Nginx
+  listen: "restart nginx"
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+    daemon_reload: true
+    enabled: true

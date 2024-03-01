@@ -1,5 +1,3 @@
 ---
 snowflake_git_version: "HEAD"
 snowflake_patches: []
-
-force_restart: false

@@ -28,12 +28,7 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: _plugin
-
-- name: Set fact
-  when: _plugin.changed
-  ansible.builtin.set_fact:
-    force_restart: true
+  notify: "restart service"
 
 # for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and probably more
 - name: Set Linux capabilities on Lyrebird
@@ -41,4 +36,4 @@
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
     state: present
-  when: _plugin.changed
+  notify: "restart service"

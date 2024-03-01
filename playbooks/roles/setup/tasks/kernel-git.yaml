@@ -52,5 +52,5 @@
       make install
       make modules_install
       update-initramfs -u
-      touch /var/run/reboot-required
     chdir: "/usr/src/linux-{{ kernel_git_version }}/"
+  notify: "reboot required"
