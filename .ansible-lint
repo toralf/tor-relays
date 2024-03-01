@@ -3,20 +3,23 @@
 # https://ansible-lint.readthedocs.io/
 
 enable_list:
-  - empty-string-compare # opt-in
-  - no-log-password # opt-in
-  - no-same-owner # opt-in
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner
 
 skip_list:
+  - command-instead-of-module
+  - command-instead-of-shell
   - latest[git]
   - line[length]
   - meta-no-info
   - meta-no-tags
+  - name[casing]
   - name[template]
   - no-changed-when
   - no-handler
   - risky-file-permissions
   - risky-shell-pipe
-  - command-instead-of-shell
-  - yaml[truthy]
+  - var-naming[no-role-prefix]
   - yaml[line-length]
+  - yaml[truthy]

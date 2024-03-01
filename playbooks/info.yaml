@@ -11,7 +11,7 @@
   hosts:
     - snowflake
   roles:
-    - role: info-snowflake
+    - role: info_snowflake
   tags:
     - info-snowflake
 
@@ -20,6 +20,6 @@
     - private
     - public
   roles:
-    - role: info-tor
+    - role: info_tor
   tags:
     - info-tor

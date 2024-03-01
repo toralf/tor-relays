@@ -11,7 +11,7 @@
   hosts:
     - snowflake
   roles:
-    - role: setup-snowflake
+    - role: setup_snowflake
   tags:
     - setup-snowflake
 
@@ -20,6 +20,6 @@
     - public
     - private
   roles:
-    - role: setup-tor
+    - role: setup_tor
   tags:
     - setup-tor
