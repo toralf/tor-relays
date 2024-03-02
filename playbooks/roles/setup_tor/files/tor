@@ -1,0 +1,15 @@
+/var/log/tor/*log {
+  daily
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 tor tor
+  sharedscripts
+  postrotate
+    if invoke-rc.d tor status > /dev/null; then
+      invoke-rc.d tor reload > /dev/null
+    fi
+  endscript
+}
