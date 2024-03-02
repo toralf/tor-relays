@@ -18,8 +18,8 @@
 
 - name: Generate SSL certificate
   when: not _keyfile.stat.exists or not _crtfile.stat.exists
-  ansible.builtin.command: >-
-    openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
+  ansible.builtin.command:
+    cmd: openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
       -keyout /etc/ssl/private/nginx-selfsigned-metrics.key \
       -out /etc/ssl/certs/nginx-selfsigned-metrics.crt \
       -subj "/C=/O=/OU=/CN="

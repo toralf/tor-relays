@@ -4,7 +4,7 @@
 
 - name: Tor version
   changed_when: false
-  ansible.builtin.shell: >-
+  ansible.builtin.shell: |
     tor --version |
     grep -m 1 '^Tor version' |
     awk '{ print $3, $4 }'
@@ -14,7 +14,7 @@
 - name: Proxy version
   changed_when: false
   ansible.builtin.command:
-    cmd: /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version
+    cmd: "/usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version"
   register: _proxy
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 
