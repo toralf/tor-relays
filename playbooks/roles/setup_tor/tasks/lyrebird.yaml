@@ -18,7 +18,7 @@
 - name: Build Lyrebird
   when: not ansible_check_mode
   ansible.builtin.command:
-    cmd: go build ./cmd/lyrebird
+    cmd: make build
     chdir: /root/lyrebird
 
 - name: Install Lyrebird
@@ -36,4 +36,3 @@
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
     state: present
-  notify: "restart service"
