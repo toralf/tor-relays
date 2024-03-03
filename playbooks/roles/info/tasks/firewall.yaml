@@ -1,11 +1,15 @@
 ---
-- name: Firewall ct drops
+- name: Get ct drops
   changed_when: false
   ansible.builtin.shell: |
-    conntrack -S | grep -v ' insert_failed=0 drop=0 ' | awk '{ print $1, $5, $6 }' | cut -f 2- -d ':' | xargs
+    conntrack -S |
+      grep -v ' insert_failed=0 drop=0 ' |
+      awk '{ print $1, $5, $6 }' |
+      cut -f 2- -d ':' |
+      xargs
   register: _result
 
-- name: File Firewall ct drops
+- name: File ct drops
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
@@ -14,12 +18,12 @@
     path: "{{ tmp_dir }}/{{ group_names[0] }}_firewall_ct_drops"
     regex: "^{{ inventory_hostname }} "
 
-- name: Firewall ct counter
+- name: Get ct counter
   changed_when: false
   ansible.builtin.command: conntrack -C
   register: _result
 
-- name: File Firewall ct counter
+- name: File ct counter
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

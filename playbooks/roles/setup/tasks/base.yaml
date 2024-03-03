@@ -21,6 +21,7 @@
       fi
 
       service sshd reload
+    executable: /bin/bash
 
 - name: Sysctl config
   ansible.builtin.copy:
@@ -64,6 +65,7 @@
       fi
       swapon /swapfile
     creates: /swapfile
+    executable: /bin/bash
 
 - name: Set sysctl swappiness
   ansible.posix.sysctl:

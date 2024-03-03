@@ -35,9 +35,9 @@
   when: _repo.changed or _patch.changed
   ansible.builtin.shell:
     cmd: |
-      set -e
+      set -euf
 
-      if [ ! -x ./configure ]; then
+      if [[ ! -x ./configure ]]; then
         rm -f Makefile
         ./autogen.sh
       fi
@@ -50,6 +50,7 @@
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
+    executable: /bin/bash
     chdir: /root/tor
 
 - name: Create system directories

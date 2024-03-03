@@ -10,6 +10,7 @@
 
       iptables  -C {{ _ipv4_cmd }} || iptables  -A {{ _ipv4_cmd }}
       ip6tables -C {{ _ipv6_cmd }} || ip6tables -A {{ _ipv6_cmd }}
+    executable: /bin/bash
   register: _ddos_rule
 
 - name: ACCEPT TCP to obfs4 port

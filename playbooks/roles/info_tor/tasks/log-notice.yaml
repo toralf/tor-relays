@@ -1,18 +1,27 @@
 ---
 - name: Get last {{ log_lines }} lines of {{ log_notice }}
   changed_when: false
-  ansible.builtin.shell: |
-    diff=$((EPOCHSECONDS - $(stat -c %Z {{ log_notice }})))
-    if [[ $diff -gt $((6 * 3600)) ]]; then
-      echo "{{ log_notice }} is older than $diff seconds" &>2
-      exit 1
-    fi
+  ansible.builtin.shell:
+    cmd: |
+      set -euf
 
-    grep -h -v -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
-    tail -n {{ log_lines }}
+      diff=$((EPOCHSECONDS - $(stat -c %Z {{ log_notice }})))
+      if [[ $diff -gt $((2 * 3600)) ]]; then
+        echo "{{ log_notice }} is older than $diff seconds" >&2
+      fi
+
+      grep -h -v -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
+      tail -n {{ log_lines }}
+    executable: /bin/bash
   register: _result
 
 - name: Results of log-notice {{ log_lines }} last lines
   ansible.builtin.debug:
     msg: "{{ _result.stdout.split('\n') }}"
   when: _result.stdout_lines | length > 0
+
+- name: error
+  when: _result.stderr_lines | length > 0
+  failed_when: true
+  ansible.builtin.debug:
+    msg: "{{ _result.stderr_lines }}"
