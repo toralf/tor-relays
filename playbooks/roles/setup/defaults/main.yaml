@@ -12,3 +12,5 @@ kernel_git_patches: []
 metrics_port: ""
 prometheus_node_exporter: ""
 prometheus_server: ""
+
+ssl_dir: "{{ playbook_dir }}/../secrets/ssl"

@@ -69,6 +69,12 @@
       tags:
         - prometheus-node-exporter
 
+    - name: CA
+      ansible.builtin.import_tasks: ca.yaml
+      tags:
+        - ca
+        - never
+
     - name: metrics
       when: metrics_port or prometheus_node_exporter
       ansible.builtin.import_tasks: metrics.yaml

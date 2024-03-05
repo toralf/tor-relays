@@ -79,9 +79,8 @@ Furthermore _<...>\_patches_ holds additional patches (referenced by an URL) whi
 ### Metrics
 
 If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then it is allowed in the firewall to scrape Tor metrics.
-An Nginx is deployed to encrypt the metrics data on transit.
-A firewall rule allows only the Prometheus server ip address as an inbound.
-No HTTP BasicAuth is therefore needed.
+An Nginx is used to encrypt the metrics data on transit, using certificates from a self-signed CA.
+A firewall rule allows only the Prometheus server ip address as an inbound to a VPS.
 
 A _Prometheus node exporter_ is installed by defining `prometheus_node_exporter: true`.
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
@@ -97,18 +96,18 @@ snowflake:
 A Prometheus config file could look like this:
 
 ```yaml
-- job_name: "Tor-Bridge-Public"
+- job_name: "Tor-Relay"
+  metrics_path: "/metrics-relay"
   scheme: https
   tls_config:
-    insecure_skip_verify: true
-  metrics_path: "/metrics-relay"
+    ca_file: "/etc/prometheus/CA.crt"
   static_configs:
-    - targets: ["a:12345", ...]
+    - targets: ["..."]
   relabel_configs:
     - source_labels: [__address__]
-      regex: "(.*):(.*)"
-      replacement: "${1}"
       target_label: instance
+      regex: "([^:]+).*:(.).*"
+      replacement: "nick${2}"
 ```
 
 For Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.

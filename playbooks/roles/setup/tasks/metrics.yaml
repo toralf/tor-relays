@@ -6,23 +6,50 @@
       - nginx
   notify: "restart nginx"
 
-- name: Check if key file does exist
-  ansible.builtin.stat:
-    path: /etc/ssl/private/nginx-selfsigned-metrics.key
-  register: _keyfile
+- name: Generate host private key
+  delegate_to: localhost
+  community.crypto.openssl_privatekey:
+    path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
 
-- name: Check if crt file does exist
-  ansible.builtin.stat:
-    path: /etc/ssl/certs/nginx-selfsigned-metrics.crt
-  register: _crtfile
+- name: Generate host CSR
+  delegate_to: localhost
+  community.crypto.openssl_csr:
+    path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
+    privatekey_path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
+    common_name: "{{ inventory_hostname }}"
+    country_name: "DE"
+    subject_alt_name:
+      - "DNS:{{ inventory_hostname }}"
+      - "IP:{{ ansible_facts.default_ipv4.address }}"
+      - "IP:{{ ansible_facts.default_ipv6.address }}"
+    key_usage:
+      - digitalSignature
+      - nonRepudiation
+      - keyEncipherment
+      - dataEncipherment
 
-- name: Generate SSL certificate
-  when: not _keyfile.stat.exists or not _crtfile.stat.exists
-  ansible.builtin.command:
-    cmd: openssl req -x509 -nodes -days 3650 -newkey rsa:2048 \
-      -keyout /etc/ssl/private/nginx-selfsigned-metrics.key \
-      -out /etc/ssl/certs/nginx-selfsigned-metrics.crt \
-      -subj "/C=/O=/OU=/CN="
+- name: Generate host certificate
+  delegate_to: localhost
+  community.crypto.x509_certificate:
+    path: "{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt"
+    csr_path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
+    ownca_path: "{{ ssl_dir }}/certs/CA.crt"
+    ownca_privatekey_path: "{{ ssl_dir }}/keys/CA.key"
+    provider: ownca
+
+- name: Copy host key
+  ansible.builtin.copy:
+    src: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
+    dest: /etc/nginx/conf.d/
+  notify: "restart nginx"
+
+- name: Copy host certificate
+  ansible.builtin.copy:
+    content: "{{
+      lookup('file','{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt')+'\n'+
+      lookup('file','{{ ssl_dir }}/certs/CA.crt')+'\n'
+      }}"
+    dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
   notify: "restart nginx"
 
 - name: Configure Nginx

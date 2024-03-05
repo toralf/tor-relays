@@ -27,8 +27,8 @@ server {
 
   ssl_protocols TLSv1.3;
   ssl_ciphers HIGH:!aNULL:!MD5;
-  ssl_certificate /etc/ssl/certs/nginx-selfsigned-metrics.crt;
-  ssl_certificate_key /etc/ssl/private/nginx-selfsigned-metrics.key;
+  ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
+  ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
 
   add_header Strict-Transport-Security "max-age=63072000" always;
   access_log off;
