@@ -78,14 +78,14 @@ Furthermore _<...>\_patches_ holds additional patches (referenced by an URL) whi
 
 ### Metrics
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then it is allowed in the firewall to scrape Tor metrics.
-An Nginx is used to encrypt the metrics data on transit, using certificates from a self-signed CA.
-A firewall rule allows only the Prometheus server ip address as an inbound to a VPS.
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then its ip is granted by a firewall rule to scrape metrics.
+An Nginx is used to encrypt the metrics data transfer, by using a certificate from a self-signed CA.
+This CA is presented to the Prometheus too to secure the TLS handshake.
 
 A _Prometheus node exporter_ is installed by defining `prometheus_node_exporter: true`.
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
-to expose Prometheus Node exporter, Tor and Snowflake metrics
-at https://_address_:_metrics_port_/metrics-_node|relay|snowflake_ respectively, e.g.:
+to expose metrics at https://_address_:_metrics_port_/metrics-_node|relay|snowflake_
+(Prometheus Node exporter, Tor and Snowflake respectively), e.g.:
 
 ```yaml
 snowflake:
