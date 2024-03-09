@@ -15,7 +15,6 @@
       - htop
       - iptables
       - iptables-persistent
-      #- net-tools
       - ntp
       - psmisc
       - unattended-upgrades

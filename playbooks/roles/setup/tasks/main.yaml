@@ -40,11 +40,11 @@
       tags:
         - base
 
-    - name: System Debian
+    - name: Update Debian
       when: ansible_facts.distribution == "Debian"
-      ansible.builtin.import_tasks: system-debian.yaml
+      ansible.builtin.import_tasks: update-debian.yaml
       tags:
-        - system-debian
+        - update
 
     - name: IPv6 Hetzner
       when: ansible_facts.system_vendor == 'Hetzner'
