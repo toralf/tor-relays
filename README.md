@@ -93,24 +93,7 @@ snowflake:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
-A Prometheus config file could look like this:
-
-```yaml
-- job_name: "Tor-Relay"
-  metrics_path: "/metrics-relay"
-  scheme: https
-  tls_config:
-    ca_file: "/etc/prometheus/CA.crt"
-  static_configs:
-    - targets: ["..."]
-  relabel_configs:
-    - source_labels: [__address__]
-      target_label: instance
-      regex: "([^:]+).*:(.).*"
-      replacement: "nick${2}"
-```
-
-For Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
+For appropriate Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
 
@@ -121,8 +104,9 @@ The value _targets_ (used in the Prometheus server config file) can be created e
 sort ~/tmp/public_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
 ```
 
-The scripts under [./bin](./bin) work for the Hetzner Cloud.
-To create a new VPS with the hostname _my_bridge_ in the Hetzner project _my_project_, do:
+The scripts under [./bin](./bin) work for the Hetzner Cloud API only.
+
+To create there a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
 
 ```bash
 hcloud context use my_project
@@ -130,13 +114,13 @@ hcloud context use my_project
 ```
 
 The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
-configured for the appropriate Hetzner project:
+configured for the appropriate project:
 
 ```config
 include: "/etc/unbound/hetzner-<project>.conf"
 ```
 
-(_hcloud_ uses the term _"context"_ for a Hertzner project)
+(_hcloud_ uses the term _"context"_ for a project)
 
 ## Links
 
