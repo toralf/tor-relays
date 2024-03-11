@@ -35,7 +35,7 @@
         - firewall
 
     - name: Debian
-      when: tor_build_from_source is false
+      when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-debian.yaml
       tags:
         - tor
