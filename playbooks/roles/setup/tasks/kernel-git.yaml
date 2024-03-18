@@ -23,7 +23,7 @@
     bare: true
     force: true
 
-- name: "Create or update {{ kernel_git_version }}"
+- name: "Create or update /usr/src/linux-{{ kernel_git_version }}/"
   when: not ansible_check_mode
   ansible.builtin.shell:
     cmd: |
@@ -46,12 +46,30 @@
       set -e
 
       yes '' | make localmodconfig
-      sed -i -e 's,^# CONFIG_LOCALVERSION_AUTO is not set$,CONFIG_LOCALVERSION_AUTO=y,' .config
+      sed -i \
+        -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=y,' \
+        -e 's,^# CONFIG_IP_NF_FILTER.*,CONFIG_IP_NF_FILTER=m,' \
+        -e 's,^# CONFIG_IP_NF_NAT.*,CONFIG_IP_NF_NAT=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH .*,CONFIG_IP_SET_HASH=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH_IP .*,CONFIG_IP_SET_HASH_IP=m,' \
+        -e 's,^# CONFIG_IP6_NF_FILTER.*,CONFIG_IP6_NF_FILTER=m,' \
+        -e 's,^# CONFIG_IP6_NF_IPTABLES .*,CONFIG_IP6_NF_IPTABLES=m,' \
+        -e 's,^# CONFIG_IP6_NF_NAT .*,CONFIG_IP6_NF_NAT=m,' \
+        -e 's,^# CONFIG_IP6_NF_RAW .*,CONFIG_IP6_NF_RAW=m,' \
+        -e 's,^# CONFIG_LOCALVERSION_AUTO .*,CONFIG_LOCALVERSION_AUTO=y,' \
+        -e 's,^# CONFIG_NETFILTER_XT_MATCH_HASHLIMIT .*,CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m,' \
+        -e 's,^# CONFIG_NETFILTER_XT_MATCH_MULTIPORT.*,CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m,' \
+        -e 's,^# CONFIG_NETFILTER_XT_NAT .*,CONFIG_NETFILTER_XT_NAT=m,' \
+        -e 's,^# CONFIG_NF_NAT .*,CONFIG_NF_NAT=m,' \
+        -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
+        .config
+      yes '' | make oldconfig
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
       make install
       make modules_install
       update-initramfs -u
+
     chdir: "/usr/src/linux-{{ kernel_git_version }}/"
     executable: /bin/bash
   notify: "reboot required"
