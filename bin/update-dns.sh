@@ -12,7 +12,7 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-hash -r unbound
+hash -r hcloud
 
 [[ $# -le 1 ]]
 project=$(hcloud context active)
@@ -29,34 +29,22 @@ while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
-echo "# managed by $(realpath $0)" | sudo tee ${hconf}.new >/dev/null
+echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
 trap Exit INT QUIT TERM EXIT
 
-(
-  echo 'server:'
-
-  hcloud server list --output columns=name,ipv4,ipv6 |
-    grep -v '^NAME' |
-    sort -n |
-    while read -r name ipv4 ipv6; do
-      if [[ -z ${name} ]]; then
-        echo "Bummer!" >&2
-        exit 1
-      fi
-      # IPv4
-      printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
-      printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
-      # IPv6: optimistic approach: do assume that <prefix>::1 works
-      ipv6_address=$(sed -e 's,/64,1,' <<<$ipv6)
-      printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6_address}
-      printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6_address} "" ${name}
-    done
-) | sudo tee -a ${hconf}.new >/dev/null
+hcloud server list --output columns=name,ipv4 |
+  grep -v '^NAME' |
+  sort |
+  while read -r name ipv4; do
+    printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
+    printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
+  done |
+  sudo tee -a ${hconf}.new >/dev/null
 
 if ! sudo diff -q ${hconf} ${hconf}.new; then
-  echo -e " reloading DNS resolver" >&2
+  echo " reloading DNS resolver" >&2
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 else
-  echo " no DNS changes for ${hconf}" >&2
+  echo " no changes in ${hconf}" >&2
 fi
