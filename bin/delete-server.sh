@@ -8,11 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 hash -r hcloud
 
-if [[ $# -eq 0 ]]; then
-  echo "no arguments given" >&2
-  exit 1
-fi
-
+[[ $# -ne 0 ]]
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}\n"
 

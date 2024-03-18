@@ -16,20 +16,15 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
+all_locations=$(hcloud location list --output json | jq -r '.[].name')
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
-all_locations=$(hcloud location list --output json | jq -r '.[].name')
 os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
-now=$EPOCHSECONDS
+now=${EPOCHSECONDS}
 
 while read -r name; do
-  if [[ -z ${name} ]]; then
-    echo "Bummer!" >&2
-    exit 1
-  fi
-
   if [[ -n ${HCLOUD_TYPE-} ]]; then
     type=${HCLOUD_TYPE}
     if [[ ${type} == "cax11" ]]; then
