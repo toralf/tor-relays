@@ -22,9 +22,10 @@
     dest: /root/linux
     bare: true
     force: true
+  register: _repo_linux
 
 - name: "Create or update /usr/src/linux-{{ kernel_git_version }}/"
-  when: not ansible_check_mode
+  when: kernel_git_forcebuild or _repo_linux.changed
   ansible.builtin.shell:
     cmd: |
       git archive "{{ kernel_git_version }}" --prefix linux-"{{ kernel_git_version }}/" |
@@ -32,15 +33,17 @@
     chdir: /root/linux
 
 - name: Apply patches
+  changed_when: length kernel_git_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: "/usr/src/linux-{{ kernel_git_version }}"
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
+  register: _patches_linux
 
 - name: "Build Linux {{ kernel_git_version }}"
-  when: not ansible_check_mode
+  when: kernel_git_forcebuild or _repo_linux.changed or _patches_linux.changed
   ansible.builtin.shell:
     cmd: |
       set -e

@@ -20,19 +20,20 @@
     dest: /root/tor
     version: "{{ tor_git_version }}"
     force: true
-  register: _repo
+  register: _repo_tor
 
 - name: Apply patches of Tor
+  changed_when: length tor_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/tor
   loop_control:
     label: "{{ item }}"
   loop: "{{ tor_patches }}"
-  register: _patch
+  register: _patch_tor
 
 - name: Build Tor
-  when: _repo.changed or _patch.changed
+  when: _repo_tor.changed or _patch_tor.changed
   ansible.builtin.shell:
     cmd: |
       set -euf
@@ -72,11 +73,11 @@
     dest: /usr/bin/
     remote_src: yes
     mode: a+x
-  register: _binary
+  register: _binary_tor
   notify: "restart service"
 
 - name: Install Tor
-  when: _binary.changed
+  when: _binary_tor.changed
   ansible.builtin.command:
     cmd: make install
     chdir: /root/tor

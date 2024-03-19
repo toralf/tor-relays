@@ -5,8 +5,7 @@
     state: directory
     mode: "0700"
 
-- name: de-activate password + root login (ionos)
-  when: _cloud_init.stat.exists
+- name: "Ionos: de-activate password + root login"
   ansible.builtin.shell:
     cmd: |
       set -e

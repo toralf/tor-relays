@@ -8,6 +8,7 @@
     force: true
 
 - name: Apply patches of Lyrebird
+  changed_when: length lyrebird_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/lyrebird
