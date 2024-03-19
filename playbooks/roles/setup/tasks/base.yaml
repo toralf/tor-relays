@@ -5,23 +5,21 @@
     state: directory
     mode: "0700"
 
-- name: check for ionos init file
-  ansible.builtin.stat:
-    path: /etc/ssh/sshd_config.d/50-cloud-init.conf
-  register: _cloud_init
-
 - name: de-activate password + root login (ionos)
   when: _cloud_init.stat.exists
   ansible.builtin.shell:
     cmd: |
-      rm /etc/ssh/sshd_config.d/50-cloud-init.conf
+      set -e
 
       if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
         sed -i -e 's,^PermitRootLogin yes,#PermitRootLogin yes,' /etc/ssh/sshd_config
       fi
 
       service sshd reload
+
+      rm /etc/ssh/sshd_config.d/50-cloud-init.conf
     executable: /bin/bash
+    removes: /etc/ssh/sshd_config.d/50-cloud-init.conf
 
 - name: Sysctl config
   ansible.builtin.copy:
