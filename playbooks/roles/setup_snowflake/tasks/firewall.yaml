@@ -1,7 +1,7 @@
 ---
 - name: ACCEPT incoming UDP to (ephemeral ports of) Snowflake
   ansible.builtin.iptables:
-    ip_version: "{{ 'ip' + item }}"
+    ip_version: "ip{{ item }}"
     chain: INPUT
     table: filter
     protocol: udp
@@ -15,7 +15,7 @@
 
 - name: Save iptables state
   community.general.iptables_state:
-    ip_version: "{{ 'ip' + item }}"
+    ip_version: "ip{{ item }}"
     state: saved
     path: "{{ '/etc/iptables/rules.' + item }}"
   with_items:
