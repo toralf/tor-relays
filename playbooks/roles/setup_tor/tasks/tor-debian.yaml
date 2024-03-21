@@ -11,7 +11,7 @@
     state: present
   with_items:
     - "{{ ansible_facts.distribution_release }}"
-    - "{{ tor_debian_suite }}"
+    - "{{ tor_debian_target }}"
 
 - name: Install or update Debian key ring
   when: not ansible_check_mode
@@ -23,7 +23,7 @@
 - name: Install or update Tor
   when: not ansible_check_mode
   ansible.builtin.apt:
-    default_release: "{{ tor_debian_suite }}"
+    default_release: "{{ tor_debian_target }}"
     name:
       - obfs4proxy
       - tor

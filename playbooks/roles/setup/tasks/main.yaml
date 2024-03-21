@@ -87,7 +87,7 @@
         - timer
 
     - name: Kernel Debian
-      when: kernel_debian_repo and kernel_debian_version
+      when: kernel_debian_target and kernel_debian_version
       ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
         - kernel

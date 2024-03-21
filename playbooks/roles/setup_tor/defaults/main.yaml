@@ -10,7 +10,7 @@ tor_build_from_source: true
 tor_git_version: "HEAD"
 tor_patches: []
 
-tor_debian_suite: "{{ ansible_facts.distribution_release }}" # e.g. "tor-nightly-main-bookworm"
+tor_debian_target: "{{ ansible_facts.distribution_release }}" # e.g. "tor-nightly-main-bookworm"
 
 metrics_port: ""
 

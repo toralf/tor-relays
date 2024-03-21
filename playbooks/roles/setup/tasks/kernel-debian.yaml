@@ -1,17 +1,17 @@
 ---
-- name: Configure repository "{{ kernel_debian_repo }}"
+- name: Configure repository "{{ kernel_debian_target }}"
   ansible.builtin.apt_repository:
-    filename: "{{ kernel_debian_repo }}"
-    repo: "deb http://deb.debian.org/debian {{ kernel_debian_repo }} main"
+    filename: "{{ kernel_debian_target }}"
+    repo: "deb http://deb.debian.org/debian {{ kernel_debian_target }} main"
 
-- name: Apt pinning for "{{ kernel_debian_repo }}" kernel
+- name: Apt pinning for "{{ kernel_debian_target }}" kernel
   ansible.builtin.copy:
     src: apt-preferences
     dest: /etc/apt/preferences
 
-- name: Install or update "{{ kernel_debian_repo }}" kernel
+- name: Install or update "{{ kernel_debian_target }}" kernel
   ansible.builtin.apt:
-    default_release: "{{ kernel_debian_repo }}"
+    default_release: "{{ kernel_debian_target }}"
     name:
       - "linux-image-{{ kernel_debian_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
   notify: "reboot required"

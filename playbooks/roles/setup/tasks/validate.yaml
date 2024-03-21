@@ -20,8 +20,8 @@
     that:
       - "prometheus_server is ansible.utils.ipv4"
 
-- name: Validate kernel_debian_repo
-  when: kernel_debian_repo
+- name: Validate kernel_debian_target
+  when: kernel_debian_target
   ansible.builtin.assert:
     quiet: true
     that:
@@ -32,4 +32,4 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "kernel_debian_repo"
+      - "kernel_debian_target"
