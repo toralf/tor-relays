@@ -1,6 +1,5 @@
 ---
 - name: DDoS of obfs4 port
-  changed_when: _ddos_rule.stderr is search("Bad rule")
   vars:
     _ipv4_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
     _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6 --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
@@ -8,10 +7,11 @@
     cmd: |
       set -e
 
-      iptables  -C {{ _ipv4_cmd }} || iptables  -A {{ _ipv4_cmd }}
-      ip6tables -C {{ _ipv6_cmd }} || ip6tables -A {{ _ipv6_cmd }}
+      iptables -C {{ _ipv4_cmd }} 2>/dev/null || true
+      iptables -A {{ _ipv4_cmd }}
+      ip6tables -C {{ _ipv6_cmd }} 2>/dev/null || true
+      ip6tables -A {{ _ipv6_cmd }}
     executable: /bin/bash
-  register: _ddos_rule
 
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:
@@ -25,7 +25,6 @@
   with_items:
     - "v4"
     - "v6"
-  register: _firewall
 
 - name: Prereoute incoming ipv6 traffic
   when: ansible_facts.default_ipv6.prefix != "128"
@@ -59,4 +58,3 @@
   with_items:
     - "v4"
     - "v6"
-  when: _firewall.changed
