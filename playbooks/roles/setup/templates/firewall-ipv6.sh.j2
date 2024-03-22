@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #set -x
 # {{ ansible_managed }}
 
@@ -18,7 +18,7 @@ function addRules() {
   $ipt -P OUTPUT ACCEPT
 
   # allow loopback
-  $ipt -A INPUT --in-interface lo -m comment -j ACCEPT
+  $ipt -A INPUT --in-interface lo -j ACCEPT
 
   # IPv6 Multicast
   $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::/80 -j ACCEPT
@@ -57,9 +57,11 @@ set -euf
 
 ipt=/sbin/ip6tables
 
+trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then
   clearAll
   addRules
 else
   $1
 fi
+trap - INT QUIT TERM EXIT
