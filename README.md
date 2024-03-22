@@ -13,25 +13,26 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create a seed, e.g.:
+1. create seeds, e.g.:
 
    ```bash
    cat <<EOF >> secrets/local.yaml
    ---
    seed_address: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
+   seed_metrics: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
+   seed_obfs4: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
 
    EOF
    ```
 
-1. add the system to the inventory and configure its obfs4 port, i.e. in `inventory/systems.yaml`:
+1. add _my_bridge_ to an inventory file and configure its obfs4 port (i.e. within `inventory/systems.yaml`):
 
    ```yaml
    ---
    public:
-     vars:
-       obfs4_port: 4711
      hosts:
        my_bridge:
+         obfs4_port: 4711
    ```
 
 1. deploy it
