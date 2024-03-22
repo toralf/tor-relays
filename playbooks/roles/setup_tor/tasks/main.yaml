@@ -40,23 +40,21 @@
       tags:
         - tor
 
-    - name: Tools
+    - name: Build from source
       when: tor_build_from_source
-      ansible.builtin.import_tasks: tools.yaml
-      tags:
-        - tools
-
-    - name: Git
-      when: tor_build_from_source
-      ansible.builtin.import_tasks: tor-git.yaml
-      tags:
-        - tor
-
-    - name: Lyrebird
-      when: tor_build_from_source
-      ansible.builtin.import_tasks: lyrebird.yaml
-      tags:
-        - lyrebird
+      block:
+        - name: Tools
+          ansible.builtin.import_tasks: tools.yaml
+          tags:
+            - tools
+        - name: Git
+          ansible.builtin.import_tasks: tor-git.yaml
+          tags:
+            - tor
+        - name: Lyrebird
+          ansible.builtin.import_tasks: lyrebird.yaml
+          tags:
+            - lyrebird
 
     - name: Config
       ansible.builtin.import_tasks: config.yaml
