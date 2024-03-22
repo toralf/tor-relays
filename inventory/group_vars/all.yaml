@@ -1,7 +1,4 @@
 ---
-# local directory for site-info files
-tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
-
 # facts cache is not updated if a tag is given or hosts are limited
 facts_subset:
   - "!all"
@@ -14,3 +11,6 @@ facts_subset:
   - "devices"
   - "dns"
   - "hardware"
+
+# local directory for site-info files
+tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
