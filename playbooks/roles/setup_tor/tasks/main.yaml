@@ -47,10 +47,12 @@
           ansible.builtin.import_tasks: tools.yaml
           tags:
             - tools
+
         - name: Git
           ansible.builtin.import_tasks: tor-git.yaml
           tags:
             - tor
+
         - name: Lyrebird
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:

@@ -36,7 +36,6 @@
     value: "0" # Debian  bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: "restart service"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Obfs4 port
