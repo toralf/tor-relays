@@ -8,7 +8,7 @@
 - name: "Ionos: de-activate password + root login"
   ansible.builtin.shell:
     cmd: |
-      set -e
+      set -euf
 
       if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
         sed -i -e 's,^PermitRootLogin yes,#PermitRootLogin yes,' /etc/ssh/sshd_config
@@ -52,7 +52,7 @@
   when: ansible_facts.memtotal_mb < 4096
   ansible.builtin.shell:
     cmd: |
-      set -e
+      set -euf
 
       fallocate -l 2G /swapfile
       chmod 600 /swapfile

@@ -46,7 +46,7 @@
   when: kernel_git_forcebuild or _repo_linux.changed or _patches_linux.changed
   ansible.builtin.shell:
     cmd: |
-      set -e
+      set -euf
 
       yes '' | make localmodconfig
       sed -i \
