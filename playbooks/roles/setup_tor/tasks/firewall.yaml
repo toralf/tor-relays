@@ -5,7 +5,7 @@
     _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ obfs4_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6 --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
   ansible.builtin.shell:
     cmd: |
-      set -e
+      set -euf
 
       iptables -C {{ _ipv4_cmd }} 2>/dev/null || true
       iptables -A {{ _ipv4_cmd }}
@@ -19,6 +19,7 @@
     chain: INPUT
     table: filter
     protocol: tcp
+    destination: "{{ (item == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
     destination_port: "{{ obfs4_port }}"
     syn: match
     jump: ACCEPT
