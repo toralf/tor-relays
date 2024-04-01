@@ -19,11 +19,13 @@
 - name: Log system
   ansible.builtin.import_tasks: log-system.yaml
   tags:
+    - log
     - log-system
 
 - name: Log unattended
   ansible.builtin.import_tasks: log-unattended.yaml
   tags:
+    - log
     - log-unattended
 
 - name: Metrics port
