@@ -1,14 +1,4 @@
 ---
-- name: Install or update toolchain for Tor build
-  when: not ansible_check_mode
-  ansible.builtin.apt:
-    name:
-      - automake
-      - build-essential
-      - libevent-dev
-      - libssl-dev
-      - zlib1g-dev
-
 - name: Add the Tor user
   ansible.builtin.user:
     name: tor

@@ -3,7 +3,12 @@
   when: not ansible_check_mode
   ansible.builtin.apt:
     name:
+      - automake
+      - build-essential
       - git
+      - libevent-dev
+      - libssl-dev
+      - zlib1g-dev
 
 - name: Configure repository "backports"
   ansible.builtin.apt_repository:

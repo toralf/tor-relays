@@ -44,7 +44,7 @@
       when: tor_build_from_source
       block:
         - name: Tools
-          ansible.builtin.import_tasks: tools.yaml
+          ansible.builtin.import_tasks: tools-git.yaml
           tags:
             - tools
 
