@@ -42,7 +42,7 @@ while read -r name; do
     fi
   fi
 
-  echo "--poll-interval 2s server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
+  echo "server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud 1>/dev/null
 
