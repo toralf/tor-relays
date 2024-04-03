@@ -14,7 +14,7 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-echo -e " deleting config(s) ..."
+echo -e " deleting local config file(s) ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/*_* 2>/dev/null
@@ -29,8 +29,19 @@ while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
-echo -e "\n deleting server(s) at Hetzner ..."
-xargs -t -r -P ${jobs} -n 1 hcloud --poll-interval 2s server delete <<<$* 1>/dev/null
+if [[ ${SNAPSHOTS:-0} -eq 1 ]]; then
+  echo -e "\n shutdown ..."
+  xargs -t -r -P ${jobs} -n 1 hcloud server shutdown <<<$* 1>/dev/null
+
+  echo -e "\n poweroff ..."
+  xargs -t -r -P ${jobs} -n 1 hcloud server poweroff <<<$* 1>/dev/null
+
+  echo -e "\n snapshot ..."
+  xargs -t -r -P ${jobs} -I '{}' -n 1 hcloud server create-image --type snapshot --description "{}-${EPOCHSECONDS}" {} <<<$* 1>/dev/null
+fi
+
+echo -e "\n deleting ..."
+xargs -t -r -P ${jobs} -n 1 hcloud server delete <<<$* 1>/dev/null
 
 echo -e "\n reloading DNS resolver" >&2
 sudo rc-service unbound reload
