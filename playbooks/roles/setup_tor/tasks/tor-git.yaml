@@ -13,17 +13,15 @@
   register: _repo_tor
 
 - name: Apply patches of Tor
-  changed_when: length tor_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/tor
   loop_control:
     label: "{{ item }}"
   loop: "{{ tor_patches }}"
-  register: _patch_tor
 
 - name: Build Tor
-  when: _repo_tor.changed or _patch_tor.changed
+  when: _repo_tor.changed or (tor_patches | length > 0)
   ansible.builtin.shell:
     cmd: |
       set -euf

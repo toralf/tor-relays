@@ -33,17 +33,15 @@
     chdir: /root/linux
 
 - name: Apply patches
-  changed_when: length kernel_git_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: "/usr/src/linux-{{ kernel_git_version }}"
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
-  register: _patches_linux
 
 - name: "Build Linux {{ kernel_git_version }}"
-  when: kernel_git_forcebuild or _repo_linux.changed or _patches_linux.changed
+  when: kernel_git_forcebuild or _repo_linux.changed or (kernel_git_patches | length > 0)
   ansible.builtin.shell:
     cmd: |
       set -euf
@@ -73,6 +71,6 @@
       make modules_install
       update-initramfs -u
 
-    chdir: "/usr/src/linux-{{ kernel_git_version }}/"
+    chdir: "/usr/src/linux-{{ kernel_git_version }}"
     executable: /bin/bash
   notify: "reboot required"

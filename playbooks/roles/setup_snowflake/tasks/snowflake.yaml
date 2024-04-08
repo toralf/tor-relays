@@ -12,7 +12,6 @@
     force: true
 
 - name: Apply patches of Snowflake
-  changed_when: length snowflake_patches > 0
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/snowflake
