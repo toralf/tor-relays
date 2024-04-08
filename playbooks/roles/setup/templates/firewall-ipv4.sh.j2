@@ -38,12 +38,14 @@ function addRules() {
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
 {%endif %}
-  # any additional ports
+  # additional ports
 {% for __i in additional_ports %}
 {% if ',' in __i or ':' in __i %}
-  $ipt -A INPUT -p tcp --match multiport --dports {{ __i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ __i }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name port-{{ __i }} --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ __i }} --syn -j ACCEPT
 {% else %}
-  $ipt -A INPUT -p tcp --dport {{ __i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ __i }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name port-{{ __i }} --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ __i }} --syn -j ACCEPT
 {% endif %}
 {% endfor %}
 }
