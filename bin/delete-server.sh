@@ -29,12 +29,14 @@ while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
-if [[ ${SNAPSHOTS:-0} -eq 1 ]]; then
-  echo -e "\n shutdown ..."
-  xargs -t -r -P ${jobs} -n 1 hcloud server shutdown <<<$* 1>/dev/null
+if [[ ${SNAPSHOT_HALT_BEFORE:-0} -eq 1 || ${SNAPSHOT:-0} -eq 1 ]]; then
+  if [[ ${SNAPSHOT_HALT_BEFORE:-0} -eq 1 ]]; then
+    echo -e "\n shutdown ..."
+    xargs -t -r -P ${jobs} -n 1 hcloud server shutdown <<<$* 1>/dev/null
 
-  echo -e "\n poweroff ..."
-  xargs -t -r -P ${jobs} -n 1 hcloud server poweroff <<<$* 1>/dev/null
+    echo -e "\n poweroff ..."
+    xargs -t -r -P ${jobs} -n 1 hcloud server poweroff <<<$* 1>/dev/null
+  fi
 
   echo -e "\n snapshot ..."
   xargs -t -r -P ${jobs} -I '{}' -n 1 hcloud server create-image --type snapshot --description "{}-${EPOCHSECONDS}" {} <<<$* 1>/dev/null
