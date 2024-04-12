@@ -21,11 +21,10 @@
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     dest: /root/linux
     bare: true
-    force: true
   register: _repo_linux
 
 - name: "Create or update /usr/src/linux-{{ kernel_git_version }}/"
-  when: kernel_git_forcebuild or _repo_linux.changed
+  when: _repo_linux.changed
   ansible.builtin.shell:
     cmd: |
       git archive "{{ kernel_git_version }}" --prefix linux-"{{ kernel_git_version }}/" |
@@ -39,9 +38,10 @@
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
+  register: _kernel_patched
 
 - name: "Build Linux {{ kernel_git_version }}"
-  when: kernel_git_forcebuild or _repo_linux.changed or (kernel_git_patches | length > 0)
+  when: _repo_linux.changed or _kernel_patched.changed
   ansible.builtin.shell:
     cmd: |
       set -euf

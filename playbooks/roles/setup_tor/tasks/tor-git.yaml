@@ -19,9 +19,10 @@
   loop_control:
     label: "{{ item }}"
   loop: "{{ tor_patches }}"
+  register: _tor_patched
 
 - name: Build Tor
-  when: _repo_tor.changed or (tor_patches | length > 0)
+  when: _repo_tor.changed or _tor_patched.changed
   ansible.builtin.shell:
     cmd: |
       set -euf
