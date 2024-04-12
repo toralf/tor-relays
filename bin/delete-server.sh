@@ -34,6 +34,8 @@ if [[ ${SNAPSHOT_HALT_BEFORE:-0} -eq 1 || ${SNAPSHOT:-0} -eq 1 ]]; then
     echo -e "\n shutdown ..."
     xargs -t -r -P ${jobs} -n 1 hcloud server shutdown <<<$* 1>/dev/null
 
+    sleep 10
+
     echo -e "\n poweroff ..."
     xargs -t -r -P ${jobs} -n 1 hcloud server poweroff <<<$* 1>/dev/null
   fi
