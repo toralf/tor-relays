@@ -6,8 +6,8 @@
 
 - name: Install or update toolchain for kernel build
   when: not ansible_check_mode
-  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0,1800) }}"
-  poll: "{{ _repo_linux_is_cloned.stat.exists | ternary(15,60) }}"
+  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0, 1800) }}"
+  poll: "{{ _repo_linux_is_cloned.stat.exists | ternary(15, 60) }}"
   ansible.builtin.apt:
     name:
       - bc
@@ -24,8 +24,8 @@
 
 - name: Init or update repo of Linux
   when: not ansible_check_mode
-  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0,1800) }}"
-  poll: "{{ _repo_linux_is_cloned.stat.exists | ternary(15,60) }}"
+  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0, 1800) }}"
+  poll: "{{ _repo_linux_is_cloned.stat.exists | ternary(15, 60) }}"
   retries: 2
   ansible.builtin.git:
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
