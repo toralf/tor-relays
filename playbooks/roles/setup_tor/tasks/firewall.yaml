@@ -7,11 +7,18 @@
     cmd: |
       set -euf
 
-      iptables -C {{ _ipv4_cmd }} 2>/dev/null || true
-      iptables -A {{ _ipv4_cmd }}
-      ip6tables -C {{ _ipv6_cmd }} 2>/dev/null || true
-      ip6tables -A {{ _ipv6_cmd }}
+      if ! iptables -C {{ _ipv4_cmd }} 2>/dev/null; then
+        iptables -A {{ _ipv4_cmd }}
+        echo "added v4 rule"
+      fi
+
+      if ! ip6tables -C {{ _ipv6_cmd }} 2>/dev/null; then
+        ip6tables -A {{ _ipv6_cmd }}
+        echo "added v6 rule"
+      fi
     executable: /bin/bash
+  register: _ddos_obfs4_rules
+  changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
 
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:
@@ -51,7 +58,7 @@
         - udp
         - udplite
 
-- name: Save iptables state
+- name: Save iptables state of Tor
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved

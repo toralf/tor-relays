@@ -30,6 +30,10 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.stat:
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
     ansible.builtin.template:
       owner: root
       group: root
@@ -81,11 +85,6 @@
       tags:
         - metrics
 
-    - name: Timer
-      ansible.builtin.import_tasks: timer.yaml
-      tags:
-        - timer
-
     - name: Kernel Debian
       when: kernel_debian_target and kernel_debian_version
       ansible.builtin.import_tasks: kernel-debian.yaml
@@ -97,6 +96,11 @@
       ansible.builtin.import_tasks: kernel-git.yaml
       tags:
         - kernel
+
+    - name: Configure Debian auto update
+      ansible.builtin.import_tasks: auto-update-debian.yaml
+      tags:
+        - auto-update
 
 - name: Check if reboot is required
   changed_when: _reboot_required.stat.exists

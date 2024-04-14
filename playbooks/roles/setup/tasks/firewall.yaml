@@ -7,13 +7,7 @@
   with_items:
     - "v4"
     - "v6"
-
-- name: Reset firewall
-  ansible.builtin.command:
-    cmd: "{{ '/root/firewall-ip' + item + '.sh' }} start"
-  with_items:
-    - "v4"
-    - "v6"
+  register: _fw_scripts
 
 - name: Save iptables state
   community.general.iptables_state:
@@ -23,3 +17,23 @@
   with_items:
     - "v4"
     - "v6"
+  register: _fw_old
+
+- name: Reset firewall
+  when: _fw_scripts.changed or _fw_old.changed
+  block:
+    - name: Start firewall
+      ansible.builtin.command:
+        cmd: "{{ '/root/firewall-ip' + item + '.sh' }} start"
+      with_items:
+        - "v4"
+        - "v6"
+
+    - name: Save iptables state of setup
+      community.general.iptables_state:
+        ip_version: "ip{{ item }}"
+        state: saved
+        path: "{{ '/etc/iptables/rules.' + item }}"
+      with_items:
+        - "v4"
+        - "v6"
