@@ -74,6 +74,7 @@
         - prometheus-node-exporter
 
     - name: CA
+      run_once: true
       ansible.builtin.import_tasks: ca.yaml
       tags:
         - ca
