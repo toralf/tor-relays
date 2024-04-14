@@ -12,7 +12,7 @@
     force: true
   register: _repo_tor
 
-- name: Apply patches of Tor
+- name: Apply patches for Tor
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/tor
@@ -23,6 +23,8 @@
 
 - name: Build Tor
   when: _repo_tor.changed or _tor_patched.changed
+  async: 900
+  poll: 60
   ansible.builtin.shell:
     cmd: |
       set -euf

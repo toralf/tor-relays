@@ -7,7 +7,7 @@
     version: "{{ lyrebird_git_version }}"
     force: true
 
-- name: Apply patches of Lyrebird
+- name: Apply patches for Lyrebird
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/lyrebird
@@ -28,10 +28,12 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
+  register: _lyrebird_install
   notify: "restart service"
 
 # for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and probably more
 - name: Set Linux capabilities on Lyrebird
+  when: _lyrebird_install.changed
   community.general.capabilities:
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
