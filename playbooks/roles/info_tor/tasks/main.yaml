@@ -1,4 +1,11 @@
 ---
+- name: Create tmp dir
+  run_once: true
+  ansible.builtin.file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: '0755'
+
 - name: Set hashed-fingerprint
   ansible.builtin.import_tasks: hashed-fingerprint.yaml
   tags:
