@@ -97,6 +97,7 @@
       ansible.builtin.import_tasks: kernel-git.yaml
       tags:
         - kernel
+        - kernel-src
 
     - name: Configure Debian auto update
       ansible.builtin.import_tasks: auto-update-debian.yaml

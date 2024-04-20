@@ -52,6 +52,7 @@
           ansible.builtin.import_tasks: tor-git.yaml
           tags:
             - tor
+            - tor-src
 
         - name: Lyrebird
           ansible.builtin.import_tasks: lyrebird.yaml
