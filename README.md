@@ -13,7 +13,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create seeds, e.g.:
+1. create seeds (and keep them secret!):
 
    ```bash
    cat <<EOF >> secrets/local.yaml
@@ -23,6 +23,8 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    seed_obfs4: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
 
    EOF
+
+   chmod 400 secrets/local.yaml
    ```
 
 1. add _my_bridge_ to an inventory file and configure its obfs4 port (i.e. within `inventory/systems.yaml`):
@@ -55,11 +57,12 @@ Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge of 
 See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
-The Ansible role uses `seed_address` to configure an random ipv6 address at a Hetzner systems or to display a proposed one (e.g.for IONOS).
+The Ansible role uses `seed_address` to configure a random ipv6 address at a Hetzner systems
+(or IONOS a proposed one is just displayed).
 
 ### Additional software
 
-To deploy additional software to your system, i.e. a _Quassel_ server, define it in the inventory, e.g. by:
+To deploy additional software, define it too, i.e. a _Quassel_ server:
 
 ```yaml
 my_group:
@@ -71,19 +74,18 @@ my_group:
         - "quassel-core"
 ```
 
-### Compiling Tor + obfs4 proxy or Snowflake from source instead using the Debian packages
+### Compiling the Kernel, Tor + Lyrebird or Snowflake from source
 
 As default _HEAD_ (of branch _main_) is taken.
 A dedicated branch can be defined by the variable _<...>\_git_version_.
-Furthermore _<...>\_patches_ holds additional patches (referenced by an URL) which will be applied on top of the branch.
+Furthermore _<...>\_patches_ can provide additional patches (as URLs) to be applied on top.
 
 ### Metrics
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then its ip is granted by a firewall rule to scrape metrics.
-An Nginx is used to encrypt the metrics data transfer, by using a certificate from a self-signed CA.
-This CA is presented to the Prometheus too to secure the TLS handshake.
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then inbound traffic from this ip is granted by a firewall rule.
+An Nginx is used to encrypt the metrics data transfer on transit, using a certificate from a self-signed CA.
+This CA has to be presented to the Prometheus too for a fully secure TLS handshake.
 
-A _Prometheus node exporter_ is installed by defining `prometheus_node_exporter: true`.
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
 to expose metrics at https://_address_:_metrics_port_/metrics-_node|relay|snowflake_
 (Prometheus Node exporter, Tor and Snowflake respectively), e.g.:
@@ -94,7 +96,9 @@ snowflake:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
 ```
 
-For appropriate Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
+A _Prometheus node exporter_ is deployed by defining `prometheus_node_exporter: true`.
+
+For Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
 
