@@ -3,7 +3,7 @@
   ansible.builtin.user:
     name: snowflake
 
-- name: Init or update repo of Snowflake
+- name: Init or update Snowflake repo
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git

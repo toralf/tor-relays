@@ -1,13 +1,6 @@
 ---
-- name: Check if repo of Linux is already there
-  ansible.builtin.stat:
-    path: /root/linux
-  register: _repo_linux_is_cloned
-
-- name: Install or update toolchain for kernel build
+- name: Install or update toolchain for Linux
   when: not ansible_check_mode
-  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0, 1800) }}"
-  poll: 30
   ansible.builtin.apt:
     name:
       - bc
@@ -22,11 +15,13 @@
       - libncurses5-dev
       - libssl-dev
 
-- name: Init or update repo of Linux
+- name: Check existance of Linux repo
+  ansible.builtin.stat:
+    path: /root/linux
+  register: _repo_linux_is_cloned
+
+- name: Init or update Linux repo
   when: not ansible_check_mode
-  async: "{{ _repo_linux_is_cloned.stat.exists | ternary(0, 1800) }}"
-  poll: 30
-  retries: 2
   ansible.builtin.git:
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     dest: /root/linux
@@ -43,35 +38,46 @@
   loop: "{{ kernel_git_patches }}"
   register: _kernel_patched
 
-- name: Build Linux
-  when: _repo_linux.changed or _kernel_patched.changed
-  async: 3600
-  poll: 60
+- name: Check if Linux config does exist
+  ansible.builtin.stat:
+    path: /root/linux/.config
+  register: _configured_already
+
+- name: Configure Linux
+  when: _repo_linux.changed or _kernel_patched.changed or (_configured_already.stat.exists is false)
   ansible.builtin.shell:
     cmd: |
       set -euf
 
-      if [[ ! -s .config ]]; then
-        yes '' | make localmodconfig
-        sed -i \
-          -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=y,' \
-          -e 's,^# CONFIG_IP_NF_FILTER.*,CONFIG_IP_NF_FILTER=m,' \
-          -e 's,^# CONFIG_IP_NF_NAT.*,CONFIG_IP_NF_NAT=m,' \
-          -e 's,^# CONFIG_IP_SET_HASH .*,CONFIG_IP_SET_HASH=m,' \
-          -e 's,^# CONFIG_IP_SET_HASH_IP .*,CONFIG_IP_SET_HASH_IP=m,' \
-          -e 's,^# CONFIG_IP6_NF_FILTER.*,CONFIG_IP6_NF_FILTER=m,' \
-          -e 's,^# CONFIG_IP6_NF_IPTABLES .*,CONFIG_IP6_NF_IPTABLES=m,' \
-          -e 's,^# CONFIG_IP6_NF_NAT .*,CONFIG_IP6_NF_NAT=m,' \
-          -e 's,^# CONFIG_IP6_NF_RAW .*,CONFIG_IP6_NF_RAW=m,' \
-          -e 's,^# CONFIG_LOCALVERSION_AUTO .*,CONFIG_LOCALVERSION_AUTO=y,' \
-          -e 's,^# CONFIG_NETFILTER_XT_MATCH_HASHLIMIT .*,CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m,' \
-          -e 's,^# CONFIG_NETFILTER_XT_MATCH_MULTIPORT.*,CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m,' \
-          -e 's,^# CONFIG_NETFILTER_XT_NAT .*,CONFIG_NETFILTER_XT_NAT=m,' \
-          -e 's,^# CONFIG_NF_NAT .*,CONFIG_NF_NAT=m,' \
-          -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
-          .config
-        yes '' | make oldconfig
-      fi
+      yes '' | make localmodconfig
+      sed -i \
+        -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=y,' \
+        -e 's,^# CONFIG_IP_NF_FILTER.*,CONFIG_IP_NF_FILTER=m,' \
+        -e 's,^# CONFIG_IP_NF_NAT.*,CONFIG_IP_NF_NAT=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH .*,CONFIG_IP_SET_HASH=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH_IP .*,CONFIG_IP_SET_HASH_IP=m,' \
+        -e 's,^# CONFIG_IP6_NF_FILTER.*,CONFIG_IP6_NF_FILTER=m,' \
+        -e 's,^# CONFIG_IP6_NF_IPTABLES .*,CONFIG_IP6_NF_IPTABLES=m,' \
+        -e 's,^# CONFIG_IP6_NF_NAT .*,CONFIG_IP6_NF_NAT=m,' \
+        -e 's,^# CONFIG_IP6_NF_RAW .*,CONFIG_IP6_NF_RAW=m,' \
+        -e 's,^# CONFIG_LOCALVERSION_AUTO .*,CONFIG_LOCALVERSION_AUTO=y,' \
+        -e 's,^# CONFIG_NETFILTER_XT_MATCH_HASHLIMIT .*,CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m,' \
+        -e 's,^# CONFIG_NETFILTER_XT_MATCH_MULTIPORT.*,CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m,' \
+        -e 's,^# CONFIG_NETFILTER_XT_NAT .*,CONFIG_NETFILTER_XT_NAT=m,' \
+        -e 's,^# CONFIG_NF_NAT .*,CONFIG_NF_NAT=m,' \
+        -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
+        .config
+      yes '' | make oldconfig
+
+    chdir: /root/linux
+    executable: /bin/bash
+  register: _configured
+
+- name: Build Linux
+  when: _configured.changed
+  ansible.builtin.shell:
+    cmd: |
+      set -euf
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
       ln -snf $PWD /usr/src/linux

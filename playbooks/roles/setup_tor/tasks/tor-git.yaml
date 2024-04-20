@@ -3,7 +3,7 @@
   ansible.builtin.user:
     name: tor
 
-- name: Init or update repo of Tor
+- name: Init or update Tor repo
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
@@ -23,8 +23,6 @@
 
 - name: Build Tor
   when: _repo_tor.changed or _tor_patched.changed
-  async: 900
-  poll: 30
   ansible.builtin.shell:
     cmd: |
       set -euf
