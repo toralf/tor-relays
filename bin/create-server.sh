@@ -52,12 +52,12 @@ $(dirname $0)/update-dns.sh
 diff=$((EPOCHSECONDS - now))
 if [[ $diff -lt 30 ]]; then
   echo -en "\n wait $diff sec before continue ..."
-  sleep $((30 - diff))
+  sleep $((35 - diff))
 fi
 
 echo -e "\n adding to ~/.ssh/known_hosts ..."
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
-  echo -e "\n wait 10 sec before retry ..."
+  echo -e "\n wait 10 sec before retry ...\n"
   sleep 10
   echo
 done

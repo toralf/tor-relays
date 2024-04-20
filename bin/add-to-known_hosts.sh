@@ -15,4 +15,4 @@ for i in $*; do
     echo $i
   fi
 done |
-  xargs -r -P ${jobs} -I '{}' ssh -n -oStrictHostKeyChecking=accept-new -oConnectTimeout=2 {} "uname -a" 2>/dev/null
+  xargs -r -P ${jobs} -I '{}' ssh -n -oStrictHostKeyChecking=accept-new -oConnectTimeout=2 {} "uname -a"
