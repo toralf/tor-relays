@@ -87,4 +87,4 @@
 
     chdir: /root/linux
     executable: /bin/bash
-  notify: "reboot required"
+  notify: "reboot system"

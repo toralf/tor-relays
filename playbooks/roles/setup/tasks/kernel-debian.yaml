@@ -14,4 +14,4 @@
     default_release: "{{ kernel_debian_target }}"
     name:
       - "linux-image-{{ kernel_debian_version }}-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}-unsigned"
-  notify: "reboot required"
+  notify: "reboot system"

@@ -1,6 +1,6 @@
 ---
-- name: Reboot if required
-  listen: "reboot required"
+- name: Reboot system
+  listen: "reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2
     reboot_timeout: 60

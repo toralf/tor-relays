@@ -104,11 +104,9 @@
       tags:
         - auto-update
 
-- name: Check if reboot is required
-  changed_when: _reboot_required.stat.exists
-  ansible.builtin.stat:
-    path: /var/run/reboot-required
-  register: _reboot_required
-  tags:
-    - reboot
-  notify: "reboot required"
+    - name: Check if reboot is needed
+      changed_when: _reboot_needed.stat.exists
+      ansible.builtin.stat:
+        path: /var/run/reboot-required
+      register: _reboot_needed
+      notify: "reboot system"
