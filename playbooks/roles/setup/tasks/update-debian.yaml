@@ -25,16 +25,6 @@
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 
-- name: Configure auto upgrades
-  ansible.builtin.copy:
-    src: 20auto-upgrades
-    dest: /etc/apt/apt.conf.d/
-
-- name: Configure unattended upgrades
-  ansible.builtin.copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/
-
 - name: Check if reboot is required
   changed_when: _reboot_needed.stat.exists
   ansible.builtin.stat:

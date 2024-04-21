@@ -1,4 +1,14 @@
 ---
+- name: Configure auto upgrades
+  ansible.builtin.copy:
+    src: 20auto-upgrades
+    dest: /etc/apt/apt.conf.d/
+
+- name: Configure unattended upgrades
+  ansible.builtin.copy:
+    src: 50unattended-upgrades
+    dest: /etc/apt/apt.conf.d/
+
 - name: Configure apt-daily timer directory
   ansible.builtin.file:
     state: directory
