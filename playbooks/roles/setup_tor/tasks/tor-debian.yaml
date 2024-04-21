@@ -17,7 +17,7 @@
     repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
     state: present
 
-- name: Install or update Debian key ring
+- name: Install or update key ring
   when: not ansible_check_mode
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}"

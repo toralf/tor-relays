@@ -1,0 +1,7 @@
+---
+- name: Install or update Snowflake
+  when: not ansible_check_mode
+  ansible.builtin.apt:
+    name:
+      - snowflake-proxy
+  notify: "restart service"

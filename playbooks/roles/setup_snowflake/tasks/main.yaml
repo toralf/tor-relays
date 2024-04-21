@@ -17,17 +17,28 @@
       tags:
         - firewall
 
-    - name: Tools
-      ansible.builtin.import_tasks: tools.yaml
+    - name: Debian
+      when: not snowflake_build_from_source
+      ansible.builtin.import_tasks: snowflake-debian.yaml
       tags:
-        - tools
-
-    - name: Snowflake
-      ansible.builtin.import_tasks: snowflake.yaml
-      tags:
+        - app
         - snowflake
 
-    - name: Config
-      ansible.builtin.import_tasks: config.yaml
-      tags:
-        - config
+    - name: Build form Source
+      when: snowflake_build_from_source
+      block:
+        - name: Tools Source
+          ansible.builtin.import_tasks: tools-src.yaml
+          tags:
+            - tools
+
+        - name: Snowflake Source
+          ansible.builtin.import_tasks: snowflake-src.yaml
+          tags:
+            - app
+            - snowflake
+
+        - name: Config
+          ansible.builtin.import_tasks: config.yaml
+          tags:
+            - config

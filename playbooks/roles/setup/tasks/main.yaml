@@ -92,9 +92,9 @@
       tags:
         - kernel
 
-    - name: Kernel Git
+    - name: Kernel source
       when: kernel_git_version
-      ansible.builtin.import_tasks: kernel-git.yaml
+      ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel
         - kernel-src

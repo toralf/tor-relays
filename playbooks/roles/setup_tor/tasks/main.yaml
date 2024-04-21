@@ -38,25 +38,27 @@
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-debian.yaml
       tags:
+        - app
         - tor
 
     - name: Build from source
       when: tor_build_from_source
       block:
         - name: Tools
-          ansible.builtin.import_tasks: tools-git.yaml
+          ansible.builtin.import_tasks: tools-src.yaml
           tags:
             - tools
 
-        - name: Git
-          ansible.builtin.import_tasks: tor-git.yaml
+        - name: Tor
+          ansible.builtin.import_tasks: tor-src.yaml
           tags:
+            - app
             - tor
-            - tor-src
 
         - name: Lyrebird
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
+            - app
             - lyrebird
 
     - name: Config
