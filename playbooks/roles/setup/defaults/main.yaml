@@ -10,7 +10,7 @@ kernel_git_version: "" # e.g. "HEAD" or "v6.7.3"
 kernel_git_patches: []
 
 metrics_port: ""
-prometheus_node_exporter: ""
+prometheus_node_exporter: false
 prometheus_server: ""
 
 # certificates and more
