@@ -29,7 +29,7 @@
   when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
-    dest: /usr/bin/
+    dest: /usr/bin/snowflake-proxy
     mode: a+x
     remote_src: yes
   notify: "restart service"
