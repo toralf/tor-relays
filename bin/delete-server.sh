@@ -47,5 +47,5 @@ fi
 echo -e "\n deleting ..."
 xargs -t -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 
-echo -e "\n reloading DNS resolver" >&2
+echo -e "\n reloading DNS resolver ..." >&2
 sudo rc-service unbound reload

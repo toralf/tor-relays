@@ -24,7 +24,7 @@ if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   exit 1
 fi
 
-echo -e "\n updating DNS ..."
+echo -e "\n checking DNS ..."
 
 # do not change the resolver config file in parallel
 while [[ -e ${hconf}.new ]]; do
@@ -43,7 +43,7 @@ hcloud server list --output columns=name,ipv4 |
   done |
   sudo tee -a ${hconf}.new >/dev/null
 
-if ! sudo diff -q ${hconf} ${hconf}.new; then
+if ! sudo diff -q ${hconf} ${hconf}.new 1>/dev/null; then
   echo " reloading DNS resolver" >&2
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
