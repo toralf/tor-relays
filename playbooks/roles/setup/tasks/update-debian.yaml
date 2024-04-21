@@ -34,7 +34,7 @@
 
 - name: Check if restart is needed
   changed_when: _restart_needed.stdout_lines | length > 0
-  failed_when: false
+  failed_when: _restart_needed.rc == 2
   ansible.builtin.shell:
     cmd: |
       needrestart -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC'

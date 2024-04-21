@@ -14,3 +14,11 @@
     state: restarted
     daemon_reload: true
     enabled: true
+
+- name: Restart Prometheus node exporter
+  listen: "restart Prometheus node exporter"
+  ansible.builtin.systemd:
+    name: "prometheus-node-exporter"
+    state: restarted
+    daemon_reload: true
+    enabled: true
