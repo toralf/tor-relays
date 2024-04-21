@@ -15,6 +15,7 @@
       - htop
       - iptables
       - iptables-persistent
+      - needrestart
       - ntp
       - psmisc
       - unattended-upgrades
@@ -33,3 +34,18 @@
   ansible.builtin.copy:
     src: 50unattended-upgrades
     dest: /etc/apt/apt.conf.d/
+
+- name: Check if reboot is required
+  changed_when: _reboot_needed.stat.exists
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: _reboot_needed
+  notify: "reboot system"
+
+- name: Check if restart is needed
+  changed_when: _restart_needed.stdout_lines | length > 0
+  ansible.builtin.shell:
+    cmd: |
+      needrestart -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC'
+  register: _restart_needed
+  notify: "reboot system"

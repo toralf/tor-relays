@@ -97,16 +97,8 @@
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel
-        - kernel-src
 
     - name: Configure Debian auto update
       ansible.builtin.import_tasks: auto-update-debian.yaml
       tags:
         - auto-update
-
-    - name: Check if reboot is needed
-      changed_when: _reboot_needed.stat.exists
-      ansible.builtin.stat:
-        path: /var/run/reboot-required
-      register: _reboot_needed
-      notify: "reboot system"
