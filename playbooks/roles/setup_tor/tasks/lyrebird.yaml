@@ -29,7 +29,7 @@
     mode: a+x
     remote_src: yes
   register: _lyrebird_install
-  notify: "restart service"
+  notify: "restart Tor"
 
 # for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and probably more
 - name: Set Linux capabilities on Lyrebird

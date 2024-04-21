@@ -32,4 +32,4 @@
     dest: /usr/bin/snowflake-proxy
     mode: a+x
     remote_src: yes
-  notify: "restart service"
+  notify: "restart Snowflake"

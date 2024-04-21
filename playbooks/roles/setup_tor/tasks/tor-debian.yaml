@@ -32,7 +32,7 @@
       - obfs4proxy
       - tor
       - tor-geoipdb
-  notify: "restart service"
+  notify: "restart Tor"
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
@@ -40,7 +40,7 @@
     value: "0" # Debian  bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: "restart service"
+  notify: "restart Tor"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Obfs4 port
@@ -66,4 +66,4 @@
         content: |
           [Service]
           NoNewPrivileges=no
-      notify: "restart service"
+      notify: "restart Tor"

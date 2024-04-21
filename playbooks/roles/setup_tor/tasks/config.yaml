@@ -3,4 +3,4 @@
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
-  notify: "restart service"
+  notify: "restart Tor"

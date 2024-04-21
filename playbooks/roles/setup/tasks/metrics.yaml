@@ -4,7 +4,7 @@
   ansible.builtin.apt:
     name:
       - nginx
-  notify: "restart nginx"
+  notify: "restart Nginx"
 
 - name: Generate host private key
   delegate_to: localhost
@@ -41,7 +41,7 @@
   ansible.builtin.copy:
     src: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
-  notify: "restart nginx"
+  notify: "restart Nginx"
 
 - name: Copy host certificate
   ansible.builtin.copy:
@@ -50,17 +50,17 @@
       lookup('file','{{ ssl_dir }}/certs/CA.crt')+'\n'
       }}"
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
-  notify: "restart nginx"
+  notify: "restart Nginx"
 
 - name: Configure Nginx
   ansible.builtin.template:
     src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
     mode: "0644"
-  notify: "restart nginx"
+  notify: "restart Nginx"
 
 - name: Remove Nginx default listener
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: "restart nginx"
+  notify: "restart Nginx"

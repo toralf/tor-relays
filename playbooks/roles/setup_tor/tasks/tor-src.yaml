@@ -63,7 +63,7 @@
     remote_src: yes
     mode: a+x
   register: _binary_tor
-  notify: "restart service"
+  notify: "restart Tor"
 
 - name: Install Tor
   when: _binary_tor.changed
@@ -75,13 +75,13 @@
   ansible.builtin.copy:
     src: system_tor
     dest: /etc/apparmor.d/
-  notify: "restart service"
+  notify: "restart Tor"
 
 - name: Add systemd unit
   ansible.builtin.copy:
     src: tor.service
     dest: /etc/systemd/system/
-  notify: "restart service"
+  notify: "restart Tor"
 
 - name: Add logrotate config
   ansible.builtin.copy:
@@ -94,4 +94,4 @@
     value: "2" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: "restart service"
+  notify: "restart Tor"

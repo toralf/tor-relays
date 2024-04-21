@@ -5,10 +5,10 @@
     value: "2" # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
-  notify: "restart service"
+  notify: "restart Snowflake"
 
 - name: Add systemd unit
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
-  notify: "restart service"
+  notify: "restart Snowflake"

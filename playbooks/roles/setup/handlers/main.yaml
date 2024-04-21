@@ -8,7 +8,7 @@
     post_reboot_delay: 20
 
 - name: Restart Nginx
-  listen: "restart nginx"
+  listen: "restart Nginx"
   ansible.builtin.service:
     name: nginx
     state: restarted

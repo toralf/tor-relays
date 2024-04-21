@@ -65,3 +65,13 @@
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
+
+    - name: Ensure that Tor is started
+      ansible.builtin.service:
+        name: tor.service
+        state: started
+        daemon_reload: true
+        enabled: true
+      tags:
+        - app
+        - tor

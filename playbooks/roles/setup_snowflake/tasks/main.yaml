@@ -42,3 +42,13 @@
           ansible.builtin.import_tasks: config.yaml
           tags:
             - config
+
+    - name: Ensure that Snowflake is started
+      ansible.builtin.service:
+        name: snowflake-proxy
+        state: started
+        daemon_reload: true
+        enabled: true
+      tags:
+        - app
+        - snowflake

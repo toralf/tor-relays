@@ -4,4 +4,4 @@
   ansible.builtin.apt:
     name:
       - snowflake-proxy
-  notify: "restart service"
+  notify: "restart Snowflake"

@@ -1,6 +1,6 @@
 ---
 - name: Restart Snowflake service
-  listen: "restart service"
+  listen: "restart Snowflake"
   ansible.builtin.service:
     name: snowflake-proxy
     state: restarted
