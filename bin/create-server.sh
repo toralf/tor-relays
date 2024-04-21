@@ -44,7 +44,7 @@ while read -r name; do
 
   echo "server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
 done < <(xargs -n 1 <<<$*) |
-  xargs -t -r -P ${jobs} -L 1 hcloud 1>/dev/null
+  xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
 echo -e "\n updating DNS ..."
 $(dirname $0)/update-dns.sh
