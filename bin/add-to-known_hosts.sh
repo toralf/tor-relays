@@ -10,6 +10,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 jobs=$((2 * $(nproc)))
 
+echo -e "\n adding to ~/.ssh/known_hosts ..."
+
 for i in $*; do
   if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
     echo $i

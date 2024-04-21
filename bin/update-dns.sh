@@ -24,6 +24,8 @@ if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   exit 1
 fi
 
+echo -e "\n updating DNS ..."
+
 # do not change the resolver config file in parallel
 while [[ -e ${hconf}.new ]]; do
   echo -n '.'

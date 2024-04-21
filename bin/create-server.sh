@@ -46,7 +46,6 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
-echo -e "\n updating DNS ..."
 $(dirname $0)/update-dns.sh
 
 diff=$((EPOCHSECONDS - now))
@@ -55,7 +54,6 @@ if [[ $diff -lt 30 ]]; then
   sleep $((35 - diff))
 fi
 
-echo -e "\n adding to ~/.ssh/known_hosts ..."
 while ! $(dirname $0)/add-to-known_hosts.sh $*; do
   echo -e "\n wait 10 sec before retry ...\n"
   sleep 10
