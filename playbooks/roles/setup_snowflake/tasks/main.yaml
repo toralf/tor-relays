@@ -21,7 +21,6 @@
       when: not snowflake_build_from_source
       ansible.builtin.import_tasks: snowflake-debian.yaml
       tags:
-        - app
         - snowflake
 
     - name: Build form Source
@@ -35,7 +34,6 @@
         - name: Snowflake Source
           ansible.builtin.import_tasks: snowflake-src.yaml
           tags:
-            - app
             - snowflake
 
         - name: Config
@@ -50,5 +48,4 @@
         daemon_reload: true
         enabled: true
       tags:
-        - app
         - snowflake

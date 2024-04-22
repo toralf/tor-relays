@@ -38,7 +38,6 @@
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-debian.yaml
       tags:
-        - app
         - tor
 
     - name: Build from source
@@ -52,13 +51,11 @@
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
-            - app
             - tor
 
         - name: Lyrebird
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
-            - app
             - lyrebird
 
     - name: Config
@@ -73,5 +70,4 @@
         daemon_reload: true
         enabled: true
       tags:
-        - app
         - tor
