@@ -67,12 +67,6 @@
       tags:
         - firewall
 
-    - name: Prometheus node exporter
-      when: prometheus_node_exporter
-      ansible.builtin.import_tasks: prometheus-node-exporter.yaml
-      tags:
-        - prometheus-node-exporter
-
     - name: CA
       run_once: true
       ansible.builtin.import_tasks: ca.yaml
@@ -85,6 +79,12 @@
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
+
+    - name: Prometheus node exporter
+      when: prometheus_node_exporter
+      ansible.builtin.import_tasks: prometheus-node-exporter.yaml
+      tags:
+        - prometheus-node-exporter
 
     - name: Kernel Debian
       when: kernel_debian_target and kernel_debian_version
