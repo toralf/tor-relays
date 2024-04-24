@@ -14,4 +14,3 @@ torrc_config:
     value: "{{ nickname | default('') }}"
   - name: "PublishServerDescriptor"
     value: "bridge"
-

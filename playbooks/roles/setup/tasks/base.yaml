@@ -71,5 +71,5 @@
     sysctl_file: /etc/sysctl.d/21tor-generic.conf
     sysctl_set: true
   loop:
-    - { name: 'vm.swappiness', value: 5 } # only use swap space when 95% or more of physical RAM is used up
-    - { name: 'kernel.sysrq', value: 0 }
+    - { name: "vm.swappiness", value: 5 } # only use swap space when 95% or more of physical RAM is used up
+    - { name: "kernel.sysrq", value: 0 }
