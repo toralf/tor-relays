@@ -11,6 +11,10 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.file:
+      owner: root
+      group: root
+      mode: "0755"
   block:
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
