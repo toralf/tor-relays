@@ -1,24 +1,20 @@
 ---
 - name: Check if reboot is required
-  changed_when: _reboot_needed.stat.exists
+  changed_when: _reboot_required.stat.exists
   ansible.builtin.stat:
     path: /var/run/reboot-required
-  register: _reboot_needed
+  register: _reboot_required
   notify: "reboot system"
 
 - name: Check if restart is needed (either kernel or a service)
+  when: not _reboot_required.changed
   changed_when: _reboot_needed.stdout_lines | length > 0
   failed_when: _reboot_needed.rc == 2
   ansible.builtin.shell:
     cmd: |
-      set -euf
-
       needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC'
-    executable: /bin/bash
   register: _reboot_needed
   notify: "reboot system"
-  tags:
-    - reboot-or-restart
 
 - name: Restart services if needed
   when: not _reboot_needed.changed
