@@ -1,0 +1,37 @@
+---
+- name: Check if reboot is required
+  changed_when: _reboot_needed.stat.exists
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: _reboot_needed
+  notify: "reboot system"
+
+- name: Check if restart is needed (either kernel or a service)
+  changed_when: _reboot_needed.stdout_lines | length > 0
+  failed_when: _reboot_needed.rc == 2
+  ansible.builtin.shell:
+    cmd: |
+      set -euf
+
+      needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC'
+    executable: /bin/bash
+  register: _reboot_needed
+  notify: "reboot system"
+  tags:
+    - reboot-or-restart
+
+- name: Restart services if needed
+  when: not _reboot_needed.changed
+  changed_when: _services_restarted.stdout_lines is search('Restarting services...')
+  ansible.builtin.shell:
+    cmd: |
+      needrestart -b -r a
+  register: _services_restarted
+
+- name: Reboot needed due to deferred services
+  when: _services_restarted.changed
+  changed_when: _services_restarted is search('Service restarts being deferred:')
+  ansible.builtin.debug:
+    var: _services_restarted.stdout_lines
+    verbosity: 1
+  notify: "reboot system"

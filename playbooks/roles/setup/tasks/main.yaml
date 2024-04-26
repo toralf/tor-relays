@@ -102,3 +102,8 @@
       ansible.builtin.import_tasks: auto-update-debian.yaml
       tags:
         - auto-update
+
+    - name: Reboot/Restart checks
+      ansible.builtin.import_tasks: reboot-or-restart.yaml
+      tags:
+        - reboot-or-restart
