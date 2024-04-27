@@ -95,3 +95,10 @@
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
   notify: "restart Tor"
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+- name: Allow low port
+  when: tor_port | int < 1024
+  changed_when: false
+  ansible.builtin.command:
+    cmd: setcap cap_net_bind_service=+ep /usr/bin/tor

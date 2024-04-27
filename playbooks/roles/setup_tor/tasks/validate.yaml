@@ -7,16 +7,16 @@
       - "nickname | length <= 19"
       - "nickname | regex_search('^[a-zA-Z0-9]+$')"
 
-- name: Validate obfs4_port
+- name: Validate tor_port
   ansible.builtin.assert:
     quiet: true
     that:
-      - "obfs4_port is defined"
-      - "(obfs4_port | int > 0) and (obfs4_port | int < 2**16)"
+      - "tor_port is defined"
+      - "(tor_port | int > 0) and (tor_port | int < 2**16)"
 
 - name: Validate metrics_port
   when: metrics_port
   ansible.builtin.assert:
     quiet: true
     that:
-      - metrics_port != obfs4_port
+      - metrics_port != tor_port

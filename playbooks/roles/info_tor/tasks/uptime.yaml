@@ -15,7 +15,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} TorStart {{ _service.status.ExecMainStartTimestamp | default('n/a') }} TorReload {{ _service.status.StateChangeTimestamp | default('n/a') }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ group_names[0] }}_uptime"
     regex: "^{{ inventory_hostname }} "

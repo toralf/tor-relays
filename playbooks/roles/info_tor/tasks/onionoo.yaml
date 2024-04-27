@@ -12,7 +12,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }}
       {{ _result.json.bridges[0].bridgedb_distributor | default('n/a') }}
       {{ _result.json.bridges[0].advertised_bandwidth | default('n/a') }}

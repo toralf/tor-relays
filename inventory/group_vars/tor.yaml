@@ -17,4 +17,4 @@ torrc_config:
   - name: "Nickname"
     value: "{{ nickname | default('') }}"
   - name: "PublishServerDescriptor"
-    value: "{{ publish_server_descriptor | default('')}}"
+    value: "{{ publish_server_descriptor | default('') }}"

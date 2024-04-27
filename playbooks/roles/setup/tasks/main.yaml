@@ -27,6 +27,7 @@
       group: root
       mode: "0644"
     ansible.builtin.lineinfile:
+      create: yes
       owner: root
       group: root
       mode: "0644"
@@ -68,7 +69,6 @@
         - firewall
 
     - name: CA
-      run_once: true
       ansible.builtin.import_tasks: ca.yaml
       tags:
         - ca

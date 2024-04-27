@@ -43,8 +43,8 @@
   notify: "restart Tor"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Obfs4 port
-  when: obfs4_port | int < 1024
+- name: Allow low port
+  when: tor_port | int < 1024
   block:
     # Hint: to remove these hooks the proxy has to be removed before
     - name: Configure apt hook for obfs4proxy

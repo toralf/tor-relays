@@ -35,7 +35,6 @@
   ansible.builtin.lineinfile:
     line: "set enable-bracketed-paste off"
     path: /root/.inputrc
-    create: yes
 
 - name: Htop config
   ansible.builtin.copy:

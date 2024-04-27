@@ -13,14 +13,14 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create seeds (and keep them secret!):
+1. create seeds (and keep them secret):
 
    ```bash
    cat <<EOF >> secrets/local.yaml
    ---
    seed_address: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
    seed_metrics: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
-   seed_obfs4: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
+   seed_tor_port: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
 
    EOF
 
@@ -34,7 +34,6 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    tor:
      hosts:
        my_bridge:
-         obfs4_port: 4711 # optionally
    ```
 
 1. deploy it
@@ -53,28 +52,25 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 ## Details
 
 The deployment is made by _Ansible_.
-Replace _public_ with _private_ or with _snowflake_ for a private Tor bridge of a _Snowflake standlone proxy_ respectively.
 See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
-The Ansible role uses `seed_address` to configure a random ipv6 address at a Hetzner systems
-(or IONOS a proposed one is just displayed).
+The Ansible role uses `seed_address` to configure a random ipv6 address at a Hetzner system (at IONOS a proposed one is displayed).
 
 ### Additional software
 
-To deploy additional software, define it too, i.e. a _Quassel_ server:
+To deploy additional software, define e.g. for a _Quassel_ server:
 
 ```yaml
-my_group:
-  hosts:
-    my_system:
-      additional_ports:
-        - "4242"
-      additional_software:
-        - "quassel-core"
+hosts:
+  my_system:
+    additional_ports:
+      - "4242"
+    additional_software:
+      - "quassel-core"
 ```
 
-### Compiling the Kernel, Tor + Lyrebird or Snowflake from source
+### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
 
 As default _HEAD_ (of branch _main_) is taken.
 A dedicated branch can be defined by the variable _<...>\_git_version_.

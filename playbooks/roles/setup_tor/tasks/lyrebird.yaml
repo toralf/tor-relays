@@ -22,7 +22,6 @@
     chdir: /root/lyrebird
 
 - name: Install Lyrebird
-  when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/lyrebird/lyrebird
     dest: /usr/bin/

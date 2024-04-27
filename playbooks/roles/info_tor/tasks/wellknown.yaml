@@ -1,20 +1,46 @@
 ---
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 # target file ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt
-- name: Ensure hostname is in wellknown file
+- name: Wellknown for bridges
+  when: bridge_distribution
   delegate_to: localhost
   throttle: 1
-  ansible.builtin.lineinfile:
-    create: yes
-    line: "# {{ inventory_hostname }} "
-    path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
+  block:
+    - name: Ensure hostname is in wellknown file
+      ansible.builtin.lineinfile:
+        line: "# {{ inventory_hostname }} "
+        path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
-- name: Ensure fingerprint is in wellknown file
-  when: not ansible_check_mode
+    - name: Ensure fingerprint is in wellknown file
+      when: not ansible_check_mode
+      ansible.builtin.lineinfile:
+        line: "{{ _hashed_fingerprint }}"
+        path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
+        insertafter: "^# {{ inventory_hostname }} "
+
+- name: Wellknown for server
+  when: not bridge_distribution
   delegate_to: localhost
   throttle: 1
-  ansible.builtin.lineinfile:
-    create: yes
-    line: "{{ _hashed_fingerprint }}"
-    path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
-    insertafter: "^# {{ inventory_hostname }} "
+  block:
+    - name: Ensure hostname is in wellknown files
+      ansible.builtin.lineinfile:
+        line: "# {{ inventory_hostname }} "
+        path: "{{ tmp_dir }}/{{ item }}"
+      loop:
+        - "rsa-fingerprint.txt"
+        - "ed25519-master-pubkey.txt"
+
+    - name: Ensure RSA fingerprint is in wellknown file
+      when: not ansible_check_mode
+      ansible.builtin.lineinfile:
+        line: "{{ _fingerprint }}"
+        path: "{{ tmp_dir }}/rsa-fingerprint.txt"
+        insertafter: "^# {{ inventory_hostname }} "
+
+    - name: Ensure ED25519 fingerprint is in wellknown file
+      when: not ansible_check_mode
+      ansible.builtin.lineinfile:
+        line: "{{ _fingerprint_ed25519 }}"
+        path: "{{ tmp_dir }}/ed25519-master-pubkey.txt"
+        insertafter: "^# {{ inventory_hostname }} "

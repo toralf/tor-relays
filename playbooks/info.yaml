@@ -17,8 +17,7 @@
 
 - name: Info Tor
   hosts:
-    - private
-    - public
+    - tor
   roles:
     - role: info_tor
   tags:

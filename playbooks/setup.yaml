@@ -17,8 +17,7 @@
 
 - name: Setup Tor
   hosts:
-    - public
-    - private
+    - tor
   roles:
     - role: setup_tor
   tags:

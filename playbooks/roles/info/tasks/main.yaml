@@ -5,11 +5,14 @@
   tags:
     - always
 
-- name: "Ensure that the tmp dir does exist: {{ tmp_dir }}"
+- name: "Ensure that tmp dir does exist: {{ tmp_dir }}"
   ansible.builtin.file:
     path: "{{ tmp_dir }}"
     state: directory
     mode: "0755"
+  tags:
+    - never
+    - tmpdir
 
 - name: Firewall
   ansible.builtin.import_tasks: firewall.yaml
