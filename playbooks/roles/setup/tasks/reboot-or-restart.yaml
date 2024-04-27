@@ -8,7 +8,7 @@
 
 - name: Check if restart is needed (either kernel or a service)
   when: not _reboot_required.changed
-  changed_when: _reboot_needed.stdout_lines | length > 0
+  changed_when: _reboot_needed.rc == 0
   failed_when: _reboot_needed.rc == 2
   ansible.builtin.shell:
     cmd: |
@@ -16,7 +16,7 @@
   register: _reboot_needed
   notify: "reboot system"
 
-- name: Restart services if needed
+- name: Restart services (no kernel) if needed
   when: not _reboot_needed.changed
   changed_when: _services_restarted.stdout_lines is search('Restarting services...')
   ansible.builtin.shell:
@@ -24,7 +24,7 @@
       needrestart -b -r a
   register: _services_restarted
 
-- name: Reboot needed due to deferred services
+- name: Reboot needed due to deferred service restarts
   when: _services_restarted.changed
   changed_when: _services_restarted is search('Service restarts being deferred:')
   ansible.builtin.debug:

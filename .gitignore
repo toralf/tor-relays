@@ -1,4 +1,4 @@
 .ansible_facts/
 .trunk/
-inventory/
+inventory/*.yaml
 secrets/

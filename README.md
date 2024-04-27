@@ -27,14 +27,14 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    chmod 400 secrets/local.yaml
    ```
 
-1. add _my_bridge_ to an inventory file and configure its obfs4 port (i.e. within `inventory/systems.yaml`):
+1. add _my_bridge_ to the group _tor_ in the [./inventory](./inventory/):
 
    ```yaml
    ---
-   public:
+   tor:
      hosts:
        my_bridge:
-         obfs4_port: 4711
+         obfs4_port: 4711 # optionally
    ```
 
 1. deploy it
@@ -47,7 +47,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
    ```bash
    ./site-info.yaml --limit my_bridge
-   grep my_bridge ~/tmp/public_*
+   grep my_bridge ~/tmp/*
    ```
 
 ## Details
@@ -106,7 +106,7 @@ The value _targets_ (used in the Prometheus server config file) can be created e
 
 ```bash
 ./site-info.yaml --tags metrics-port
-sort ~/tmp/public_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
+sort ~/tmp/*_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
 ```
 
 The scripts under [./bin](./bin) work for the Hetzner Cloud API only.

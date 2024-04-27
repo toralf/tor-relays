@@ -1,8 +1,4 @@
 ---
 log_lines: 10
 
-log_notice: "/var/log/tor/notice.log"
-log_warn: "/var/log/tor/warn.log"
-log_err: "/var/log/tor/err.log"
-
 tor_build_from_source: true
