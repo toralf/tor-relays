@@ -31,7 +31,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
    ```yaml
    ---
-   tor:
+   my_bridge_group:
      hosts:
        my_bridge:
    ```
@@ -42,7 +42,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    ./site-setup.yaml --limit my_bridge
    ```
 
-1. get its stats:
+1. get its data:
 
    ```bash
    ./site-info.yaml --limit my_bridge
@@ -56,6 +56,13 @@ See the section [Metrics](#metrics) below how to configure a pseudo-random port 
 The firewall provides basic capabilities.
 For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
 The Ansible role uses `seed_address` to configure a random ipv6 address at a Hetzner system (at IONOS a proposed one is displayed).
+The _MyFamily_ value for the host group _server_test_ could be created by a command like:
+
+```bash
+./site-info.yaml --limit server_test --tags wellknown
+
+echo -e "---\nmy_family: $(grep -v '#' ~/tmp/server_rsa-fingerprint.txt | xargs | tr ' ' ',')" > ./inventory/group_vars/server_test.yaml
+```
 
 ### Additional software
 
