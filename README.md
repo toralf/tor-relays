@@ -31,7 +31,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
    ```yaml
    ---
-   my_bridge_group:
+   tor:
      hosts:
        my_bridge:
    ```

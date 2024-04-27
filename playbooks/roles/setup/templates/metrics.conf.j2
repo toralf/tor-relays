@@ -14,7 +14,7 @@ server {
     proxy_pass http://127.0.0.1:9100/metrics;
   }
 {% endif %}
-{% if group_names is contains('public') or group_names is contains('private') %}
+{% if group_names is contains('tor') %}
   location = /metrics-relay {
     proxy_pass http://127.0.0.1:9052/metrics;
   }
