@@ -1,4 +1,16 @@
 ---
+- name: Install or update base software for auto-update
+  when: not ansible_check_mode
+  ansible.builtin.apt:
+    name:
+      - needrestart
+      - unattended-upgrades
+
+- name: Configure needrestart
+  ansible.builtin.lineinfile:
+    line: "$nrconf{restart} = 'a';"
+    path: /etc/needrestart/conf.d/auto-restart.conf
+
 - name: Configure auto upgrades
   ansible.builtin.copy:
     src: 20auto-upgrades
@@ -41,8 +53,3 @@
     state: restarted
     daemon_reload: true
   when: _timer_state.changed or _upgrade_timer_state.changed
-
-- name: Configure needrestart
-  ansible.builtin.lineinfile:
-    line: "$nrconf{restart} = 'a';"
-    path: /etc/needrestart/conf.d/auto-restart.conf

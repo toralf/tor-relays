@@ -15,10 +15,8 @@
       - htop
       - iptables
       - iptables-persistent
-      - needrestart
       - ntp
       - psmisc
-      - unattended-upgrades
 
 - name: Install or update additional software
   when: additional_software | length > 0
