@@ -3,7 +3,6 @@
   when: not ansible_check_mode
   ansible.builtin.apt:
     name:
-      - needrestart
       - unattended-upgrades
 
 - name: Configure needrestart

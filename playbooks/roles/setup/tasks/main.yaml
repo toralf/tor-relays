@@ -98,12 +98,13 @@
       tags:
         - kernel
 
-    - name: Configure Debian auto update
-      ansible.builtin.import_tasks: auto-update-debian.yaml
-      tags:
-        - auto-update
-
-    - name: Reboot/Restart checks
+    - name: Check if reboot/restart after setup is needed
       ansible.builtin.import_tasks: reboot-or-restart.yaml
       tags:
         - reboot-or-restart
+
+    - name: Configure Debian auto update
+      when: ansible_facts.distribution == "Debian"
+      ansible.builtin.import_tasks: auto-update-debian.yaml
+      tags:
+        - auto-update

@@ -15,6 +15,7 @@
       - htop
       - iptables
       - iptables-persistent
+      - needrestart
       - ntp
       - psmisc
 
