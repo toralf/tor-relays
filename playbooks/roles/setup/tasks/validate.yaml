@@ -19,17 +19,3 @@
     quiet: true
     that:
       - "prometheus_server is ansible.utils.ipv4"
-
-- name: Validate kernel_debian_target
-  when: kernel_debian_target
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "kernel_debian_version"
-
-- name: Validate kernel_debian_version
-  when: kernel_debian_version
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "kernel_debian_target"
