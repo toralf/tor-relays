@@ -2,7 +2,7 @@
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 # target file ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt
 - name: Wellknown for bridges
-  when: bridge_distribution
+  when: bridge_distribution | length > 0
   delegate_to: localhost
   throttle: 1
   block:
@@ -19,7 +19,7 @@
         insertafter: "^# {{ inventory_hostname }} "
 
 - name: Wellknown for server
-  when: not bridge_distribution
+  when: bridge_distribution | length == 0
   delegate_to: localhost
   throttle: 1
   block:

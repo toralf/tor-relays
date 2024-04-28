@@ -6,7 +6,7 @@ tor_build_from_source: true
 tor_git_version: "HEAD"
 tor_patches: []
 
-tor_debian_target: "" # if not ansible_facts.distribution_release but e.g. "tor-nightly-main-bookworm"
+tor_debian_target: "" # if ansible_facts.distribution_release is not wanted but instead e.g. "tor-nightly-main-bookworm"
 
 metrics_port: ""
 

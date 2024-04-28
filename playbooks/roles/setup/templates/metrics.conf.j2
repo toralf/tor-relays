@@ -1,7 +1,7 @@
 # {{ ansible_managed }}
 
 server {
-{% if metrics_port %}
+{% if metrics_port | int > 0 %}
 {% if prometheus_server %}
   listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
 {% else %}

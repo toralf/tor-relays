@@ -35,9 +35,10 @@
   notify: "restart Tor"
 
 # for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and more
-- name: Set Linux capabilities on Lyrebird
-  when: _lyrebird_install.changed
+- name: Allow low port for Lyrebird
+  when: tor_port | int < 1024
   community.general.capabilities:
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service=+ep
     state: present
+  notify: "restart Tor"

@@ -1,6 +1,6 @@
 ---
 - name: Validate nickname
-  when: nickname
+  when: nickname | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
@@ -15,7 +15,7 @@
       - "(tor_port | int > 0) and (tor_port | int < 2**16)"
 
 - name: Validate metrics_port
-  when: metrics_port
+  when: metrics_port | length > 0
   ansible.builtin.assert:
     quiet: true
     that:

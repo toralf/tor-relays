@@ -32,7 +32,7 @@
     - log-unattended
 
 - name: Metrics port
-  when: metrics_port
+  when: metrics_port | int > 0
   ansible.builtin.import_tasks: metrics.yaml
   tags:
     - metrics

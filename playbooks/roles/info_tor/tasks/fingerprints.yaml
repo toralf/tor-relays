@@ -10,7 +10,7 @@
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
 - name: ED25519 fingerprint
-  when: not bridge_distribution
+  when: bridge_distribution | length > 0
   block:
     - name: Get ED25519 fingerprint
       changed_when: false
@@ -23,10 +23,10 @@
         _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
 - name: Hashed fingerprint
-  when: bridge_distribution
+  when: bridge_distribution | length > 0
   block:
     - name: Get hashed fingerprint
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       changed_when: false
       ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
       register: _result

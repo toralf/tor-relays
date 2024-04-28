@@ -4,13 +4,13 @@
     url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
     state: present
 
-- name: Configure repository "torproject"
+- name: Configure Debian repository "torproject"
   ansible.builtin.apt_repository:
     filename: "torproject"
     repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
     state: present
 
-- name: Configure repository "torproject"
+- name: Configure Debian repository "torproject" for tor_debian_target
   when: tor_debian_target
   ansible.builtin.apt_repository:
     filename: "torproject"
@@ -20,15 +20,16 @@
 - name: Install or update key ring
   when: not ansible_check_mode
   ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}"
     name:
       - deb.torproject.org-keyring
 
-- name: Install or update Tor
+- name: Install or update obfs4proxy
   when: not ansible_check_mode
   ansible.builtin.apt:
-    default_release: "{{ tor_debian_target }}"
+    default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
     name:
+      - tor
+      - tor-geoipdb
       - obfs4proxy
   notify: "restart Tor"
 
@@ -36,17 +37,18 @@
 - name: Allow low port
   when: tor_port | int < 1024
   block:
-    # Hint: to remove these hooks the proxy has to be removed before
-    - name: Configure apt hook for obfs4proxy
+    - name: Configure apt hook to use low port for obfs4proxy
+      when: bridge_distribution | length > 0
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
         path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
         create: yes
 
-    - name: Configure dpkg hook for obfs4proxy to use privileged port
+    - name: Configure apt hook to use low port for Tor
+      when: not bridge_distribution
       ansible.builtin.lineinfile:
-        line: "post-invoke=setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"
-        path: /etc/dpkg/dpkg.cfg.d/obfs4proxy-capability
+        line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/tor"; };'
+        path: /etc/apt/apt.conf.d/99-tor-capability
         create: yes
 
     - name: Override systemd defaults for Tor
@@ -57,14 +59,6 @@
           [Service]
           NoNewPrivileges=no
       notify: "restart Tor"
-
-- name: Install or update obfs4proxy
-  when: not ansible_check_mode
-  ansible.builtin.apt:
-    default_release: "{{ tor_debian_target }}"
-    name:
-      - obfs4proxy
-  notify: "restart Tor"
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:

@@ -7,7 +7,7 @@
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
 - name: Validate metrics_port
-  when: metrics_port
+  when: metrics_port | length > 0
   ansible.builtin.assert:
     quiet: true
     that:

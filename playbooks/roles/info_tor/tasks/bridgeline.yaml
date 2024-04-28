@@ -1,6 +1,6 @@
 ---
 - name: Get certificate
-  when: bridge_distribution
+  when: bridge_distribution | length > 0
   changed_when: false
   ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: _cert

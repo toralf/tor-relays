@@ -3,6 +3,12 @@
   ansible.builtin.user:
     name: tor
 
+- name: Install or update sandbox lib (if NOT being a bridge)
+  when: not ansible_check_mode and (bridge_distribution | length == 0)
+  ansible.builtin.apt:
+    name:
+      - libseccomp-dev
+
 - name: Init or update Tor repo
   when: not ansible_check_mode
   ansible.builtin.git:
@@ -23,7 +29,7 @@
   register: _tor_patched
 
 - name: Build Tor
-  when: _repo_tor.changed or _tor_patched.changed
+  when: _repo_tor.changed or _tor_patched.changed or true
   changed_when: true
   ansible.builtin.shell:
     cmd: |
@@ -99,9 +105,9 @@
     sysctl_set: true
   notify: "restart Tor"
 
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Allow low port
-  when: tor_port | int < 1024
-  changed_when: false
-  ansible.builtin.command:
-    cmd: setcap cap_net_bind_service=+ep /usr/bin/tor
+- name: Allow low port for Tor
+  when: (tor_port | int < 1024) and (bridge_distribution | length == 0)
+  community.general.capabilities:
+    path: /usr/bin/tor
+    capability: cap_net_bind_service=+ep
+    state: present
