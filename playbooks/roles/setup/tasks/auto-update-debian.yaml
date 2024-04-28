@@ -41,3 +41,8 @@
     state: restarted
     daemon_reload: true
   when: _timer_state.changed or _upgrade_timer_state.changed
+
+- name: Configure needrestart
+  ansible.builtin.lineinfile:
+    line: "$nrconf{restart} = 'a';"
+    path: /etc/needrestart/conf.d/auto-restart.conf
