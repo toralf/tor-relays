@@ -34,6 +34,9 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    tor:
      hosts:
        my_bridge:
+          bridge_distribution: "any"
+          publish_server_descriptor: "bridge"
+          tor_port: 12345
    ```
 
 1. deploy it
@@ -52,11 +55,12 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 ## Details
 
 The deployment is made by _Ansible_.
-See the section [Metrics](#metrics) below how to configure a pseudo-random port for obfs4.
-The firewall provides basic capabilities.
-For DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
-The Ansible role uses `seed_address` to configure a random ipv6 address at a Hetzner system (at IONOS a proposed one is displayed).
-The _MyFamily_ value for the host group _server_test_ could be created by a command like:
+See the section [Metrics](#metrics) below how to scrape runtime metrics.
+The Ansible role expects a `seed_address` value in the configure step of a randomized ipv6 address at a Hetzner system (at IONOS a proposed one is displayed).
+The firewall rules provide basic protection.
+For more DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
+
+The _MyFamily_ value for the host group _server_test_ can be created by:
 
 ```bash
 ./site-info.yaml --limit server_test --tags wellknown
