@@ -12,7 +12,6 @@ skip_list:
   - latest[git]
   - name[casing]
   - name[template]
-  - no-changed-when
   - no-handler
   - risky-file-permissions
   - risky-shell-pipe

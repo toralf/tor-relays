@@ -6,17 +6,21 @@
     dest: /root/lyrebird
     version: "{{ lyrebird_git_version }}"
     force: true
+  register: _repo_lyrebird
 
 - name: Apply patches for Lyrebird
+  changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/lyrebird
   loop_control:
     label: "{{ item }}"
   loop: "{{ lyrebird_patches }}"
+  register: _lyrebird_patched
 
 - name: Build Lyrebird
-  when: not ansible_check_mode
+  when: _repo_lyrebird.changed or _lyrebird_patched.changed
+  changed_when: true
   ansible.builtin.command:
     cmd: make build
     chdir: /root/lyrebird
@@ -30,7 +34,7 @@
   register: _lyrebird_install
   notify: "restart Tor"
 
-# for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and probably more
+# for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and more
 - name: Set Linux capabilities on Lyrebird
   when: _lyrebird_install.changed
   community.general.capabilities:

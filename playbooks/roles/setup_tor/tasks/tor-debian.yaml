@@ -30,16 +30,6 @@
     default_release: "{{ tor_debian_target }}"
     name:
       - obfs4proxy
-      - tor
-      - tor-geoipdb
-  notify: "restart Tor"
-
-- name: Set sysctl max user namespaces
-  ansible.posix.sysctl:
-    name: user.max_user_namespaces
-    value: "0" # Debian  bookworm default: 14886
-    sysctl_file: /etc/sysctl.d/21tor-relay.conf
-    sysctl_set: true
   notify: "restart Tor"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
@@ -67,3 +57,19 @@
           [Service]
           NoNewPrivileges=no
       notify: "restart Tor"
+
+- name: Install or update obfs4proxy
+  when: not ansible_check_mode
+  ansible.builtin.apt:
+    default_release: "{{ tor_debian_target }}"
+    name:
+      - obfs4proxy
+  notify: "restart Tor"
+
+- name: Set sysctl max user namespaces
+  ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    value: "0" # Debian  bookworm default: 14886
+    sysctl_file: /etc/sysctl.d/21tor-relay.conf
+    sysctl_set: true
+  notify: "restart Tor"

@@ -23,6 +23,7 @@
   when: _fw_scripts.changed or _fw_old.changed
   block:
     - name: Start firewall
+      changed_when: true
       ansible.builtin.command:
         cmd: "{{ '/root/firewall-ip' + item + '.sh' }} start"
       with_items:

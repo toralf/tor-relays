@@ -15,11 +15,6 @@
       - libncurses5-dev
       - libssl-dev
 
-- name: Check existance of Linux repo
-  ansible.builtin.stat:
-    path: /root/linux
-  register: _repo_linux_is_cloned
-
 - name: Init or update Linux repo
   when: not ansible_check_mode
   ansible.builtin.git:
@@ -30,26 +25,30 @@
   register: _repo_linux
 
 - name: Apply patches for Linux
+  changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: curl -s {{ item }} | patch -p 1
+    cmd: |
+      set -euf
+      set -o pipefail
+
+      curl -s {{ item }} | patch -p 1
     chdir: /root/linux
+    executable: /bin/bash
   loop_control:
     label: "{{ item }}"
   loop: "{{ kernel_git_patches }}"
   register: _kernel_patched
 
-- name: Check if Linux config does exist
-  ansible.builtin.stat:
-    path: /root/linux/.config
-  register: _configured_already
-
 - name: Configure Linux
-  when: _repo_linux.changed or _kernel_patched.changed or (_configured_already.stat.exists is false)
+  changed_when: _configured.rc == 123
+  failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
     cmd: |
       set -euf
 
-      yes '' | make localmodconfig
+      [[ -s .config ]] && before=$(md5sum .config) || before="0"
+
+      yes '' | make localmodconfig 1>/dev/null
       sed -i \
         -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=y,' \
         -e 's,^# CONFIG_IP_NF_FILTER.*,CONFIG_IP_NF_FILTER=m,' \
@@ -66,15 +65,21 @@
         -e 's,^# CONFIG_NETFILTER_XT_NAT .*,CONFIG_NETFILTER_XT_NAT=m,' \
         -e 's,^# CONFIG_NF_NAT .*,CONFIG_NF_NAT=m,' \
         -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
-        .config
-      yes '' | make oldconfig
+        .config || true
+      yes '' | make oldconfig 1>/dev/null
 
+      after=$(md5sum .config)
+
+      if [[ ! $before == $after ]]; then
+        exit 123
+      fi
     chdir: /root/linux
     executable: /bin/bash
   register: _configured
 
 - name: Build Linux
-  when: _configured.changed
+  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
+  changed_when: true
   ansible.builtin.shell:
     cmd: |
       set -euf

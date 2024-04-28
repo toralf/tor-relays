@@ -10,17 +10,21 @@
     dest: /root/snowflake
     version: "{{ snowflake_git_version }}"
     force: true
+  register: _repo_snowflake
 
 - name: Apply patches of Snowflake
+  changed_when: _snowflake_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/snowflake
   loop_control:
     label: "{{ item }}"
   loop: "{{ snowflake_patches }}"
+  register: _snowflake_patched
 
 - name: Build Snowflake
-  when: not ansible_check_mode
+  changed_when: false
+  when: _repo_snowflake.changed or _snowflake_patched.changed
   ansible.builtin.command:
     cmd: go build
     chdir: /root/snowflake/proxy

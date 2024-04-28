@@ -13,6 +13,7 @@
   register: _repo_tor
 
 - name: Apply patches for Tor
+  changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
     chdir: /root/tor
@@ -23,6 +24,7 @@
 
 - name: Build Tor
   when: _repo_tor.changed or _tor_patched.changed
+  changed_when: true
   ansible.builtin.shell:
     cmd: |
       set -euf
@@ -67,6 +69,7 @@
 
 - name: Install Tor
   when: _binary_tor.changed
+  changed_when: true
   ansible.builtin.command:
     cmd: make install
     chdir: /root/tor
