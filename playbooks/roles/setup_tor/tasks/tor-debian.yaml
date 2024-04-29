@@ -45,7 +45,7 @@
         create: yes
 
     - name: Configure apt hook to use low port for Tor
-      when: not bridge_distribution
+      when: bridge_distribution | length == 0
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/tor"; };'
         path: /etc/apt/apt.conf.d/99-tor-capability

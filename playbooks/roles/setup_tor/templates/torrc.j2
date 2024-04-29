@@ -6,7 +6,7 @@
 DataDirectory /var/lib/tor
 {% endif %}
 
-{% if bridge_distribution %}
+{% if bridge_distribution | length > 0 %}
 BridgeRelay 1
 
 SandBox 0
