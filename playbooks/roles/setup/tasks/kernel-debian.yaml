@@ -8,5 +8,5 @@
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
-      - "linux-image-{{ ansible_facts.proc_cmdline.BOOT_IMAGE is search('-amd64') | ternary('amd64', 'arm64') }}"
+      - "linux-image-{{ ansible_facts.proc_cmdline.BOOT_IMAGE[-5:] }}"
   notify: "reboot system"
