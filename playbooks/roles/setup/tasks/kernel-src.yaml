@@ -40,6 +40,7 @@
   register: _kernel_patched
 
 - name: Configure Linux
+  when: not ansible_check_mode
   changed_when: _configured.rc == 123
   failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
@@ -65,6 +66,7 @@
         -e 's,^# CONFIG_NETFILTER_XT_NAT .*,CONFIG_NETFILTER_XT_NAT=m,' \
         -e 's,^# CONFIG_NF_NAT .*,CONFIG_NF_NAT=m,' \
         -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
+        -e 's,^# CONFIG_NF_CT_NETLINK .*,CONFIG_NF_CT_NETLINK=m,' \
         .config || true
       yes '' | make oldconfig 1>/dev/null
 
