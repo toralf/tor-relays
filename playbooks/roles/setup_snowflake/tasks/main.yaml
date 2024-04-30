@@ -46,6 +46,7 @@
             - config
 
     - name: Ensure that Snowflake is started
+      when: not ansible_check_mode
       ansible.builtin.service:
         name: snowflake-proxy
         state: started

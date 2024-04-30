@@ -1,5 +1,6 @@
 ---
 - name: Restart Tor
+  when: not ansible_check_mode
   listen: "restart Tor"
   ansible.builtin.service:
     name: tor

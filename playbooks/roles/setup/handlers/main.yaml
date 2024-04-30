@@ -1,5 +1,6 @@
 ---
 - name: Reboot system
+  when: not ansible_check_mode
   listen: "reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2
@@ -8,6 +9,7 @@
     post_reboot_delay: 20
 
 - name: Restart Nginx
+  when: not ansible_check_mode
   listen: "restart Nginx"
   ansible.builtin.service:
     name: nginx
@@ -16,6 +18,7 @@
     enabled: true
 
 - name: Restart Prometheus node exporter
+  when: not ansible_check_mode
   listen: "restart Prometheus node exporter"
   ansible.builtin.systemd:
     name: "prometheus-node-exporter"
