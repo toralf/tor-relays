@@ -17,5 +17,5 @@
       {{ _result.json.bridges[0].advertised_bandwidth | default('n/a') }}
       running: {{ _result.json.bridges[0].running | default('n/a') }}
       blocklist: {{ _result.json.bridges[0].blocklist | default([]) | join(',') }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_onionoo"
+    path: "{{ tmp_dir }}/tor_onionoo"
     regex: "^{{ inventory_hostname }} "

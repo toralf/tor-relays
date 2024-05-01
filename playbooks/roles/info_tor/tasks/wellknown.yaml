@@ -26,7 +26,7 @@
     - name: Ensure hostname is in wellknown files
       ansible.builtin.lineinfile:
         line: "# {{ inventory_hostname }} "
-        path: "{{ tmp_dir }}/{{ group_names[0] }}_{{ item }}"
+        path: "{{ tmp_dir }}/tor_{{ item }}"
       loop:
         - "rsa-fingerprint.txt"
         - "ed25519-master-pubkey.txt"
@@ -35,12 +35,12 @@
       when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint }}"
-        path: "{{ tmp_dir }}/{{ group_names[0] }}_rsa-fingerprint.txt"
+        path: "{{ tmp_dir }}/tor_rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }} "
 
     - name: Ensure ED25519 fingerprint is in wellknown file
       when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_ed25519 }}"
-        path: "{{ tmp_dir }}/{{ group_names[0] }}_ed25519-master-pubkey.txt"
+        path: "{{ tmp_dir }}/tor_ed25519-master-pubkey.txt"
         insertafter: "^# {{ inventory_hostname }} "

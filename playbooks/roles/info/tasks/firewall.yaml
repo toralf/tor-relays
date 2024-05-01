@@ -15,7 +15,7 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_firewall_ct_drops"
+    path: "{{ tmp_dir }}/all_firewall_ct_drops"
     regex: "^{{ inventory_hostname }} "
 
 - name: Get ct counter
@@ -29,5 +29,5 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_firewall_ct_counter"
+    path: "{{ tmp_dir }}/all_firewall_ct_counter"
     regex: "^{{ inventory_hostname }} "

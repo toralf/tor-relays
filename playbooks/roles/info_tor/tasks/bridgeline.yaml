@@ -11,7 +11,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }} {{ _fingerprint }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
-    path: /tmp/{{ group_names[0] }}_bridgeline
+    path: /tmp/tor_bridgeline
     mode: "0600"
   with_items:
     - "{{ ansible_facts.default_ipv4.address }}"

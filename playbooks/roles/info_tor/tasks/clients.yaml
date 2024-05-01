@@ -16,5 +16,5 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_clients"
+    path: "{{ tmp_dir }}/tor_clients"
     regex: "^{{ inventory_hostname }} "

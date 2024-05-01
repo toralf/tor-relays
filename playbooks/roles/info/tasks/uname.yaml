@@ -10,5 +10,5 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_uname"
+    path: "{{ tmp_dir }}/all_uname"
     regex: "^{{ inventory_hostname }} "

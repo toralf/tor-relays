@@ -15,5 +15,5 @@
   ansible.builtin.lineinfile:
     create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ group_names[0] }}_connections"
+    path: "{{ tmp_dir }}/snowflake_connections"
     regex: "^{{ inventory_hostname }} "
