@@ -14,6 +14,3 @@ prometheus_server: ""
 
 # certificates and more
 ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
-
-tor_metrics: false
-snowflake_metrics: false
