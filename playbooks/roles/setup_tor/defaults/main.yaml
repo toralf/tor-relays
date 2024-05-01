@@ -8,8 +8,6 @@ tor_patches: []
 
 tor_debian_target: "" # if ansible_facts.distribution_release is not wanted but instead e.g. "tor-nightly-main-bookworm"
 
-metrics_port: ""
-
 nickname: ""
 
 publish_server_descriptor: "{{ bridge_distribution | length > 0 | ternary('bridge', '')}}"
