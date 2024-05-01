@@ -19,7 +19,11 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
 ExitRelay 0
 
+{% if tor_build_from_source and ansible_facts.proc_cmdline.BOOT_IMAGE[-5:] == 'arm64' %}
+SandBox 0
+{% else %}
 SandBox 1
+{% endif %}
 
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort {{ ansible_facts.default_ipv6.address }}:{{ tor_port }}
