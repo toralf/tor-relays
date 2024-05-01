@@ -89,8 +89,8 @@ Furthermore _<...>\_patches_ can provide additional patches (as URLs) to be appl
 ### Metrics
 
 If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule.
-An Nginx is used to encrypt the metrics data transfer on transit, using a certificate of the(previously generated) self-signed CA.
-This CA key has to be presented to the Prometheus too to enable a the TLS traffic.
+An Nginx is used to encrypt the metrics data transfer on transit, using the certificate of the self-signed CA (to be generated once before).
+This CA key has then to be presented to the Prometheus to enable the TLS traffic.
 
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
 to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_:
