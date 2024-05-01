@@ -94,13 +94,14 @@ An Nginx is used to encrypt the metrics data transfer on transit, using a certif
 This CA has to be presented to the Prometheus too for a fully secure TLS handshake.
 
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
-to expose metrics at https://_address_:_metrics_port_/metrics-_node|relay|snowflake_
+to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
 (Prometheus Node exporter, Tor and Snowflake respectively), e.g.:
 
 ```yaml
 snowflake:
   vars:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+    snowflake_metrics: true
 ```
 
 A _Prometheus node exporter_ is deployed by defining `prometheus_node_exporter: true`.

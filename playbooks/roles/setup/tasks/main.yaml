@@ -75,7 +75,7 @@
         - never
 
     - name: metrics
-      when: metrics_port | int > 0 or prometheus_node_exporter
+      when: (metrics_port | length > 0) and prometheus_server
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics

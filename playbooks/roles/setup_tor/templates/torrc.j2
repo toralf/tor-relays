@@ -25,7 +25,7 @@ ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort {{ ansible_facts.default_ipv6.address }}:{{ tor_port }}
 {% endif %}
 
-{% if metrics_port %}
+{% if metrics_port | length > 0 %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
 {% endif %}
