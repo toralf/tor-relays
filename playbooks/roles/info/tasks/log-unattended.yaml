@@ -9,4 +9,4 @@
 - name: Findings of log-unattended {{ log_lines }} last lines
   when: _result.stdout_lines | length > 0
   ansible.builtin.debug:
-    msg: "{{ _result.stdout.split('\n') }}"
+    var: _result.stdout_lines
