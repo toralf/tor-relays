@@ -7,11 +7,15 @@ Wants=network-online.target
 
 [Service]
 ExecStart=/usr/bin/tor
+ExecReload=/bin/kill -HUP ${MAINPID}
+TimeoutSec=60
 User=tor
 Group=tor
 Restart=on-failure
 RestartSec=5s
 LimitNOFILE=65536
+KillSignal=SIGINT
+WatchdogSec=1m
 
 # Hardening
 AppArmorProfile=-system_tor

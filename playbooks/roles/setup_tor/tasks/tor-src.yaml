@@ -80,12 +80,6 @@
     cmd: make install
     chdir: /root/tor
 
-- name: Add apparmor config
-  ansible.builtin.copy:
-    src: system_tor
-    dest: /etc/apparmor.d/
-  notify: "restart Tor"
-
 - name: Add systemd unit
   ansible.builtin.copy:
     src: tor.service
