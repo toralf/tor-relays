@@ -34,9 +34,8 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    tor:
      hosts:
        my_bridge:
-          bridge_distribution: "any"
-          publish_server_descriptor: "bridge"
-          tor_port: 12345
+         bridge_distribution: "any"
+         tor_port: 12345
    ```
 
 1. deploy it
@@ -60,7 +59,7 @@ The Ansible role expects a `seed_address` value in the configure step of a rando
 The firewall rules provide basic protection.
 For more DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
 
-The _MyFamily_ value for the host group _server_test_ can be created by:
+The _MyFamily_ value (i.e. for the host group _server_test_) can be created by:
 
 ```bash
 ./site-info.yaml --limit server_test --tags wellknown
@@ -70,7 +69,7 @@ echo -e "---\nmy_family: $(grep -v '#' ~/tmp/server_rsa-fingerprint.txt | xargs 
 
 ### Additional software
 
-To deploy additional software, define e.g. for a _Quassel_ server:
+To deploy additional software, define (i.e. for a _Quassel_ server) it like:
 
 ```yaml
 hosts:
@@ -89,13 +88,12 @@ Furthermore _<...>\_patches_ can provide additional patches (as URLs) to be appl
 
 ### Metrics
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then inbound traffic from this ip is granted by a firewall rule.
-An Nginx is used to encrypt the metrics data transfer on transit, using a certificate from a self-signed CA.
-This CA has to be presented to the Prometheus too for a fully secure TLS handshake.
+If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule.
+An Nginx is used to encrypt the metrics data transfer on transit, using a certificate of the(previously generated) self-signed CA.
+This CA key has to be presented to the Prometheus too to enable a the TLS traffic.
 
 Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
-to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
-(Prometheus Node exporter, Tor and Snowflake respectively), e.g.:
+to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_:
 
 ```yaml
 snowflake:
@@ -106,7 +104,7 @@ snowflake:
 
 A _Prometheus node exporter_ is deployed by defining `prometheus_node_exporter: true`.
 
-For Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
+For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
 
