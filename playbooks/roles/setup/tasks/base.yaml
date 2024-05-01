@@ -6,6 +6,7 @@
     mode: "0700"
 
 - name: "Ionos: de-activate password + root login"
+  when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.shell:
     cmd: |
       set -euf
