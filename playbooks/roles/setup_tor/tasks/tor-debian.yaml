@@ -55,7 +55,7 @@
       ansible.builtin.blockinfile:
         create: true
         dest: /etc/systemd/system/tor@default.service.d/override.conf
-        content: |
+        block: |
           [Service]
           NoNewPrivileges=no
       notify: "restart Tor"
