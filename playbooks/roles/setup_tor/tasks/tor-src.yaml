@@ -35,9 +35,11 @@
     cmd: |
       set -euf
 
+      truncate -s 0 make.log
+
       if [[ ! -x ./configure ]]; then
         rm -f Makefile
-        ./autogen.sh
+        ./autogen.sh 1>>make.log
       fi
 
       ./configure --prefix=/usr \
@@ -45,9 +47,10 @@
           --localstatedir=/var --datarootdir=/usr/share \
           --disable-systemd --disable-asciidoc --disable-html-manual --disable-unittests \
           --enable-module-relay --disable-module-dirauth \
-          --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp
+          --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
+          1>>make.log
 
-      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }} 1>>make.log
     executable: /bin/bash
     chdir: /root/tor
 
