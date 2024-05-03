@@ -49,9 +49,11 @@
 
       [[ -s .config ]] && before=$(md5sum .config) || before="0"
 
-      yes '' | make localmodconfig 1>/dev/null
+      truncate -s 0 make.log
+
+      yes '' | make localmodconfig 1>>make.log
       sed -i \
-        -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=y,' \
+        -e 's,^# CONFIG_IKCONFIG_PROC .*,CONFIG_IKCONFIG_PROC=m,' \
         -e 's,^# CONFIG_IP_NF_FILTER.*,CONFIG_IP_NF_FILTER=m,' \
         -e 's,^# CONFIG_IP_NF_NAT.*,CONFIG_IP_NF_NAT=m,' \
         -e 's,^# CONFIG_IP_SET_HASH .*,CONFIG_IP_SET_HASH=m,' \
@@ -68,7 +70,7 @@
         -e 's,^# CONFIG_NFT_NAT .*,CONFIG_NFT_NAT=m,' \
         -e 's,^# CONFIG_NF_CT_NETLINK .*,CONFIG_NF_CT_NETLINK=m,' \
         .config || true
-      yes '' | make oldconfig 1>/dev/null
+      yes '' | make oldconfig 1>>make.log
 
       after=$(md5sum .config)
 
@@ -86,11 +88,13 @@
     cmd: |
       set -euf
 
-      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }}
+      yes '' | make localmodconfig 1>>make.log
+
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }} 1>>make.log
       ln -snf $PWD /usr/src/linux
-      make install
-      make modules_install
-      update-initramfs -u
+      make install 1>>make.log
+      make modules_install 1>>make.log
+      update-initramfs -u 1>>make.log
 
     chdir: /root/linux
     executable: /bin/bash

@@ -68,6 +68,26 @@
       tags:
         - firewall
 
+    - name: Kernel Debian
+      when: kernel_debian_backports
+      ansible.builtin.import_tasks: kernel-debian.yaml
+      tags:
+        - kernel
+
+    - name: Check if reboot/restart after setup is needed
+      ansible.builtin.import_tasks: reboot-or-restart.yaml
+      tags:
+        - reboot-or-restart
+
+    - name: Ensure updated software is running
+      ansible.builtin.meta: flush_handlers
+
+    - name: Kernel source
+      when: kernel_git_version
+      ansible.builtin.import_tasks: kernel-src.yaml
+      tags:
+        - kernel
+
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
       tags:
@@ -85,23 +105,6 @@
       ansible.builtin.import_tasks: prometheus-node-exporter.yaml
       tags:
         - prometheus-node-exporter
-
-    - name: Kernel Debian
-      when: kernel_debian_backports
-      ansible.builtin.import_tasks: kernel-debian.yaml
-      tags:
-        - kernel
-
-    - name: Kernel source
-      when: kernel_git_version
-      ansible.builtin.import_tasks: kernel-src.yaml
-      tags:
-        - kernel
-
-    - name: Check if reboot/restart after setup is needed
-      ansible.builtin.import_tasks: reboot-or-restart.yaml
-      tags:
-        - reboot-or-restart
 
     - name: Configure Debian auto update
       when: ansible_facts.distribution == "Debian"
