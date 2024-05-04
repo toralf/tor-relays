@@ -68,7 +68,7 @@
       tags:
         - firewall
 
-    - name: Ensure that an updated kernel is in place
+    - name: Ensure that an updated kernel is booted
       ansible.builtin.meta: flush_handlers
 
     - name: Kernel source

@@ -10,6 +10,8 @@
     dest: /root/snowflake
     version: "{{ snowflake_git_version }}"
     force: true
+    depth: 1
+    single_branch: true
   register: _repo_snowflake
 
 - name: Apply patches of Snowflake
