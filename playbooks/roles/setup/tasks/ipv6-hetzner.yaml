@@ -32,14 +32,15 @@
   register: _result
   failed_when: _result.stderr_lines | length > 0
 
-- name: Gather facts again
+- name: Gather ipv6 facts
   when: _cloud_init.changed
   ansible.builtin.setup:
     gather_subset:
+      - "all_ipv6_addresses"
       - "default_ipv6"
 
 - name: Bail out
   when: ansible_facts.default_ipv6.address is match('fe80::')
   failed_when: ansible_facts.default_ipv6.address is match('fe80::')
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    var: ansible_facts.default_ipv6
