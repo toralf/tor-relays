@@ -68,18 +68,7 @@
       tags:
         - firewall
 
-    - name: Kernel Debian
-      when: kernel_debian_backports
-      ansible.builtin.import_tasks: kernel-debian.yaml
-      tags:
-        - kernel
-
-    - name: Check if reboot/restart after setup is needed
-      ansible.builtin.import_tasks: reboot-or-restart.yaml
-      tags:
-        - reboot-or-restart
-
-    - name: Ensure updated software is running
+    - name: Ensure that an updated kernel is in place
       ansible.builtin.meta: flush_handlers
 
     - name: Kernel source
@@ -111,3 +100,8 @@
       ansible.builtin.import_tasks: auto-update-debian.yaml
       tags:
         - auto-update
+
+    - name: Check if service restarts are needed
+      ansible.builtin.import_tasks: reboot-or-restart.yaml
+      tags:
+        - reboot-or-restart

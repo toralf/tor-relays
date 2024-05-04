@@ -19,7 +19,8 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
 ExitRelay 0
 
-{% if tor_build_from_source and ansible_facts.proc_cmdline.BOOT_IMAGE[-5:] == 'arm64' %}
+{% if ansible_facts.architecture != 'x86_64' %}
+# sandbox issues with ARM64 (e.g. aarch64)
 SandBox 0
 {% else %}
 SandBox 1

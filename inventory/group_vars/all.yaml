@@ -1,16 +1,14 @@
 ---
-# facts cache is not updated if a tag is given or hosts are limited
+# Hint: facts cache is not updated if --tags or --limit is used
 facts_subset:
   - "!all"
   - "!min"
   - "all_ipv4_addresses"
   - "all_ipv6_addresses"
-  - "cmdline"
+  - "architecture"
   - "default_ipv4"
   - "default_ipv6"
-  - "devices"
-  - "dns"
-  - "hardware"
+  - "distribution"
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"

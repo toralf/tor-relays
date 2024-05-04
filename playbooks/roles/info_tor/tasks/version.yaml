@@ -1,5 +1,5 @@
 ---
-- name: Gather installed package
+- name: Gather installed packages
   ansible.builtin.package_facts:
 
 - name: Tor version

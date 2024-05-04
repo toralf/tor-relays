@@ -3,7 +3,7 @@ additional_ports: []
 additional_software: []
 
 # use the backported kernel
-kernel_debian_backports: false
+kernel_debian_backports: true
 
 kernel_git_version: "" # e.g. "HEAD" or "v6.7.3"
 kernel_git_patches: []

@@ -23,3 +23,19 @@
   when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Debian backport kernel
+  when: kernel_debian_backports
+  block:
+    - name: Configure repository "backports"
+      ansible.builtin.apt_repository:
+        filename: backports
+        repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+
+    - name: Install or update "backports" kernel
+      when: not ansible_check_mode
+      ansible.builtin.apt:
+        default_release: "{{ ansible_facts.distribution_release }}-backports"
+        name:
+          - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary ('amd64', 'arm64') }}"
+      notify: "reboot system"
