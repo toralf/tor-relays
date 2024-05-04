@@ -92,7 +92,7 @@
 
       yes '' | make oldconfig 1>>make.log
 
-      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }} 1>>make.log
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 1500) | int }} 1>>make.log
       ln -snf $PWD /usr/src/linux
       make install 1>>make.log
       make modules_install 1>>make.log

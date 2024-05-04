@@ -52,7 +52,7 @@
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
           1>>make.log
 
-      make -j {{ 1 + (ansible_facts.memtotal_mb / 2048) | int }} 1>>make.log
+      make -j {{ 1 + (ansible_facts.memtotal_mb / 1500) | int }} 1>>make.log
     executable: /bin/bash
     chdir: /root/tor
 

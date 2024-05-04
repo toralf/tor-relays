@@ -57,7 +57,7 @@
       fallocate -l 2G /swapfile
       chmod 600 /swapfile
       mkswap /swapfile
-      if ! grep -q "/swapfile" /etc/fstab; then
+      if ! grep -q "^/swapfile " /etc/fstab; then
         echo "/swapfile  none  swap  defaults  0  0" >> /etc/fstab
       fi
       swapon /swapfile
