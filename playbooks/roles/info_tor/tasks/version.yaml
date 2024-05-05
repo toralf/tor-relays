@@ -12,6 +12,7 @@
   failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
 
 - name: Proxy version
+  when: bridge_distribution | length > 0
   changed_when: false
   ansible.builtin.command:
     cmd: "/usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version"
@@ -19,7 +20,7 @@
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 
 - name: File version
-  when: not ansible_check_mode
+  when: _proxy.changed
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

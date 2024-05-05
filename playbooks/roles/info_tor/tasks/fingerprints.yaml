@@ -10,7 +10,6 @@
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
 - name: ED25519 fingerprint
-  when: bridge_distribution | length > 0
   block:
     - name: Get ED25519 fingerprint
       changed_when: false
