@@ -11,3 +11,5 @@ tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is ansible_fac
 nickname: ""
 
 publish_server_descriptor: "{{ (bridge_distribution | length > 0) | ternary('bridge', '')}}"
+
+tor_config_local: []
