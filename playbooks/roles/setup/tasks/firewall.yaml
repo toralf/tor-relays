@@ -20,7 +20,7 @@
   register: _fw_old
 
 - name: Reset firewall
-  when: _fw_scripts.changed or _fw_old.changed
+  when: _fw_scripts.changed or _fw_old.changed or firewall_force_reset
   block:
     - name: Start firewall
       changed_when: true

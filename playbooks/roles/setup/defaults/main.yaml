@@ -14,3 +14,6 @@ prometheus_server: ""
 
 # certificates and more
 ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
+
+# to delete outdated additional rules
+firewall_force_reset: false
