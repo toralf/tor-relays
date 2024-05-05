@@ -21,7 +21,7 @@ while read -r name; do
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   if grep -q "^    ${name}:$" $(dirname $0)/../inventory/*.yaml 2>/dev/null; then
     # delete host from inventory only if it has no specific vars
-    if ! grep -A 1 "^    ${name}:$" $(dirname $0)/../inventory/*.yaml | tail -n 1 | grep -q '^      .*:'; then
+    if ! grep -A 1 "^    ${name}:$" $(dirname $0)/../inventory/*.yaml | tail -n 1 | grep -q '^      .*'; then
       sed -i -e "/^    ${name}:$/d" $(dirname $0)/../inventory/*.yaml
     fi
   fi
