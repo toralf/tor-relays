@@ -17,8 +17,6 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
-ExitRelay 0
-
 {% if ansible_facts.architecture != 'x86_64' %}
 # sandbox issues with ARM64 (e.g. aarch64)
 SandBox 0
@@ -37,11 +35,15 @@ MetricsPortPolicy accept 127.0.0.1
 
 SocksPort 0
 
-{% for item in torrc_config + tor_config_local %}
+{% for item in torrc_config %}
 {% if item.value %}
 {{ item.name }} {{ item.value }}
 {% endif %}
 {% endfor %}
+
+{% if tor_config_local | length > 0 %}
+{{ tor_config_local }}
+{% endif %}
 
 {#
 dummy comment to have an empty line above
