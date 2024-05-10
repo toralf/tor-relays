@@ -3,7 +3,7 @@
   ansible.builtin.user:
     name: tor
 
-- name: Install or update sandbox lib (if NOT being a bridge)
+- name: Install or update seccomp lib (non-bridge only)
   when: not ansible_check_mode and (bridge_distribution | length == 0)
   ansible.builtin.apt:
     name:
@@ -86,9 +86,9 @@
     chdir: /root/tor
 
 - name: Add systemd unit
-  ansible.builtin.copy:
-    src: tor.service
-    dest: /etc/systemd/system/
+  ansible.builtin.template:
+    src: tor.service.j2
+    dest: /etc/systemd/system/tor.service
   notify: "restart Tor"
 
 - name: Add logrotate config
