@@ -31,6 +31,9 @@ ORPort {{ ansible_facts.default_ipv6.address }}:{{ tor_port }}
 {% if tor_metrics %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
+
+CellStatistics 1
+ConnDirectionStatistics 1
 {% endif %}
 
 SocksPort 0
@@ -43,8 +46,5 @@ SocksPort 0
 
 {% if tor_config_local | length > 0 %}
 {{ tor_config_local }}
-{% endif %}
 
-{#
-dummy comment to have an empty line above
-#}
+{% endif %}
