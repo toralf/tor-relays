@@ -1,8 +1,9 @@
 ---
 - name: DDoS of obfs4 port
   vars:
-    _ipv4_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
-    _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6 --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
+    _max: "{{ (bridge_distribution | length > 0) | ternary(9,3) }}"
+    _ipv4_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
+    _ipv6_cmd: "INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6 --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
   ansible.builtin.shell:
     cmd: |
       set -euf
