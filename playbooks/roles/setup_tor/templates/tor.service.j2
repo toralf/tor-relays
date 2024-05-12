@@ -9,7 +9,7 @@ Wants=network-online.target
 ExecStartPre=/usr/bin/tor --verify-config
 ExecStart=/usr/bin/tor
 ExecReload=/bin/kill -HUP ${MAINPID}
-TimeoutSec=30
+TimeoutSec={{ (bridge_distribution | length == 0) | ternary(30, 5) }}
 User=tor
 Group=tor
 Restart=on-failure
