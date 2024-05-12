@@ -1,7 +1,7 @@
 ---
 - name: DDoS of obfs4 port
   vars:
-    _max: "{{ (bridge_distribution | length > 0) | ternary(9,3) }}"
+    _max: "{{ (bridge_distribution | length > 0) | ternary(3, 9) }}"
   changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
   ansible.builtin.shell:
     cmd: |
