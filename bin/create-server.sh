@@ -24,22 +24,24 @@ ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 now=${EPOCHSECONDS}
 
+# 50:50 between ARM and AMD if not specified otherwise
 while read -r name; do
   if [[ -n ${HCLOUD_TYPE-} ]]; then
     type=${HCLOUD_TYPE}
-    if [[ ${type} == "cax11" ]]; then
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
-    else
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
-    fi
+  elif [[ ${name} =~ "-arm" ]]; then
+    type="cax11"
+  elif [[ ${name} =~ "-amd" ]]; then
+    type="cpx11"
+  elif [[ $((RANDOM % 2)) -eq 0 ]]; then
+    type="cax11"
+  else
+    type="cpx11"
+  fi
+
+  if [[ ${type} == "cax11" ]]; then
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
   else
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
-    # 50:50 if possible
-    if [[ " ${cax11_locations} " =~ " ${loc} " && $((RANDOM % 2)) -eq 0 ]]; then
-      type="cax11" # ARM
-    else
-      type="cpx11" # AMD
-    fi
   fi
 
   echo "server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
