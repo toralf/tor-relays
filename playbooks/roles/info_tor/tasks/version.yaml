@@ -12,10 +12,11 @@
   failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
 
 - name: Proxy version
-  when: bridge_distribution | length > 0
   changed_when: false
+  when: (bridge_distribution | length > 0) and tor_build_from_source
   ansible.builtin.command:
-    cmd: "/usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }} --version"
+    cmd: git describe --always
+    chdir: /root/lyrebird
   register: _proxy
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 
@@ -24,6 +25,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ ansible_facts.packages['tor'][0].version | default('') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('') }} {{ _tor.stdout_lines[0] }}  {{ _proxy.stdout_lines[0] }}"
+    line: "{{ inventory_hostname }} {{ ansible_facts.packages['tor'][0].version | default('') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('') }} tor {{ _tor.stdout_lines[0] }} lyrebird {{ _proxy.stdout_lines[0] }}"
     path: "{{ tmp_dir }}/tor_version"
     regex: "^{{ inventory_hostname }} "
