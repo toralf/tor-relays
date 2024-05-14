@@ -37,5 +37,5 @@
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}-backports"
         name:
-          - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary ('amd64', 'arm64') }}"
+          - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
       notify: "reboot system"
