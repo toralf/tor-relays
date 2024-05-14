@@ -21,7 +21,7 @@
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 
 - name: File version
-  when: _proxy.changed
+  when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
