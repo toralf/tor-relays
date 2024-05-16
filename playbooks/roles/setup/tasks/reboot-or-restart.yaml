@@ -21,12 +21,11 @@
   changed_when: _services_restarted.stdout_lines is search('Restarting services...')
   ansible.builtin.shell:
     cmd: |
-      needrestart -b -r a
+      needrestart -r a
   register: _services_restarted
 
 - name: Check if a reboot is needed due to deferred service restart
-  when: _services_restarted.changed
-  changed_when: _services_restarted.stdout_lines is search('Service restarts being deferred:')
+  when: _services_restarted.stdout_lines is search('Service restarts being deferred:')
   ansible.builtin.debug:
     var: _services_restarted.stdout_lines
     verbosity: 1
