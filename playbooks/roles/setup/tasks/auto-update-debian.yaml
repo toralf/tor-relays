@@ -10,43 +10,36 @@
     line: "$nrconf{restart} = 'a';"
     path: /etc/needrestart/conf.d/auto-restart.conf
 
-- name: Configure auto upgrades
+- name: Configure unattended auto upgrade
   ansible.builtin.copy:
-    src: 20auto-upgrades
+    src: "{{ item }}"
     dest: /etc/apt/apt.conf.d/
+  with_items:
+    - 20auto-upgrades
+    - 50unattended-upgrades
 
-- name: Configure unattended upgrades
-  ansible.builtin.copy:
-    src: 50unattended-upgrades
-    dest: /etc/apt/apt.conf.d/
-
-- name: Configure apt-daily timer directory
+- name: Create timer.d directories
   ansible.builtin.file:
     state: directory
-    path: "/etc/systemd/system/apt-daily.timer.d/"
+    path: "/etc/systemd/system/{{ item }}"
     mode: "0755"
+  with_items:
+    - "apt-daily.timer.d/"
+    - "apt-daily-upgrade.timer.d/"
 
-- name: Configure apt-daily timer
+- name: Configure apt timer
   ansible.builtin.template:
     src: timer.j2
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
   register: _timer_state
 
-# the apt-daily timer should call unattended upgrades already but configure it here nevertheless
-
-- name: Configure apt-daily-upgrade directory
-  ansible.builtin.file:
-    state: directory
-    path: "/etc/systemd/system/apt-daily-upgrade.timer.d/"
-    mode: "0755"
-
-- name: Configure apt-daily-upgrade timer
+- name: Configure apt upgrade timer
   ansible.builtin.template:
     src: upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
   register: _upgrade_timer_state
 
-- name: Restart apt-daily timer
+- name: Restart apt daily timer
   ansible.builtin.systemd:
     name: apt-daily.timer
     state: restarted

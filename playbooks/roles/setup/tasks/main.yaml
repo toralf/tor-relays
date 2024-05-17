@@ -95,7 +95,7 @@
       tags:
         - prometheus-node-exporter
 
-    - name: Configure Debian auto update
+    - name: Configure auto update Debian
       when: ansible_facts.distribution == "Debian"
       ansible.builtin.import_tasks: auto-update-debian.yaml
       tags:
