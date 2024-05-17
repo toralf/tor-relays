@@ -3,6 +3,5 @@
 # https://wiki.debian.org/UnattendedUpgrades
 [Timer]
 OnCalendar=
-OnCalendar=*-*-* {{ 12 | random(seed=inventory_hostname) }},{{ 12 + 12 | random(seed=inventory_hostname) }}:00
-RandomizedDelaySec=0
-
+OnCalendar=*-*-* {{ timer_hour }},{{ 12 + timer_hour | int }}:02
+RandomizedDelaySec=120

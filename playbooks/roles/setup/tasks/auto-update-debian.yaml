@@ -45,3 +45,14 @@
     state: restarted
     daemon_reload: true
   when: _timer_state.changed or _upgrade_timer_state.changed
+
+- name: Ensure Reboot cron job for deferred services is present
+  ansible.builtin.cron:
+    name: "Reboot if services can't be safely restarted"
+    minute: "42"
+    hour: "{{ 1 + timer_hour | int }}"
+    job: >-
+      if needrestart -r l -b | grep -q 'NEEDRESTART-SVC:'; then
+      pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || /usr/sbin/reboot;
+      fi
+    user: root

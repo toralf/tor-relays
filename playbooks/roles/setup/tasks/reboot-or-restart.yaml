@@ -16,17 +16,11 @@
   register: _reboot_needed
   notify: "reboot system"
 
-- name: Restart service(s) if needed
+- name: Check if a reboot is needed due to deferred services
   when: not _reboot_needed.changed
-  changed_when: _services_restarted.stdout_lines is search('Restarting services...')
+  changed_when: _reboot_needed.rc == 0
+  failed_when: _reboot_needed.rc == 2
   ansible.builtin.shell:
     cmd: |
-      needrestart -r a
-  register: _services_restarted
-
-- name: Check if a reboot is needed due to deferred service restart
-  when: _services_restarted.stdout_lines is search('Service restarts being deferred:')
-  ansible.builtin.debug:
-    var: _services_restarted.stdout_lines
-    verbosity: 1
+      needrestart -r l -b | grep -q 'NEEDRESTART-SVC:'
   notify: "reboot system"
