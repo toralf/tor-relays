@@ -8,6 +8,7 @@
   ansible.builtin.apt:
     name:
       - apt-transport-https
+      - chrony
       - conntrack
       - cron
       - gpg
@@ -16,7 +17,6 @@
       - iptables
       - iptables-persistent
       - needrestart
-      - ntp
       - psmisc
 
 - name: Install or update additional software
