@@ -22,6 +22,8 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.cron:
+      backup: yes
     ansible.builtin.file:
       owner: root
       group: root
