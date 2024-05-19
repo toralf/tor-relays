@@ -10,6 +10,7 @@ kernel_git_patches: []
 
 metrics_port: ""
 prometheus_node_exporter: false
+# comma separated list (no spaces)
 prometheus_server: ""
 
 # certificates and more
