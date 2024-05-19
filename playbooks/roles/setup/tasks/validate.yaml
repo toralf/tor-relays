@@ -14,7 +14,7 @@
       - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
 
 - name: Validate prometheus_server
-  when: prometheus_server
+  when: prometheus_server | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
