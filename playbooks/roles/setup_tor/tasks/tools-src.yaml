@@ -1,5 +1,5 @@
 ---
-- name: Install or update toolchain for Tor build
+- name: Install or update software for Tor build from source
   when: not ansible_check_mode
   ansible.builtin.apt:
     name:
@@ -8,6 +8,7 @@
       - git
       - libevent-dev
       - libssl-dev
+      - logrotate
       - zlib1g-dev
 
 - name: Configure repository "backports"
