@@ -18,5 +18,5 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "{{ item }} is ansible.utils.ipv4"
-  with_items: "{{ prometheus_server | split(',') }}"
+      - "item is ansible.utils.ipv4"
+  loop: "{{ prometheus_server | split(',') }}"
