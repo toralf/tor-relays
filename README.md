@@ -55,9 +55,9 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
 The deployment is made by _Ansible_.
 See the section [Metrics](#metrics) below how to scrape runtime metrics.
-The Ansible role expects a `seed_address` value in the configure step of a randomized ipv6 address at a Hetzner system (at IONOS a proposed one is displayed).
-The firewall rules provide basic protection.
-For more DDoS prevention please take a look at the [torutils](https://github.com/toralf/torutils) repository.
+The Ansible role expects a `seed_address` value to configure a relyable randomized ipv6 address at a Hetzner system (at IONOS a proposed one is only displayed).
+For Tor servers is the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
+For other systems a set of firewall rules provide basic protection.
 
 The _MyFamily_ value (i.e. for the host group _server_test_) can be created by:
 
