@@ -1,0 +1,60 @@
+---
+- name: Download iptables scripts
+  ansible.builtin.get_url:
+    url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
+    dest: "/root/{{ item }}"
+    mode: "0744"
+    force: true
+  with_items:
+    - ipv4-rules.sh
+    - ipv6-rules.sh
+
+- name: Install or update ipset
+  ansible.builtin.apt:
+    name:
+      - ipset
+      - jq
+
+- name: Define additional remote services
+  ansible.builtin.set_fact:
+    _add_remote_service: "{{ ((metrics_port | length > 0) and (prometheus_server | length > 0)) | ternary ('ADD_REMOTE_SERVICES=' + prometheus_server + ':' + metrics_port, '') }}"
+
+- name: Start firewall scripts
+  ansible.builtin.shell:
+    cmd: |
+      set -euf
+
+      {{ _add_remote_service }} CONFIGURED_RELAYS={{ ansible_facts.default_ipv4.address }}:{{ tor_port }} ./ipv4-rules.sh start
+      CONFIGURED_RELAYS6=[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }} ./ipv6-rules.sh start
+    chdir: /root
+    executable: /bin/bash
+
+- name: Cron job to start after reboot for IPv4
+  vars:
+  ansible.builtin.cron:
+    name: "start IPv4 firewall"
+    special_time: reboot
+    job: "{{ _add_remote_service }} /root/ipv4-rules.sh start"
+
+- name: Cron job to start after reboot for IPv6
+  ansible.builtin.cron:
+    name: "start IPv6 firewall"
+    special_time: reboot
+    job: "/root/ipv6-rules.sh start"
+
+- name: Cron job to save ipsets for IP{{ item }}
+  ansible.builtin.cron:
+    name: "save IP{{ item }} ipset"
+    special_time: hourly
+    job: "/root/ipv{{ item }}-rules.sh save"
+  with_items:
+    - "v4"
+    - "v6"
+
+- name: Remove iptables state of Tor server for IP{{ item }}
+  ansible.builtin.file:
+    path: "{{ '/etc/iptables/rules.' + item }}"
+    state: absent
+  with_items:
+    - "v4"
+    - "v6"

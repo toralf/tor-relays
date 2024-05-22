@@ -29,8 +29,15 @@
       group: root
       mode: "0644"
   block:
-    - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
+    - name: Firewall for bridge
+      when: bridge_distribution | length > 0
+      ansible.builtin.import_tasks: firewall-bridge.yaml
+      tags:
+        - firewall
+
+    - name: Firewall for server
+      when: bridge_distribution | length == 0
+      ansible.builtin.import_tasks: firewall-server.yaml
       tags:
         - firewall
 
