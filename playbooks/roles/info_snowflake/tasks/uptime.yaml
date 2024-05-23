@@ -1,6 +1,6 @@
 ---
 - name: Get service status
-  ansible.builtin.service:
+  ansible.builtin.service_facts:
     name: snowflake-proxy
   register: _service
 
