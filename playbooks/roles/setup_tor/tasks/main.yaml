@@ -28,6 +28,9 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.service:
+      daemon_reload: true
+      enabled: true
   block:
     - name: Firewall for bridge
       when: bridge_distribution | length > 0
@@ -40,6 +43,7 @@
       ansible.builtin.import_tasks: firewall-server.yaml
       tags:
         - firewall
+        - firewall-torserver
 
     - name: Debian
       when: not tor_build_from_source
@@ -72,11 +76,8 @@
         - config
 
     - name: Ensure that Tor is started
-      when: not ansible_check_mode
       ansible.builtin.service:
         name: tor.service
         state: started
-        daemon_reload: true
-        enabled: true
       tags:
         - tor

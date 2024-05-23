@@ -57,7 +57,7 @@ function addRules() {
 #######################################################################
 set -euf
 
-ipt=/sbin/ip6tables
+ipt=ip6tables
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

@@ -40,10 +40,9 @@
   register: _upgrade_timer_state
 
 - name: Restart apt daily timer
-  ansible.builtin.systemd:
+  ansible.builtin.service:
     name: apt-daily.timer
     state: restarted
-    daemon_reload: true
   when: _timer_state.changed or _upgrade_timer_state.changed
 
 - name: Ensure Reboot cron job for deferred services is present

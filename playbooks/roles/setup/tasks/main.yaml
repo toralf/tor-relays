@@ -33,6 +33,9 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.service:
+      daemon_reload: true
+      enabled: true
     ansible.builtin.stat:
       get_attributes: false
       get_checksum: false

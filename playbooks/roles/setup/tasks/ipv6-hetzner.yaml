@@ -19,11 +19,9 @@
     dest: /etc/cloud/cloud.cfg.d/
 
 - name: Restart network service
-  ansible.builtin.systemd:
-    name: "networking"
+  ansible.builtin.service:
+    name: networking
     state: restarted
-    daemon_reload: true
-    enabled: true
   when: _cloud_init.changed
 
 - name: Check that ipv6 is up again
