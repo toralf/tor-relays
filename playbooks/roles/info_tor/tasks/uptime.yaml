@@ -1,6 +1,6 @@
 ---
 - name: Get Service Status
-  ansible.builtin.service:
+  ansible.builtin.service_facts:
     name: tor
   register: _service
 
