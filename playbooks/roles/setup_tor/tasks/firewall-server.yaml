@@ -15,13 +15,16 @@
       - ipset
       - jq
 
-- name: Start firewall scripts
-  # explicit specify the relay because torrc might not yet been configured at this point
-  vars:
+- name: Prepare to enable metrics scraping
+  ansible.builtin.set_fact:
     _add_remote_service: "{{ ((metrics_port | length > 0) and (prometheus_server | length > 0)) | ternary ('ADD_REMOTE_SERVICES=' + prometheus_server + ':' + metrics_port, '') }}"
+
+- name: Start firewall scripts
   ansible.builtin.shell:
     cmd: |
       set -euf
+
+      # explicit specify the relay because torrc is not configured yet
 
       CONFIGURED_RELAYS={{ ansible_facts.default_ipv4.address }}:{{ tor_port }}    {{ _add_remote_service }} ./ipv4-rules.sh start
       CONFIGURED_RELAYS6=[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}                           ./ipv6-rules.sh start
@@ -32,24 +35,10 @@
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot
-    job: "/root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
+    job: "{{ _add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
 
 - name: Cron job to save ipsets
   ansible.builtin.cron:
     name: "save ipset"
     special_time: hourly
     job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
-
-- name: De-activate netfilter persistent service
-  ansible.builtin.service:
-    name: netfilter-persistent
-    enabled: false
-    state: stopped
-
-- name: Remove iptables state of Tor server for IP{{ item }}
-  ansible.builtin.file:
-    path: "{{ '/etc/iptables/rules.' + item }}"
-    state: absent
-  with_items:
-    - "v4"
-    - "v6"
