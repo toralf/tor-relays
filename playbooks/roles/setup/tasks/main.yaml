@@ -69,6 +69,7 @@
         - ipv6
 
     - name: Firewall
+      when: firewall_base_config
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall

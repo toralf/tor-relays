@@ -15,7 +15,6 @@
       - gpg-agent
       - htop
       - iptables
-      - iptables-persistent
       - needrestart
       - psmisc
 
