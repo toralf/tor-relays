@@ -1,19 +1,23 @@
 ---
 - name: Create firewall script
   ansible.builtin.template:
-    src: "{{ 'firewall-ip' + item + '.sh.j2' }}"
-    dest: "{{ '/root/firewall-ip' + item + '.sh' }}"
+    src: "firewall-ip{{ item }}.sh.j2"
+    dest: "/root/firewall-ip{{ item }}.sh"
     mode: "0700"
   with_items:
     - "v4"
     - "v6"
   register: _fw_scripts
 
+- name: Gather state of services
+  ansible.builtin.service_facts:
+
 - name: Save iptables state
+  when: ansible_facts.services["netfilter-persistent.service"].status == "enabled"
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
-    path: "{{ '/etc/iptables/rules.' + item }}"
+    path: "/etc/iptables/rules.{{ item }}"
   with_items:
     - "v4"
     - "v6"
@@ -25,7 +29,7 @@
     - name: Start firewall
       changed_when: true
       ansible.builtin.command:
-        cmd: "{{ '/root/firewall-ip' + item + '.sh' }} start"
+        cmd: "/root/firewall-ip{{ item }}.sh start"
       with_items:
         - "v4"
         - "v6"
@@ -34,7 +38,7 @@
       community.general.iptables_state:
         ip_version: "ip{{ item }}"
         state: saved
-        path: "{{ '/etc/iptables/rules.' + item }}"
+        path: "/etc/iptables/rules.{{ item }}"
       with_items:
         - "v4"
         - "v6"
