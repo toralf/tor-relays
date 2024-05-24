@@ -24,7 +24,7 @@ ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 now=${EPOCHSECONDS}
 
-# 50:50 between ARM and AMD if not specified otherwise
+# prefer 2 vCPU type; prefer50:50 between ARM and AMD if not explicitely specified
 while read -r name; do
   if [[ -n ${HCLOUD_TYPE-} ]]; then
     type=${HCLOUD_TYPE}
@@ -32,6 +32,8 @@ while read -r name; do
     type="cax11"
   elif [[ ${name} =~ "-amd" ]]; then
     type="cpx11"
+  elif [[ ${name} =~ "-int" ]]; then
+    type="cx21"
   elif [[ $((RANDOM % 2)) -eq 0 ]]; then
     type="cax11"
   else
