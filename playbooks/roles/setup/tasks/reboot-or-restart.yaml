@@ -6,21 +6,12 @@
   register: _reboot_required
   notify: "reboot system"
 
-- name: Check if a reboot is needed due to a kernel update
-  when: not _reboot_required.changed
+- name: Check if a reboot is needed due to a kernel update or due to deferred services
   changed_when: _reboot_needed.rc == 0
-  failed_when: _reboot_needed.rc == 2
+  failed_when: false
   ansible.builtin.shell:
     cmd: |
-      needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'
+      needrestart -r l -b |
+        grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
   register: _reboot_needed
-  notify: "reboot system"
-
-- name: Check if a reboot is needed due to deferred services
-  when: not _reboot_needed.changed
-  changed_when: _reboot_needed.rc == 0
-  failed_when: _reboot_needed.rc == 2
-  ansible.builtin.shell:
-    cmd: |
-      needrestart -r l -b | grep -q 'NEEDRESTART-SVC:'
   notify: "reboot system"
