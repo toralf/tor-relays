@@ -24,22 +24,21 @@ ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 now=${EPOCHSECONDS}
 
-# prefer 2 vCPU type and 50:50 between ARM and AMD if not explicitely specified
+# prefer smallest type
 while read -r name; do
   if [[ -n ${HCLOUD_TYPE-} ]]; then
-    type=${HCLOUD_TYPE}
-  elif [[ ${name} =~ "-arm" ]]; then
-    type="cax11"
+    type=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
   elif [[ ${name} =~ "-amd" ]]; then
     type="cpx11"
-  elif [[ ${name} =~ "-int" ]]; then
-    type="cx21"
-  elif [[ $((RANDOM % 2)) -eq 0 ]]; then
+  elif [[ ${name} =~ "-arm" ]]; then
     type="cax11"
+  elif [[ ${name} =~ "-int" ]]; then
+    type="cx11"
   else
-    type="cpx11"
+    type=$(xargs -n 1 <<<"cpx11 cax11 cx11" | shuf -n 1)
   fi
 
+  # ARM is not available at every location
   if [[ ${type} == "cax11" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
   else
