@@ -42,7 +42,6 @@
   register: _kernel_patched
 
 - name: Configure Linux
-  when: not ansible_check_mode
   changed_when: _configured.rc == 123
   failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
@@ -90,8 +89,6 @@
   ansible.builtin.shell:
     cmd: |
       set -euf
-
-      yes '' | make oldconfig 1>>make.log
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 1500) | int }} 1>>make.log
       ln -snf $PWD /usr/src/linux

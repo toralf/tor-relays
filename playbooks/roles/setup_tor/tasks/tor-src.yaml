@@ -31,7 +31,7 @@
   register: _tor_patched
 
 - name: Build Tor
-  when: not ansible_check_mode and (_repo_tor.changed or _tor_patched.changed)
+  when: _repo_tor.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
     cmd: |
