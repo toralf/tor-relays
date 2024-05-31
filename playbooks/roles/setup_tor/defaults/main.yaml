@@ -13,3 +13,6 @@ nickname: ""
 publish_server_descriptor: "{{ (bridge_distribution | length > 0) | ternary('bridge', '') }}"
 
 tor_config_local: ""
+
+# to delete outdated additional rules
+firewall_force_reset: false
