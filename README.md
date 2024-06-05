@@ -1,6 +1,6 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy public and private Tor bridges or Snowflake proxies
+# A stack to deploy Tor relays or Snowflake
 
 ## Quick start
 
