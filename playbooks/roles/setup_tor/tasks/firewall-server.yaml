@@ -1,4 +1,10 @@
 ---
+- name: Install or update software for Tor server firewall
+  ansible.builtin.apt:
+    name:
+      - ipset
+      - jq
+
 - name: Download iptables scripts
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
@@ -8,37 +14,14 @@
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh
-  register: _torutils
-
-- name: Install or update software for Tor server firewall
-  ansible.builtin.apt:
-    name:
-      - ipset
-      - jq
-
-- name: Prepare to enable metrics scraping
-  ansible.builtin.set_fact:
-    _add_remote_service: "{{ ((metrics_port | length > 0) and (prometheus_server | length > 0)) | ternary('ADD_REMOTE_SERVICES=' + prometheus_server + ':' + metrics_port, '') }}"
-
-- name: Start firewall scripts
-  when: _torutils.changed or firewall_force_reset
-  changed_when: true
-  ansible.builtin.shell:
-    cmd: |
-      set -euf
-
-      # specify the relay ip address because torrc might not yet exists at this point
-
-      CONFIGURED_RELAYS={{ ansible_facts.default_ipv4.address }}:{{ tor_port }}    {{ _add_remote_service }} ./ipv4-rules.sh start
-      CONFIGURED_RELAYS6=[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}                           ./ipv6-rules.sh start
-    chdir: /root
-    executable: /bin/bash
+  notify: "restart Firewall"
 
 - name: Cron job to start firewall after reboot
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot
-    job: "{{ _add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
+    job: "{{ add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
+  notify: "restart Firewall"
 
 - name: Cron job to save ipsets
   ansible.builtin.cron:

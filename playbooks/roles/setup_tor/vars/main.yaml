@@ -1,0 +1,2 @@
+---
+add_remote_service: "{{ ((metrics_port | length > 0) and (prometheus_server | length > 0)) | ternary('ADD_REMOTE_SERVICES=' + prometheus_server + ':' + metrics_port, '') }}"

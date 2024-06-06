@@ -1,6 +1,15 @@
 ---
+- name: Start firewall scripts
+  listen: "restart Firewall"
+  ansible.builtin.shell:
+    cmd: |
+      /root/ipv4-rules.sh save
+      /root/ipv6-rules.sh save
+
+      {{ add_remote_service }} /root/ipv4-rules.sh start
+      /root/ipv6-rules.sh start
+
 - name: Restart Tor
-  when: not ansible_check_mode
   listen: "restart Tor"
   ansible.builtin.service:
     name: tor
