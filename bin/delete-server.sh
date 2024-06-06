@@ -17,7 +17,8 @@ jobs=$((2 * $(nproc)))
 echo -e " deleting local config file(s) ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
-  sed -i -e "/^${name} /d" -e "/^${name}$/d" ~/tmp/*_* 2>/dev/null
+  # the wellknown files can't be cleaned b/c the hostname is on a separate line
+  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   if grep -q "^    ${name}:$" $(dirname $0)/../inventory/*.yaml 2>/dev/null; then
     # delete host from inventory only if it has no specific vars
