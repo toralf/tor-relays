@@ -27,7 +27,7 @@
     cmd: |
       set -euf
 
-      # explicit specify the relay because torrc is not configured yet
+      # specify the relay ip address because torrc might not yet exists at this point
 
       CONFIGURED_RELAYS={{ ansible_facts.default_ipv4.address }}:{{ tor_port }}    {{ _add_remote_service }} ./ipv4-rules.sh start
       CONFIGURED_RELAYS6=[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}                           ./ipv6-rules.sh start
