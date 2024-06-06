@@ -1,6 +1,6 @@
 ---
 - name: Check for a pseudo-random choosen ipv6 address
-  when: _ipv6_new != ansible_facts.default_ipv6.address
+  when: (ansible_facts.default_ipv6.address is defined) and (_ipv6_new != ansible_facts.default_ipv6.address)
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _a: "{{ (ansible_facts.default_ipv6.address | split(':'))[4] | default('0') }}"

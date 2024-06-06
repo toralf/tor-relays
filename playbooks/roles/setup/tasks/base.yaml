@@ -42,12 +42,6 @@
     src: htoprc
     dest: /root/.config/htop/
 
-- name: Ensure kernel crash dumps are made to /tmp
-  ansible.builtin.cron:
-    name: "core debug files"
-    special_time: reboot
-    job: "echo '/tmp/core.\\%e.\\%p.\\%s.\\%t' > /proc/sys/kernel/core_pattern"
-
 - name: Create swap file
   when: ansible_facts.memtotal_mb < 4096
   ansible.builtin.shell:

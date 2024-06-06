@@ -9,6 +9,7 @@ facts_subset:
   - "default_ipv4"
   - "default_ipv6"
   - "distribution"
+  - "hardware"
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
