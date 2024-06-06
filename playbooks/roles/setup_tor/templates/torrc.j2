@@ -38,13 +38,8 @@ MetricsPortPolicy accept 127.0.0.1
 
 SocksPort 0
 
-{% for item in torrc_config %}
+{% for item in torrc_config + tor_config_local %}
 {% if item.value %}
 {{ item.name }} {{ item.value }}
 {% endif %}
 {% endfor %}
-
-{% if tor_config_local | length > 0 %}
-{{ tor_config_local }}
-
-{% endif %}
