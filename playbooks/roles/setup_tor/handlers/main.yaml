@@ -1,7 +1,8 @@
 ---
 - name: Start firewall scripts
+  changed_when: true
   when: bridge_distribution | length == 0
-  listen: "restart Firewall"
+  listen: "Restart Firewall"
   ansible.builtin.shell:
     cmd: |
       /root/ipv4-rules.sh save
@@ -12,7 +13,7 @@
 
 - name: Restart Tor
   when: not ansible_check_mode
-  listen: "restart Tor"
+  listen: "Restart Tor"
   ansible.builtin.service:
     name: tor
     state: restarted

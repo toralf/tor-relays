@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     name:
       - prometheus-node-exporter
-  notify: "restart Prometheus node exporter"
+  notify: "Restart Prometheus node exporter"
 
 - name: Configure Prometheus node exporter
   ansible.builtin.lineinfile:
@@ -11,4 +11,4 @@
     line: 'ARGS="--web.listen-address=127.0.0.1:9100"'
     path: /etc/default/prometheus-node-exporter
     regex: "^ARGS="
-  notify: "restart Prometheus node exporter"
+  notify: "Restart Prometheus node exporter"

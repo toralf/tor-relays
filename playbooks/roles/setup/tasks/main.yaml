@@ -89,7 +89,7 @@
         - ca
         - never
 
-    - name: metrics
+    - name: Metrics
       when: (metrics_port | length > 0) and (prometheus_server | length > 0)
       ansible.builtin.import_tasks: metrics.yaml
       tags:

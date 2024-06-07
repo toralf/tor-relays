@@ -20,7 +20,7 @@
   ansible.builtin.debug:
     var: _result.stdout_lines
 
-- name: error
+- name: Error
   when: _result.stderr_lines | length > 0
   ansible.builtin.debug:
     var: _result.stderr_lines

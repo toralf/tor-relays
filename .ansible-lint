@@ -10,9 +10,12 @@ enable_list:
 skip_list:
   - command-instead-of-module
   - latest[git]
-  - name[casing]
   - name[template]
   - no-handler
   - risky-file-permissions
   - risky-shell-pipe
   - var-naming[no-role-prefix]
+
+exclude_paths:
+  - site-info.yaml
+  - site-setup.yaml

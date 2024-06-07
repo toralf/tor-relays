@@ -15,8 +15,8 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    __starttime: "{{ _service.status.ExecMainStartTimestamp | default('n/a') }}"
-    __reloadtime: "{{ _service.status.StateChangeTimestamp | default('n/a') }}"
+    __starttime: "{{ _service.status.ExecMainStartTimestamp | default('-') }}"
+    __reloadtime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} TorStart {{ __starttime }} TorReload {{ __reloadtime }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_uptime"

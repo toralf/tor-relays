@@ -98,4 +98,4 @@
 
     chdir: /root/linux
     executable: /bin/bash
-  notify: "reboot system"
+  notify: "Reboot system"

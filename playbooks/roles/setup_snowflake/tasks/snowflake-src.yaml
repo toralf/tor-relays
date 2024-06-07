@@ -38,10 +38,10 @@
     dest: /usr/bin/snowflake-proxy
     mode: a+x
     remote_src: yes
-  notify: "restart Snowflake"
+  notify: "Restart Snowflake"
 
 - name: Add systemd unit
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
-  notify: "restart Snowflake"
+  notify: "Restart Snowflake"

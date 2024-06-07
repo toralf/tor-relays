@@ -1,8 +1,11 @@
 ---
 - name: DDoS of obfs4 port
+  changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
   vars:
     _max: "{{ (bridge_distribution | length > 0) | ternary(3, 9) }}"
-  changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
+    _ipt4_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn"
+    _ipt6_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn"
+    _hash_limit: "--hashlimit-mode srcip,dstport --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
   ansible.builtin.shell:
     cmd: |
       set -euf
@@ -13,10 +16,10 @@
     executable: /bin/bash
   register: _ddos_obfs4_rules
   with_items:
-    - "iptables  --xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name tor-ddos  --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
-    - "ip6tables --xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name tor-ddos6 --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
-    - "iptables  --xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn -m connlimit --connlimit-mask 32 --connlimit-above {{ _max }} -j DROP"
-    - "ip6tables --xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn -m connlimit --connlimit-mask 80 --connlimit-above {{ _max }} -j DROP"
+    - "iptables  {{ _ipt4_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 32 --hashlimit-name tor-ddos"
+    - "ip6tables {{ _ipt6_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 80 --hashlimit-name tor-ddos6"
+    - "iptables  {{ _ipt4_common }} -m connlimit --connlimit-mask 32 --connlimit-above {{ _max }} -j DROP"
+    - "ip6tables {{ _ipt6_common }} -m connlimit --connlimit-mask 80 --connlimit-above {{ _max }} -j DROP"
 
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:

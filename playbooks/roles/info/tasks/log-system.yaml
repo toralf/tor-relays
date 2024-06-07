@@ -2,7 +2,7 @@
 - name: Grep system log since {{ log_system_since }}
   changed_when: false
   # rc=1 if nothing was grep'ed
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: >-
       journalctl -t kernel -g 'BUG:' -g 'Call Trace:' -g 'oom-kill' -g 'RIP:' -g 'WARNING:' -g 'OOM'
       -g 'status=9/KILL' -g '.service: Failed' --since "{{ log_system_since }}" -q

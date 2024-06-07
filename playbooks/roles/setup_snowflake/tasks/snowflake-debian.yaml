@@ -4,7 +4,7 @@
   ansible.builtin.apt:
     name:
       - snowflake-proxy
-  notify: "restart Snowflake"
+  notify: "Restart Snowflake"
 
 - name: Ensure that the override dir exists
   ansible.builtin.file:
@@ -15,4 +15,4 @@
   ansible.builtin.copy:
     src: override.conf
     dest: /etc/systemd/system/snowflake-proxy.service.d/
-  notify: "restart Snowflake"
+  notify: "Restart Snowflake"

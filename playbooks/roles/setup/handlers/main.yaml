@@ -1,19 +1,19 @@
 ---
 - name: Restart Nginx
   when: not ansible_check_mode
-  listen: "restart Nginx"
+  listen: "Restart Nginx"
   ansible.builtin.service:
     name: nginx
     state: restarted
 
 - name: Restart Prometheus node exporter
-  listen: "restart Prometheus node exporter"
+  listen: "Restart Prometheus node exporter"
   ansible.builtin.service:
     name: prometheus-node-exporter
     state: restarted
 
 - name: Reboot system
-  listen: "reboot system"
+  listen: "Reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2
     reboot_timeout: 60

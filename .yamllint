@@ -1,11 +1,21 @@
 ---
-
 # https://yamllint.readthedocs.io/en/stable/configuration.html
 
 extends: default
 
+ignore: |
+  site-info.yaml
+  site-setup.yaml
+
 rules:
-  braces: disable
-  comments: disable
-  line-length: disable
-  truthy: disable
+  braces:
+    max-spaces-inside: 1
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+  line-length:
+    max: 180
+  octal-values:
+    forbid-explicit-octal: true
+    forbid-implicit-octal: true
+  truthy: false

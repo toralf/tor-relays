@@ -76,7 +76,7 @@
     remote_src: yes
     mode: a+x
   register: _binary_tor
-  notify: "restart Tor"
+  notify: "Restart Tor"
 
 - name: Run install command of Tor
   when: _binary_tor.changed
@@ -89,7 +89,7 @@
   ansible.builtin.template:
     src: tor.service.j2
     dest: /etc/systemd/system/tor.service
-  notify: "restart Tor"
+  notify: "Restart Tor"
 
 - name: Add logrotate config
   ansible.builtin.copy:
@@ -102,7 +102,7 @@
     value: "2" # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: "restart Tor"
+  notify: "Restart Tor"
 
 - name: Allow low port for Tor
   when: (tor_port | int < 1024) and (bridge_distribution | length == 0)

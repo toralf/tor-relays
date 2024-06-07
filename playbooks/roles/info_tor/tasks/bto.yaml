@@ -12,6 +12,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', 'functional') | first | default('n/a n/a n/a') }}"
+    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', 'functional') | first | default('- - -') }}"
     path: "{{ tmp_dir }}/tor_bto"
     regex: "^{{ inventory_hostname }} "

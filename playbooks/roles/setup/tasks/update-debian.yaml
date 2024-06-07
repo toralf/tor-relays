@@ -37,7 +37,7 @@
         default_release: "{{ ansible_facts.distribution_release }}-backports"
         name:
           - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-      notify: "reboot system"
+      notify: "Reboot system"
 
 - name: Ensure kernel crash dumps are made to /tmp
   when: not ansible_check_mode

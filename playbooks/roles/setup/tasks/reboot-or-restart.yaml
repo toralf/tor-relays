@@ -4,7 +4,7 @@
   ansible.builtin.stat:
     path: /var/run/reboot-required
   register: _reboot_required
-  notify: "reboot system"
+  notify: "Reboot system"
 
 - name: Check if a reboot is needed due to a kernel update or due to deferred services
   changed_when: _reboot_needed.rc == 0
@@ -14,4 +14,4 @@
       needrestart -r l -b |
         grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
   register: _reboot_needed
-  notify: "reboot system"
+  notify: "Reboot system"

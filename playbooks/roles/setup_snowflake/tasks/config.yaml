@@ -5,4 +5,4 @@
     value: "2" # 1 is too low: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
-  notify: "restart Snowflake"
+  notify: "Restart Snowflake"

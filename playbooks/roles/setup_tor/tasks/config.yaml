@@ -4,5 +4,5 @@
     src: torrc.j2
     dest: /etc/tor/torrc
   notify:
-    - "restart Firewall"
-    - "restart Tor"
+    - "Restart Firewall"
+    - "Restart Tor"
