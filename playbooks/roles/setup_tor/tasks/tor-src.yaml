@@ -78,7 +78,7 @@
   register: _binary_tor
   notify: "restart Tor"
 
-- name: Install Tor
+- name: Run install command of Tor
   when: _binary_tor.changed
   changed_when: true
   ansible.builtin.command:

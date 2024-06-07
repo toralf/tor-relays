@@ -40,6 +40,7 @@
       notify: "reboot system"
 
 - name: Ensure kernel crash dumps are made to /tmp
+  when: not ansible_check_mode
   ansible.builtin.cron:
     name: "core debug files"
     special_time: reboot

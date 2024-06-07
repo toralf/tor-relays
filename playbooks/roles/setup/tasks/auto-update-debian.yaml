@@ -46,6 +46,7 @@
   when: _timer_state.changed or _upgrade_timer_state.changed
 
 - name: Ensure Reboot cron job for deferred services is present
+  when: not ansible_check_mode
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted"
     minute: "42"

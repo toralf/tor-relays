@@ -1,5 +1,6 @@
 ---
 - name: Restart Nginx
+  when: not ansible_check_mode
   listen: "restart Nginx"
   ansible.builtin.service:
     name: nginx
