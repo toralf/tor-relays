@@ -14,7 +14,10 @@
   when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
+  vars:
+    __starttime: "{{ _service.status.ExecMainStartTimestamp | default('n/a') }}"
+    __reloadtime: "{{ _service.status.StateChangeTimestamp | default('n/a') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} TorStart {{ _service.status.ExecMainStartTimestamp | default('n/a') }} TorReload {{ _service.status.StateChangeTimestamp | default('n/a') }} uptime {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} TorStart {{ __starttime }} TorReload {{ __reloadtime }} uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_uptime"
     regex: "^{{ inventory_hostname }} "

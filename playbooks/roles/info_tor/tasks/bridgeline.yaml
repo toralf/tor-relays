@@ -9,8 +9,10 @@
 - name: File bridgeline
   delegate_to: localhost
   throttle: 1
+  vars:
+    _torport: "{{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }}"
   ansible.builtin.lineinfile:
-    line: "Bridge obfs4 {{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }} {{ _fingerprint }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
+    line: "Bridge obfs4 {{ _torport }} {{ _fingerprint }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
     path: /tmp/tor_bridgeline
     mode: "0600"
   with_items:
