@@ -1,9 +1,10 @@
 ---
 - name: Snowflake version
   changed_when: false
-  ansible.builtin.shell: |
-    /usr/bin/snowflake-proxy --version 2>&1 |
-    cut -f 2- -d ' '
+  ansible.builtin.shell:
+    cmd: |
+      /usr/bin/snowflake-proxy --version 2>&1 |
+      cut -f 2- -d ' '
   register: _proxy_version
   failed_when: (_proxy_version.stdout_lines | length != 1) or (_proxy_version.stderr_lines | length > 0)
 
