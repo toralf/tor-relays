@@ -2,7 +2,6 @@
 - name: Setup
   hosts:
     - all
-  order: shuffled
   roles:
     - role: setup
   tags:
@@ -11,7 +10,6 @@
 - name: Setup Snowflake
   hosts:
     - snowflake
-  order: shuffled
   roles:
     - role: setup_snowflake
   tags:
@@ -20,7 +18,6 @@
 - name: Setup Tor
   hosts:
     - tor
-  order: shuffled
   roles:
     - role: setup_tor
   tags:

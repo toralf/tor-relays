@@ -2,7 +2,6 @@
 - name: Info
   hosts:
     - all
-  order: sorted
   roles:
     - role: info
   tags:
@@ -11,7 +10,6 @@
 - name: Info Snowflake
   hosts:
     - snowflake
-  order: sorted
   roles:
     - role: info_snowflake
   tags:
@@ -20,7 +18,6 @@
 - name: Info Tor
   hosts:
     - tor
-  order: sorted
   roles:
     - role: info_tor
   tags:
