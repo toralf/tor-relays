@@ -1,4 +1,2 @@
 ---
 log_lines: 10
-
-tor_build_from_source: true

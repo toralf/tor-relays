@@ -30,7 +30,10 @@
   when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
+  vars:
+    __packages: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
+    __application: "{{ _tor.stdout_lines[0] }} {{ _proxy.stdout_lines[0] | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ ansible_facts.packages['tor'][0].version | default('') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('') }} tor {{ _tor.stdout_lines[0] }} proxy {{ _proxy.stdout_lines[0] | default('n/a') }}"
+    line: "{{ inventory_hostname }} tor {{ __application }} {{ __packages }}"
     path: "{{ tmp_dir }}/tor_version"
     regex: "^{{ inventory_hostname }} "

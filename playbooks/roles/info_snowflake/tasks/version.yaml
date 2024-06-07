@@ -1,4 +1,7 @@
 ---
+- name: Gather installed packages
+  ansible.builtin.package_facts:
+
 - name: Snowflake version
   changed_when: false
   ansible.builtin.shell:
@@ -12,8 +15,10 @@
   when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
+  vars:
+    __package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ inventory_hostname }} snowflake {{ _proxy_version.stdout_lines[0] }}"
+    line: "{{ inventory_hostname }} snowflake {{ __package }} {{ _proxy_version.stdout_lines[0] }}"
     path: "{{ tmp_dir }}/snowflake_version"
     regex: "^{{ inventory_hostname }} "
