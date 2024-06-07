@@ -1,6 +1,6 @@
 ---
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
-# target file ./public_html/.well-known/tor-relay/hashed-bridge-rsa-fingerprint.txt
+
 - name: Wellknown for bridges
   when: bridge_distribution | length > 0
   delegate_to: localhost
@@ -8,7 +8,7 @@
   block:
     - name: Ensure hostname is in wellknown file
       ansible.builtin.lineinfile:
-        line: "# {{ inventory_hostname }} "
+        line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
     - name: Ensure fingerprint is in wellknown file
@@ -16,7 +16,7 @@
       ansible.builtin.lineinfile:
         line: "{{ _hashed_fingerprint }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
-        insertafter: "^# {{ inventory_hostname }} "
+        insertafter: "^# {{ inventory_hostname }}$"
 
 - name: Wellknown for server
   when: bridge_distribution | length == 0
@@ -25,8 +25,8 @@
   block:
     - name: Ensure hostname is in wellknown files
       ansible.builtin.lineinfile:
-        line: "# {{ inventory_hostname }} "
-        path: "{{ tmp_dir }}/tor_{{ item }}"
+        line: "# {{ inventory_hostname }}"
+        path: "{{ tmp_dir }}/{{ item }}"
       loop:
         - "rsa-fingerprint.txt"
         - "ed25519-master-pubkey.txt"
@@ -35,12 +35,12 @@
       when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint }}"
-        path: "{{ tmp_dir }}/tor_rsa-fingerprint.txt"
-        insertafter: "^# {{ inventory_hostname }} "
+        path: "{{ tmp_dir }}/rsa-fingerprint.txt"
+        insertafter: "^# {{ inventory_hostname }}$"
 
     - name: Ensure ED25519 fingerprint is in wellknown file
       when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_ed25519 }}"
-        path: "{{ tmp_dir }}/tor_ed25519-master-pubkey.txt"
-        insertafter: "^# {{ inventory_hostname }} "
+        path: "{{ tmp_dir }}/ed25519-master-pubkey.txt"
+        insertafter: "^# {{ inventory_hostname }}$"
