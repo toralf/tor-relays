@@ -34,6 +34,9 @@ function addRules() {
   $ipt -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s -j ACCEPT
   $ipt -A INPUT -p icmp --icmp-type echo-request -j DROP
 
+  # DHCPv4
+  $ipt -A INPUT -p udp --dport 68 -j ACCEPT
+
 {% if (metrics_port | length > 0) and (prometheus_server | length > 0) %}
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
