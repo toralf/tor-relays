@@ -13,3 +13,10 @@
     that:
       - "tor_port is defined"
       - "(tor_port | int > 0) and (tor_port | int < 2**16)"
+
+- name: Validate ipv6 is global scope
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is defined"
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
