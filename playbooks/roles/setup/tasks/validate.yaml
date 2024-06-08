@@ -1,5 +1,5 @@
 ---
-- name: Validate ipv6 being available
+- name: Validate ipv6 is global scope
   ansible.builtin.assert:
     quiet: true
     that:
@@ -20,3 +20,11 @@
     that:
       - "item is ansible.utils.ipv4"
   loop: "{{ prometheus_server | split(',') }}"
+
+- name: Validate RAM for kernel src
+  when: kernel_git_version | length > 0
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.memtotal_mb is defined"
+      - "ansible_facts.memtotal_mb > 1024"
