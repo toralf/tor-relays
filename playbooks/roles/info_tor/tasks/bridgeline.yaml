@@ -2,9 +2,9 @@
 - name: Get certificate
   when: bridge_distribution | length > 0
   changed_when: false
+  failed_when: (_cert.stdout_lines | length != 1) or (_cert.stderr_lines | length > 0)
   ansible.builtin.command: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: _cert
-  failed_when: (_cert.stdout_lines | length != 1) or (_cert.stderr_lines | length > 0)
 
 - name: File bridgeline
   delegate_to: localhost

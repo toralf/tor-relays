@@ -1,13 +1,12 @@
 ---
 - name: Grep system log since {{ log_system_since }}
   changed_when: false
-  # rc=1 if nothing was grep'ed
+  failed_when: _result.stderr_lines | length > 0
   ansible.builtin.command:
     cmd: >-
       journalctl -t kernel -g 'BUG:' -g 'Call Trace:' -g 'oom-kill' -g 'RIP:' -g 'WARNING:' -g 'OOM'
       -g 'status=9/KILL' -g '.service: Failed' --since "{{ log_system_since }}" -q
   register: _result
-  failed_when: _result.stderr_lines | length > 0
 
 - name: Findings of log-system since {{ log_system_since }}
   when: _result.stdout_lines | length > 0

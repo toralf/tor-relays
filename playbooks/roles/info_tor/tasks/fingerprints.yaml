@@ -1,9 +1,9 @@
 ---
 - name: RSA fingerprint
   changed_when: false
+  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
   ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: _result
-  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
 
 - name: Set fact
   when: not ansible_check_mode
@@ -14,9 +14,9 @@
   block:
     - name: Get ED25519 fingerprint
       changed_when: false
+      failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
       ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
       register: _result
-      failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
 
     - name: Set fact
       when: not ansible_check_mode

@@ -4,17 +4,18 @@
 
 - name: Tor version
   changed_when: false
+  failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
   ansible.builtin.shell:
     cmd: |
       tor --version |
       grep -m 1 '^Tor version' |
-      awk '{ print $3, $4 }'
+      awk '{ print $3"_"$4 }'
   register: _tor
-  failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
 
 - name: Proxy version
   changed_when: false
   when: bridge_distribution | length > 0
+  failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
   ansible.builtin.shell:
     cmd: |
       if cd /root/lyrebird 2>/dev/null; then
@@ -24,16 +25,15 @@
       fi
     executable: /bin/bash
   register: _proxy
-  failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
 
 - name: File version
   when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
   vars:
-    __packages: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
-    __application: "{{ _tor.stdout_lines[0] }} {{ _proxy.stdout_lines[0] | default('-') }}"
+    __package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
+    __version: "{{ _tor.stdout_lines[0] }} {{ _proxy.stdout_lines[0] | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} tor {{ __application }} {{ __packages }}"
+    line: "{{ inventory_hostname }} tor {{ __version }} {{ __package }}"
     path: "{{ tmp_dir }}/tor_version"
     regex: "^{{ inventory_hostname }} "
