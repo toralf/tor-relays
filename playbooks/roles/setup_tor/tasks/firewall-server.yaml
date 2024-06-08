@@ -28,3 +28,10 @@
     name: "save ipset"
     special_time: hourly
     job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
+
+- name: Ensure persistent iptables package is removed
+  when: not ansible_check_mode
+  ansible.builtin.apt:
+    name:
+      - iptables-persistent
+    state: absent

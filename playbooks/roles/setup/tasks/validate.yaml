@@ -1,4 +1,10 @@
 ---
+- name: Validate OS
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.distribution == 'Debian'"
+
 - name: Validate ipv6 is global scope
   ansible.builtin.assert:
     quiet: true
