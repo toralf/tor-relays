@@ -20,6 +20,6 @@
     __package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
   ansible.builtin.lineinfile:
     create: yes
-    line: "{{ inventory_hostname }} snowflake {{ _proxy_version.stdout_lines[0] }} {{ __package }}"
+    line: "{{ inventory_hostname }} sf {{ _proxy_version.stdout_lines[0] }} {{ __package }}"
     path: "{{ tmp_dir }}/snowflake_version"
     regex: "^{{ inventory_hostname }} "
