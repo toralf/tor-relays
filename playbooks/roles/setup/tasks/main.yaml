@@ -8,6 +8,7 @@
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
+    # not always here b/c ipv6 might not yet been setup
     - validate
 
 - name: Main
@@ -67,6 +68,14 @@
       ansible.builtin.import_tasks: ipv6-ionos.yaml
       tags:
         - ipv6
+
+    - name: Ensure Ipv6 address is global scope and non-default
+      failed_when: ansible_facts.default_ipv6.address is match('fe80::') or ansible_facts.default_ipv6.address is search('::1$')
+      ansible.builtin.debug:
+        var: ansible_facts.default_ipv6
+        verbosity: 1
+      tags:
+        - always
 
     - name: Firewall
       when: firewall_base_config

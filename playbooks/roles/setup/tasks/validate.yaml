@@ -5,13 +5,6 @@
     that:
       - "ansible_facts.distribution == 'Debian'"
 
-- name: Validate ipv6 is global scope
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ansible_facts.default_ipv6.address is defined"
-      - "ansible_facts.default_ipv6.address is not match('fe80::')"
-
 - name: Validate metrics_port
   when: metrics_port | length > 0
   ansible.builtin.assert:

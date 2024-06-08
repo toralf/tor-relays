@@ -37,9 +37,3 @@
   ansible.builtin.setup:
     gather_subset:
       - "default_ipv6"
-
-- name: Bail out if default ipv6 is link-local or default
-  when: ansible_facts.default_ipv6.address is match('fe80::') or ansible_facts.default_ipv6.address is search('::1$')
-  failed_when: true
-  ansible.builtin.debug:
-    var: ansible_facts.default_ipv6
