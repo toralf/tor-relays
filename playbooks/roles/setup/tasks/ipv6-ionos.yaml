@@ -12,4 +12,4 @@
     msg:
       - "expected: {{ _ipv6_new }}"
       - "current:  {{ ansible_facts.default_ipv6.address }}"
-      - "service systemd-networkd reload"
+      - "service systemd-networkd restart"
