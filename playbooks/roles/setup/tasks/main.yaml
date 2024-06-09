@@ -104,12 +104,6 @@
       tags:
         - metrics
 
-    - name: Prometheus node exporter
-      when: prometheus_node_exporter
-      ansible.builtin.import_tasks: prometheus-node-exporter.yaml
-      tags:
-        - prometheus-node-exporter
-
     - name: Configure auto update Debian
       when: ansible_facts.distribution == "Debian"
       ansible.builtin.import_tasks: auto-update-debian.yaml
