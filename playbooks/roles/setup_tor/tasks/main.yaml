@@ -44,7 +44,6 @@
       ansible.builtin.import_tasks: firewall-server.yaml
       tags:
         - firewall
-        - firewall-torserver
 
     - name: Debian
       when: not tor_build_from_source
