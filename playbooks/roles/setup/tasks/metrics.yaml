@@ -80,7 +80,19 @@
     - name: Configure Prometheus node exporter
       ansible.builtin.lineinfile:
         create: no
-        line: 'ARGS="--web.listen-address=127.0.0.1:9100"'
+        line: >-
+          ARGS='
+          --web.listen-address=localhost:9100
+          --collector.tcpstat
+          --collector.textfile.directory=/var/lib/node_exporter/
+          --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
+          '
         path: /etc/default/prometheus-node-exporter
         regex: "^ARGS="
       notify: "Restart Prometheus node exporter"
+
+    - name: Create Prometheus node exporter data directory
+      ansible.builtin.file:
+        path: /var/lib/node_exporter/
+        state: directory
+        mode: "0755"
