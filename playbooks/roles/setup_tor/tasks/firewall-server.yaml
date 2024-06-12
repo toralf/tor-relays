@@ -35,3 +35,18 @@
     name:
       - iptables-persistent
     state: absent
+
+- name: DDoS metrics
+  when: prometheus_node_exporter
+  block:
+    - name: Download DDoS metrics script
+      ansible.builtin.get_url:
+        url: "https://github.com/toralf/torutils/raw/main/metrics.sh"
+        dest: "/root/metrics.sh"
+        mode: "0744"
+        force: true
+
+    - name: Create cron job for DDoS metrics
+      ansible.builtin.cron:
+        name: "DDoS metrics"
+        job: "for i in {0..3}; do /root/metrics.sh 1>/dev/null 2>&1; sleep 15; done"
