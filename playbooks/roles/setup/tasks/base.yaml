@@ -42,22 +42,6 @@
     src: htoprc
     dest: /root/.config/htop/
 
-- name: Create swap file
-  when: ansible_facts.memtotal_mb < 4096
-  ansible.builtin.shell:
-    cmd: |
-      set -euf
-
-      fallocate -l 2G /swapfile
-      chmod 600 /swapfile
-      mkswap /swapfile
-      if ! grep -q "^/swapfile " /etc/fstab; then
-        echo "/swapfile  none  swap  defaults  0  0" >> /etc/fstab
-      fi
-      swapon /swapfile
-    creates: /swapfile
-    executable: /bin/bash
-
 - name: Set sysctl base values
   ansible.posix.sysctl:
     name: "{{ item.name }}"
