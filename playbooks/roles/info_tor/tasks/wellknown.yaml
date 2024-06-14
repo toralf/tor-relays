@@ -12,7 +12,6 @@
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
     - name: Ensure fingerprint is in wellknown file
-      when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _hashed_fingerprint }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
@@ -32,14 +31,12 @@
         - "ed25519-master-pubkey.txt"
 
     - name: Ensure RSA fingerprint is in wellknown file
-      when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint }}"
         path: "{{ tmp_dir }}/rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
     - name: Ensure ED25519 fingerprint is in wellknown file
-      when: not ansible_check_mode
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_ed25519 }}"
         path: "{{ tmp_dir }}/ed25519-master-pubkey.txt"

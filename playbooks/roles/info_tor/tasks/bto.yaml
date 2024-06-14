@@ -1,6 +1,5 @@
 ---
 - name: Query bto
-  when: not ansible_check_mode
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ _hashed_fingerprint }}"
     return_content: yes
@@ -8,7 +7,7 @@
   register: _result
 
 - name: File bto
-  when: not ansible_check_mode and _result.status == 200
+  when: _result.status == 200
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

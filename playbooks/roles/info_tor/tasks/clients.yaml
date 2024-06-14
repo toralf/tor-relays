@@ -12,7 +12,6 @@
   register: _result
 
 - name: File clients
-  when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

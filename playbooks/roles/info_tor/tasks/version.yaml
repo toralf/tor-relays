@@ -27,7 +27,6 @@
   register: _proxy
 
 - name: File version
-  when: not ansible_check_mode
   delegate_to: localhost
   throttle: 1
   vars:
