@@ -4,7 +4,7 @@
     name: tor
 
 - name: Install or update seccomp lib (non-bridge only)
-  when: not ansible_check_mode and (bridge_distribution | length == 0)
+  when: (not ansible_check_mode) and (bridge_distribution | length == 0)
   ansible.builtin.apt:
     name:
       - libseccomp-dev
