@@ -10,7 +10,7 @@
   changed_when: _reboot_needed.rc == 0
   failed_when: false
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       needrestart -r l -b |
         grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
   register: _reboot_needed

@@ -4,7 +4,7 @@
   when: bridge_distribution | length == 0
   listen: "Restart Firewall"
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
 

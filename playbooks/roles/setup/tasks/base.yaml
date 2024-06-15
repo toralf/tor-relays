@@ -8,7 +8,7 @@
 - name: "Ionos: de-activate password + root login"
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
 
       if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then

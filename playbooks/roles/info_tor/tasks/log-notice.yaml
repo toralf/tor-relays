@@ -2,7 +2,7 @@
 - name: Get last {{ log_lines }} lines of {{ log_notice }}
   changed_when: false
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
 
       diff=$((EPOCHSECONDS - $(stat -c %Z {{ log_notice }})))

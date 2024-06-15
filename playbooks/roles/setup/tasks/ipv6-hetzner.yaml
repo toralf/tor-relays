@@ -27,7 +27,7 @@
 - name: Check that ipv6 is up again
   changed_when: false
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       while ip -6 a | grep -q ' tentative'; do
         sleep 1
       done

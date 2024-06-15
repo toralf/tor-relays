@@ -34,7 +34,7 @@
   when: _repo_tor.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
 
       truncate -s 0 make.log

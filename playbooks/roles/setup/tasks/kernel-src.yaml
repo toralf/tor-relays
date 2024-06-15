@@ -29,7 +29,7 @@
 - name: Apply patches for Linux
   changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
       set -o pipefail
 
@@ -45,7 +45,7 @@
   changed_when: _configured.rc == 123
   failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
 
       [[ -s .config ]] && before=$(md5sum .config) || before="0"
@@ -87,7 +87,7 @@
   when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       set -euf
 
       make -j {{ 1 + (ansible_facts.memtotal_mb / 1500) | int }} 1>>make.log

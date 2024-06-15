@@ -6,7 +6,7 @@
   changed_when: false
   failed_when: (_tor.stdout_lines | length != 1) or (_tor.stderr_lines | length > 0)
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       tor --version |
       grep -m 1 '^Tor version' |
       awk '{ print $3"_"$4 }'
@@ -17,7 +17,7 @@
   when: bridge_distribution | length > 0
   failed_when: (_proxy.stdout_lines | length != 1) or (_proxy.stderr_lines | length > 0)
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       if cd /root/lyrebird 2>/dev/null; then
         git describe --always
       else

@@ -2,7 +2,7 @@
 - name: Get ct drops
   changed_when: false
   ansible.builtin.shell:
-    cmd: |
+    cmd: |-
       conntrack -S |
         grep -v ' insert_failed=0 drop=0 ' |
         awk '{ print $1, $5, $6 }' |
