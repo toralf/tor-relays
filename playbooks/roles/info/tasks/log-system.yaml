@@ -4,8 +4,9 @@
   failed_when: _result.stderr_lines | length > 0
   ansible.builtin.command:
     cmd: >-
-      journalctl -t kernel -g 'BUG:' -g 'Call Trace:' -g 'oom-kill' -g 'RIP:' -g 'WARNING:' -g 'OOM'
-      -g 'status=9/KILL' -g '.service: Failed' --since "{{ log_system_since }}" -q
+      journalctl
+      -g 'BUG:' -g 'Call Trace:' -g 'OOM' -g 'oom' -g 'RIP:' -g 'WARNING:' -g 'status=9/KILL' -g '.service: Failed'
+      --since "{{ log_system_since }}" -q
   register: _result
 
 - name: Findings of log-system since {{ log_system_since }}
