@@ -1,9 +1,9 @@
 ---
-- name: Add the snowflake user
+- name: Add the user
   ansible.builtin.user:
     name: snowflake
 
-- name: Init or update Snowflake repo
+- name: Init or update repo
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
@@ -14,7 +14,7 @@
     single_branch: true
   register: _repo_snowflake
 
-- name: Apply patches of Snowflake
+- name: Apply patches
   changed_when: _snowflake_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
@@ -24,14 +24,14 @@
   loop: "{{ snowflake_patches }}"
   register: _snowflake_patched
 
-- name: Build Snowflake
+- name: Build
   changed_when: false
   when: _repo_snowflake.changed or _snowflake_patched.changed
   ansible.builtin.command:
     cmd: go build
     chdir: /root/snowflake/proxy
 
-- name: Install Snowflake
+- name: Install
   when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
