@@ -1,5 +1,5 @@
 ---
-- name: Add the Tor user
+- name: Add the user
   ansible.builtin.user:
     name: tor
 
@@ -9,7 +9,7 @@
     name:
       - libseccomp-dev
 
-- name: Init or update Tor repo
+- name: Init or update
   when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
@@ -20,7 +20,7 @@
     single_branch: true
   register: _repo_tor
 
-- name: Apply patches for Tor
+- name: Apply patches
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
@@ -30,7 +30,7 @@
   loop: "{{ tor_patches }}"
   register: _tor_patched
 
-- name: Build Tor
+- name: Build
   when: _repo_tor.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
@@ -68,7 +68,7 @@
     - /var/log/tor/
 
 # test if Tor restart is needed
-- name: Install Tor binary
+- name: Install binary
   when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/tor/src/app/tor
@@ -78,7 +78,7 @@
   register: _binary_tor
   notify: "Restart Tor"
 
-- name: Run install command of Tor
+- name: Run install command
   when: _binary_tor.changed
   changed_when: true
   ansible.builtin.command:
@@ -104,7 +104,7 @@
     sysctl_set: true
   notify: "Restart Tor"
 
-- name: Allow low port for Tor
+- name: Allow low port
   when: (tor_port | int < 1024) and (bridge_distribution | length == 0)
   community.general.capabilities:
     path: /usr/bin/tor
