@@ -12,6 +12,8 @@ metrics_port: ""
 prometheus_node_exporter: false
 # comma separated list (no spaces)
 prometheus_server: ""
+snowflake_metrics: false
+tor_metrics: false
 
 # store certificates and more
 ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
