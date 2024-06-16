@@ -52,6 +52,11 @@
         path: /etc/apt/apt.conf.d/99-tor-capability
         create: yes
 
+    - name: Ensure that systemd override dir exists
+      ansible.builtin.file:
+        path: /etc/systemd/system/tor@default.service.d/
+        state: directory
+
     - name: Override systemd defaults for Tor
       ansible.builtin.blockinfile:
         create: true
@@ -59,6 +64,14 @@
         block: |
           [Service]
           NoNewPrivileges=no
+      notify: "Restart Tor"
+
+    - name: Handle low memory
+      when: ansible_facts.memtotal_mb < 1024
+      ansible.builtin.lineinfile:
+        line: "MemoryHigh=700MB"
+        path: /etc/systemd/system/tor@default.service.d/override.conf
+        insertafter: "NoNewPrivileges=no"
       notify: "Restart Tor"
 
 - name: Set sysctl max user namespaces

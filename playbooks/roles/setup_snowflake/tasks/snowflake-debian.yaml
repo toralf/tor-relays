@@ -6,13 +6,24 @@
       - snowflake-proxy
   notify: "Restart Snowflake"
 
-- name: Ensure that the override dir exists
+- name: Ensure that systemd override dir exists
   ansible.builtin.file:
     path: /etc/systemd/system/snowflake-proxy.service.d/
     state: directory
 
-- name: Configure restart-on-failure
-  ansible.builtin.copy:
-    src: override.conf
-    dest: /etc/systemd/system/snowflake-proxy.service.d/
+- name: Override systemd defaults
+  ansible.builtin.blockinfile:
+    create: true
+    dest: /etc/systemd/system/snowflake-proxy.service.d/override.conf
+    block: |
+      [Service]
+      NoNewPrivileges=no
+  notify: "Restart Snowflake"
+
+- name: Handle low memory
+  when: ansible_facts.memtotal_mb < 1024
+  ansible.builtin.lineinfile:
+    line: "MemoryHigh=700MB"
+    path: /etc/systemd/system/snowflake-proxy.service.d/override.conf
+    insertafter: "NoNewPrivileges=no"
   notify: "Restart Snowflake"
