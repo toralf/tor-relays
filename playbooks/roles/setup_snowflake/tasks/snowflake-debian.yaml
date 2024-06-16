@@ -20,7 +20,7 @@
       NoNewPrivileges=no
   notify: "Restart Snowflake"
 
-- name: Handle low memory
+- name: Override systemd defaults to handle low memory
   when: ansible_facts.memtotal_mb < 1024
   ansible.builtin.lineinfile:
     line: "MemoryHigh=700MB"
