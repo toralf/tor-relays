@@ -1,0 +1,63 @@
+/var/log/tor/err.log {
+  daily
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
+  sharedscripts
+  postrotate
+    if invoke-rc.d tor status > /dev/null; then
+      invoke-rc.d tor reload > /dev/null
+    fi
+  endscript
+}
+
+/var/log/tor/warn.log {
+  daily
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
+  sharedscripts
+  postrotate
+    if invoke-rc.d tor status > /dev/null; then
+      invoke-rc.d tor reload > /dev/null
+    fi
+  endscript
+}
+
+/var/log/tor/notice.log {
+  daily
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
+  sharedscripts
+  postrotate
+    if invoke-rc.d tor status > /dev/null; then
+      invoke-rc.d tor reload > /dev/null
+    fi
+  endscript
+}
+
+/var/log/tor/info.log {
+  hourly
+  rotate 24
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
+  sharedscripts
+  postrotate
+    if invoke-rc.d tor status > /dev/null; then
+      invoke-rc.d tor reload > /dev/null
+    fi
+  endscript
+}

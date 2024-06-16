@@ -52,16 +52,19 @@
         path: /etc/apt/apt.conf.d/99-tor-capability
         create: yes
 
-- name: Ensure that systemd override dir exists
+- name: Ensure that Tor systemd override dir exists
   ansible.builtin.file:
     path: /etc/systemd/system/tor@default.service.d/
     state: directory
+    mode: "0755"
 
-- name: Add systemd override
+- name: Add Tor systemd override
   ansible.builtin.template:
     src: tor.override.conf.j2
     dest: /etc/systemd/system/tor@default.service.d/override.conf
-  notify: "Restart Tor"
+  notify:
+    - "Reload Systemd"
+    - "Restart Tor"
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:

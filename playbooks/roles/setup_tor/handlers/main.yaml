@@ -11,6 +11,12 @@
       {{ add_remote_service }} /root/ipv4-rules.sh start
       /root/ipv6-rules.sh start
 
+- name: Reload Systemd
+  when: not ansible_check_mode
+  listen: "Reload Systemd"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
 - name: Restart Tor
   when: not ansible_check_mode
   listen: "Restart Tor"

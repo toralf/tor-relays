@@ -91,11 +91,6 @@
     dest: /etc/systemd/system/tor.service
   notify: "Restart Tor"
 
-- name: Add logrotate config
-  ansible.builtin.copy:
-    src: tor
-    dest: /etc/logrotate.d/
-
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
