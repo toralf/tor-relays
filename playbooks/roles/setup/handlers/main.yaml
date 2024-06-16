@@ -7,12 +7,14 @@
     state: restarted
 
 - name: Restart Prometheus node exporter
+  when: not ansible_check_mode
   listen: "Restart Prometheus node exporter"
   ansible.builtin.service:
     name: prometheus-node-exporter
     state: restarted
 
 - name: Reboot system
+  when: not ansible_check_mode
   listen: "Reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2

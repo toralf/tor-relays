@@ -1,5 +1,12 @@
 ---
+- name: Reload systemd
+  when: not ansible_check_mode
+  listen: "Reload Systemd"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
 - name: Restart Snowflake
+  when: not ansible_check_mode
   listen: "Restart Snowflake"
   ansible.builtin.service:
     name: snowflake-proxy
