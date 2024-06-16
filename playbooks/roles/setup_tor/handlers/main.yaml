@@ -17,3 +17,10 @@
   ansible.builtin.service:
     name: tor
     state: restarted
+
+- name: Reload Tor
+  when: not ansible_check_mode
+  listen: "Reload Tor"
+  ansible.builtin.service:
+    name: tor
+    state: reloaded

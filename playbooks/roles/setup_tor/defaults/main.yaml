@@ -1,8 +1,7 @@
 ---
+tor_build_from_source: true
 lyrebird_git_version: "HEAD"
 lyrebird_patches: []
-
-tor_build_from_source: true
 tor_git_version: "HEAD"
 tor_patches: []
 
@@ -12,6 +11,10 @@ nickname: ""
 
 publish_server_descriptor: "{{ (bridge_distribution | length > 0) | ternary('bridge', '') }}"
 
-tor_config_local: []
+# torrc values, usually set for an ansible group
+tor_config_group: []
+
+# torrc values, usually set for an ansible host
+tor_config_host: []
 
 tor_metrics: false
