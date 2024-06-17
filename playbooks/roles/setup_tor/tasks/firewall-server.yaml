@@ -23,7 +23,7 @@
     job: "{{ add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
   notify: "Restart Firewall"
 
-- name: Create ron job to save ipsets
+- name: Create cron job to save ipsets
   ansible.builtin.cron:
     name: "save ipset"
     special_time: hourly
