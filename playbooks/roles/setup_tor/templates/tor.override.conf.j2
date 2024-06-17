@@ -1,5 +1,5 @@
 [Service]
 NoNewPrivileges=no
 {% if  ansible_facts.memtotal_mb < 1024 %}
-MemoryHigh=700M
+MemoryHigh=700MB
 {% endif %}
