@@ -82,3 +82,12 @@
         state: started
       tags:
         - tor
+
+    - name: Ensure that Tor is restarted
+      when: not ansible_check_mode
+      ansible.builtin.service:
+        name: tor.service
+        state: restarted
+      tags:
+        - never
+        - restart

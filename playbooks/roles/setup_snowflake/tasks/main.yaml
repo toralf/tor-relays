@@ -60,3 +60,12 @@
         state: started
       tags:
         - snowflake
+
+    - name: Ensure that Snowflake is restarted
+      when: not ansible_check_mode
+      ansible.builtin.service:
+        name: snowflake-proxy
+        state: restarted
+      tags:
+        - never
+        - restart
