@@ -7,8 +7,6 @@ tor_patches: []
 
 tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is ansible_facts.distribution_release
 
-publish_server_descriptor: "{{ (bridge_distribution | length > 0) | ternary('bridge', '') }}"
-
 # torrc values, usually set for an ansible group
 tor_config_group: []
 
@@ -16,3 +14,5 @@ tor_config_group: []
 tor_config_host: []
 
 tor_metrics: false
+
+bridge_distribution: ""
