@@ -14,8 +14,6 @@ torrc_config:
     value: "{{ log_warn }}"
   - name: "Log err file"
     value: "{{ log_err }}"
-  - name: "MyFamily"
-    value: "{{ my_family | default('') }}"
   - name: "Nickname"
     value: "{{ nickname | default('') }}"
   - name: "PublishServerDescriptor"

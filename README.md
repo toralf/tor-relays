@@ -59,12 +59,22 @@ The Ansible role expects a `seed_address` value to configure a relyable randomiz
 For Tor servers is the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
 For other systems a set of firewall rules provide basic protection.
 
-The _MyFamily_ value (i.e. for the host group _server_test_) can be created by:
+The _MyFamily_ value can be created by:
 
 ```bash
-./site-info.yaml --limit server_test --tags wellknown
+./site-info.yaml --tags wellknown
 
-echo -e "---\nmy_family: $(grep -v '#' ~/tmp/server_rsa-fingerprint.txt | xargs | tr ' ' ',')" > ./inventory/group_vars/server_test.yaml
+grep -v '#' ~/tmp/*_rsa-fingerprint.txt
+```
+
+```yaml
+__rsa: >-
+  ...
+  ...
+
+tor_config_group:
+  - name: "MyFamily"
+    value: "{{ __rsa | replace('\n', ' ') | regex_replace('  *', ',') }}"
 ```
 
 ### Additional software
