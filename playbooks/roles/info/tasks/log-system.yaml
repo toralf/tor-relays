@@ -5,7 +5,7 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl \
-        -g 'BUG:' -g 'Call Trace:' -g 'OOM' -g 'oom' -g 'RIP:' -g 'WARNING:' -g 'status=9/KILL' -g '.service: Failed' -g 'Out of memory:' \
+        -g 'BUG:' -g 'Call Trace:' -g 'OOM' -g 'oom-kill:' -g 'RIP:' -g 'WARNING:' -g 'status=9/KILL' -g '.service: Failed' -g 'Out of memory:' \
         --since "{{ log_system_since }}" -q |
       tail -n 10
   register: _result
