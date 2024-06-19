@@ -1,0 +1,15 @@
+---
+- name: Uptime
+  changed_when: false
+  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
+  ansible.builtin.command: uptime -ps
+  register: _result
+
+- name: File uptime
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    create: yes
+    line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
+    path: "{{ tmp_dir }}/all_uptime"
+    regex: "^{{ inventory_hostname }} "

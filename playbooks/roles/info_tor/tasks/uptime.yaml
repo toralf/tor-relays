@@ -1,22 +1,27 @@
 ---
-- name: Get Service Status
+- name: Get service status
   ansible.builtin.systemd:
     name: tor
   register: _service
 
-- name: Uptime
+- name: Get process start time
   changed_when: false
-  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
-  ansible.builtin.command: uptime -ps
-  register: _result
+  failed_when: (_process.stdout_lines | length != 1) or (_process.stderr_lines | length > 0)
+  ansible.builtin.shell:
+    cmd: |-
+      ps -eo lstart,cmd --no-headers |
+        grep /usr/bin/tor |
+        grep -v grep |
+        cut -f 1,3,4 -d ' '
+  register: _process
 
 - name: File uptime
   delegate_to: localhost
   throttle: 1
   vars:
     __starttime: "{{ _service.status.ExecMainStartTimestamp | default('-') }}"
-    __reloadtime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
+    __changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} TorStart {{ __starttime }} TorReload {{ __reloadtime }} uptime {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} Restart {{ _process.stdout }} Change {{ __changetime }} Start {{ __starttime }}"
     path: "{{ tmp_dir }}/tor_uptime"
     regex: "^{{ inventory_hostname }} "
