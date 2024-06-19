@@ -34,6 +34,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    tor:
      hosts:
        my_bridge:
+         bridge_distribution: "any"
          tor_port: 12345
    ```
 
