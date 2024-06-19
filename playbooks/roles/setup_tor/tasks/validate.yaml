@@ -1,12 +1,4 @@
 ---
-- name: Validate nickname
-  when: nickname | length > 0
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "nickname | length <= 19"
-      - "nickname | regex_search('^[a-zA-Z0-9]+$')"
-
 - name: Validate tor_port
   ansible.builtin.assert:
     quiet: true

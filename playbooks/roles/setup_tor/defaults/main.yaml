@@ -7,8 +7,6 @@ tor_patches: []
 
 tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is ansible_facts.distribution_release
 
-nickname: ""
-
 publish_server_descriptor: "{{ (bridge_distribution | length > 0) | ternary('bridge', '') }}"
 
 # torrc values, usually set for an ansible group
