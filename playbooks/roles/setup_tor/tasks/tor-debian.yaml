@@ -64,7 +64,6 @@
     dest: /etc/systemd/system/tor@default.service.d/override.conf
   notify:
     - "Reload Systemd"
-    - "Restart Tor"
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:

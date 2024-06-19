@@ -27,9 +27,5 @@ ReadOnlyDirectories=/
 ReadWriteDirectories=-/var/lib/tor
 ReadWriteDirectories=-/var/log/tor
 
-{% if ansible_facts.memtotal_mb < 1024 %}
-MemoryHigh=700MB
-{% endif %}
-
 [Install]
 WantedBy=multi-user.target

@@ -36,9 +36,5 @@ ReadOnlyDirectories=/
 ReadWriteDirectories=-/proc
 ReadWriteDirectories=-/run
 
-{% if ansible_facts.memtotal_mb < 1024 %}
-MemoryHigh=700MB
-{% endif %}%}
-
 [Install]
 WantedBy=multi-user.target

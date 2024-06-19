@@ -18,4 +18,3 @@
     dest: /etc/systemd/system/snowflake-proxy.service.d/override.conf
   notify:
     - "Reload Systemd"
-    - "Restart Snowflake"
