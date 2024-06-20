@@ -9,7 +9,7 @@
   failed_when: (_process.stdout_lines | length != 1) or (_process.stderr_lines | length > 0)
   ansible.builtin.shell:
     cmd: |-
-      ps -eo lstart,cmd --no-headers |
+      ps -eo etime,cmd --no-headers |
         grep /usr/bin/snowflake-proxy |
         grep -v grep |
         cut -f 1,3,4 -d ' '
@@ -22,6 +22,6 @@
     __starttime: "{{ _service.status.ExecMainStartTimestamp | default('-') }}"
     __changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} Restart {{ _process.stdout }} Change {{ __changetime }} Start {{ __starttime }}"
+    line: "{{ inventory_hostname }} etime {{ _process.stdout }} Change {{ __changetime }} Start {{ __starttime }}"
     path: "{{ tmp_dir }}/snowflake_uptime"
     regex: "^{{ inventory_hostname }} "
