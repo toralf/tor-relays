@@ -24,6 +24,8 @@ SandBox 0
 SandBox 1
 {% endif %}
 
+NoExec 1
+
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
