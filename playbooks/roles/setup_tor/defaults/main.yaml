@@ -15,4 +15,9 @@ tor_config_host: []
 
 tor_metrics: false
 
-bridge_distribution: ""
+# safety first
+bridge_distribution: "none"
+
+# for server specific firewall
+_has_remote_service: "{{ (metrics_port | length > 0) and (prometheus_server | length > 0) }}"
+add_remote_service: '{{ _has_remote_service | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
