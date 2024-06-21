@@ -29,7 +29,15 @@
     special_time: hourly
     job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
 
-- name: Ensure persistent iptables package is removed
+- name: Remove base firewall script
+  ansible.builtin.file:
+    path: "/root/firewall-ip{{ item }}.sh"
+    state: absent
+  with_items:
+    - "v4"
+    - "v6"
+
+- name: Remove persistent iptables package
   when: not ansible_check_mode
   ansible.builtin.apt:
     name:
