@@ -29,7 +29,7 @@
       owner: root
       group: root
       mode: "0644"
-    ansible.builtin.service:
+    ansible.builtin.systemd_service:
       daemon_reload: true
       enabled: true
   block:

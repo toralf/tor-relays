@@ -8,6 +8,6 @@
 - name: Restart Snowflake
   when: not ansible_check_mode
   listen: "Restart Snowflake"
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: snowflake-proxy
     state: restarted

@@ -8,14 +8,14 @@
 - name: Restart Nginx
   when: not ansible_check_mode
   listen: "Restart Nginx"
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: nginx
     state: restarted
 
 - name: Restart Prometheus node exporter
   when: not ansible_check_mode
   listen: "Restart Prometheus node exporter"
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: prometheus-node-exporter
     state: restarted
 

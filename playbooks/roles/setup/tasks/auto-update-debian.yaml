@@ -40,7 +40,7 @@
   register: _upgrade_timer_state
 
 - name: Restart apt daily timer
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: apt-daily.timer
     state: restarted
   when: _timer_state.changed or _upgrade_timer_state.changed

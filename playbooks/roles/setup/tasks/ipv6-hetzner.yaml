@@ -19,7 +19,7 @@
     dest: /etc/cloud/cloud.cfg.d/
 
 - name: Restart network service
-  ansible.builtin.service:
+  ansible.builtin.systemd_service:
     name: networking
     state: restarted
   when: _cloud_init.changed
