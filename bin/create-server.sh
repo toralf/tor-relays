@@ -17,8 +17,8 @@ echo -e "\n using Hetzner project ${project:?}\n"
 jobs=$((2 * $(nproc)))
 
 all_locations=$(hcloud location list --output json | jq -r '.[].name')
-cx11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cx11") | .id')
-cx11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cx11_id}'])) | .location.name' | xargs)
+cx22_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cx22") | .id')
+cx22_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' | xargs)
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
 os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
@@ -35,13 +35,13 @@ while read -r name; do
   elif [[ ${name} =~ "-arm" ]]; then
     type="cax11"
   elif [[ ${name} =~ "-int" ]]; then
-    type="cx11"
+    type="cx22"
   else
-    type=$(xargs -n 1 <<<"cpx11 cax11 cx11" | shuf -n 1)
+    type=$(xargs -n 1 <<<"cpx11 cax11 cx22" | shuf -n 1)
   fi
 
-  if [[ ${type} == "cx11" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx11_locations} | shuf -n 1)
+  if [[ ${type} == "cx22" ]]; then
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx22_locations} | shuf -n 1)
   elif [[ ${type} == "cax11" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
   else
