@@ -91,6 +91,11 @@
     dest: /etc/systemd/system/tor.service
   notify: "Restart Tor"
 
+- name: Enable Tor at boot
+  when: not ansible_check_mode
+  ansible.builtin.systemd_service:
+    name: tor
+
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
