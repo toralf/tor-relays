@@ -55,7 +55,7 @@ done < <(xargs -n 1 <<<$*) |
 $(dirname $0)/update-dns.sh
 
 diff=$((EPOCHSECONDS - now))
-if [[ $diff -lt 30 ]]; then
+if [[ $diff -lt 35 ]]; then
   echo -en "\n wait $diff sec before continue ..."
   sleep $((35 - diff))
 fi
