@@ -42,6 +42,11 @@
     src: htoprc
     dest: /root/.config/htop/
 
+- name: Editor config
+  ansible.builtin.copy:
+    src: .selected_editor
+    dest: /root/
+
 - name: Set sysctl base values
   ansible.posix.sysctl:
     name: "{{ item.name }}"
