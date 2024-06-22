@@ -17,6 +17,8 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
+NoExec 1
+
 {% if ansible_facts.architecture != 'x86_64' %}
 # sandbox issues with ARM64 (e.g. aarch64)
 SandBox 0
@@ -24,13 +26,12 @@ SandBox 0
 SandBox 1
 {% endif %}
 
-NoExec 1
-
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
 CellStatistics 1
 ConnDirectionStatistics 1
+EntryStatistics 1
 {% endif %}
 
 {% if tor_metrics %}
