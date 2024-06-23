@@ -4,8 +4,6 @@ log_warn: "/var/log/tor/warn.log"
 log_err: "/var/log/tor/err.log"
 
 torrc_config:
-  - name: "BridgeDistribution"
-    value: "{{ bridge_distribution }}"
   - name: "Log notice file"
     value: "{{ log_notice }}"
   - name: "Log warn file"

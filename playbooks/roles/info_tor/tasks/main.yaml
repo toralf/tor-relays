@@ -31,6 +31,11 @@
       tags:
         - clients
 
+    - name: Heartbeat
+      ansible.builtin.import_tasks: heartbeat.yaml
+      tags:
+        - heartbeat
+
     - name: Log
       ansible.builtin.import_tasks: log-notice.yaml
       tags:
