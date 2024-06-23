@@ -29,26 +29,28 @@ now=${EPOCHSECONDS}
 # prefer smallest type
 while read -r name; do
   if [[ -n ${HCLOUD_TYPE-} ]]; then
-    type=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
-  elif [[ ${name} =~ "-amd" ]]; then
-    type="cpx11"
-  elif [[ ${name} =~ "-arm" ]]; then
-    type="cax11"
-  elif [[ ${name} =~ "-int" ]]; then
-    type="cx22"
+    htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
   else
-    type=$(xargs -n 1 <<<"cpx11 cax11 cx22" | shuf -n 1)
+    echo $name
+    case ${name} in
+    *-amd-*) htype="cpx11" ;;
+    *-arm-*) htype="cax11" ;;
+    *-int-*) htype="cx22" ;;
+    *) htype=$(xargs -n 1 <<<"cpx11 cax11 cx22" | shuf -n 1) ;;
+    esac
   fi
 
-  if [[ ${type} == "cx22" ]]; then
+  if [[ ${htype} == "cx22" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx22_locations} | shuf -n 1)
-  elif [[ ${type} == "cax11" ]]; then
+  elif [[ ${htype} == "cax11" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
+  elif [[ ${htype} == "cpx11" ]]; then
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cpx11_locations} | shuf -n 1)
   else
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
   fi
 
-  echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
+  echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
