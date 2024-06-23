@@ -16,11 +16,16 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
+_data_centers=$(hcloud datacenter list --output json)
+_server_types=$(hcloud server-type list --output json)
+
 all_locations=$(hcloud location list --output json | jq -r '.[].name')
-cx22_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cx22") | .id')
-cx22_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' | xargs)
-cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
-cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
+cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${_server_types})
+cax11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${_data_centers} | xargs)
+cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${_server_types})
+cpx11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${_data_centers} | xargs)
+cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${_server_types})
+cx22_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${_data_centers} | xargs)
 debian=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
