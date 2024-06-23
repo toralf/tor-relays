@@ -21,7 +21,7 @@ cx22_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cx
 cx22_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' | xargs)
 cax11_id=$(hcloud server-type list --output json | jq -r '.[] | select(.name=="cax11") | .id')
 cax11_locations=$(hcloud datacenter list --output json | jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' | xargs)
-os_version=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
+debian=$(hcloud image list --type system --output columns=name | grep '^debian' | sort -ur | head -n 1) # choose latest Debian
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 
 now=${EPOCHSECONDS}
@@ -48,7 +48,7 @@ while read -r name; do
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
   fi
 
-  echo "server create --image ${os_version} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
+  echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${type}"
 done < <(xargs -n 1 <<<$*) |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
