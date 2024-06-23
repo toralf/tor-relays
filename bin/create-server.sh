@@ -41,16 +41,16 @@ while read -r name; do
     *-amd-*) htype="cpx11" ;;
     *-arm-*) htype="cax11" ;;
     *-int-*) htype="cx22" ;;
-    *) htype=$(xargs -n 1 <<<"cpx11 cax11 cx22" | shuf -n 1) ;;
+    *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
     esac
   fi
 
-  if [[ ${htype} == "cx22" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx22_locations} | shuf -n 1)
-  elif [[ ${htype} == "cax11" ]]; then
+  if [[ ${htype} == "cax11" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
   elif [[ ${htype} == "cpx11" ]]; then
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cpx11_locations} | shuf -n 1)
+  elif [[ ${htype} == "cx22" ]]; then
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx22_locations} | shuf -n 1)
   else
     loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
   fi
