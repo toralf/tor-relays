@@ -46,13 +46,13 @@ while read -r name; do
   fi
 
   if [[ ${htype} == "cax11" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cax11_locations} | shuf -n 1)
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cax11_locations} | shuf -n 1)
   elif [[ ${htype} == "cpx11" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cpx11_locations} | shuf -n 1)
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cpx11_locations} | shuf -n 1)
   elif [[ ${htype} == "cx22" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$cx22_locations} | shuf -n 1)
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cx22_locations} | shuf -n 1)
   else
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATIONS:-$all_locations} | shuf -n 1)
+    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$all_locations} | shuf -n 1)
   fi
 
   echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
