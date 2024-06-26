@@ -29,6 +29,7 @@ server {
   ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
   ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
+  ssl_conf_command Options KTLS;
 
   add_header Strict-Transport-Security "max-age=63072000" always;
   access_log off;

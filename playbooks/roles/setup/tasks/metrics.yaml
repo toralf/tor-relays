@@ -77,7 +77,7 @@
           - prometheus-node-exporter
       notify: "Restart Prometheus node exporter"
 
-    # needed if manually disabled in the past
+    # needed if manually disabled
     - name: Enable Prometheus node exporter at boot
       when: not ansible_check_mode
       ansible.builtin.systemd_service:
