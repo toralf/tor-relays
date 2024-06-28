@@ -57,5 +57,6 @@
       when: not ansible_check_mode
       ansible.builtin.systemd_service:
         name: snowflake-proxy
+      notify: "Restart Snowflake"
       tags:
         - snowflake
