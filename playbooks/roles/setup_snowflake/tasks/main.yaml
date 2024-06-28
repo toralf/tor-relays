@@ -52,3 +52,10 @@
           ansible.builtin.import_tasks: config.yaml
           tags:
             - config
+
+    - name: Enable Snowflake at boot
+      when: not ansible_check_mode
+      ansible.builtin.systemd_service:
+        name: snowflake-proxy
+      tags:
+        - snowflake
