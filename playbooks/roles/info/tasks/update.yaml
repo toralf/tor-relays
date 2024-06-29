@@ -1,0 +1,10 @@
+---
+- name: Dry-run of unattended-upgrade
+  changed_when: false
+  ansible.builtin.command: unattended-upgrade -d
+  register: _result
+
+- name: Findings of f unattended-upgrade
+  when: _result.stdout_lines is not search("No packages found that can be upgraded unattended and no pending auto-removals")
+  ansible.builtin.debug:
+    var: _result.stdout_lines

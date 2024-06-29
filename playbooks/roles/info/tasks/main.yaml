@@ -36,6 +36,11 @@
   tags:
     - uname
 
+- name: Update
+  ansible.builtin.import_tasks: update.yaml
+  tags:
+    - update
+
 - name: Uptime
   ansible.builtin.import_tasks: uptime.yaml
   tags:
