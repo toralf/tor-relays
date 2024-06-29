@@ -1,5 +1,6 @@
 ---
 - name: Gather installed packages
+  when: (snowflake_build_from_source is defined) and (not snowflake_build_from_source)
   ansible.builtin.package_facts:
 
 - name: Snowflake version
