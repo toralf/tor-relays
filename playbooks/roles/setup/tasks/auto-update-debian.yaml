@@ -17,6 +17,7 @@
   with_items:
     - 20auto-upgrades
     - 50unattended-upgrades
+  notify: "Reload Systemd"
 
 - name: Create timer.d directories
   ansible.builtin.file:
@@ -31,19 +32,13 @@
   ansible.builtin.template:
     src: timer.j2
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
-  register: _timer_state
+  notify: "Reload Systemd"
 
 - name: Configure apt upgrade timer
   ansible.builtin.template:
     src: upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
-  register: _upgrade_timer_state
-
-- name: Restart apt daily timer
-  ansible.builtin.systemd_service:
-    name: apt-daily.timer
-    state: restarted
-  when: _timer_state.changed or _upgrade_timer_state.changed
+  notify: "Reload Systemd"
 
 - name: Ensure Reboot cron job for deferred services is present
   when: not ansible_check_mode
