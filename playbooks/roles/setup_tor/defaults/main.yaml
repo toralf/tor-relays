@@ -7,10 +7,9 @@ tor_patches: []
 
 tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is ansible_facts.distribution_release
 
-# torrc values, usually set for an ansible group
+# torrc values
+tor_config_all: []
 tor_config_group: []
-
-# torrc values, usually set for an ansible host
 tor_config_host: []
 
 tor_metrics: false
@@ -21,3 +20,5 @@ bridge_distribution: "none"
 # for server specific firewall
 _has_remote_service: "{{ (metrics_port | length > 0) and (prometheus_server | length > 0) }}"
 add_remote_service: '{{ _has_remote_service | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
+
+my_family: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | replace('\n', ',') }}"

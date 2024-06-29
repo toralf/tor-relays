@@ -2,13 +2,15 @@
 # {{ ansible_managed }}
 
 {% if tor_build_from_source %}
-# if self-compiled then do not rely on compile-time configure option (/home/tor/.tor/)
 DataDirectory /var/lib/tor
 {% endif %}
 
 {% if bridge_distribution | length > 0 %}
 BridgeRelay 1
 BridgeDistribution {{ bridge_distribution }}
+{% if bridge_distribution == 'none' %}
+PublishServerDescriptor 0
+{% endif %}
 
 SandBox 0
 
@@ -30,9 +32,9 @@ SandBox 1
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
-CellStatistics 1
-ConnDirectionStatistics 1
-EntryStatistics 1
+{% if my_family | length > 0 %}
+MyFamily {{ my_family  }}
+{% endif %}
 {% endif %}
 
 {% if tor_metrics %}
@@ -42,6 +44,6 @@ MetricsPortPolicy accept 127.0.0.1
 
 SocksPort 0
 
-{% for item in torrc_config + tor_config_group + tor_config_host %}
+{% for item in torrc_config + tor_config_all + tor_config_group + tor_config_host %}
 {{ item.name }} {{ item.value }}
 {% endfor %}
