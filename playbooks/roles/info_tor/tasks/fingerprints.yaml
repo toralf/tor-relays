@@ -1,8 +1,10 @@
 ---
 - name: RSA fingerprint
   changed_when: false
-  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
-  ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint
+  ansible.builtin.shell:
+    cmd: |-
+      cut -f 2 -d ' ' /var/lib/tor/fingerprint |
+      grep . || echo "-"
   register: _result
 
 - name: Set fact
@@ -13,7 +15,6 @@
   block:
     - name: Get ED25519 fingerprint
       changed_when: false
-      failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
       ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
       register: _result
 

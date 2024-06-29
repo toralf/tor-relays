@@ -6,13 +6,14 @@
 
 - name: Get process start time
   changed_when: false
-  failed_when: (_process.stdout_lines | length != 1) or (_process.stderr_lines | length > 0)
   ansible.builtin.shell:
     cmd: |-
       ps -eo etime,cmd --no-headers |
         grep /usr/bin/snowflake-proxy |
         grep -v grep |
-        cut -f 1,3,4 -d ' '
+        cut -f 1,3,4 -d ' ' |
+        grep . ||
+        echo "-"
   register: _process
 
 - name: File uptime

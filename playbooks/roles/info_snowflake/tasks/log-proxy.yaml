@@ -7,7 +7,6 @@
       grep -v -e  ', there were .* connections' -e ': sctp ERROR: .* stream 1 not found' -e ' Proxy connection closed' |
       tail -n {{ log_lines }}
   register: _result
-  failed_when: _result.stderr_lines | length > 0
 
 - name: Results of log-proxy since {{ log_proxy_since }}
   when: _result.stdout_lines | length > 0

@@ -1,8 +1,11 @@
 ---
 - name: Uptime
   changed_when: false
-  failed_when: (_result.stdout_lines | length != 1) or (_result.stderr_lines | length > 0)
-  ansible.builtin.command: uptime -ps
+  ansible.builtin.shell:
+    cmd: |-
+      uptime -ps |
+      grep . ||
+      echo "- -"
   register: _result
 
 - name: File uptime

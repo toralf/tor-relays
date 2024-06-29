@@ -1,7 +1,6 @@
 ---
 - name: Check error log
   changed_when: false
-  failed_when: _result.stderr_lines | length > 0
   ansible.builtin.shell:
     cmd: |-
       grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} 2>/dev/null |
