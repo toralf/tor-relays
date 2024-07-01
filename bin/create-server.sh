@@ -32,31 +32,31 @@ ssh_key=$(hcloud ssh-key list --output json | jq -r '.[].name' | head -n 1)
 now=${EPOCHSECONDS}
 
 # prefer smallest type
-while read -r name; do
-  if [[ -n ${HCLOUD_TYPE-} ]]; then
-    htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
-  else
-    echo $name
-    case ${name} in
-    *-amd-*) htype="cpx11" ;;
-    *-arm-*) htype="cax11" ;;
-    *-int-*) htype="cx22" ;;
-    *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
-    esac
-  fi
+xargs -n 1 <<<$* |
+  while read -r name; do
+    if [[ -n ${HCLOUD_TYPE-} ]]; then
+      htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
+    else
+      case ${name} in
+      *-amd-*) htype="cpx11" ;;
+      *-arm-*) htype="cax11" ;;
+      *-int-*) htype="cx22" ;;
+      *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
+      esac
+    fi
 
-  if [[ ${htype} == "cax11" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cax11_locations} | shuf -n 1)
-  elif [[ ${htype} == "cpx11" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cpx11_locations} | shuf -n 1)
-  elif [[ ${htype} == "cx22" ]]; then
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cx22_locations} | shuf -n 1)
-  else
-    loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$all_locations} | shuf -n 1)
-  fi
+    if [[ ${htype} == "cax11" ]]; then
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cax11_locations} | shuf -n 1)
+    elif [[ ${htype} == "cpx11" ]]; then
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cpx11_locations} | shuf -n 1)
+    elif [[ ${htype} == "cx22" ]]; then
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cx22_locations} | shuf -n 1)
+    else
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$all_locations} | shuf -n 1)
+    fi
 
-  echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
-done < <(xargs -n 1 <<<$*) |
+    echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+  done |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
