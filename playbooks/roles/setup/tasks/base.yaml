@@ -47,23 +47,24 @@
     src: .selected_editor
     dest: /root/
 
-- name: Set sysctl base values
+- name: Change sysctl values
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     sysctl_file: /etc/sysctl.d/21tor-generic.conf
     sysctl_set: true
   loop:
-    - { name: "vm.swappiness", value: 5 } # only use swap space when 95% or more of physical RAM is used up
+    - { name: "vm.swappiness", value: 5 } # swap only if <=5% of physical RAM is still free
     - { name: "kernel.sysrq", value: 0 }
+    - { name: "net.ipv4.tcp_fin_timeout", value: 10 }
 
-- name: Ensure that Logrotate systemd override dir exists
+- name: Ensure that logrotate systemd override dir exists
   ansible.builtin.file:
     path: /etc/systemd/system/logrotate.timer.d/
     state: directory
     mode: "0755"
 
-- name: Add Logrotate systemd override
+- name: Add logrotate systemd override
   ansible.builtin.template:
     src: logrotate.override.conf.j2
     dest: /etc/systemd/system/logrotate.timer.d/override.conf
