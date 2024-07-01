@@ -63,6 +63,8 @@
     path: /etc/systemd/system/logrotate.timer.d/
     state: directory
     mode: "0755"
+  notify:
+    - "Reload Systemd"
 
 - name: Add logrotate systemd override
   ansible.builtin.template:
