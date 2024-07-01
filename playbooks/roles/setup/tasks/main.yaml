@@ -2,11 +2,12 @@
 - name: Gather facts
   ansible.builtin.setup:
     gather_subset: "{{ facts_subset }}"
+  tags:
+    - always
 
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
-    # not always here b/c ipv6 might not yet been setup
     - validate
 
 - name: Main
