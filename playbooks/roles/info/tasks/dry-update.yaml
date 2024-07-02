@@ -5,6 +5,6 @@
   register: _result
 
 - name: Output of unattended-upgrade dry run
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout_lines is not search('No packages found that can be upgraded unattended and no pending auto-removals')
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    msg: "{{ _result.stdout_lines | select ('search', 'Checking:') }}"

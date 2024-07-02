@@ -36,10 +36,10 @@
   tags:
     - uname
 
-- name: Update
-  ansible.builtin.import_tasks: update.yaml
+- name: Dryrun of unattended-upgrade
+  ansible.builtin.import_tasks: dry-update.yaml
   tags:
-    - update
+    - dry-update
 
 - name: Uptime
   ansible.builtin.import_tasks: uptime.yaml
