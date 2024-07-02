@@ -1,4 +1,4 @@
-# {{ ansible_managed }}
+// {{ ansible_managed }}
 
 [Unit]
 Description=snowflake-proxy
@@ -15,7 +15,7 @@ ExecStart=/usr/bin/snowflake-proxy {{ snowflake_command_args }}
 {% endif %}
 User=snowflake
 Group=snowflake
-# https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
+// https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
 ProtectSystem=strict
 ProtectHome=tmpfs
 PrivateTmp=true
