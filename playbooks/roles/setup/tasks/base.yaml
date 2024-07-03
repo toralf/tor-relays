@@ -5,21 +5,19 @@
     state: directory
     mode: "0700"
 
-- name: "Ionos: de-activate password + root login"
-  when: ansible_facts.system_vendor == 'QEMU'
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+- name: Configure SSH
+  ansible.builtin.copy:
+    src: 00sshd.conf
+    dest: /etc/ssh/sshd_config.d/
+  notify:
+    - "Reload SSH"
 
-      if grep -q "^PermitRootLogin yes" /etc/ssh/sshd_config; then
-        sed -i -e 's,^PermitRootLogin yes,#PermitRootLogin yes,' /etc/ssh/sshd_config
-      fi
-
-      service sshd reload
-
-      rm /etc/ssh/sshd_config.d/50-cloud-init.conf
-    executable: /bin/bash
-    removes: /etc/ssh/sshd_config.d/50-cloud-init.conf
+- name: Remove SSH cloud init config at IONOS systems
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+    state: absent
+  notify:
+    - "Reload SSH"
 
 - name: Sysctl config
   ansible.builtin.copy:

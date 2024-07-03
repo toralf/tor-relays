@@ -5,6 +5,13 @@
   ansible.builtin.systemd_service:
     daemon_reload: true
 
+- name: Reload SSH
+  when: not ansible_check_mode
+  listen: "Reload SSH"
+  ansible.builtin.systemd_service:
+    name: ssh
+    state: reloaded
+
 - name: Restart Nginx
   when: not ansible_check_mode
   listen: "Restart Nginx"
