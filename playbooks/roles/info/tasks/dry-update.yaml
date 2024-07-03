@@ -7,4 +7,4 @@
 - name: Output of unattended-upgrade dry run
   when: _result.stdout_lines is not search('No packages found that can be upgraded unattended and no pending auto-removals')
   ansible.builtin.debug:
-    msg: "{{ _result.stdout_lines | select ('search', 'Checking:') }}"
+    msg: "{{ _result.stdout_lines | select('search', 'Checking:') }}"
