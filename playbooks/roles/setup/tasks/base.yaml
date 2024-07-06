@@ -5,6 +5,10 @@
     state: directory
     mode: "0700"
 
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
+
 - name: Configure SSH
   ansible.builtin.copy:
     src: 00sshd.conf
