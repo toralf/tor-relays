@@ -3,8 +3,8 @@
   changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
   vars:
     _max: "{{ (bridge_distribution | length > 0) | ternary(3, 9) }}"
-    _ipt4_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }} --syn"
-    _ipt6_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }} --syn"
+    _ipt4_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }}"
+    _ipt6_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ tor_port }}"
     _hash_limit: "--hashlimit-mode srcip,dstport --hashlimit-above {{ _max }}/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP"
   ansible.builtin.shell:
     cmd: |-
