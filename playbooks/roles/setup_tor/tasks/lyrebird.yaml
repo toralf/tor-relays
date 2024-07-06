@@ -1,6 +1,5 @@
 ---
 - name: Init or update Lyrebird repo
-  when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     dest: /root/lyrebird

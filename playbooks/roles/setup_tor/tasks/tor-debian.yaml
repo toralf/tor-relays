@@ -1,6 +1,5 @@
 ---
 - name: Get Tor repository apt key
-  when: not ansible_check_mode
   ansible.builtin.apt_key:
     url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
     state: present
@@ -19,13 +18,11 @@
     state: present
 
 - name: Install or update key ring
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - deb.torproject.org-keyring
 
 - name: Install or update Tor + obfs4proxy
-  when: not ansible_check_mode
   ansible.builtin.apt:
     default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
     name:

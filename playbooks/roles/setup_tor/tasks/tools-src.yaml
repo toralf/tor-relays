@@ -1,6 +1,5 @@
 ---
 - name: Install or update software for Tor build from source
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - automake
@@ -17,7 +16,6 @@
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
 - name: Install or update Go for Tor proxy
-  when: not ansible_check_mode
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:

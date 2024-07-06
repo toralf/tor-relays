@@ -38,7 +38,6 @@
     - "v6"
 
 - name: Remove persistent iptables package
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - iptables-persistent

@@ -1,6 +1,5 @@
 ---
 - name: Install or update firewall software
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - iptables-persistent

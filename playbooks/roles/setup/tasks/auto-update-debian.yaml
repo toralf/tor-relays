@@ -1,6 +1,5 @@
 ---
 - name: Install or update base software for auto-update
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - unattended-upgrades
@@ -41,7 +40,6 @@
   notify: "Reload Systemd"
 
 - name: Ensure Reboot cron job for deferred services is present
-  when: not ansible_check_mode
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted"
     minute: "42"

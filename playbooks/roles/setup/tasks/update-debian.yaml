@@ -4,7 +4,6 @@
     upgrade: dist
 
 - name: Install or update base software
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - apt-transport-https
@@ -32,7 +31,6 @@
         repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
     - name: Install or update "backports" kernel
-      when: not ansible_check_mode
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}-backports"
         name:
@@ -40,7 +38,6 @@
       notify: "Reboot system"
 
 - name: Ensure kernel crash dumps are made to /tmp
-  when: not ansible_check_mode
   ansible.builtin.cron:
     name: "core debug files"
     special_time: reboot

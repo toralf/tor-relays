@@ -1,6 +1,5 @@
 ---
 - name: Install or update toolchain for Linux
-  when: not ansible_check_mode
   ansible.builtin.apt:
     name:
       - bc
@@ -16,7 +15,6 @@
       - libssl-dev
 
 - name: Init or update Linux repo
-  when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     dest: /root/linux
