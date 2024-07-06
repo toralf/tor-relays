@@ -32,7 +32,6 @@
     chdir: /root/snowflake/proxy
 
 - name: Install
-  when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
     dest: /usr/bin/snowflake-proxy

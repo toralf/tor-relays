@@ -4,13 +4,12 @@
     name: tor
 
 - name: Install or update seccomp lib (non-bridge only)
-  when: (not ansible_check_mode) and (bridge_distribution | length == 0)
+  when: bridge_distribution | length == 0
   ansible.builtin.apt:
     name:
       - libseccomp-dev
 
 - name: Init or update
-  when: not ansible_check_mode
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
     dest: /root/tor
@@ -69,7 +68,6 @@
 
 # test if Tor restart is needed
 - name: Install binary
-  when: not ansible_check_mode
   ansible.builtin.copy:
     src: /root/tor/src/app/tor
     dest: /usr/bin/

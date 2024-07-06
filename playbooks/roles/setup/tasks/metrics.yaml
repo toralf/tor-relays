@@ -29,7 +29,6 @@
       - dataEncipherment
 
 - name: Generate host certificate
-  when: not ansible_check_mode
   delegate_to: localhost
   community.crypto.x509_certificate:
     path: "{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt"
@@ -39,14 +38,12 @@
     provider: ownca
 
 - name: Copy host key
-  when: not ansible_check_mode
   ansible.builtin.copy:
     src: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
   notify: "Restart Nginx"
 
 - name: Copy host certificate
-  when: not ansible_check_mode
   ansible.builtin.copy:
     content: "{{
       lookup('file','{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt')+'\n'+

@@ -1,33 +1,28 @@
 ---
 - name: Reload Systemd
-  when: not ansible_check_mode
   listen: "Reload Systemd"
   ansible.builtin.systemd_service:
     daemon_reload: true
 
 - name: Reload SSH
-  when: not ansible_check_mode
   listen: "Reload SSH"
   ansible.builtin.systemd_service:
     name: ssh
     state: reloaded
 
 - name: Restart Nginx
-  when: not ansible_check_mode
   listen: "Restart Nginx"
   ansible.builtin.systemd_service:
     name: nginx
     state: restarted
 
 - name: Restart Prometheus node exporter
-  when: not ansible_check_mode
   listen: "Restart Prometheus node exporter"
   ansible.builtin.systemd_service:
     name: prometheus-node-exporter
     state: restarted
 
 - name: Reboot system
-  when: not ansible_check_mode
   listen: "Reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2
