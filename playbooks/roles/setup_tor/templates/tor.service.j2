@@ -11,7 +11,7 @@ Wants=network-online.target
 ExecStartPre=/usr/bin/tor --verify-config
 ExecStart=/usr/bin/tor
 ExecReload=/bin/kill -HUP ${MAINPID}
-TimeoutSec={{ (bridge_distribution | length > 0) | ternary(5, 30) }}
+TimeoutSec={{ bridge_distribution | ternary(5, 30) }}
 User=tor
 Group=tor
 Restart=on-failure
@@ -20,7 +20,7 @@ KillSignal=SIGINT
 
 # Hardening
 CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE CAP_DAC_READ_SEARCH CAP_KILL
-NoNewPrivileges={{ (bridge_distribution | length > 0) | ternary('no', 'yes') }}
+NoNewPrivileges={{ bridge_distribution | ternary('no', 'yes') }}
 PrivateDevices=no
 PrivateTmp=yes
 ProtectHome=yes

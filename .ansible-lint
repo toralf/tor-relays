@@ -3,7 +3,6 @@
 # https://ansible-lint.readthedocs.io/
 
 enable_list:
-  - empty-string-compare
   - no-log-password
   - no-same-owner
 

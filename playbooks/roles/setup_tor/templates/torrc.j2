@@ -5,7 +5,7 @@
 DataDirectory /var/lib/tor
 {% endif %}
 
-{% if bridge_distribution | length > 0 %}
+{% if bridge_distribution %}
 BridgeRelay 1
 BridgeDistribution {{ bridge_distribution }}
 {% if bridge_distribution == 'none' %}
@@ -32,7 +32,7 @@ SandBox 1
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
-{% if my_family | length > 0 %}
+{% if my_family %}
 MyFamily {{ my_family  }}
 {% endif %}
 

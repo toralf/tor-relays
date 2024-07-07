@@ -15,7 +15,7 @@
 
 - name: Proxy version
   changed_when: false
-  when: bridge_distribution | length > 0
+  when: bridge_distribution
   ansible.builtin.shell:
     cmd: |-
       (

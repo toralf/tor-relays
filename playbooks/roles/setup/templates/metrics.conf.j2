@@ -1,8 +1,8 @@
 # {{ ansible_managed }}
 
 server {
-{% if metrics_port | length > 0 %}
-{% if (prometheus_server | length > 0) %}
+{% if metrics_port %}
+{% if prometheus_server %}
   listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
 {% else %}
   listen 127.0.0.1:{{ metrics_port }} ssl http2;

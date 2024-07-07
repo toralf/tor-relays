@@ -33,13 +33,13 @@
       enabled: true
   block:
     - name: Firewall for bridge
-      when: bridge_distribution | length > 0
+      when: bridge_distribution
       ansible.builtin.import_tasks: firewall-bridge.yaml
       tags:
         - firewall
 
     - name: Firewall for server
-      when: bridge_distribution | length == 0
+      when: not bridge_distribution
       ansible.builtin.import_tasks: firewall-server.yaml
       tags:
         - firewall
@@ -64,7 +64,7 @@
             - tor
 
         - name: Lyrebird
-          when: bridge_distribution | length > 0
+          when: bridge_distribution
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
             - lyrebird

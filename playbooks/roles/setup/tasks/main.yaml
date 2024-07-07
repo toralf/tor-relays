@@ -86,7 +86,7 @@
       ansible.builtin.meta: flush_handlers
 
     - name: Kernel source
-      when: kernel_git_version | length > 0
+      when: kernel_git_version
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel
@@ -98,7 +98,7 @@
         - never
 
     - name: Metrics
-      when: (metrics_port | length > 0) and (prometheus_server | length > 0)
+      when: metrics_port and prometheus_server
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics

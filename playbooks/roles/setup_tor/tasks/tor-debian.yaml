@@ -36,14 +36,14 @@
   when: tor_port | int < 1024
   block:
     - name: Configure apt hook to use low port for obfs4proxy
-      when: bridge_distribution | length > 0
+      when: bridge_distribution
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
         path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
         create: yes
 
     - name: Configure apt hook to use low port for Tor
-      when: bridge_distribution | length == 0
+      when: not bridge_distribution
       ansible.builtin.lineinfile:
         line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/tor"; };'
         path: /etc/apt/apt.conf.d/99-tor-capability

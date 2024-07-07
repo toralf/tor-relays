@@ -18,7 +18,7 @@
       - psmisc
 
 - name: Install or update additional software
-  when: additional_software | length > 0
+  when: additional_software
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 

@@ -4,7 +4,7 @@
     name: tor
 
 - name: Install or update seccomp lib (non-bridge only)
-  when: bridge_distribution | length == 0
+  when: not bridge_distribution
   ansible.builtin.apt:
     name:
       - libseccomp-dev
@@ -115,7 +115,7 @@
   notify: "Restart Tor"
 
 - name: Allow low port
-  when: (tor_port | int < 1024) and (bridge_distribution | length == 0)
+  when: (tor_port | int < 1024) and (not bridge_distribution)
   community.general.capabilities:
     path: /usr/bin/tor
     capability: cap_net_bind_service=+ep
