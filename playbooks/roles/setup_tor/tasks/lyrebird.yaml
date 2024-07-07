@@ -7,7 +7,6 @@
     force: true
     depth: 1
     single_branch: true
-  register: _repo_lyrebird
 
 - name: Apply patches for Lyrebird
   changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
@@ -20,13 +19,12 @@
   register: _lyrebird_patched
 
 - name: Build Lyrebird
-  when: _repo_lyrebird.changed or _lyrebird_patched.changed
   changed_when: true
   ansible.builtin.command:
     cmd: make build
     chdir: /root/lyrebird
 
-- name: Install Lyrebird
+- name: Copy Lyrebird
   ansible.builtin.copy:
     src: /root/lyrebird/lyrebird
     dest: /usr/bin/
