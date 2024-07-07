@@ -18,9 +18,6 @@ tor_metrics: false
 # store certificates and more
 ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
 
-# to delete outdated additional rules
-firewall_force_reset: false
-
 # false: only iptables package is installed
 firewall_base_config: true
 

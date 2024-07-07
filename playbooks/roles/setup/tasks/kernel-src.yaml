@@ -82,7 +82,7 @@
   register: _configured
 
 - name: Build Linux
-  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
+  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed or (force is defined)
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
