@@ -66,6 +66,15 @@
     - /var/lib/tor/
     - /var/log/tor/
 
+# needed if Tor was previously installed by a Debian package
+- name: Set ownership for Tor
+  when: _found_system_directories.changed
+  ansible.builtin.command:
+    cmd: chown -R tor:tor "{{ item }}"
+  with_items:
+    - /var/lib/tor/
+    - /var/log/tor/
+
 # test if Tor restart is needed
 - name: Install binary
   ansible.builtin.copy:
