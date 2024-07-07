@@ -1,5 +1,5 @@
 ---
-- name: Init or update Lyrebird repo
+- name: Init or update Lyrebird Git repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     dest: /root/lyrebird

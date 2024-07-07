@@ -9,7 +9,7 @@
     name:
       - libseccomp-dev
 
-- name: Init or update
+- name: Init or update Tor Git repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
     dest: /root/tor
@@ -19,7 +19,7 @@
     single_branch: true
   register: _repo_tor
 
-- name: Apply patches
+- name: Apply patches for Tor
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
@@ -29,7 +29,7 @@
   loop: "{{ tor_patches }}"
   register: _tor_patched
 
-- name: Build
+- name: Build Tor
   when: _repo_tor.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
@@ -55,7 +55,7 @@
     executable: /bin/bash
     chdir: /root/tor
 
-- name: Create system directories
+- name: Create Tor directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -76,7 +76,7 @@
     - /var/log/tor/
 
 # test if Tor restart is needed
-- name: Install binary
+- name: Install binary of Tor
   ansible.builtin.copy:
     src: /root/tor/src/app/tor
     dest: /usr/bin/
@@ -85,7 +85,7 @@
   register: _binary_tor
   notify: "Restart Tor"
 
-- name: Run install command
+- name: Run install command for Tor
   when: _binary_tor.changed
   changed_when: true
   ansible.builtin.command:

@@ -3,7 +3,7 @@
   ansible.builtin.user:
     name: snowflake
 
-- name: Init or update repo
+- name: Init or update Git repo
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     dest: /root/snowflake
@@ -23,14 +23,14 @@
   loop: "{{ snowflake_patches }}"
   register: _snowflake_patched
 
-- name: Build
+- name: Build Tor
   changed_when: false
   when: _repo_snowflake.changed or _snowflake_patched.changed
   ansible.builtin.command:
     cmd: go build
     chdir: /root/snowflake/proxy
 
-- name: Install
+- name: Install Tor
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
     dest: /usr/bin/snowflake-proxy

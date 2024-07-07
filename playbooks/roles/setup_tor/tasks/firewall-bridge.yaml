@@ -59,7 +59,7 @@
         - udp
         - udplite
 
-- name: Save iptables state of Tor
+- name: Save iptables state
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved

@@ -13,7 +13,7 @@
     - "v6"
   register: _firewall
 
-- name: Save iptables state of Snowflake
+- name: Save iptables state
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
