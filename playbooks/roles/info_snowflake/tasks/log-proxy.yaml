@@ -9,6 +9,6 @@
   register: _result
 
 - name: Results of log-proxy since {{ log_proxy_since }}
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

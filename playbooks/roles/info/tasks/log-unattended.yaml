@@ -8,6 +8,6 @@
   register: _result
 
 - name: Findings of log-unattended {{ log_lines }} last lines
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

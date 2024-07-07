@@ -16,11 +16,11 @@
   register: _result
 
 - name: Results of log-notice {{ log_lines }} last lines
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines
 
 - name: Error
-  when: _result.stderr_lines | length > 0
+  when: _result.stderr_lines
   ansible.builtin.debug:
     var: _result.stderr_lines

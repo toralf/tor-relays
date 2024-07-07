@@ -1,6 +1,6 @@
 ---
 - name: DDoS of obfs4 port
-  changed_when: _ddos_obfs4_rules.stdout_lines | length > 0
+  changed_when: _ddos_obfs4_rules.stdout_lines
   vars:
     _max: "{{ bridge_distribution | ternary(3, 9) }}"
     _ipt4_common: "--xxx INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ tor_port }}"

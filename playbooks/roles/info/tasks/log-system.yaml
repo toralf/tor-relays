@@ -10,6 +10,6 @@
   register: _result
 
 - name: Findings of log-system since {{ log_system_since }}
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

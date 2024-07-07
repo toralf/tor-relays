@@ -8,7 +8,7 @@ iface {{ ansible_facts.default_ipv4.interface }} inet dhcp
 
 iface {{ ansible_facts.default_ipv6.interface }} inet6 static
     address {{ _ipv6_new }}/{{ ansible_facts.default_ipv6.prefix }} dev {{ ansible_facts.default_ipv6.interface }}
-{% if ansible_facts.dns.nameservers | ansible.utils.ipv6 | length > 0 %}
+{% if ansible_facts.dns.nameservers | ansible.utils.ipv6 %}
     dns-nameservers {{ ansible_facts.dns.nameservers | ansible.utils.ipv6 | join(' ') }}
 {% endif %}
     gateway fe80::1
