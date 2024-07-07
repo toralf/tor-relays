@@ -23,14 +23,14 @@
   loop: "{{ snowflake_patches }}"
   register: _snowflake_patched
 
-- name: Build Tor
+- name: Build
   changed_when: false
   when: _repo_snowflake.changed or _snowflake_patched.changed
   ansible.builtin.command:
     cmd: go build
     chdir: /root/snowflake/proxy
 
-- name: Install Tor
+- name: Install
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
     dest: /usr/bin/snowflake-proxy
