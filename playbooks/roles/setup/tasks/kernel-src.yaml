@@ -53,14 +53,14 @@
       yes '' | make localmodconfig 1>>make.log
       sed -i \
         -e 's,^# CONFIG_IKCONFIG_PROC,CONFIG_IKCONFIG_PROC=m,' \
-        -e 's,^# CONFIG_IP_NF_FILTER,CONFIG_IP_NF_FILTER=m,' \
-        -e 's,^# CONFIG_IP_NF_NAT,CONFIG_IP_NF_NAT=m,' \
-        -e 's,^# CONFIG_IP_SET_HASH,CONFIG_IP_SET_HASH=m,' \
-        -e 's,^# CONFIG_IP_SET_HASH_IP,CONFIG_IP_SET_HASH_IP=m,' \
         -e 's,^# CONFIG_IP6_NF_FILTER,CONFIG_IP6_NF_FILTER=m,' \
         -e 's,^# CONFIG_IP6_NF_IPTABLES,CONFIG_IP6_NF_IPTABLES=m,' \
         -e 's,^# CONFIG_IP6_NF_NAT,CONFIG_IP6_NF_NAT=m,' \
         -e 's,^# CONFIG_IP6_NF_RAW,CONFIG_IP6_NF_RAW=m,' \
+        -e 's,^# CONFIG_IP_NF_FILTER,CONFIG_IP_NF_FILTER=m,' \
+        -e 's,^# CONFIG_IP_NF_NAT,CONFIG_IP_NF_NAT=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH,CONFIG_IP_SET_HASH=m,' \
+        -e 's,^# CONFIG_IP_SET_HASH_IP,CONFIG_IP_SET_HASH_IP=m,' \
         -e 's,^# CONFIG_LOCALVERSION_AUTO,CONFIG_LOCALVERSION_AUTO=y,' \
         -e 's,^# CONFIG_NETFILTER_XT_MATCH_CONNLIMIT,CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m,' \
         -e 's,^# CONFIG_NETFILTER_XT_MATCH_HASHLIMIT,CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m,' \
