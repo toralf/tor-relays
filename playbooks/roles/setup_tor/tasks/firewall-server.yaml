@@ -1,5 +1,5 @@
 ---
-- name: Install or update software for Tor server firewall
+- name: Install or update software for Tor DDoS solution
   ansible.builtin.apt:
     name:
       - ipset
@@ -44,7 +44,7 @@
     state: absent
 
 - name: DDoS metrics
-  when: prometheus_node_exporter
+  when: prometheus_node_exporter and tor_metrics
   block:
     - name: Download DDoS metrics script
       ansible.builtin.get_url:
@@ -56,4 +56,4 @@
     - name: Create cron job for DDoS metrics
       ansible.builtin.cron:
         name: "DDoS metrics"
-        job: "for i in {0..3}; do /root/metrics.sh 1>/dev/null 2>&1; sleep 15; done"
+        job: "for i in 0 1 2 3; do /root/metrics.sh 1>/dev/null 2>&1; sleep 15; done"
