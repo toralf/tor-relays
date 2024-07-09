@@ -1,0 +1,5 @@
+---
+# for server specific firewall
+_add_remote_service: '{{ _has_remote_service | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
+
+_my_family: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | replace('\n', ',') }}"

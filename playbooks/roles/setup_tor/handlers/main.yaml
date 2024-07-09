@@ -8,7 +8,7 @@
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
 
-      {{ add_remote_service }} /root/ipv4-rules.sh start
+      {{ _add_remote_service }} /root/ipv4-rules.sh start
       /root/ipv6-rules.sh start
 
 - name: Reload Systemd

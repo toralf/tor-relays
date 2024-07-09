@@ -32,8 +32,8 @@ SandBox 1
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
-{% if my_family %}
-MyFamily {{ my_family  }}
+{% if _my_family %}
+MyFamily {{ _my_family }}
 {% endif %}
 
 CellStatistics 0

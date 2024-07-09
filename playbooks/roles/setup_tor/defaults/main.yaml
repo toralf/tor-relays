@@ -16,9 +16,3 @@ tor_metrics: false
 
 # safety first
 bridge_distribution: "none"
-
-# for server specific firewall
-_has_remote_service: "{{ metrics_port and prometheus_server }}"
-add_remote_service: '{{ _has_remote_service | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
-
-my_family: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | replace('\n', ',') }}"
