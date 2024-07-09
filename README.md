@@ -13,21 +13,19 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create seeds (and keep them secret):
+1. create a seed (only once needed, please keep it secret):
 
    ```bash
-   cat <<EOF >> secrets/local.yaml
+   cat <<EOF >>secrets/local.yaml
    ---
    seed_address: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
-   seed_metrics: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
-   seed_tor_port: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
 
    EOF
 
    chmod 400 secrets/local.yaml
    ```
 
-1. add _my_bridge_ to the group _tor_ in the [./inventory](./inventory/):
+1. add your bridge, i.e. _my_bridge_, to the group, i.e. _tor_, to a YAML file under [./inventory](./inventory/):
 
    ```yaml
    ---
@@ -55,27 +53,24 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
 
 The deployment is made by _Ansible_.
 See the section [Metrics](#metrics) below how to scrape runtime metrics.
-The Ansible role expects a `seed_address` value to configure a relyable randomized ipv6 address at a Hetzner system (at IONOS a proposed one is only displayed).
-For Tor servers is the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
-For other systems a set of firewall rules provide basic protection.
+The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system to a relyable randomized one
+(at IONOS a proposed one is displayed, but not set).
+For Tor servers the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
+For Tor bridges and Snowflake a lightweight version of that is used..
 
-The _MyFamily_ value can be created by:
+The _MyFamily_ value for Tor server is derived from the output of:
 
 ```bash
 ./site-info.yaml --tags wellknown
-
-grep -v '#' ~/tmp/*_rsa-fingerprint.txt
 ```
 
-```yaml
-__rsa: >-
-  ...
-  ...
+in the next run of the setup script:
 
-tor_config_group:
-  - name: "MyFamily"
-    value: "{{ __rsa | replace('\n', ' ') | regex_replace('  *', ',') }}"
+```bash
+./site-setup.yaml --tags config
 ```
+
+(look [here](./playbooks/roles/setup_tor/vars/main.yaml.) for details).
 
 ### Additional software
 
@@ -104,7 +99,7 @@ An Nginx is used to encrypt the metrics data transfer on transit ([code](./playb
 using the certificate of the self-signed CA ([code](./playbooks/roles/setup/tasks/ca.yaml)).
 This CA key has then to be presented to the Prometheus to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
 
-Configure a randomly choosen `metrics_port` (using `seed_metrics` similar to `seed_address`)
+Configure a randomly choosen `metrics_port` (create `seed_metrics` as before `seed_address`)
 to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_:
 
 ```yaml
