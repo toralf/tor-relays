@@ -87,30 +87,29 @@ hosts:
 
 ### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
 
-As default _HEAD_ (of branch _main_) is taken.
-A dedicated branch can be defined by the variable _<...>\_git_version_.
-Furthermore _<...>\_patches_ can provide additional patches (as URLs) to be applied on top.
+As default _HEAD_ (of the Git branch _main_) is taken.
+A branch can be defined by the variable _<...>\_git_version_.
+Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from (appleid on top of the branch).
 
 ### Metrics
 
-If a Prometheus server is configured (e.g. `prometheus_server: "1.2.3.4"`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule
+If a Prometheus server is configured (`prometheus_server`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule
 ([code](./playbooks/roles/setup/tasks/firewall.yaml)).
-An Nginx is used to encrypt the metrics data transfer on transit ([code](./playbooks/roles/setup/tasks/metrics.yaml)).
-using the certificate of the self-signed CA ([code](./playbooks/roles/setup/tasks/ca.yaml)).
-This CA key has then to be presented to the Prometheus to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
-
-Configure a randomly choosen `metrics_port` (create `seed_metrics` as before `seed_address`)
-to expose metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_:
+An Nginx is used to encrypt the metrics data transfer on transit ([code](./playbooks/roles/setup/tasks/metrics.yaml))
+using the certificate of a self-signed CA ([code](./playbooks/roles/setup/tasks/ca.yaml)).
+This CA key has to be put into the Prometheus config to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
+Configure a `metrics_port` to expose several kind of metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
+(i.e. the metrics port is pseudo-randomly choosen using a secret seed called _seed_metrics_):
 
 ```yaml
 snowflake:
   vars:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
     snowflake_metrics: true
+    prometheus_server: "1.2.3.4
 ```
 
-A _Prometheus node exporter_ is deployed by defining `prometheus_node_exporter: true`.
-
+In addition a _Prometheus node exporter_ is deployed by: `prometheus_node_exporter: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
