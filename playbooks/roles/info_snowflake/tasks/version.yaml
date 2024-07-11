@@ -9,9 +9,7 @@
     cmd: |-
       snowflake-proxy --version 2>&1 |
       cut -f 2- -d ' ' |
-      tr ' ' '_' |
-      grep . ||
-      echo "-"
+      tr ' ' '_'
   register: _proxy_version
 
 - name: File version

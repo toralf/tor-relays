@@ -8,23 +8,21 @@
     cmd: |-
       tor --version |
       grep -m 1 '^Tor version' |
-      awk '{ print $3"_"$4 }' |
-      grep . ||
-      echo "-"
+      cut -f 3,4 -d ' ' |
+      tr ' ' '_'
   register: _tor
 
 - name: Proxy version
   changed_when: false
   when: bridge_distribution
+  failed_when: false
   ansible.builtin.shell:
     cmd: |-
-      (
-        if cd /root/lyrebird 2>/dev/null; then
-          git describe --always
-        else
-          obfs4proxy --version || lyrebird --version
-        fi
-      ) || echo "-"
+      if cd /root/lyrebird 2>/dev/null; then
+        git describe --always
+      else
+        obfs4proxy --version || lyrebird --version
+      fi
     executable: /bin/bash
   register: _proxy
 
