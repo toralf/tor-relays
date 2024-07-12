@@ -1,11 +1,4 @@
 ---
-- name: Validate tor_port
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "tor_port is defined"
-      - "(tor_port | int > 0) and (tor_port | int < 2**16)"
-
 - name: Validate ipv6 address
   ansible.builtin.assert:
     quiet: true
@@ -13,6 +6,13 @@
       - "ansible_facts.default_ipv6.address is defined"
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
       - "ansible_facts.default_ipv6.address is not search('::1$')"
+
+- name: Validate tor_port
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "tor_port is defined"
+      - "(tor_port | int > 0) and (tor_port | int < 2**16)"
 
 - name: Validate metrics_port
   when: metrics_port
