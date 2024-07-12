@@ -29,6 +29,12 @@
     special_time: hourly
     job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
 
+- name: Create cron job to update Tor authority ip addresses
+  ansible.builtin.cron:
+    name: "Tor authority ip addresses update"
+    special_time: daily
+    job: "/root/ipv4-rules.sh update; /root/ipv6-rules.sh update"
+
 - name: Remove base firewall script
   ansible.builtin.file:
     path: "/root/firewall-ip{{ item }}.sh"
@@ -53,7 +59,7 @@
         mode: "0744"
         force: true
 
-    - name: Create cron job for DDoS metrics
+    - name: Create cron job to create DDoS metrics
       ansible.builtin.cron:
         name: "DDoS metrics"
         job: "for i in 0 1 2 3; do /root/metrics.sh 1>/dev/null 2>&1; sleep 14; done"
