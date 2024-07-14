@@ -65,7 +65,7 @@
   notify: "Restart Nginx"
 
 - name: Prometheus node exporter
-  when: prometheus_node_exporter
+  when: node_metrics is true
   block:
     - name: Install Prometheus node exporter
       ansible.builtin.apt:

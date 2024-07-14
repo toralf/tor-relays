@@ -69,6 +69,12 @@
           tags:
             - lyrebird
 
+    - name: Metrics
+      when: tor_metrics is true
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics
+
     - name: Enable Tor at boot
       ansible.builtin.systemd_service:
         name: tor

@@ -4,5 +4,3 @@ snowflake_git_version: "HEAD"
 snowflake_patches: []
 
 snowflake_command_args: ""
-
-snowflake_metrics: false

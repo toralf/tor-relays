@@ -109,7 +109,7 @@ snowflake:
     prometheus_server: "1.2.3.4
 ```
 
-In addition a _Prometheus node exporter_ is deployed by: `prometheus_node_exporter: true`.
+In addition a _Prometheus node exporter_ is deployed by: `node_metrics: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc

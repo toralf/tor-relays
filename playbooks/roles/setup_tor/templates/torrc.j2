@@ -42,7 +42,7 @@ EntryStatistics 1
 ExitPortStatistics 1
 {% endif %}
 
-{% if tor_metrics %}
+{% if tor_metrics is true %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
 {% endif %}
