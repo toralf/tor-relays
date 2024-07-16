@@ -7,7 +7,7 @@
 
 - name: Download iptables scripts
   ansible.builtin.get_url:
-    url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
+    url: "https://github.com/toralf/torutils/raw/length/{{ item }}"
     dest: "/root/{{ item }}"
     mode: "0744"
     force: true
