@@ -56,7 +56,6 @@
     sysctl_file: /etc/sysctl.d/21tor-generic.conf
     sysctl_set: true
   loop:
-    - { name: "vm.swappiness", value: 5 } # swap only if <=5% of physical RAM is still free
     - { name: "kernel.sysrq", value: 0 }
     - { name: "net.ipv4.tcp_fin_timeout", value: 10 }
 
