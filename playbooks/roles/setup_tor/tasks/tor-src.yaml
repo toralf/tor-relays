@@ -30,7 +30,7 @@
   register: _tor_patched
 
 - name: Build
-  when: _repo_tor.changed or _tor_patched.changed or (force is defined)
+  when: _repo_tor.changed or _tor_patched.changed or ((force is defined) and force)
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
