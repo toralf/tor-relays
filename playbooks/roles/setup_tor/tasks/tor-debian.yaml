@@ -1,4 +1,9 @@
 ---
+- name: Install or update Release key
+  ansible.builtin.apt:
+    name:
+      - deb.torproject.org-keyring
+
 - name: Get Tor repository apt key
   ansible.builtin.apt_key:
     url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
@@ -16,11 +21,6 @@
     filename: "torproject"
     repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
     state: present
-
-- name: Install or update key ring
-  ansible.builtin.apt:
-    name:
-      - deb.torproject.org-keyring
 
 - name: Install or update Tor + obfs4proxy
   ansible.builtin.apt:
