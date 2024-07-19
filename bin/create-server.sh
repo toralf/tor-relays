@@ -75,7 +75,7 @@ if [[ $diff -lt 35 ]]; then
   sleep $((35 - diff))
 fi
 
-while ! $(dirname $0)/add-to-known_hosts.sh $*; do
+while ! $(dirname $0)/trust-host-ssh-key.sh $*; do
   echo -e "\n wait 10 sec before retry ...\n"
   sleep 10
   echo

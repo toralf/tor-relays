@@ -17,7 +17,6 @@ jobs=$((2 * $(nproc)))
 # the wellknown files can't be cleaned b/c the hostname is on a separate line
 echo -e " deleting local config file(s) ..."
 while read -r name; do
-  sed -i -e "/^${name} /d" -e "/^${name},/d" ~/.ssh/known_hosts 2>/dev/null
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
@@ -44,3 +43,5 @@ xargs -t -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 
 echo -e "\n reloading DNS resolver ..." >&2
 sudo rc-service unbound reload
+
+$(dirname $0)/distrust-host-ssh-key.sh $*
