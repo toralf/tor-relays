@@ -82,17 +82,20 @@
   register: _configured
 
 - name: Build Linux
-  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed or ((force is defined) and force)
+  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
+  vars:
+    __m: "{{ (1 + ansible_facts.memtotal_mb / 2048) }}"
+    __j: "{{ (__m | int > ansible_facts.processor_vcpus | int) | ternary(ansible_facts.processor_vcpus, __m | int) }}"
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      make -j {{ ansible_facts.processor_vcpus }} 1>>make.log
+      make -j {{ __j }}           1>>make.log
       ln -snf $PWD /usr/src/linux
-      make install 1>>make.log
-      make modules_install 1>>make.log
-      update-initramfs -u 1>>make.log
+      make install                1>>make.log
+      make modules_install        1>>make.log
+      update-initramfs -u         1>>make.log
 
     chdir: /root/linux
     executable: /bin/bash
