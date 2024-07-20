@@ -50,9 +50,8 @@
       tags:
         - base
 
-    - name: Update Debian
-      when: ansible_facts.distribution == "Debian"
-      ansible.builtin.import_tasks: update-debian.yaml
+    - name: Update
+      ansible.builtin.import_tasks: update.yaml
       tags:
         - update
 
@@ -85,7 +84,12 @@
     - name: Ensure that an updated kernel is booted
       ansible.builtin.meta: flush_handlers
 
-    - name: Kernel source
+    - name: Kernel
+      ansible.builtin.import_tasks: kernel.yaml
+      tags:
+        - kernel
+
+    - name: Kernel from source
       when: kernel_git_version
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
@@ -103,9 +107,8 @@
       tags:
         - metrics
 
-    - name: Configure auto update Debian
-      when: ansible_facts.distribution == "Debian"
-      ansible.builtin.import_tasks: auto-update-debian.yaml
+    - name: Configure auto update
+      ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
 

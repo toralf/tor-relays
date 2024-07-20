@@ -1,34 +1,11 @@
 ---
-- name: Upgrade distribution
-  ansible.builtin.apt:
-    upgrade: dist
-
-- name: Install or update base software
-  ansible.builtin.apt:
-    name:
-      - apt-transport-https
-      - chrony
-      - conntrack
-      - cron
-      - gpg
-      - gpg-agent
-      - htop
-      - iptables
-      - needrestart
-      - psmisc
-
-- name: Install or update additional software
-  when: additional_software
-  ansible.builtin.apt:
-    name: "{{ additional_software }}"
-
 - name: Configure repository "backports"
   when: kernel_debian_backports
   ansible.builtin.apt_repository:
     filename: backports
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-- name: Install Debian Cloud kernel
+- name: Install Cloud kernel
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
     name:

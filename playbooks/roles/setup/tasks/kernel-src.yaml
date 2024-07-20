@@ -13,6 +13,7 @@
       - libelf-dev
       - libncurses5-dev
       - libssl-dev
+      - lz4
 
 - name: Init or update Linux repo
   ansible.builtin.git:
@@ -40,40 +41,51 @@
   register: _kernel_patched
 
 - name: Configure Linux
-  changed_when: _configured.rc == 123
+  changed_when: _configured.rc == 123 or true
   failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
       [[ -s .config ]] && before=$(md5sum .config) || before="0"
+      yes '' | make localmodconfig >/dev/null
 
-      truncate -s 0 make.log
-
-      yes '' | make localmodconfig 1>>make.log
       sed -i \
-        -e 's,^# CONFIG_IKCONFIG_PROC,CONFIG_IKCONFIG_PROC=m,' \
-        -e 's,^# CONFIG_IP6_NF_FILTER,CONFIG_IP6_NF_FILTER=m,' \
-        -e 's,^# CONFIG_IP6_NF_IPTABLES,CONFIG_IP6_NF_IPTABLES=m,' \
-        -e 's,^# CONFIG_IP6_NF_NAT,CONFIG_IP6_NF_NAT=m,' \
-        -e 's,^# CONFIG_IP6_NF_RAW,CONFIG_IP6_NF_RAW=m,' \
-        -e 's,^# CONFIG_IP_NF_FILTER,CONFIG_IP_NF_FILTER=m,' \
-        -e 's,^# CONFIG_IP_NF_NAT,CONFIG_IP_NF_NAT=m,' \
-        -e 's,^# CONFIG_IP_SET_HASH,CONFIG_IP_SET_HASH=m,' \
-        -e 's,^# CONFIG_IP_SET_HASH_IP,CONFIG_IP_SET_HASH_IP=m,' \
-        -e 's,^# CONFIG_LOCALVERSION_AUTO,CONFIG_LOCALVERSION_AUTO=y,' \
-        -e 's,^# CONFIG_NETFILTER_XT_MATCH_CONNLIMIT,CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m,' \
-        -e 's,^# CONFIG_NETFILTER_XT_MATCH_HASHLIMIT,CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m,' \
-        -e 's,^# CONFIG_NETFILTER_XT_MATCH_MULTIPORT,CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m,' \
-        -e 's,^# CONFIG_NETFILTER_XT_NAT,CONFIG_NETFILTER_XT_NAT=m,' \
-        -e 's,^# CONFIG_NF_CT_NETLINK,CONFIG_NF_CT_NETLINK=m,' \
-        -e 's,^# CONFIG_NF_NAT,CONFIG_NF_NAT=m,' \
-        -e 's,^# CONFIG_NFT_NAT,CONFIG_NFT_NAT=m,' \
+        -e '/^CONFIG_AGP=/d' \
+        -e '/^CONFIG_BPF=/d' \
+        -e '/^CONFIG_DRM=/d' \
+        -e '/^CONFIG_FB=/d' \
+        -e '/^CONFIG_HID=/d' \
+        -e '/^CONFIG_LOCALVERSION_AUTO=/d' \
+        -e '/^CONFIG_SOUND=/d' \
+        -e '/^CONFIG_USB=/d' \
+        -e '/^CONFIG_XEN=/d' \
         .config
-      yes '' | make oldconfig 1>>make.log
 
+      cat <<EOF >>.config
+      CONFIG_IKCONFIG_PROC=m
+      CONFIG_IP6_NF_FILTER=m
+      CONFIG_IP6_NF_IPTABLES=m
+      CONFIG_IP6_NF_NAT=m
+      CONFIG_IP6_NF_RAW=m
+      CONFIG_IP_NF_FILTER=m
+      CONFIG_IP_NF_NAT=m
+      CONFIG_IP_SET_HASH=m
+      CONFIG_IP_SET_HASH_IP=m
+      CONFIG_LOCALVERSION=""
+      CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
+      CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
+      CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
+      CONFIG_NETFILTER_XT_NAT=m
+      CONFIG_NF_CT_NETLINK=m
+      CONFIG_NF_NAT=m
+      CONFIG_NFT_NAT=m
+      CONFIG_RD_GZIP=y
+      CONFIG_RD_ZSTD=y
+      EOF
+
+      yes '' | make oldconfig >/dev/null
       after=$(md5sum .config)
-
       if [[ ! $before == $after ]]; then
         exit 123
       fi
@@ -85,17 +97,25 @@
   when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
   vars:
-    __m: "{{ (1 + ansible_facts.memtotal_mb / 2048) }}"
-    __j: "{{ (__m | int > ansible_facts.processor_vcpus | int) | ternary(ansible_facts.processor_vcpus, __m | int) }}"
+    __m: "{{ (ansible_facts.memtotal_mb | int < 2048) | ternary(1, (ansible_facts.memtotal_mb / 2048) | int) }}"
+    __j: "{{ (__m | int > ansible_facts.processor_vcpus | int) | ternary(ansible_facts.processor_vcpus, __m) }}"
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      make -j {{ __j }}           1>>make.log
+      export LOCALVERSION=""
+      make -j {{ __j }}                             >/dev/null
       ln -snf $PWD /usr/src/linux
-      make install                1>>make.log
-      make modules_install        1>>make.log
-      update-initramfs -u         1>>make.log
+      make modules_install                          >/dev/null
+      make install                                  >/dev/null
+      kver=$(make kernelversion)
+      update-initramfs -u -k $kver
+
+      grub_entry=$(grep -m 1 "menuentry.*with Linux $kver" /boot/grub/grub.cfg |
+        sed -e "s,' --class debian.*,," |
+        cut -f2- -d "'")
+      sed -i -e "s#^GRUB_DEFAULT=.*#GRUB_DEFAULT=\"Advanced options for Debian GNU/Linux>${grub_entry}\"#" /etc/default/grub
+      update-grub
 
     chdir: /root/linux
     executable: /bin/bash
