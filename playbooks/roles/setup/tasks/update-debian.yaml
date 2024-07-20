@@ -33,11 +33,7 @@
     default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
     name:
       - "linux-image-cloud-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-  register: _new_kernel
-
-- name: Reboot to Cloud kernel
-  when: _new_kernel.changed
-  ansible.builtin.reboot:
+  notify: "Reboot system"
 
 - name: Ensure kernel crash dumps are made to /tmp
   ansible.builtin.cron:
