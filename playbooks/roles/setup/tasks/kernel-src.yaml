@@ -41,7 +41,7 @@
   register: _kernel_patched
 
 - name: Configure Linux
-  changed_when: _configured.rc == 123 or true
+  changed_when: _configured.rc == 123
   failed_when: (_configured.rc != 0) and (_configured.rc != 123)
   ansible.builtin.shell:
     cmd: |-
@@ -97,8 +97,7 @@
   when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
   vars:
-    __m: "{{ (ansible_facts.memtotal_mb | int < 2048) | ternary(1, (ansible_facts.memtotal_mb / 2048) | int) }}"
-    __j: "{{ (__m | int > ansible_facts.processor_vcpus | int) | ternary(ansible_facts.processor_vcpus, __m) }}"
+    __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
   ansible.builtin.shell:
     cmd: |-
       set -euf
