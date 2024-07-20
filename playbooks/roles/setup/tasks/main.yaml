@@ -33,6 +33,11 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.reboot:
+      connect_timeout: 2
+      reboot_timeout: 30
+      pre_reboot_delay: 0
+      post_reboot_delay: 20
     ansible.builtin.stat:
       get_attributes: false
       get_checksum: false

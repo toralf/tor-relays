@@ -22,20 +22,22 @@
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 
-- name: Debian backport kernel
+- name: Configure repository "backports"
   when: kernel_debian_backports
-  block:
-    - name: Configure repository "backports"
-      ansible.builtin.apt_repository:
-        filename: backports
-        repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+  ansible.builtin.apt_repository:
+    filename: backports
+    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-    - name: Install or update "backports" kernel
-      ansible.builtin.apt:
-        default_release: "{{ ansible_facts.distribution_release }}-backports"
-        name:
-          - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-      notify: "Reboot system"
+- name: Install Debian Cloud kernel
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
+    name:
+      - "linux-image-cloud-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+  register: _new_kernel
+
+- name: Reboot to Cloud kernel
+  when: _new_kernel.changed
+  ansible.builtin.reboot:
 
 - name: Ensure kernel crash dumps are made to /tmp
   ansible.builtin.cron:
