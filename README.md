@@ -99,7 +99,7 @@ An Nginx is used to encrypt the metrics data transfer on transit ([code](./playb
 using the certificate of a self-signed CA ([code](./playbooks/roles/setup/tasks/ca.yaml)).
 This CA key has to be put into the Prometheus config to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
 Configure a `metrics_port` to expose several kind of metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
-(i.e. the metrics port is pseudo-randomly choosen using a secret seed called _seed_metrics_):
+(i.e. the metrics port is pseudo-randomly choosen using _seed_metrics_):
 
 ```yaml
 snowflake:
@@ -109,19 +109,17 @@ snowflake:
     prometheus_server: "1.2.3.4
 ```
 
-In addition a _Prometheus node exporter_ is deployed by: `node_metrics: true`.
+In addition the _Prometheus node exporter_ is deployed by: `node_metrics: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 ### Misc
 
-The value _targets_ (used in the Prometheus server config file) can be created e.g. by:
+The value _targets_ (used in the Prometheus server config file) can be created by sth. like:
 
 ```bash
 ./site-info.yaml --tags metrics-port
 sort ~/tmp/*_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
 ```
-
-The scripts under [./bin](./bin) work for the Hetzner Cloud API only.
 
 To create there a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
 
@@ -138,6 +136,8 @@ include: "/etc/unbound/hetzner-<project>.conf"
 ```
 
 (_hcloud_ uses the term _"context"_ for a project)
+
+The scripts under [./bin](./bin) work only for the Hetzner Cloud API.
 
 ## Links
 
