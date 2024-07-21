@@ -59,11 +59,9 @@
         -e '/^CONFIG_LOCALVERSION_AUTO=/d' \
         -e '/^CONFIG_SOUND=/d' \
         -e '/^CONFIG_USB=/d' \
-        -e '/^CONFIG_XEN=/d' \
         .config
 
       cat <<EOF >>.config
-      CONFIG_IKCONFIG_PROC=m
       CONFIG_IP6_NF_FILTER=m
       CONFIG_IP6_NF_IPTABLES=m
       CONFIG_IP6_NF_NAT=m
@@ -112,10 +110,9 @@
 
       grub_entry=$(grep -m 1 "menuentry.*with Linux $kver" /boot/grub/grub.cfg |
         sed -e "s,' --class debian.*,," |
-        cut -f2- -d "'")
+        cut -f 2- -d "'")
       sed -i -e "s#^GRUB_DEFAULT=.*#GRUB_DEFAULT=\"Advanced options for Debian GNU/Linux>${grub_entry}\"#" /etc/default/grub
       update-grub
-
     chdir: /root/linux
     executable: /bin/bash
   notify: "Reboot system"
