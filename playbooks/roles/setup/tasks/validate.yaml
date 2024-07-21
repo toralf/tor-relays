@@ -5,6 +5,14 @@
     that:
       - "ansible_facts.distribution == 'Debian'"
 
+- name: Validate node_metrics
+  when: node_metrics
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "metrics_port is defined"
+      - "metrics_port"
+
 - name: Validate metrics_port
   when: metrics_port
   ansible.builtin.assert:
@@ -18,6 +26,8 @@
     quiet: true
     that:
       - "item is ansible.utils.ipv4"
+      - "metrics_port is defined"
+      - "metrics_port"
   loop: "{{ prometheus_server | split(',') }}"
 
 - name: Validate RAM for kernel src

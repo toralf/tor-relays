@@ -70,7 +70,7 @@
             - lyrebird
 
     - name: Metrics
-      when: (node_metrics is true) and (tor_metrics_ddos is true)
+      when: tor_metrics_ddos is true
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics-ddos

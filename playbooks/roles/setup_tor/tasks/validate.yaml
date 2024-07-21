@@ -21,10 +21,9 @@
     that:
       - "metrics_port != tor_port"
 
-- name: Validate node_metrics
-  when: node_metrics
+- name: Validate tor_metrics_ddos
+  when: tor_metrics_ddos
   ansible.builtin.assert:
     quiet: true
     that:
-      - "metrics_port is defined"
-      - "(metrics_port | int > 0) and (metrics_port | int < 2**16)"
+      - "node_metrics is true"
