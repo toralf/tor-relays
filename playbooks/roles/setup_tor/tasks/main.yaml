@@ -70,10 +70,10 @@
             - lyrebird
 
     - name: Metrics
-      when: tor_metrics is true
+      when: (node_metrics is true) and (tor_metrics_ddos is true)
       ansible.builtin.import_tasks: metrics.yaml
       tags:
-        - metrics
+        - metrics-ddos
 
     - name: Enable Tor at boot
       ansible.builtin.systemd_service:

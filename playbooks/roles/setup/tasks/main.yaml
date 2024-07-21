@@ -102,7 +102,7 @@
         - never
 
     - name: Metrics
-      when: metrics_port and (node_metrics is true or snowflake_metrics is true or tor_metrics is true)
+      when: metrics_port
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
