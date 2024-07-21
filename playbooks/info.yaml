@@ -1,23 +1,21 @@
 ---
 - name: Info
-  hosts:
-    - all
+  hosts: all
+  strategy: ansible.builtin.linear
   roles:
     - role: info
   tags:
-    - info
+    - info-common
 
 - name: Info Snowflake
-  hosts:
-    - snowflake
+  hosts: snowflake
   roles:
     - role: info_snowflake
   tags:
     - info-snowflake
 
 - name: Info Tor
-  hosts:
-    - tor
+  hosts: tor
   roles:
     - role: info_tor
   tags:
