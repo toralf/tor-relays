@@ -1,9 +1,9 @@
 ---
-- name: Info
+- name: Info Common
   hosts: all
   strategy: ansible.builtin.linear
   roles:
-    - role: info
+    - role: info_common
   tags:
     - info-common
 

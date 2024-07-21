@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- name: Import Setup
+- name: Play Setup
   import_playbook: playbooks/setup.yaml

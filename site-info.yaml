@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- name: Import Info
+- name: Play Info
   import_playbook: playbooks/info.yaml
