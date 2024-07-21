@@ -73,6 +73,7 @@
       when: tor_metrics_ddos is true
       ansible.builtin.import_tasks: metrics.yaml
       tags:
+        - metrics
         - metrics-ddos
 
     - name: Enable Tor at boot

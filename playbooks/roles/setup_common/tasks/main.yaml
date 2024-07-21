@@ -106,6 +106,7 @@
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
+        - metrics-common
 
     - name: Configure auto update
       ansible.builtin.import_tasks: auto-update.yaml
