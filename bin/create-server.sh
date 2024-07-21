@@ -70,13 +70,13 @@ xargs -n 1 <<<$* |
 $(dirname $0)/update-dns.sh
 
 diff=$((EPOCHSECONDS - now))
-if [[ $diff -lt 35 ]]; then
+if [[ $diff -lt 30 ]]; then
   echo -en "\n wait $diff sec before continue ..."
-  sleep $((35 - diff))
+  sleep $((30 - diff))
 fi
 
 while ! $(dirname $0)/trust-host-ssh-key.sh $*; do
-  echo -e "\n wait 10 sec before retry ...\n"
-  sleep 10
+  echo -e "\n wait 5 sec before retry ...\n"
+  sleep 5
   echo
 done
