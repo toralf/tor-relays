@@ -94,9 +94,9 @@ Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from 
 ### Metrics
 
 If a Prometheus server is configured (`prometheus_server`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule
-([code](./playbooks/roles/setup/tasks/firewall.yaml)).
-An Nginx is used to encrypt the metrics data transfer on transit ([code](./playbooks/roles/setup/tasks/metrics.yaml))
-using the certificate of a self-signed CA ([code](./playbooks/roles/setup/tasks/ca.yaml)).
+([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+An Nginx is used to encrypt the metrics data transfer on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
+using the certificate of a self-signed CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
 This CA key has to be put into the Prometheus config to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
 Configure a `metrics_port` to expose several kind of metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
 (i.e. the metrics port is pseudo-randomly choosen using _seed_metrics_):
