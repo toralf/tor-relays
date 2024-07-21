@@ -6,7 +6,6 @@
 - name: Install or update base software
   ansible.builtin.apt:
     name:
-      - apt-transport-https
       - chrony
       - conntrack
       - cron
