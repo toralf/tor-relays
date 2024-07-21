@@ -81,19 +81,19 @@
       tags:
         - firewall
 
-    - name: Ensure that an updated kernel is booted
-      ansible.builtin.meta: flush_handlers
-
     - name: Kernel
-      ansible.builtin.import_tasks: kernel.yaml
       tags:
         - kernel
+      block:
+        - name: Ensure desired kernel is installed
+          ansible.builtin.import_tasks: kernel.yaml
 
-    - name: Kernel from source
-      when: kernel_git_version
-      ansible.builtin.import_tasks: kernel-src.yaml
-      tags:
-        - kernel
+        - name: Ensure that desired kernel is running
+          ansible.builtin.meta: flush_handlers
+
+        - name: Build kernel from source
+          when: kernel_git_version
+          ansible.builtin.import_tasks: kernel-src.yaml
 
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
