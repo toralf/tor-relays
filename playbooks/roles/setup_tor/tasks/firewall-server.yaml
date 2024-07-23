@@ -6,6 +6,8 @@
       - jq
 
 - name: Download iptables scripts
+  throttle: 32
+  retries: 3
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
     dest: "/root/{{ item }}"

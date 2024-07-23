@@ -16,6 +16,8 @@
       - lz4
 
 - name: Init or update Linux repo
+  throttle: 32
+  retries: 3
   ansible.builtin.git:
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     dest: /root/linux
@@ -26,6 +28,8 @@
   register: _repo_linux
 
 - name: Apply patches for Linux
+  throttle: 32
+  retries: 3
   changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: |-

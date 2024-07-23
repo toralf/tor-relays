@@ -1,5 +1,7 @@
 ---
 - name: Init or update Lyrebird Git repo
+  throttle: 16
+  retries: 3
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     dest: /root/lyrebird
@@ -9,6 +11,8 @@
     single_branch: true
 
 - name: Apply patches for Lyrebird
+  throttle: 16
+  retries: 3
   changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
