@@ -114,11 +114,11 @@ For more Prometheus config examples and Grafana dashboards take a look at [this]
 
 ### Misc
 
-The value _targets_ (used in the Prometheus server config file) can be created by sth. like:
+The _targets_ lines for the Prometheus config can be created by sth. like:
 
 ```bash
 ./site-info.yaml --tags metrics-port
-sort ~/tmp/*_metrics_port | xargs -n 10 | sed -e 's,$,"],' -e 's, ,"\, ",g' -e 's,^,- targets: [",'
+sort ~/tmp/*_metrics_port | xargs -n 10 | sed -e 's, ,"\, ",g' -e 's,^,- targets: [",' -e 's,$,"],'
 ```
 
 To create there a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
