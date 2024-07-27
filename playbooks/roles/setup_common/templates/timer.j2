@@ -1,6 +1,3 @@
-// {{ ansible_managed }}
-// https://wiki.debian.org/UnattendedUpgrades
-
 [Timer]
 OnCalendar=
 OnCalendar=*-*-* {{ timer_hour }},{{ 12 + timer_hour | int }}:02
