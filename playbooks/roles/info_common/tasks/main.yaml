@@ -17,6 +17,12 @@
   tags:
     - firewall
 
+- name: Issues
+  ansible.builtin.import_tasks: issue.yaml
+  tags:
+    - issue
+    - log
+
 - name: Log system
   ansible.builtin.import_tasks: log-system.yaml
   tags:

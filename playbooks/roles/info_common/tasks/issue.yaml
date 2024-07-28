@@ -1,0 +1,21 @@
+---
+- name: Get issue/s (full report) since {{ log_system_since }}
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      journalctl -g 'BUG:' -g 'oom' --since "{{ log_system_since }}" -q |
+        while read -r issue; do
+          journalctl --since "{{ log_system_since }}" |
+            grep -m 1 -A 1000 -F "$issue" |
+            while grep " kernel: "; do
+              :
+            done
+        done
+  register: _result
+
+- name: Findings of issue/s since {{ log_system_since }}
+  delegate_to: localhost
+  when: _result.stdout_lines
+  ansible.builtin.copy:
+    content: "{{ _result.stdout }}"
+    dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.log"
