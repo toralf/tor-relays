@@ -94,6 +94,8 @@
         - name: Build kernel from source
           when: kernel_git_version
           ansible.builtin.import_tasks: kernel-src.yaml
+          tags:
+            - kernel-src
 
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
