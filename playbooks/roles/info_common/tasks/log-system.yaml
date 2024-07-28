@@ -1,15 +1,15 @@
 ---
-- name: Grep system log since {{ log_system_since }}
+- name: Get overview of oddities in system log since {{ log_system_since }}
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl \
-        -g 'BUG:' -g 'Call Trace:' -g 'OOM' -g 'oom-kill:' -g 'RIP:' -g 'WARNING:' -g 'status=9/KILL' -g '.service: Failed' -g 'Out of memory:' \
+        -g 'BUG:' -g 'Call Trace:' -g 'OOM' -g 'invoked oom-killer' -g 'RIP:' -g 'WARNING:' -g 'status=9/KILL' -g '.service: Failed' -g 'Out of memory:' \
         --since "{{ log_system_since }}" -q |
       tail -n 10
   register: _result
 
-- name: Findings of log-system since {{ log_system_since }}
+- name: Findings of oddities in log-system since {{ log_system_since }}
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines
