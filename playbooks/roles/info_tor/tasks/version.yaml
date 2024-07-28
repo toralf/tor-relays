@@ -19,7 +19,7 @@
   ansible.builtin.shell:
     cmd: |-
       if cd /root/lyrebird 2>/dev/null; then
-        git describe --always
+        git rev-parse --verify HEAD | cut -c -12
       else
         obfs4proxy --version || lyrebird --version
       fi
