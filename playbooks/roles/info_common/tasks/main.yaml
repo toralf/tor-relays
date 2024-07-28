@@ -1,10 +1,14 @@
 ---
-- name: "Ensure that tmp dir does exist: {{ tmp_dir }}"
+- name: "Ensure that tmp dirs do exist"
+  delegate_to: localhost
   run_once: true
   ansible.builtin.file:
-    path: "{{ tmp_dir }}"
+    path: "{{ item }}"
     state: directory
     mode: "0755"
+  loop:
+    - "{{ tmp_dir }}"
+    - "{{ tmp_dir }}/issues"
   tags:
     - tmpdir
 
