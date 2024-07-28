@@ -57,10 +57,10 @@
       sed -i \
         -e '/^CONFIG_AGP=/d' \
         -e '/^CONFIG_BPF=/d' \
+        -e '/^CONFIG_BTRFS_FS=/d' \
         -e '/^CONFIG_DRM=/d' \
         -e '/^CONFIG_FB=/d' \
         -e '/^CONFIG_HID=/d' \
-        -e '/^CONFIG_LOCALVERSION_AUTO=/d' \
         -e '/^CONFIG_SOUND=/d' \
         -e '/^CONFIG_USB=/d' \
         .config
@@ -75,6 +75,7 @@
       CONFIG_IP_SET_HASH=m
       CONFIG_IP_SET_HASH_IP=m
       CONFIG_LOCALVERSION=""
+      CONFIG_LOCALVERSION_AUTO=y
       CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
       CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
       CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
@@ -87,6 +88,11 @@
       EOF
 
       yes '' | make oldconfig >/dev/null
+
+      if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
+        exit 123
+      fi
+
       after=$(md5sum .config)
       if [[ ! $before == $after ]]; then
         exit 123
@@ -104,19 +110,17 @@
     cmd: |-
       set -euf
 
-      export LOCALVERSION=""
-      make -j {{ __j }}                             >/dev/null
-      ln -snf $PWD /usr/src/linux
-      make modules_install                          >/dev/null
-      make install                                  >/dev/null
-      kver=$(make kernelversion)
-      update-initramfs -u -k $kver
+      make -j {{ __j }}     >/dev/null
+      make modules_install  >/dev/null
+      make install          >/dev/null
 
-      grub_entry=$(grep -m 1 "menuentry.*with Linux $kver" /boot/grub/grub.cfg |
-        sed -e "s,' --class debian.*,," |
-        cut -f 2- -d "'")
-      sed -i -e "s#^GRUB_DEFAULT=.*#GRUB_DEFAULT=\"Advanced options for Debian GNU/Linux>${grub_entry}\"#" /etc/default/grub
+      kver=$(make kernelversion)
+      lver=$(KERNELVERSION=$kver ./scripts/setlocalversion)
+      grub_entry="Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux $lver"
+      sed -i -e "s#^GRUB_DEFAULT=.*#GRUB_DEFAULT=\"${grub_entry}\"#" /etc/default/grub
       update-grub
+
+      ln -snf $PWD /usr/src/linux
     chdir: /root/linux
     executable: /bin/bash
   notify: "Reboot system"
