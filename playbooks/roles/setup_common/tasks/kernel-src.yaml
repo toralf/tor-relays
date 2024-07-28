@@ -101,6 +101,22 @@
     executable: /bin/bash
   register: _configured
 
+- name: Create swap file for small VPS
+  when: ansible_facts.memtotal_mb < 2048
+  ansible.builtin.shell:
+    cmd: |
+      set -euf
+
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      if ! grep -q "^/swapfile " /etc/fstab; then
+        echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+      fi
+      swapon /swapfile
+    creates: /swapfile
+    executable: /bin/bash
+
 - name: Build Linux
   when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
