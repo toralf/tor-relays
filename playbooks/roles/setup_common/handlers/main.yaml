@@ -26,6 +26,6 @@
   listen: "Reboot system"
   ansible.builtin.reboot:
     connect_timeout: 2
-    reboot_timeout: 30
+    reboot_timeout: 65
     pre_reboot_delay: 0
     post_reboot_delay: 20

@@ -85,10 +85,10 @@
       tags:
         - kernel
       block:
-        - name: Ensure desired kernel is installed
+        - name: Ensure cloud kernel is installed
           ansible.builtin.import_tasks: kernel.yaml
 
-        - name: Ensure that desired kernel is running
+        - name: Ensure cloud kernel is running
           ansible.builtin.meta: flush_handlers
 
         - name: Build kernel from source
@@ -96,6 +96,10 @@
           ansible.builtin.import_tasks: kernel-src.yaml
           tags:
             - kernel-src
+
+        - name: Ensure built kernel is running
+          when: kernel_git_version
+          ansible.builtin.meta: flush_handlers
 
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
