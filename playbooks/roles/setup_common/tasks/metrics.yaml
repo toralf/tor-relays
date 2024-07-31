@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     name:
       - nginx
-  notify: "Restart Nginx"
+  notify: "Reload Nginx"
 
 - name: Generate host private key
   delegate_to: localhost
@@ -40,7 +40,7 @@
   ansible.builtin.copy:
     src: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
-  notify: "Restart Nginx"
+  notify: "Reload Nginx"
 
 - name: Copy host certificate
   ansible.builtin.copy:
@@ -49,20 +49,20 @@
       lookup('file','{{ ssl_dir }}/certs/CA.crt')+'\n'
       }}"
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
-  notify: "Restart Nginx"
+  notify: "Reload Nginx"
 
 - name: Configure Nginx
   ansible.builtin.template:
     src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
     mode: "0644"
-  notify: "Restart Nginx"
+  notify: "Reload Nginx"
 
 - name: Remove Nginx default listener
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: "Restart Nginx"
+  notify: "Reload Nginx"
 
 - name: Prometheus node exporter
   when: node_metrics is true
