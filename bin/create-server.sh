@@ -48,7 +48,7 @@ xargs -n 1 <<<$* |
       case ${name} in
       *-amd-*) htype="cpx11" ;;
       *-arm-*) htype="cax11" ;;
-      *-int-*) htype="cx22" ;;
+      *-intel-*) htype="cx22" ;;
       *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
       esac
     fi
