@@ -44,6 +44,9 @@
       tags:
         - firewall
 
+    - name: Ensure that firewall is up
+      ansible.builtin.meta: flush_handlers
+
     - name: Debian
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-debian.yaml
