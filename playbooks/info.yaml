@@ -1,6 +1,6 @@
 ---
 - name: Info Common
-  hosts: all
+  hosts: "!snowflake:!tor"
   strategy: ansible.builtin.linear
   roles:
     - role: info_common
@@ -10,6 +10,7 @@
 - name: Info Snowflake
   hosts: snowflake
   roles:
+    - role: info_common
     - role: info_snowflake
   tags:
     - info-snowflake
@@ -17,6 +18,7 @@
 - name: Info Tor
   hosts: tor
   roles:
+    - role: info_common
     - role: info_tor
   tags:
     - info-tor
