@@ -10,6 +10,8 @@
       - libseccomp-dev
 
 - name: Init or update Tor Git repo
+  throttle: 20
+  retries: 3
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
     dest: /root/tor
@@ -20,6 +22,8 @@
   register: _repo_tor
 
 - name: Apply patches
+  throttle: 20
+  retries: 3
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
@@ -30,6 +34,8 @@
   register: _tor_patched
 
 - name: Build
+  async: 600
+  poll: 45
   when: _repo_tor.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:

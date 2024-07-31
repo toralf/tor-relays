@@ -16,7 +16,9 @@
       - lz4
 
 - name: Init or update Linux repo
-  throttle: 32
+  async: 900
+  poll: 45
+  throttle: 50
   retries: 3
   ansible.builtin.git:
     repo: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
@@ -28,7 +30,7 @@
   register: _repo_linux
 
 - name: Apply patches for Linux
-  throttle: 32
+  throttle: 50
   retries: 3
   changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
@@ -118,6 +120,8 @@
     executable: /bin/bash
 
 - name: Build Linux
+  async: 3600
+  poll: 45
   when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
   changed_when: true
   vars:
@@ -137,6 +141,8 @@
       update-grub
 
       ln -snf $PWD /usr/src/linux
+
+      touch /var/run/reboot-required        # handle Ansible "poll: 0"
     chdir: /root/linux
     executable: /bin/bash
   notify: "Reboot system"
