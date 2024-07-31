@@ -115,7 +115,7 @@
       tags:
         - auto-update
 
-    - name: Check if service restarts are needed
-      ansible.builtin.import_tasks: reboot-or-restart.yaml
+    - name: Check if reboot is needed
+      ansible.builtin.import_tasks: reboot.yaml
       tags:
-        - reboot-or-restart
+        - reboot
