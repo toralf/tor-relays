@@ -1,0 +1,8 @@
+---
+- name: Setup Tor
+  hosts: tor
+  roles:
+    - role: setup_common
+    - role: setup_tor
+  tags:
+    - setup-tor

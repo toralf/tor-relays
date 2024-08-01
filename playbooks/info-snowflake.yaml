@@ -1,0 +1,8 @@
+---
+- name: Info Snowflake
+  hosts: snowflake
+  roles:
+    - role: info_common
+    - role: info_snowflake
+  tags:
+    - info-snowflake

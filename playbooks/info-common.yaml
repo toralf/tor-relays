@@ -1,0 +1,7 @@
+---
+- name: Info Common
+  hosts: "!snowflake:!tor"
+  roles:
+    - role: info_common
+  tags:
+    - info-common

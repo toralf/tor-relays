@@ -1,0 +1,7 @@
+---
+- name: Setup Common
+  hosts: "!snowflake:!tor"
+  roles:
+    - role: setup_common
+  tags:
+    - setup-common

@@ -1,0 +1,8 @@
+---
+- name: Setup Snowflake
+  hosts: snowflake
+  roles:
+    - role: setup_common
+    - role: setup_snowflake
+  tags:
+    - setup-snowflake

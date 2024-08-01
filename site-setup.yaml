@@ -2,5 +2,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- name: Play Setup
-  import_playbook: playbooks/setup.yaml
+- ansible.builtin.import_playbook: playbooks/setup-common.yaml
+- ansible.builtin.import_playbook: playbooks/setup-snowflake.yaml
+- ansible.builtin.import_playbook: playbooks/setup-tor.yaml

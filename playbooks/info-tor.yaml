@@ -1,0 +1,8 @@
+---
+- name: Info Tor
+  hosts: tor
+  roles:
+    - role: info_common
+    - role: info_tor
+  tags:
+    - info-tor
