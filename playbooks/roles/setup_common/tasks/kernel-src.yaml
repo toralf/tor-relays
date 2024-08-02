@@ -27,7 +27,7 @@
     force: true
     depth: 1
     single_branch: true
-  register: _repo_linux
+  register: _kernel_repo
 
 - name: Apply patches for Linux
   throttle: 50
@@ -47,8 +47,8 @@
   register: _kernel_patched
 
 - name: Configure Linux
-  changed_when: _configured.rc == 123
-  failed_when: (_configured.rc != 0) and (_configured.rc != 123)
+  changed_when: _kernel_configured.rc == 123
+  failed_when: (_kernel_configured.rc != 0) and (_kernel_configured.rc != 123)
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -109,7 +109,7 @@
       fi
     chdir: /root/linux
     executable: /bin/bash
-  register: _configured
+  register: _kernel_configured
 
 - name: Create swap file for small VPS
   when: ansible_facts.memtotal_mb < 2048
@@ -129,8 +129,8 @@
 
 - name: Build Linux
   async: 3600
-  poll: 45
-  when: _repo_linux.changed or _kernel_patched.changed or _configured.changed
+  poll: 0
+  when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed
   changed_when: true
   vars:
     __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
@@ -150,7 +150,7 @@
 
       ln -snf $PWD /usr/src/linux
 
-      touch /var/run/reboot-required        # handle Ansible "poll: 0"
+      touch /var/run/reboot-required # safety net if Ansible failed to catch the async status
     chdir: /root/linux
     executable: /bin/bash
-  notify: "Reboot system"
+  register: _kernel_build

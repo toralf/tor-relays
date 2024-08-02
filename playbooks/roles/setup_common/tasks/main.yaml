@@ -55,31 +55,23 @@
       tags:
         - update
 
-    - name: IPv6 Hetzner
-      when: ansible_facts.system_vendor == 'Hetzner'
-      ansible.builtin.import_tasks: ipv6-hetzner.yaml
+    - name: IPv6
       tags:
         - ipv6
+      block:
+        - name: IPv6 Hetzner
+          when: ansible_facts.system_vendor == 'Hetzner'
+          ansible.builtin.import_tasks: ipv6-hetzner.yaml
 
-    - name: IPv6 IONOS
-      when: ansible_facts.system_vendor == 'QEMU'
-      ansible.builtin.import_tasks: ipv6-ionos.yaml
-      tags:
-        - ipv6
+        - name: IPv6 IONOS
+          when: ansible_facts.system_vendor == 'QEMU'
+          ansible.builtin.import_tasks: ipv6-ionos.yaml
 
-    - name: Ensure Ipv6 address is global scope and non-default
-      failed_when: ansible_facts.default_ipv6.address is match('fe80::') or ansible_facts.default_ipv6.address is search('::1$')
-      ansible.builtin.debug:
-        var: ansible_facts.default_ipv6
-        verbosity: 1
-      tags:
-        - ipv6
-
-    - name: Firewall
-      when: firewall_base_config
-      ansible.builtin.import_tasks: firewall.yaml
-      tags:
-        - firewall
+        - name: Ensure Ipv6 address is global scope and non-default
+          failed_when: ansible_facts.default_ipv6.address is match('fe80::') or ansible_facts.default_ipv6.address is search('::1$')
+          ansible.builtin.debug:
+            var: ansible_facts.default_ipv6
+            verbosity: 1
 
     - name: Kernel
       tags:
@@ -91,15 +83,15 @@
         - name: Ensure cloud kernel is running
           ansible.builtin.meta: flush_handlers
 
-        - name: Build kernel from source
+        - name: Build self-compiled kernel
           when: kernel_git_version
           ansible.builtin.import_tasks: kernel-src.yaml
-          tags:
-            - kernel-src
 
-        - name: Ensure built kernel is running
-          when: kernel_git_version
-          ansible.builtin.meta: flush_handlers
+    - name: Firewall
+      when: firewall_base_config
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall
 
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
@@ -114,12 +106,34 @@
         - metrics
         - metrics-common
 
-    - name: Configure auto update
-      ansible.builtin.import_tasks: auto-update.yaml
-      tags:
-        - auto-update
-
     - name: Check if reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
+
+    - name: Catch kernel build results
+      tags:
+        - kernel
+      when: kernel_git_version and _kernel_build.changed
+      block:
+        - name: Ensure self-compiled kernel is built
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_build.ansible_job_id }}"
+          register: _job_result
+          until: _job_result.finished
+          retries: 80
+          delay: 45
+          notify: "Reboot system"
+
+        - name: Cleanup async job
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_build.ansible_job_id }}"
+            mode: cleanup
+
+    - name: Flush common handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Configure auto update
+      ansible.builtin.import_tasks: auto-update.yaml
+      tags:
+        - auto-update
