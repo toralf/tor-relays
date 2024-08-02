@@ -32,20 +32,31 @@
       daemon_reload: true
       enabled: true
   block:
-    - name: Firewall for bridge
-      when: bridge_distribution
-      ansible.builtin.import_tasks: firewall-bridge.yaml
+    - name: Firewall
       tags:
         - firewall
+      block:
+        - name: FW for bridge
+          when: bridge_distribution
+          ansible.builtin.import_tasks: firewall-bridge.yaml
 
-    - name: Firewall for server
-      when: not bridge_distribution
-      ansible.builtin.import_tasks: firewall-server.yaml
-      tags:
-        - firewall
+        - name: FW for server
+          when: not bridge_distribution
+          ansible.builtin.import_tasks: firewall-server.yaml
 
-    - name: Ensure that firewall is up
-      ansible.builtin.meta: flush_handlers
+        - name: Ensure that FW is started
+          ansible.builtin.meta: flush_handlers
+
+        - name: Ensure that FW for server is up
+          when: not bridge_distribution
+          changed_when: true
+          ansible.builtin.shell:
+            cmd: |-
+              set -euf
+
+              ./ipv4-rules.sh | grep "DDoS IPv4"
+              ./ipv6-rules.sh | grep "DDoS IPv6"
+            executable: /bin/bash
 
     - name: Debian
       when: not tor_build_from_source
