@@ -56,7 +56,13 @@ function addRules() {
 #######################################################################
 set -euf
 
-ipt=iptables
+if type iptables-legacy 1>/dev/null; then
+  ipt="iptables-legacy"
+elif type iptables 1>/dev/null; then
+  ipt="iptables"
+else
+  echo "can't find iptables executable" >&1
+fi
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

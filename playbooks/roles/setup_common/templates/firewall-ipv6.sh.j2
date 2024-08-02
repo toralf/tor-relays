@@ -56,7 +56,13 @@ function addRules() {
 #######################################################################
 set -euf
 
-ipt=ip6tables
+if type ip6tables-legacy 1>/dev/null; then
+  ipt="ip6tables-legacy"
+elif type ip6tables 1>/dev/null; then
+  ipt="ip6tables"
+else
+  echo "can't find ip6tables executable" >&1
+fi
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then
