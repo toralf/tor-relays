@@ -16,7 +16,7 @@
       - lz4
 
 - name: Init or update Linux repo
-  async: 900
+  async: 300
   poll: 45
   throttle: 50
   retries: 3
