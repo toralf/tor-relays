@@ -7,10 +7,10 @@ tor_patches: []
 
 tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is the stable package
 
-# torrc values
-tor_config_all: []
-tor_config_group: []
-tor_config_host: []
+# additional/overwrite torrc values
+torrc_config_all: []
+torrc_config_group: []
+torrc_config_host: []
 
 # safe default: a Tor private bridge
 bridge_distribution: "none"
