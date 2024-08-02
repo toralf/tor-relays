@@ -19,7 +19,7 @@
     force: true
     depth: 1
     single_branch: true
-  register: _repo_tor
+  register: _tor_repo
 
 - name: Apply patches
   throttle: 20
@@ -36,7 +36,7 @@
 - name: Build
   async: 600
   poll: 45
-  when: _repo_tor.changed or _tor_patched.changed
+  when: _tor_repo.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
