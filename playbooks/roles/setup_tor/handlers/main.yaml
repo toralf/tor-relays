@@ -1,7 +1,6 @@
 ---
-- name: Start firewall scripts
+- name: Restart Firewall
   changed_when: true
-  when: not bridge_distribution
   listen: "Restart Firewall"
   ansible.builtin.shell:
     cmd: |-
