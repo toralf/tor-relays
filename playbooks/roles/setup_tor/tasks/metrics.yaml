@@ -9,9 +9,9 @@
     mode: "0744"
     force: true
 
-- name: Create cron job to create DDoS metrics
+- name: Cron job for DDoS metrics
   ansible.builtin.cron:
     name: "DDoS metrics"
     special_time: reboot
-    job: "/root/metrics.sh 1>/dev/null 2>&1"
+    job: "/root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
