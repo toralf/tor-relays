@@ -43,5 +43,4 @@
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted"
     minute: "42"
-    hour: "{{ 1 + timer_hour | int }}"
     job: "if [[ -s /var/run/reboot-required ]] || needrestart -r l -b | grep -q 'NEEDRESTART-SVC:'; then reboot; fi"
