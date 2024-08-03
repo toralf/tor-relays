@@ -1,7 +1,8 @@
 ---
-- name: Restart Firewall
+- name: Restart DDoS
   changed_when: true
-  listen: "Restart Firewall"
+  listen: "Restart DDoS"
+  when: not bridge_distribution
   ansible.builtin.shell:
     cmd: |-
       /root/ipv4-rules.sh save
@@ -26,3 +27,4 @@
   ansible.builtin.systemd_service:
     name: tor
     state: restarted
+    no_block: true

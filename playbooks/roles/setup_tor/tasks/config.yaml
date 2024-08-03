@@ -4,6 +4,7 @@
     src: torrc.j2
     dest: /etc/tor/torrc
   notify:
+    - "Restart DDoS"
     - "Reload Tor"
 
 - name: Add Tor logrotate config

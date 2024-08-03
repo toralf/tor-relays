@@ -16,14 +16,14 @@
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh
-  notify: "Restart Firewall"
+  notify: "Restart DDoS"
 
 - name: Create cron job to start firewall after reboot
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot
     job: "{{ _add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
-  notify: "Restart Firewall"
+  notify: "Restart DDoS"
 
 - name: Create cron job to save ipsets
   ansible.builtin.cron:
