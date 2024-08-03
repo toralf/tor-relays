@@ -17,10 +17,10 @@
     executable: /bin/bash
   register: _ddos_obfs4_rules
   with_items:
-    - "iptables-legacy  {{ _ipt4_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 32 --hashlimit-name tor-ddos"
-    - "ip6tables-legacy {{ _ipt6_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 80 --hashlimit-name tor-ddos6"
-    - "iptables-legacy  {{ _ipt4_common }} -m connlimit --connlimit-mask 32 --connlimit-above {{ _max }} -j DROP"
-    - "ip6tables-legacy {{ _ipt6_common }} -m connlimit --connlimit-mask 80 --connlimit-above {{ _max }} -j DROP"
+    - "iptables  {{ _ipt4_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 32 --hashlimit-name tor-ddos"
+    - "ip6tables {{ _ipt6_common }} -m hashlimit {{ _hash_limit }} --hashlimit-srcmask 80 --hashlimit-name tor-ddos6"
+    - "iptables  {{ _ipt4_common }} -m connlimit --connlimit-mask 32 --connlimit-above {{ _max }} -j DROP"
+    - "ip6tables {{ _ipt6_common }} -m connlimit --connlimit-mask 80 --connlimit-above {{ _max }} -j DROP"
 
 - name: ACCEPT TCP to obfs4 port
   ansible.builtin.iptables:

@@ -56,7 +56,7 @@ function addRules() {
 #######################################################################
 set -euf
 
-ipt="iptables-legacy"
+ipt="iptables"
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

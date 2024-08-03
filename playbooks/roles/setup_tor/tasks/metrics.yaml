@@ -13,5 +13,5 @@
   ansible.builtin.cron:
     name: "DDoS metrics"
     special_time: reboot
-    job: "/root/metrics.sh 60"
+    job: "nice /root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"

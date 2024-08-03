@@ -22,3 +22,5 @@ timer_hour: "{{ 12 | random(seed=inventory_hostname) }}"
 
 # do not wait for kernel being build ?
 fire_and_forget: false
+
+node_metrics: false
