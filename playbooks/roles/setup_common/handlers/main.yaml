@@ -15,12 +15,14 @@
   ansible.builtin.systemd_service:
     name: nginx
     state: reloaded
+    no_block: true
 
 - name: Restart Prometheus node exporter
   listen: "Restart Prometheus node exporter"
   ansible.builtin.systemd_service:
     name: prometheus-node-exporter
     state: restarted
+    no_block: true
 
 - name: Reboot system
   listen: "Reboot system"
