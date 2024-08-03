@@ -17,7 +17,6 @@
 
 - name: Init or update Linux repo
   async: 300
-  poll: 45
   throttle: 50
   retries: 3
   ansible.builtin.git:
@@ -90,8 +89,8 @@
       CONFIG_NF_CONNTRACK=m
       CONFIG_NF_CT_NETLINK=m
       CONFIG_NF_NAT=m
-      CONFIG_NF_TABLES=m
-      CONFIG_NFT_COMPAT=m
+      #CONFIG_NF_TABLES=m
+      #CONFIG_NFT_COMPAT=m
       CONFIG_NFT_NAT=m
       CONFIG_RD_GZIP=y
       CONFIG_RD_ZSTD=y
@@ -127,30 +126,19 @@
     creates: /swapfile
     executable: /bin/bash
 
+- name: Create kernel build script
+  ansible.builtin.template:
+    src: "build-kernel.sh.j2"
+    dest: "/root/build-kernel.sh"
+    mode: "0700"
+  register: _kernel_build_script
+
 - name: Build Linux
   async: 3600
   poll: 0
-  when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed
+  when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
   changed_when: true
-  vars:
-    __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
   ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      make -j {{ __j }}     >/dev/null
-      make modules_install  >/dev/null
-      make install          >/dev/null
-
-      kver=$(make kernelversion)
-      lver=$(KERNELVERSION=$kver ./scripts/setlocalversion)
-      grub_entry="Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux $lver"
-      sed -i -e "s#^GRUB_DEFAULT=.*#GRUB_DEFAULT=\"${grub_entry}\"#" /etc/default/grub
-      update-grub
-
-      ln -snf $PWD /usr/src/linux
-
-      touch /var/run/reboot-required # safety net if Ansible failed to catch the async status
-    chdir: /root/linux
+    cmd: "{{ fire_and_forget | ternary('nohup /root/build-kernel.sh &', '/root/build-kernel.sh') }}"
     executable: /bin/bash
   register: _kernel_build

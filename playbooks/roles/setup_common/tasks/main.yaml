@@ -80,12 +80,17 @@
         - name: Ensure cloud kernel is installed
           ansible.builtin.import_tasks: kernel.yaml
 
-        - name: Ensure cloud kernel is running
+        - name: Check if reboot is needed (for kernel)
+          ansible.builtin.import_tasks: reboot.yaml
+
+        - name: Ensure cloud kernel is used
           ansible.builtin.meta: flush_handlers
 
         - name: Build self-compiled kernel
           when: kernel_git_version
           ansible.builtin.import_tasks: kernel-src.yaml
+          tags:
+            - kernel-src
 
     - name: Firewall
       when: firewall_base_config
@@ -106,29 +111,31 @@
         - metrics
         - metrics-common
 
-    - name: Check if reboot is needed
-      ansible.builtin.import_tasks: reboot.yaml
-      tags:
-        - reboot
-
-    - name: Catch kernel build results
+    - name: Catch kernel build job
       tags:
         - kernel
-      when: kernel_git_version and _kernel_build.changed
+        - kernel-src
+      when: _kernel_build.changed
       block:
-        - name: Ensure self-compiled kernel is built
+        - name: Ensure kernel build finished
+          when: not fire_and_forget
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result
           until: _job_result.finished
-          retries: 80
-          delay: 45
+          retries: 120
+          delay: 30
           notify: "Reboot system"
 
-        - name: Cleanup async job
+        - name: Cleanup kernel build async job
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
+
+    - name: Check if reboot is needed
+      ansible.builtin.import_tasks: reboot.yaml
+      tags:
+        - reboot
 
     - name: Flush common handlers
       ansible.builtin.meta: flush_handlers

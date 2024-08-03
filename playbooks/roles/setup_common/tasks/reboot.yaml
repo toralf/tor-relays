@@ -8,7 +8,7 @@
 
 - name: Check if a reboot is needed by a kernel update or a deferred service
   changed_when: _reboot_needed.rc == 0
-  failed_when: false
+  failed_when: _reboot_needed.rc == 2
   ansible.builtin.shell:
     cmd: |-
       needrestart -r l -b |
