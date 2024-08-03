@@ -18,7 +18,7 @@
     - ipv6-rules.sh
   notify: "Restart DDoS"
 
-- name: Create cron job to start firewall after reboot
+- name: Create cron job to start DDoS after reboot
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot

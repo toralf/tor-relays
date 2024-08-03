@@ -36,18 +36,18 @@
       tags:
         - firewall
       block:
-        - name: FW for bridge
+        - name: FW for Tor bridge
           when: bridge_distribution
           ansible.builtin.import_tasks: firewall-bridge.yaml
 
-        - name: FW for server
+        - name: DDoS for Tor server
           when: not bridge_distribution
-          ansible.builtin.import_tasks: firewall-server.yaml
+          ansible.builtin.import_tasks: firewall-ddos.yaml
 
-        - name: Ensure that FW is started
+        - name: Ensure that DDoS is started
           ansible.builtin.meta: flush_handlers
 
-        - name: Ensure that FW for server is up
+        - name: Ensure that DDoS for server is up
           when: not bridge_distribution
           changed_when: true
           ansible.builtin.shell:
@@ -84,7 +84,6 @@
             - lyrebird
 
     - name: Metrics
-      when: tor_metrics_ddos is true
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
