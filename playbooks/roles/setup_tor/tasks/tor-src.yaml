@@ -34,8 +34,7 @@
   register: _tor_patched
 
 - name: Build
-  async: 600
-  poll: 45
+  async: 300
   when: _tor_repo.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
