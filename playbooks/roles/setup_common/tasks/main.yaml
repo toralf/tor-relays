@@ -86,14 +86,14 @@
         - name: Ensure cloud kernel is used
           ansible.builtin.meta: flush_handlers
 
-        - name: Build self-compiled kernel
-          when: kernel_git_version
-          ansible.builtin.import_tasks: kernel-src.yaml
-          tags:
-            - kernel-src
+    - name: Build self-compiled kernel
+      when: kernel_git_version
+      ansible.builtin.import_tasks: kernel-src.yaml
+      tags:
+        - kernel-src
 
     - name: Firewall
-      when: firewall_base_config
+      when: not firewall_use_ddos
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
