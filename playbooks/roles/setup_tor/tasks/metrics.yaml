@@ -8,6 +8,7 @@
     dest: "/root/metrics.sh"
     mode: "0744"
     force: true
+  register: _metrics_ddos
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
@@ -15,3 +16,16 @@
     special_time: reboot
     job: "nice /root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
+
+- name: Ensure DDoS metris are delivered
+  changed_when: true
+  vars:
+    _kill_cmd: "{{ _metrics_ddos.changed | ternary('pkill -f /root/metrics.sh &>/dev/null', ':') }}"
+  ansible.builtin.shell:
+    cmd: |
+
+      {{ _kill_cmd }}
+      if ! pgrep -f /root/metrics.sh &>/dev/null; then
+        nice /root/metrics.sh 60 &
+      fi
+    executable: /bin/bash
