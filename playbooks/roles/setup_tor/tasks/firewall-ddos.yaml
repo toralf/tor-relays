@@ -1,11 +1,11 @@
 ---
-- name: Install or update software for Tor DDoS solution
+- name: Install or update software for DDoS solution
   ansible.builtin.apt:
     name:
       - ipset
       - jq
 
-- name: Download iptables scripts
+- name: Download DDoS scripts
   throttle: 50
   retries: 3
   ansible.builtin.get_url:
@@ -18,20 +18,20 @@
     - ipv6-rules.sh
   notify: "Restart DDoS"
 
-- name: Create cron job to start DDoS after reboot
+- name: Create DDoS cron job to start DDoS after reboot
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot
     job: "{{ _add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
   notify: "Restart DDoS"
 
-- name: Create cron job to save ipsets
+- name: Create DDoS cron job to save ipsets
   ansible.builtin.cron:
     name: "save ipset"
     special_time: hourly
     job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
 
-- name: Create cron job to update Tor authority ip addresses
+- name: Create DDoS cron job to update Tor authority ip addresses
   ansible.builtin.cron:
     name: "Tor authority ip addresses update"
     special_time: daily
@@ -50,3 +50,16 @@
     name:
       - iptables-persistent
     state: absent
+
+- name: Ensure that DDoS is started
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure that DDoS is up
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      ./ipv4-rules.sh | grep "DDoS IPv4" || {{ _add_remote_service }} /root/ipv4-rules.sh start
+      ./ipv6-rules.sh | grep "DDoS IPv6" || /root/ipv6-rules.sh start
+    executable: /bin/bash

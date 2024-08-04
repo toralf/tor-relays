@@ -32,31 +32,18 @@
       daemon_reload: true
       enabled: true
   block:
-    - name: Firewall
+    - name: FW for Tor bridge
+      when: not firewall_use_ddos
+      ansible.builtin.import_tasks: firewall-bridge.yaml
       tags:
         - firewall
-      block:
-        - name: FW for Tor bridge
-          when: bridge_distribution
-          ansible.builtin.import_tasks: firewall-bridge.yaml
 
-        - name: DDoS for Tor server
-          when: not bridge_distribution
-          ansible.builtin.import_tasks: firewall-ddos.yaml
-
-        - name: Ensure that DDoS is started
-          ansible.builtin.meta: flush_handlers
-
-        - name: Ensure that DDoS for server is up
-          when: not bridge_distribution
-          changed_when: true
-          ansible.builtin.shell:
-            cmd: |-
-              set -euf
-
-              ./ipv4-rules.sh | grep "DDoS IPv4"
-              ./ipv6-rules.sh | grep "DDoS IPv6"
-            executable: /bin/bash
+    - name: DDoS for Tor server
+      when: firewall_use_ddos
+      ansible.builtin.import_tasks: firewall-ddos.yaml
+      tags:
+        - firewall
+        - firewall-ddos
 
     - name: Debian
       when: not tor_build_from_source
