@@ -15,6 +15,7 @@
       - iptables
       - needrestart
       - psmisc
+      - python3-psutil
 
 - name: Install or update additional software
   when: additional_software

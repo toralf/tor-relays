@@ -8,7 +8,7 @@
     dest: "/root/metrics.sh"
     mode: "0744"
     force: true
-  register: _metrics_ddos
+  register: _metrics_ddos_download
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
@@ -17,15 +17,27 @@
     job: "nice /root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
 
-- name: Ensure DDoS metrics script is running
-  changed_when: true
-  when: _metrics_ddos.changed
+- name: Getting process IDs of a currently running script
+  community.general.pids:
+    name: metrics.sh
+  register: _metrics_ddos_pids_2_kill
+
+- name: Ensure old DDoS metrics script is stopped
+  changed_when: _metrics_ddos_killed.changed
+  when: _metrics_ddos_download.changed or not tor_metrics_ddos
   ansible.builtin.shell:
     cmd: |-
-      if [[ -s /tmp/torutils-metrics.sh.lock ]]; then
-        if ! kill -15 $(cat /tmp/torutils-metrics.sh.lock) &>/dev/null; then
-          echo "outdated lock file found"
-        fi
-      fi
-      nice /root/metrics.sh 60 &
-    executable: /bin/bash
+      kill -0 "{{ item }}" && kill -9 "{{ item }}"
+  with_items: "{{ _metrics_ddos_pids_2_kill.pids }}"
+  register: _metrics_ddos_killed
+
+- name: Check if DDoS metrics script is running
+  community.general.pids:
+    name: metrics.sh
+  register: _metrics_ddos_pids_running
+
+- name: Ensure DDoS metrics script is running
+  changed_when: _metrics_ddos_started.changed
+  when: tor_metrics_ddos and (_metrics_ddos_pids_running.pids | length == 0)
+  ansible.builtin.shell: "nice /root/metrics.sh 60 &"
+  register: _metrics_ddos_started
