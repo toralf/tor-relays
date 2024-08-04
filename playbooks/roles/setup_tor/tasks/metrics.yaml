@@ -17,15 +17,15 @@
     job: "nice /root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
 
-- name: Ensure DDoS metris are delivered
+- name: Ensure DDoS metrics script is running
   changed_when: true
-  vars:
-    _kill_cmd: "{{ _metrics_ddos.changed | ternary('pkill -f /root/metrics.sh &>/dev/null', ':') }}"
+  when: _metrics_ddos.changed
   ansible.builtin.shell:
-    cmd: |
-
-      {{ _kill_cmd }}
-      if ! pgrep -f /root/metrics.sh &>/dev/null; then
-        nice /root/metrics.sh 60 &
+    cmd: |-
+      if [[ -s /tmp/torutils-metrics.sh.lock ]]; then
+        if ! kill -15 $(cat /tmp/torutils-metrics.sh.lock) &>/dev/null; then
+          echo "outdated lock file found"
+        fi
       fi
+      nice /root/metrics.sh 60 &
     executable: /bin/bash
