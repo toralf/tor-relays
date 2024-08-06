@@ -2,6 +2,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- ansible.builtin.import_playbook: playbooks/info-common.yaml
+- ansible.builtin.import_playbook: playbooks/info-misc.yaml
 - ansible.builtin.import_playbook: playbooks/info-snowflake.yaml
 - ansible.builtin.import_playbook: playbooks/info-tor.yaml
