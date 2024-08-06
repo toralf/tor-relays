@@ -113,7 +113,6 @@
 
     - name: Catch kernel build job
       tags:
-        - kernel
         - kernel-src
       when: _kernel_build.changed
       block:
