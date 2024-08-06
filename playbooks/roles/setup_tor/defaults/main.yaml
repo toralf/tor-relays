@@ -15,4 +15,5 @@ torrc_config_host: []
 # safe default: a Tor private bridge
 bridge_distribution: "none"
 
-tor_metrics_ddos: false
+# use a dedicated DDoS solution at servers
+firewall_use_ddos: false

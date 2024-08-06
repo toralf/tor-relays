@@ -58,6 +58,9 @@ set -euf
 
 ipt="iptables"
 
+# test that it works with nf_tables too
+$ipt -nv -L INPUT 1>/dev/null
+
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then
   clearAll

@@ -32,13 +32,13 @@
       daemon_reload: true
       enabled: true
   block:
-    - name: FW for Tor bridge
+    - name: FW for Tor
       when: not firewall_use_ddos
-      ansible.builtin.import_tasks: firewall-bridge.yaml
+      ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
 
-    - name: DDoS for Tor server
+    - name: DDoS for Tor
       when: firewall_use_ddos
       ansible.builtin.import_tasks: firewall-ddos.yaml
       tags:

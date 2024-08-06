@@ -14,9 +14,6 @@ prometheus_server: ""
 # store certificates and more
 ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
 
-# Tor server uses a dedicated DDoS solution
-firewall_use_ddos: false
-
 # apt timer schedules, reboot (for deferred service) is made via cron in the following hour
 timer_hour: "{{ 12 | random(seed=inventory_hostname) }}"
 

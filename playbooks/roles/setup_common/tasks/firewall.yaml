@@ -1,41 +1,29 @@
 ---
-- name: Install or update firewall software
-  ansible.builtin.apt:
-    name:
-      - iptables-persistent
+- name: Check if a dedicate DDoS solution is in place
+  changed_when: _ddos_is_used.stat.exists
+  ansible.builtin.stat:
+    path: /root/ipv4-rules.sh
+  register: _ddos_is_used
 
-- name: Create firewall script
-  ansible.builtin.template:
-    src: "firewall-ip{{ item }}.sh.j2"
-    dest: "/root/firewall-ip{{ item }}.sh"
-    mode: "0700"
-  with_items:
-    - "v4"
-    - "v6"
-  register: _fw_scripts
-
-- name: Save iptables state
-  community.general.iptables_state:
-    ip_version: "ip{{ item }}"
-    state: saved
-    path: "/etc/iptables/rules.{{ item }}"
-  with_items:
-    - "v4"
-    - "v6"
-  register: _fw_old
-
-- name: Reset firewall
-  when: _fw_scripts.changed or _fw_old.changed
+- name: Firewall
+  when: not _ddos_is_used.stat.exists
   block:
-    - name: Start firewall
-      changed_when: true
-      ansible.builtin.command:
-        cmd: "/root/firewall-ip{{ item }}.sh start"
+    - name: Install or update firewall software
+      ansible.builtin.apt:
+        name:
+          - iptables-persistent
+
+    - name: Create firewall script
+      ansible.builtin.template:
+        src: "firewall-ip{{ item }}.sh.j2"
+        dest: "/root/firewall-ip{{ item }}.sh"
+        mode: "0700"
       with_items:
         - "v4"
         - "v6"
+      register: _fw_scripts
 
-    - name: Save iptables state of setup
+    - name: Save iptables state
       community.general.iptables_state:
         ip_version: "ip{{ item }}"
         state: saved
@@ -43,3 +31,24 @@
       with_items:
         - "v4"
         - "v6"
+      register: _fw_old
+
+    - name: Reset firewall
+      when: _fw_scripts.changed or _fw_old.changed
+      block:
+        - name: Start firewall
+          changed_when: true
+          ansible.builtin.command:
+            cmd: "/root/firewall-ip{{ item }}.sh start"
+          with_items:
+            - "v4"
+            - "v6"
+
+        - name: Save iptables state of setup
+          community.general.iptables_state:
+            ip_version: "ip{{ item }}"
+            state: saved
+            path: "/etc/iptables/rules.{{ item }}"
+          with_items:
+            - "v4"
+            - "v6"

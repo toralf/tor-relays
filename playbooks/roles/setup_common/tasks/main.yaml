@@ -73,6 +73,11 @@
             var: ansible_facts.default_ipv6
             verbosity: 1
 
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall
+
     - name: Kernel
       tags:
         - kernel
@@ -91,12 +96,6 @@
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel-src
-
-    - name: Firewall
-      when: not firewall_use_ddos
-      ansible.builtin.import_tasks: firewall.yaml
-      tags:
-        - firewall
 
     - name: CA
       ansible.builtin.import_tasks: ca.yaml
