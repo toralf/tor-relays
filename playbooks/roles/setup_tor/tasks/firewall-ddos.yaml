@@ -37,6 +37,19 @@
     special_time: daily
     job: "/root/ipv4-rules.sh update; /root/ipv6-rules.sh update"
 
+- name: Ensure that DDoS is up
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      ./ipv4-rules.sh | grep "DDoS IPv4" || {{ _add_remote_service }} /root/ipv4-rules.sh start
+      ./ipv6-rules.sh | grep "DDoS IPv6" || /root/ipv6-rules.sh start
+    executable: /bin/bash
+
+- name: Ensure that DDoS is started
+  ansible.builtin.meta: flush_handlers
+
 - name: Remove base firewall script
   ansible.builtin.file:
     path: "/root/firewall-ip{{ item }}.sh"
@@ -51,15 +64,10 @@
       - iptables-persistent
     state: absent
 
-- name: Ensure that DDoS is started
-  ansible.builtin.meta: flush_handlers
-
-- name: Ensure that DDoS is up
-  changed_when: true
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      ./ipv4-rules.sh | grep "DDoS IPv4" || {{ _add_remote_service }} /root/ipv4-rules.sh start
-      ./ipv6-rules.sh | grep "DDoS IPv6" || /root/ipv6-rules.sh start
-    executable: /bin/bash
+- name: Remove iptables state
+  ansible.builtin.file:
+    path: "/etc/iptables/rules.{{ item }}"
+    state: absent
+  with_items:
+    - "v4"
+    - "v6"
