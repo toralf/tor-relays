@@ -16,7 +16,6 @@
       - lz4
 
 - name: Init or update Linux repo
-  async: 300
   throttle: 50
   retries: 3
   ansible.builtin.git:
@@ -30,7 +29,6 @@
 
 - name: Apply patches for Linux
   throttle: 50
-  retries: 3
   changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: |-

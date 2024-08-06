@@ -23,7 +23,6 @@
 
 - name: Apply patches
   throttle: 20
-  retries: 3
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1
@@ -34,7 +33,6 @@
   register: _tor_patched
 
 - name: Build
-  async: 300
   when: _tor_repo.changed or _tor_patched.changed
   changed_when: true
   ansible.builtin.shell:
