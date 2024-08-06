@@ -3,6 +3,8 @@
   hosts: tor
   roles:
     - role: info_common
+      tags:
+        - info-common
     - role: info_tor
-  tags:
-    - info-tor
+      tags:
+        - info-tor

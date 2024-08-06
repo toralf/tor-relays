@@ -3,6 +3,8 @@
   hosts: snowflake
   roles:
     - role: setup_common
+      tags:
+        - setup-common
     - role: setup_snowflake
-  tags:
-    - setup-snowflake
+      tags:
+        - setup-snowflake

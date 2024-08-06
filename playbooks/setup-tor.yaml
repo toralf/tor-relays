@@ -3,6 +3,8 @@
   hosts: tor
   roles:
     - role: setup_common
+      tags:
+        - setup-common
     - role: setup_tor
-  tags:
-    - setup-tor
+      tags:
+        - setup-tor
