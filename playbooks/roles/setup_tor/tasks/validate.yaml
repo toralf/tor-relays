@@ -22,7 +22,7 @@
       - "metrics_port != tor_port"
 
 - name: Validate tor_metrics_ddos
-  when: tor_metrics_ddos is true
+  when: tor_metrics_ddos
   ansible.builtin.assert:
     quiet: true
     that:

@@ -17,3 +17,6 @@ bridge_distribution: "none"
 
 # use a dedicated DDoS solution at servers
 firewall_use_ddos: false
+
+# cpu consuming
+tor_metrics_ddos: false
