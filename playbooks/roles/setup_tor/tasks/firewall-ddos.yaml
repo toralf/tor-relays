@@ -38,14 +38,29 @@
     job: "/root/ipv4-rules.sh update; /root/ipv6-rules.sh update"
 
 - name: Ensure that DDoS is up
-  changed_when: true
+  changed_when: _ddos_up.rc == 42
+  failed_when: (_ddos_up.rc != 0) and (_ddos_up.rc != 42)
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      ./ipv4-rules.sh | grep "DDoS IPv4" || {{ _add_remote_service }} /root/ipv4-rules.sh start
-      ./ipv6-rules.sh | grep "DDoS IPv6" || /root/ipv6-rules.sh start
+      changed=0
+
+      if ! ./ipv4-rules.sh | grep -q "DDoS IPv4"; then
+        {{ _add_remote_service }} /root/ipv4-rules.sh start
+        changed=1
+      fi
+
+      if ! ./ipv6-rules.sh | grep -q "DDoS IPv6"; then
+        /root/ipv6-rules.sh start
+        changed=1
+      fi
+
+      if [[ $changed -ne 0 ]]; then
+        exit 42
+      fi
     executable: /bin/bash
+  register: _ddos_up
 
 - name: Ensure that DDoS is started
   ansible.builtin.meta: flush_handlers

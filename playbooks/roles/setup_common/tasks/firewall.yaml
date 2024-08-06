@@ -1,6 +1,6 @@
 ---
 - name: Check if a dedicate DDoS solution is in place
-  changed_when: _ddos_is_used.stat.exists
+  changed_when: false
   ansible.builtin.stat:
     path: /root/ipv4-rules.sh
   register: _ddos_is_used
