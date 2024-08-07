@@ -1,6 +1,8 @@
 ---
-# needed for server b/c they do use the full blown DDoS solution
+# needed for the DDoS solution
 _add_remote_service: '{{ (metrics_port and prometheus_server) | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
 
-# created by the task "wellknown"
-_my_family: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | replace('\n', ',') }}"
+# RSA fingerprints have to be created before by the task "wellknown"
+_rsa_fp_all: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | split('\n')}}"
+# https://gitlab.torproject.org/tpo/core/tor/-/issues/40837
+_my_family: "{{ _rsa_fp_all[0:360] | join(',') }}"
