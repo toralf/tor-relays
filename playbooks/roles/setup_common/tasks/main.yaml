@@ -78,7 +78,7 @@
       tags:
         - firewall
 
-    - name: Kernel
+    - name: Debian kernel
       tags:
         - kernel-bin
       block:
