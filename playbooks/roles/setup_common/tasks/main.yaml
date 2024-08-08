@@ -80,10 +80,10 @@
 
     - name: Kernel
       tags:
-        - kernel
+        - kernel-bin
       block:
         - name: Ensure cloud kernel is installed
-          ansible.builtin.import_tasks: kernel.yaml
+          ansible.builtin.import_tasks: kernel-bin.yaml
 
         - name: Check if reboot is needed (for kernel)
           ansible.builtin.import_tasks: reboot.yaml
