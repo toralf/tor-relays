@@ -19,18 +19,23 @@
     dest: /etc/cloud/cloud.cfg.d/
 
 - name: Restart network service
+  when: _cloud_init.changed
   ansible.builtin.systemd_service:
     name: networking
     state: restarted
-  when: _cloud_init.changed
 
 - name: Check that ipv6 is up again
-  changed_when: false
+  changed_when: _ip6_up.rc == 42
+  failed_when: (_ip6_up.rc != 0) and (_ip6_up.rc != 42)
   ansible.builtin.shell:
     cmd: |-
+      rc=0
       while ip -6 a | grep -q ' tentative'; do
+        rc=42
         sleep 1
       done
+      exit $rc
+  register: _ip6_up
 
 - name: Gather ipv6 facts
   when: _cloud_init.changed
