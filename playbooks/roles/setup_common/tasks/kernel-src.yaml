@@ -158,3 +158,13 @@
     cmd: "{{ fire_and_forget | ternary('nohup /root/build-kernel.sh reboot &', '/root/build-kernel.sh') }}"
     executable: /bin/bash
   register: _kernel_build
+
+- name: Flush common handlers (Kernel src)
+  ansible.builtin.meta: flush_handlers
+
+- name: Remove Debian kernel
+  when: not _kernel_build.changed
+  ansible.builtin.apt:
+    name:
+      - "linux-image{{ kernel_debian_cloud | ternary('-cloud', '') }}-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+    state: absent

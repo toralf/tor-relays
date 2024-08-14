@@ -82,13 +82,13 @@
       tags:
         - kernel-bin
       block:
-        - name: Ensure cloud kernel is installed
+        - name: Ensure newest Debian kernel is installed
           ansible.builtin.import_tasks: kernel-bin.yaml
 
-        - name: Check if reboot is needed (for kernel)
+        - name: Check if reboot is needed (Debian kernel)
           ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Ensure cloud kernel is used
+        - name: Ensure newest Debian kernel is used
           ansible.builtin.meta: flush_handlers
 
     - name: Build self-compiled kernel
@@ -135,7 +135,7 @@
       tags:
         - reboot
 
-    - name: Flush common handlers
+    - name: Flush common handlers before finalizing
       ansible.builtin.meta: flush_handlers
 
     - name: Configure auto update

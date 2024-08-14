@@ -5,15 +5,18 @@
     filename: backports
     repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
 
-- name: Install Cloud kernel
-  ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
-    name:
-      - "linux-image-cloud-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-  notify: "Reboot system"
+- name: Cloud kernel
+  when: kernel_debian_cloud
+  block:
+    - name: Install Cloud kernel
+      ansible.builtin.apt:
+        default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
+        name:
+          - "linux-image-cloud-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+      notify: "Reboot system"
 
-- name: Remove non-Cloud kernel
-  ansible.builtin.apt:
-    name:
-      - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-    state: absent
+    - name: Remove non-Cloud kernel
+      ansible.builtin.apt:
+        name:
+          - "linux-image-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+        state: absent
