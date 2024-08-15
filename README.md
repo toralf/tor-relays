@@ -36,7 +36,7 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
          tor_port: 12345
    ```
 
-  Take a look at this [example](./examples/inventory.yaml) for an Ansible inventory.
+Take a look at this [example](./examples/inventory.yaml) for an Ansible inventory.
 
 1. deploy it
 
