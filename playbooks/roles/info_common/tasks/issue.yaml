@@ -13,9 +13,26 @@
         done
   register: _result
 
-- name: Findings of issue/s since {{ log_system_since }}
-  delegate_to: localhost
+- name: Findings
   when: _result.stdout_lines
-  ansible.builtin.copy:
-    content: "{{ _result.stdout }}"
-    dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.log"
+  block:
+    - name: Findings of issue/s since {{ log_system_since }}
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ _result.stdout }}"
+        dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.log"
+
+    - name: Get Linux kernel config file name
+      changed_when: false
+      failed_when: (_config_fname .stdout | length != 1) or (_config_fname.rc != 0)
+      ansible.builtin.shell:
+        cmd: |-
+          ls -t /boot/config-* |
+            head -n 1
+      register: _config_fname
+
+    - name: Download Linux kernel config file name
+      ansible.builtin.fetch:
+        src: "{{ _config_fname.stdout }}"
+        dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.config"
+        flat: true
