@@ -11,4 +11,3 @@
     - "{{ tmp_dir }}/issues"
   tags:
     - tmpdir
-
