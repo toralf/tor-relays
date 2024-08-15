@@ -4,22 +4,25 @@
   tags:
     - firewall
 
+- name: IPv6
+  ansible.builtin.import_tasks: ipv6.yaml
+  tags:
+    - ipv6
+    - never
+
 - name: Issues
   ansible.builtin.import_tasks: issue.yaml
   tags:
     - issue
-    - log
 
 - name: Log system
   ansible.builtin.import_tasks: log-system.yaml
   tags:
-    - log
     - log-system
 
 - name: Log unattended
   ansible.builtin.import_tasks: log-unattended.yaml
   tags:
-    - log
     - log-unattended
 
 - name: Metrics port

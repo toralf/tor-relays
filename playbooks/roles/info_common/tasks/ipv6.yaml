@@ -1,0 +1,14 @@
+---
+# check if the config is lost
+
+- name: Gather facts
+  ansible.builtin.setup:
+    gather_subset: "{{ facts_subset }}"
+
+- name: Validate ipv6 address
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is defined"
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
+      - "ansible_facts.default_ipv6.address is not search('::1$')"
