@@ -14,7 +14,7 @@
   register: _result
 
 - name: Findings
-  when: _result.stdout_lines
+  when: _result.stdout
   block:
     - name: Findings of issue/s since {{ log_system_since }}
       delegate_to: localhost
@@ -24,7 +24,7 @@
 
     - name: Get Linux kernel config file name
       changed_when: false
-      failed_when: (_config_fname .stdout | length != 1) or (_config_fname.rc != 0)
+      failed_when: (_config_fname.stdout | length == 0) or (_config_fname.rc != 0)
       ansible.builtin.shell:
         cmd: |-
           ls -t /boot/config-* |
