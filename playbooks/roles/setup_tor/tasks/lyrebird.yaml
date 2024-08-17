@@ -33,7 +33,6 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: yes
-  register: _lyrebird_install
   notify: "Restart Tor"
 
 # for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and more
