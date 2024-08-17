@@ -4,6 +4,10 @@
 
 # e.g. ./create-server.sh $(seq -w 0 9 | xargs -n 1 printf "foo%i ")
 
+function filterLoc() {
+  grep -v -e "^sin$"
+}
+
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -22,13 +26,13 @@ _locations=$(hcloud location list --output json)
 _image_list=$(hcloud image list --type system --output columns=name)
 _ssh_keys=$(hcloud ssh-key list --output json)
 
-all_locations=$(jq -r '.[].name' <<<${_locations})
+all_locations=$(jq -r '.[].name' <<<${_locations} | filterLoc)
 cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${_server_types})
-cax11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${_data_centers} | xargs)
+cax11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
 cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${_server_types})
-cpx11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${_data_centers} | xargs)
+cpx11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
 cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${_server_types})
-cx22_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${_data_centers} | xargs)
+cx22_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
 debian=$(grep '^debian' <<<${_image_list} | sort -ur | head -n 1) # choose latest Debian
 ssh_key=$(jq -r '.[].name' <<<${_ssh_keys} | head -n 1)
 
