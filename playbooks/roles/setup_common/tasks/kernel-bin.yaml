@@ -1,10 +1,4 @@
 ---
-- name: Configure repository "backports"
-  when: kernel_debian_backports
-  ansible.builtin.apt_repository:
-    filename: backports
-    repo: "deb http://deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
-
 - name: Cloud kernel
   when: kernel_debian_cloud
   block:
