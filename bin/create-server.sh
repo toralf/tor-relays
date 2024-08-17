@@ -46,9 +46,9 @@ xargs -n 1 <<<$* |
       htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
     else
       case ${name} in
-      *-amd|*-amd-*) htype="cpx11" ;;
-      *-arm|*-arm-*) htype="cax11" ;;
-      *-intel|*-intel-*)) htype="cx22" ;;
+      *-amd | *-amd-*) htype="cpx11" ;;
+      *-arm | *-arm-*) htype="cax11" ;;
+      *-intel | *-intel-*) htype="cx22" ;;
       *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
       esac
     fi
