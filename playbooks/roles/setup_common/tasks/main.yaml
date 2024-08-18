@@ -3,7 +3,7 @@
   ansible.builtin.setup:
     gather_subset: "{{ facts_subset }}"
   tags:
-    - always
+    - facts
 
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
