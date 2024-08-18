@@ -1,5 +1,5 @@
 ---
-- name: Install or update software for Tor build from source
+- name: Install or update toolchain for Tor build
   ansible.builtin.apt:
     name:
       - automake
@@ -10,7 +10,7 @@
       - logrotate
       - zlib1g-dev
 
-- name: Install or update Go for Tor proxy
+- name: Install or update Go for Tor proxy build
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
