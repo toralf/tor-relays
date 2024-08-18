@@ -53,26 +53,12 @@
       [[ -s .config ]] && before=$(md5sum .config) || before="0"
       yes '' | make localmodconfig >/dev/null
 
-      sed -i \
-        -e '/^CONFIG_AGP=/d' \
-        -e '/^CONFIG_BTRFS_FS=/d' \
-        -e '/^CONFIG_DRM=/d' \
-        -e '/^CONFIG_FB=/d' \
-        -e '/^CONFIG_HID=/d' \
-        -e '/^CONFIG_SOUND=/d' \
-        -e '/^CONFIG_USB_support=/d' \
-        .config
-
       cat <<EOF >>.config
 
       CONFIG_LOCALVERSION=""
       CONFIG_LOCALVERSION_AUTO=y
 
-      CONFIG_RD_GZIP=y
-      CONFIG_RD_ZSTD=y
-
       CONFIG_BPF=n
-      CONFIG_HID=n
 
       CONFIG_NETFILTER_EGRESS=n
       CONFIG_NETFILTER_INGRESS=n
@@ -82,15 +68,15 @@
       CONFIG_NF_TABLES_ARP=n
       CONFIG_NF_TABLES_NETDEV=n
 
-      CONFIG_IP6_NF_FILTER=m
-      CONFIG_IP6_NF_IPTABLES=m
-      CONFIG_IP6_NF_NAT=m
-      CONFIG_IP6_NF_RAW=m
       CONFIG_IP_NF_FILTER=m
       CONFIG_IP_NF_IPTABLES=m
       CONFIG_IP_NF_NAT=m
       CONFIG_IP_SET=m
       CONFIG_IP_SET_HASH_IP=m
+      CONFIG_IP6_NF_FILTER=m
+      CONFIG_IP6_NF_IPTABLES=m
+      CONFIG_IP6_NF_NAT=m
+      CONFIG_IP6_NF_RAW=m
       CONFIG_NETFILTER_XT_MATCH_COMMENT=m
       CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
       CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
@@ -100,6 +86,7 @@
       CONFIG_NETFILTER_XT_MATCH_STATE=m
       CONFIG_NETFILTER_XT_NAT=m
       CONFIG_NETFILTER_XT_SET=m
+      CONFIG_NETFILTER_XTABLES_COMPAT=y
       CONFIG_NF_CONNTRACK=m
       CONFIG_NF_NAT=m
       CONFIG_NF_TABLES=m
