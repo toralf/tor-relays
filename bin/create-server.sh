@@ -4,10 +4,6 @@
 
 # e.g. ./create-server.sh $(seq -w 0 9 | xargs -n 1 printf "foo%i ")
 
-function filterLoc() {
-  grep -v -e "^sin$"
-}
-
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -20,35 +16,40 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-_data_centers=$(hcloud datacenter list --output json)
-_server_types=$(hcloud server-type list --output json)
-_locations=$(hcloud location list --output json)
-_image_list=$(hcloud image list --type system --output columns=name)
-_ssh_keys=$(hcloud ssh-key list --output json)
+# Architecture: get available locations
+data_centers=$(hcloud datacenter list --output json | jq -r '.[] | select(.location.name != "sin")')
+locations=$(hcloud location list --output json | jq -r '.[] | select(.name != "sin")')
 
-all_locations=$(jq -r '.[].name' <<<${_locations} | filterLoc)
-cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${_server_types})
-cax11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
-cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${_server_types})
-cpx11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
-cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${_server_types})
-cx22_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${_data_centers} | filterLoc)
-debian=$(grep '^debian' <<<${_image_list} | sort -ur | head -n 1) # choose latest Debian
-ssh_key=$(jq -r '.[].name' <<<${_ssh_keys} | head -n 1)
+server_types=$(hcloud server-type list --output json)
+cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types})
+cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types})
+cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})
 
-if [[ -z ${all_locations} || -z ${cax11_locations} || -z ${cpx11_locations} || -z ${cx22_locations} || -z ${debian} || -z ${ssh_key} ]]; then
+cax11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${data_centers})
+cpx11_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${data_centers})
+cx22_locations=$(jq -r '.[] | select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${data_centers})
+used_locations=$(jq -r '.[].name' <<<${locations})
+
+# OS: use latest Debian
+image_list=$(hcloud image list --type system --output columns=name)
+debian=$(grep '^debian' <<<${image_list} | sort -ur | head -n 1)
+
+ssh_keys=$(hcloud ssh-key list --output json)
+ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
+
+if [[ -z ${used_locations} || -z ${cax11_locations} || -z ${cpx11_locations} || -z ${cx22_locations} || -z ${debian} || -z ${ssh_key} ]]; then
   echo "API query failed" >&2
   exit 1
 fi
 
 now=${EPOCHSECONDS}
 
-# prefer smallest type
 xargs -n 1 <<<$* |
   while read -r name; do
     if [[ -n ${HCLOUD_TYPE-} ]]; then
       htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
     else
+      # default: smallest type
       case ${name} in
       *-amd | *-amd-*) htype="cpx11" ;;
       *-arm | *-arm-*) htype="cax11" ;;
@@ -64,7 +65,7 @@ xargs -n 1 <<<$* |
     elif [[ ${htype} == "cx22" ]]; then
       loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cx22_locations} | shuf -n 1)
     else
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$all_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$used_locations} | shuf -n 1)
     fi
 
     echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
