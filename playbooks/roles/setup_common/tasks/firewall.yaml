@@ -3,10 +3,10 @@
   changed_when: false
   ansible.builtin.stat:
     path: /root/ipv4-rules.sh
-  register: _ddos_is_used
+  register: _test_at_ddos_solution
 
 - name: Firewall
-  when: not _ddos_is_used.stat.exists
+  when: not _test_at_ddos_solution.stat.exists
   block:
     - name: Install or update firewall software
       ansible.builtin.apt:
