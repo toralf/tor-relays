@@ -79,7 +79,7 @@ if [[ $diff -lt 30 ]]; then
   sleep $((30 - diff))
 fi
 
-while ! $(dirname $0)/trust-host-ssh-key.sh $*; do
+while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
   echo -e "\n wait 5 sec before retry ...\n"
   sleep 5
   echo

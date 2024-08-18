@@ -44,4 +44,4 @@ xargs -t -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 echo -e "\n reloading DNS resolver ..." >&2
 sudo rc-service unbound reload
 
-$(dirname $0)/distrust-host-ssh-key.sh $*
+xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
