@@ -13,3 +13,6 @@ facts_subset:
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
+
+# local vCPUs
+nproc: 16

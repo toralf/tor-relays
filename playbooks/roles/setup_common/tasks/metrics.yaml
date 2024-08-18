@@ -7,11 +7,13 @@
 
 - name: Generate host private key
   delegate_to: localhost
+  throttle: "{{ nproc }}"
   community.crypto.openssl_privatekey:
     path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
 
 - name: Generate host CSR
   delegate_to: localhost
+  throttle: "{{ nproc }}"
   community.crypto.openssl_csr:
     path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
     privatekey_path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
@@ -29,6 +31,7 @@
 
 - name: Generate host certificate
   delegate_to: localhost
+  throttle: "{{ nproc }}"
   community.crypto.x509_certificate:
     path: "{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt"
     csr_path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
