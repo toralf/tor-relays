@@ -40,9 +40,9 @@ function addRules() {
 
   # DHCPv6
   $ipt -A INPUT -p udp --dport 546 -j ACCEPT
-
-  # additional ports
 {% for __i in additional_ports %}
+
+  # additional port {{ __i }}
 {% if ',' in __i or ':' in __i %}
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ __i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name port6-{{ __i }} --hashlimit-above 6/minute --hashlimit-burst 1 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ __i }} --syn -j ACCEPT
