@@ -1,4 +1,34 @@
 ---
+- name: Ensure system is up
+  delegate_to: localhost
+  throttle: "{{ nproc }}"
+  tags:
+    - never
+    - poweron
+  block:
+    - name: Ping
+      changed_when: _poweron.rc != 0
+      failed_when: _poweron.rc != 0
+      ansible.builtin.shell:
+        cmd: >-
+          ping -c 1 {{ inventory_hostname }} &>/dev/null ||
+          ping -c 2 {{ inventory_hostname }} &>/dev/null ||
+          ping -c 4 {{ inventory_hostname }} &>/dev/null
+        executable: /bin/bash
+      register: _poweron
+  rescue:
+    - name: Poweron
+      changed_when: true
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          hcloud server poweroff {{ inventory_hostname }}
+          sleep 2
+          hcloud server poweron {{ inventory_hostname }}
+          sleep 15
+        executable: /bin/bash
+
 - name: Gather facts
   ansible.builtin.setup:
     gather_subset: "{{ facts_subset }}"
