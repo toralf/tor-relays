@@ -31,12 +31,11 @@ if [[ ! -s ${local_inventory} ]]; then
 
 # vCPU
 all:
-  nproc: $(nproc)
+  vars:
+    nproc: $(nproc)
 
 EOF
-  chmod 400 ${local_inventory}
+  chmod 600 ${local_inventory}
 fi
-
-
 
 mkdir -p ${HOME}/tmp/{kconfigs,issues}
