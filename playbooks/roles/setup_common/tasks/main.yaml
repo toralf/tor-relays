@@ -2,6 +2,7 @@
 - name: Ensure system is up
   delegate_to: localhost
   throttle: "{{ nproc }}"
+  when: ansible_facts.system_vendor == 'Hetzner'
   tags:
     - never
     - poweron
