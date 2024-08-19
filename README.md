@@ -13,19 +13,13 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create a seed (only once needed, please keep it secret):
+1. create seeds under ./secrets (need to be run only once) and a tmp directory:
 
    ```bash
-   cat <<EOF >>secrets/local.yaml
-   ---
-   seed_address: "$(base64 < /dev/urandom | tr -d '+/=' | head -c 32)"
-
-   EOF
-
-   chmod 400 secrets/local.yaml
+   bash ./bin/base.sh
    ```
 
-1. add your bridge, i.e. _my_bridge_, to the group, i.e. _tor_, to a YAML file under [./inventory](./inventory/):
+1. add your bridge (i.e. _my_first_public_bridge_) to the group (i.e. _tor_) to the [./inventory](./inventory/):
 
    ```yaml
    ---
@@ -36,19 +30,20 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
          tor_port: 12345
    ```
 
-Take a look at this [example](./examples/inventory.yaml) for an Ansible inventory.
+like in this [example](./examples/inventory.yaml) for an Ansible inventory.
 
 1. deploy it
 
    ```bash
-   ./site-setup.yaml --limit my_bridge
+   ./site-setup.yaml --limit my_first_public_bridge
    ```
 
-1. get its data:
+1. enjoy it:
 
    ```bash
-   ./site-info.yaml --limit my_bridge
-   grep my_bridge ~/tmp/*
+   ./site-info.yaml --limit my_first_public_bridge
+
+   grep my_first_public_bridge ~/tmp/*
    ```
 
 ## Details

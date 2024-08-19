@@ -1,12 +1,4 @@
 ---
-- name: Info Base
-  strategy: linear
-  hosts: misc
-  roles:
-    - role: info_base
-      tags:
-        - info-base
-
 - name: Info Misc
   hosts: misc
   roles:

@@ -1,5 +1,5 @@
 ---
-# Hint: facts cache is not updated if --tags or --limit is used
+# Hint: facts cache is not updated if --tags or --limit is used, so use "--tags facts" if needed
 facts_subset:
   - "!all"
   - "!min"

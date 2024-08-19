@@ -6,9 +6,11 @@ all:
     prometheus_server: "1.2.3.4"
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
 
-misc:
-  children:
-    misc_hetzner:
+snowflake:
+  vars:
+    snowflake_metrics: true
+  hosts:
+    my_first_snowflake:
 
 tor:
   vars:
@@ -21,7 +23,7 @@ tor:
           gpg:1234...
           ciissversion:2
       - name: "Nickname"
-        value: "{{ ('gnampf4' + inventory_hostname | replace('-', ''))[0:19] }}"
+        value: "{{ ('my_prefix' + inventory_hostname | replace('-', ''))[0:19] }}"
     tor_metrics: true
     tor_port: "{{ range(16000, 60999) | random(seed=seed_tor_port + seed_host) }}"
   children:
@@ -32,14 +34,14 @@ tor:
 private:
   vars:
     bridge_distribution: "none"
-  children:
+  hosts:
+    my_first_private_bridge:
 
 public:
   vars:
     bridge_distribution: "any"
   children:
-    public_hetzner:
-    public_ionos:
+    my_first_public_bridge:
 
 # for exits:
 #   additional_software:
@@ -50,12 +52,5 @@ server:
     bridge_distribution: ""
     firewall_use_ddos: true
     node_metrics: true
-  children:
-    server_ionos:
-    server_test:
-
-snowflake:
-  vars:
-    snowflake_metrics: true
-  children:
-    snowflake_ionos:
+  hosts:
+    my_first_server:

@@ -1,12 +1,4 @@
 ---
-- name: Info Base
-  strategy: linear
-  hosts: tor
-  roles:
-    - role: info_base
-      tags:
-        - info-base
-
 - name: Info Tor
   hosts: tor
   roles:

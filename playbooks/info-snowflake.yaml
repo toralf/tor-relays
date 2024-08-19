@@ -1,12 +1,4 @@
 ---
-- name: Info Base
-  strategy: linear
-  hosts: snowflake
-  roles:
-    - role: info_base
-      tags:
-        - info-base
-
 - name: Info Snowflake
   hosts: snowflake
   roles:
