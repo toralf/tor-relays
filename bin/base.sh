@@ -23,4 +23,20 @@ EOF
   chmod 400 ${secrets}
 fi
 
+local_inventory=$(dirname $0)/../inventory/local.yaml
+if [[ ! -s ${local_inventory} ]]; then
+  cat <<EOF >${local_inventory}
+---
+# created by $0 at $(date)
+
+# vCPU
+all:
+  nproc: $(nproc)
+
+EOF
+  chmod 400 ${local_inventory}
+fi
+
+
+
 mkdir -p ${HOME}/tmp/{kconfigs,issues}
