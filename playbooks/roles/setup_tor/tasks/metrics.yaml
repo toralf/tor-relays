@@ -17,12 +17,12 @@
     job: "nice /root/metrics.sh 60"
     state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
 
-- name: Getting process IDs of a currently running script
+- name: Getting process IDs of any running metrics script
   community.general.pids:
     name: metrics.sh
   register: _metrics_ddos_pids_2_kill
 
-- name: Ensure old DDoS metrics script is stopped
+- name: Ensure no outdated DDoS metrics script is running
   changed_when: _metrics_ddos_killed.changed
   when: _metrics_ddos_download.changed or not tor_metrics_ddos
   ansible.builtin.shell:
