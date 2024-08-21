@@ -2,6 +2,7 @@
 - name: Setup Snowflake
   hosts: snowflake
   roles:
+    - role: poweron
     - role: setup_common
       tags:
         - setup-common

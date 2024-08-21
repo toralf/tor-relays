@@ -2,6 +2,7 @@
 - name: Setup Misc
   hosts: misc
   roles:
+    - role: poweron
     - role: setup_common
       tags:
         - setup-common

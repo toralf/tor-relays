@@ -2,6 +2,7 @@
 - name: Info Snowflake
   hosts: snowflake
   roles:
+    - role: poweron
     - role: info_common
       tags:
         - info-common

@@ -2,6 +2,7 @@
 - name: Info Misc
   hosts: misc
   roles:
+    - role: poweron
     - role: info_common
       tags:
         - info-common

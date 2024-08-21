@@ -2,6 +2,7 @@
 - name: Info Tor
   hosts: tor
   roles:
+    - role: poweron
     - role: info_common
       tags:
         - info-common

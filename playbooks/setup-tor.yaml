@@ -2,6 +2,7 @@
 - name: Setup Tor
   hosts: tor
   roles:
+    - role: poweron
     - role: setup_common
       tags:
         - setup-common
