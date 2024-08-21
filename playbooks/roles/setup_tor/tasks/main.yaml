@@ -42,7 +42,6 @@
       when: firewall_use_ddos
       ansible.builtin.import_tasks: firewall-ddos.yaml
       tags:
-        - firewall
         - firewall-ddos
 
     - name: Debian

@@ -5,7 +5,7 @@
       - ipset
       - jq
 
-- name: Download DDoS scripts
+- name: Download DDoS solution
   throttle: 50
   retries: 3
   ansible.builtin.get_url:
@@ -17,6 +17,23 @@
     - ipv4-rules.sh
     - ipv6-rules.sh
   notify: "Restart DDoS"
+
+# it might be stopped manually
+- name: Check if DDoS is up
+  changed_when: _ddos_up.rc != 0
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      ./ipv4-rules.sh | grep -q "DDoS IPv4"
+      ./ipv6-rules.sh | grep -q "DDoS IPv6"
+    executable: /bin/bash
+  register: _ddos_up
+  notify: "Restart DDoS"
+
+- name: Ensure that DDoS is up
+  ansible.builtin.meta: flush_handlers
 
 - name: Create DDoS cron job to start DDoS after reboot
   ansible.builtin.cron:
@@ -37,37 +54,17 @@
     special_time: daily
     job: "/root/ipv4-rules.sh update; /root/ipv6-rules.sh update"
 
-- name: Ensure that DDoS is up
-  changed_when: _ddos_up.rc == 42
-  failed_when: (_ddos_up.rc != 0) and (_ddos_up.rc != 42)
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      changed=0
-
-      if ! ./ipv4-rules.sh | grep -q "DDoS IPv4"; then
-        {{ _add_remote_service }} /root/ipv4-rules.sh start
-        changed=1
-      fi
-
-      if ! ./ipv6-rules.sh | grep -q "DDoS IPv6"; then
-        /root/ipv6-rules.sh start
-        changed=1
-      fi
-
-      if [[ $changed -ne 0 ]]; then
-        exit 42
-      fi
-    executable: /bin/bash
-  register: _ddos_up
-
-- name: Ensure that DDoS is started
-  ansible.builtin.meta: flush_handlers
-
 - name: Remove base firewall script
   ansible.builtin.file:
     path: "/root/firewall-ip{{ item }}.sh"
+    state: absent
+  with_items:
+    - "v4"
+    - "v6"
+
+- name: Remove iptables state
+  ansible.builtin.file:
+    path: "/etc/iptables/rules.{{ item }}"
     state: absent
   with_items:
     - "v4"
@@ -78,11 +75,3 @@
     name:
       - iptables-persistent
     state: absent
-
-- name: Remove iptables state
-  ansible.builtin.file:
-    path: "/etc/iptables/rules.{{ item }}"
-    state: absent
-  with_items:
-    - "v4"
-    - "v6"
