@@ -4,7 +4,7 @@
 
 ## Quick start
 
-To setup a new Tor public bridge at an existing recent Debian system (i.e. with the hostname _my_bridge_), do
+To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
 
 1. clone this repo
 
@@ -13,22 +13,20 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. needed only once: create seeds, a self-signed CA and local dirs in ~/tmp and ./secrets:
+1. run once at your local machine: create seeds, a self-signed CA and local dirs in ~/tmp and ./secrets:
 
    ```bash
    bash ./bin/base.sh
    ansible-playbook playbooks/ca.yaml -i ./inventory -e @secrets/local.yaml --tags ca
    ```
 
-1. add your bridge (i.e. _my_first_public_bridge_) to the group (i.e. _tor_) to the [./inventory](./inventory/):
+1. add it to the group _tor_ to the [./inventory](./inventory/):
 
    ```yaml
    ---
    tor:
      hosts:
        my_bridge:
-         bridge_distribution: "any"
-         tor_port: 12345
    ```
 
 like in this [example](./examples/inventory.yaml) for an Ansible inventory.
@@ -36,15 +34,15 @@ like in this [example](./examples/inventory.yaml) for an Ansible inventory.
 1. deploy it
 
    ```bash
-   ./site-setup.yaml --limit my_first_public_bridge
+   ./site-setup.yaml --limit my_bridge
    ```
 
 1. enjoy it:
 
    ```bash
-   ./site-info.yaml --limit my_first_public_bridge
+   ./site-info.yaml --limit my_bridge
 
-   grep my_first_public_bridge ~/tmp/*
+   grep "my_bridge" ~/tmp/*
    ```
 
 ## Details
