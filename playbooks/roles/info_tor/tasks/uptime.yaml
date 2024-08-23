@@ -13,7 +13,7 @@
         grep -v grep |
         awk '{ print $1 }'|
         grep . ||
-        echo "-"
+      echo "-"
   register: _process
 
 - name: File uptime

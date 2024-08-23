@@ -7,9 +7,9 @@
   ansible.builtin.shell:
     cmd: |-
       tor --version |
-      grep -m 1 '^Tor version' |
-      cut -f 3,4 -d ' ' |
-      tr ' ' '_'
+        grep -m 1 '^Tor version' |
+        cut -f 3,4 -d ' ' |
+        tr ' ' '_'
   register: _tor
 
 - name: Proxy version

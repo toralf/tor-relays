@@ -4,7 +4,8 @@
   ansible.builtin.shell:
     cmd: |-
       cut -f 2 -d ' ' /var/lib/tor/fingerprint |
-      grep . || echo "-"
+        grep . ||
+      echo "-"
   register: _result
 
 - name: Set fact

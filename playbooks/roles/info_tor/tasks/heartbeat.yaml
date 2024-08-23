@@ -4,7 +4,7 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -F 'Heartbeat: Tor' {{ log_notice }}.4.gz {{ log_notice }}.3.gz {{ log_notice }}.2.gz {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
-      tail -n 4
+        tail -n 4
   register: _result
 
 - name: File clients

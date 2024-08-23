@@ -4,7 +4,7 @@
   ansible.builtin.shell:
     cmd: |-
       grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} 2>/dev/null |
-      tail -n {{ log_lines }}
+        tail -n {{ log_lines }}
   register: _result
 
 - name: Results of error log check

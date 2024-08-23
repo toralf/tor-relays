@@ -29,11 +29,10 @@ if [[ ! -s ${local_inventory} ]]; then
 ---
 # created by $0 at $(date)
 
-# vCPU
+# 2x vCPU
 all:
   vars:
     jobs: $((2 * $(nproc)))
-
 EOF
   chmod 600 ${local_inventory}
 fi

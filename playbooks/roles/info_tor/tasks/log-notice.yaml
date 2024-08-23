@@ -11,7 +11,7 @@
       fi
 
       grep -h -v -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
-      tail -n {{ log_lines }}
+        tail -n {{ log_lines }}
     executable: /bin/bash
   register: _result
 
