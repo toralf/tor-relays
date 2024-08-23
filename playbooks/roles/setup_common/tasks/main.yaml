@@ -99,12 +99,6 @@
       tags:
         - kernel-src
 
-    - name: CA
-      ansible.builtin.import_tasks: ca.yaml
-      tags:
-        - ca
-        - never
-
     - name: Metrics
       when: metrics_port
       ansible.builtin.import_tasks: metrics.yaml

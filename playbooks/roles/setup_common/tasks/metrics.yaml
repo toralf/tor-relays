@@ -9,14 +9,14 @@
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.openssl_privatekey:
-    path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
+    path: "{{ ssl_dir }}/clients/keys/{{ inventory_hostname }}.key"
 
 - name: Generate host CSR
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.openssl_csr:
-    path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
-    privatekey_path: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
+    path: "{{ ssl_dir }}/clients/csrs/{{ inventory_hostname }}.csr"
+    privatekey_path: "{{ ssl_dir }}/clients/keys/{{ inventory_hostname }}.key"
     common_name: "{{ inventory_hostname }}"
     country_name: "DE"
     subject_alt_name:
@@ -33,23 +33,23 @@
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.x509_certificate:
-    path: "{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt"
-    csr_path: "{{ ssl_dir }}/csrs/{{ inventory_hostname }}.csr"
-    ownca_path: "{{ ssl_dir }}/certs/CA.crt"
-    ownca_privatekey_path: "{{ ssl_dir }}/keys/CA.key"
+    path: "{{ ssl_dir }}/clients/certs/{{ inventory_hostname }}.crt"
+    csr_path: "{{ ssl_dir }}/clients/csrs/{{ inventory_hostname }}.csr"
+    ownca_path: "{{ ssl_dir }}/CA/certs/CA.crt"
+    ownca_privatekey_path: "{{ ssl_dir }}/CA/keys/CA.key"
     provider: ownca
 
 - name: Copy host key
   ansible.builtin.copy:
-    src: "{{ ssl_dir }}/keys/{{ inventory_hostname }}.key"
+    src: "{{ ssl_dir }}/clients/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
   notify: "Reload Nginx"
 
 - name: Copy host certificate
   ansible.builtin.copy:
     content: "{{
-      lookup('file','{{ ssl_dir }}/certs/{{ inventory_hostname }}.crt')+'\n'+
-      lookup('file','{{ ssl_dir }}/certs/CA.crt')+'\n'
+      lookup('file','{{ ssl_dir }}/clients/certs/{{ inventory_hostname }}.crt')+'\n'+
+      lookup('file','{{ ssl_dir }}/CA/certs/CA.crt')+'\n'
       }}"
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
   notify: "Reload Nginx"

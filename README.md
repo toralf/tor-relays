@@ -13,10 +13,11 @@ To setup a new Tor public bridge at an existing recent Debian system (i.e. with 
    cd ./tor-relays
    ```
 
-1. create seeds under ./secrets (need to be run only once) and a tmp directory:
+1. needed only once: create seeds, a self-signed CA and local dirs in ~/tmp and ./secrets:
 
    ```bash
    bash ./bin/base.sh
+   ansible-playbook playbooks/ca.yaml -i ./inventory -e @secrets/local.yaml --tags ca
    ```
 
 1. add your bridge (i.e. _my_first_public_bridge_) to the group (i.e. _tor_) to the [./inventory](./inventory/):

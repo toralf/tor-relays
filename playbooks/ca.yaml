@@ -1,0 +1,10 @@
+---
+- name: CA
+  hosts: all
+  run_once: true
+  strategy: linear
+  roles:
+    - role: ca
+      tags:
+        - ca
+        - never
