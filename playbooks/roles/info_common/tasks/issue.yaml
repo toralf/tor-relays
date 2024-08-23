@@ -18,7 +18,7 @@
   block:
     - name: Findings of issue/s since {{ log_system_since }}
       delegate_to: localhost
-      throttle: "{{ nproc }}"
+      throttle: "{{ jobs }}"
       ansible.builtin.copy:
         content: "{{ _result.stdout }}"
         dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.log"

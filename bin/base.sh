@@ -32,7 +32,7 @@ if [[ ! -s ${local_inventory} ]]; then
 # vCPU
 all:
   vars:
-    nproc: $(nproc)
+    jobs: $((2 * $(nproc)))
 
 EOF
   chmod 600 ${local_inventory}

@@ -1,7 +1,7 @@
 ---
 - name: Ensure system is able to ping
   delegate_to: localhost
-  throttle: "{{ nproc }}"
+  throttle: "{{ jobs }}"
   tags:
     - never
     - poweron
