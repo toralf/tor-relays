@@ -4,6 +4,9 @@
 
 - name: Generate CA
   delegate_to: localhost
+  tags:
+    - ca
+    - never
   block:
     - name: Create local directories
       delegate_to: localhost

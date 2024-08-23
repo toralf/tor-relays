@@ -1,0 +1,24 @@
+---
+- name: Setup common
+  hosts: all
+  roles:
+    - role: poweron
+      tags:
+        - poweron
+    - role: setup_common
+      tags:
+        - setup-common
+
+- name: Setup Snowflake
+  hosts: snowflake
+  roles:
+    - role: setup_snowflake
+      tags:
+        - setup-snowflake
+
+- name: Setup Tor
+  hosts: tor
+  roles:
+    - role: setup_tor
+      tags:
+        - setup-tor

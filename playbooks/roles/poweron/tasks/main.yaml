@@ -3,8 +3,8 @@
   delegate_to: localhost
   throttle: "{{ jobs }}"
   tags:
-    - never
     - poweron
+    - never
   block:
     - name: Ping
       changed_when: _ping_result.rc != 0
