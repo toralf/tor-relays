@@ -20,11 +20,11 @@
   listen: "Reload Tor"
   ansible.builtin.systemd_service:
     name: tor
-    state: reloaded
+    state: "{{ (_base_initialized.changed and fire_and_forget and _kernel_build.changed) | ternary('stopped', 'reloaded') }}"
 
 - name: Restart Tor
   listen: "Restart Tor"
   ansible.builtin.systemd_service:
     name: tor
-    state: restarted
+    state: "{{ (_base_initialized.changed and fire_and_forget and _kernel_build.changed) | ternary('stopped', 'restarted') }}"
     no_block: true
