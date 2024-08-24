@@ -17,5 +17,3 @@ prometheus_server: ""
 timer_hour: "{{ 12 | random(seed=inventory_hostname) }}"
 
 node_metrics: false
-
-snowflake_metrics: true
