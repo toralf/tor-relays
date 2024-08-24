@@ -9,3 +9,4 @@
   ansible.builtin.systemd_service:
     name: snowflake-proxy
     state: restarted
+    no_block: true

@@ -75,12 +75,12 @@
         - metrics
         - metrics-ddos
 
-    - name: Enable Tor at boot
-      ansible.builtin.systemd_service:
-        name: tor
-      notify: "Restart Tor"
-
     - name: Config
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
+
+    - name: Enable Tor
+      ansible.builtin.systemd_service:
+        name: tor
+      notify: "Restart Tor"

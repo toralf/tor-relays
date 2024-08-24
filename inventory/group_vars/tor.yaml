@@ -10,3 +10,5 @@ torrc_config:
     value: "{{ log_warn }}"
   - name: "Log err file"
     value: "{{ log_err }}"
+
+tor_metrics: true

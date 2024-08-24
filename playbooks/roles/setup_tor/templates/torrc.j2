@@ -37,7 +37,7 @@ MyFamily {{ _my_family }}
 {% endif %}
 {% endif %}
 
-{% if tor_metrics is true %}
+{% if tor_metrics %}
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
 {% endif %}

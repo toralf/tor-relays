@@ -53,7 +53,7 @@
           tags:
             - config
 
-    - name: Enable Snowflake at boot
+    - name: Enable Snowflake
       ansible.builtin.systemd_service:
         name: snowflake-proxy
       notify: "Restart Snowflake"
