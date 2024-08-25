@@ -8,5 +8,5 @@
   listen: "Restart Snowflake"
   ansible.builtin.systemd_service:
     name: snowflake-proxy
-    state: restarted
+    state: "{{ (_first_kernel_build_in_progress | default(false)) | ternary('stopped', 'restarted') }}"
     no_block: true

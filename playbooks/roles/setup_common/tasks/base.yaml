@@ -4,6 +4,7 @@
     path: /root/.ansible/tmp
     state: directory
     mode: "0700"
+  register: _ansible_tmp
 
 - name: Set the hostname
   ansible.builtin.hostname:
