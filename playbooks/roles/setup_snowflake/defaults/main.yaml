@@ -5,4 +5,4 @@ snowflake_patches: []
 
 snowflake_command_args: ""
 
-snowflake_metrics: true
+snowflake_metrics: false
