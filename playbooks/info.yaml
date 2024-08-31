@@ -1,24 +1,20 @@
 ---
-- name: Info common
-  hosts: all
+- name: Info Misc
+  hosts: '!snowflake:&!tor'
   roles:
     - role: poweron
-      tags:
-        - poweron
     - role: info_common
-      tags:
-        - info-common
 
 - name: Info Snowflake
   hosts: snowflake
   roles:
+    - role: poweron
+    - role: info_common
     - role: info_snowflake
-      tags:
-        - info-snowflake
 
 - name: Info Tor
   hosts: tor
   roles:
+    - role: poweron
+    - role: info_common
     - role: info_tor
-      tags:
-        - info-tor
