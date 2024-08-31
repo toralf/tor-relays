@@ -1,6 +1,6 @@
 ---
 - name: Setup Misc
-  hosts: '!snowflake:&!tor'
+  hosts: '!snowflake:!tor'
   roles:
     - role: poweron
     - role: setup_common
