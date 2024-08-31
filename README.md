@@ -13,14 +13,14 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
    cd ./tor-relays
    ```
 
-1. run once at your local machine: create seeds, a self-signed CA and local dirs in ~/tmp and ./secrets:
+1. run once at your local machine: create seeds, local dirs _~/tmp_ and _./secrets_ and a self-signed CA:
 
    ```bash
    bash ./bin/base.sh
    ansible-playbook playbooks/ca.yaml -i ./inventory -e @secrets/local.yaml --tags ca
    ```
 
-1. add it to the group _tor_ to the [./inventory](./inventory/):
+1. add the bridge to the group _tor_:
 
    ```yaml
    ---
