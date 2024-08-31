@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# e.g. ./create-server.sh $(seq -w 0 9 | xargs -n 1 printf "foo%i ")
+# e.g. ./create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
 
 set -euf
 export LANG=C.utf8
