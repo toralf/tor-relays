@@ -110,21 +110,21 @@ For more Prometheus config examples and Grafana dashboards take a look at [this]
 
 ### Misc
 
-The _targets_ lines for the Prometheus config can be created by sth. like:
+The _targets_ for Prometheus can be created by sth. like:
 
 ```bash
 ./site-info.yaml --tags metrics-port
-sort ~/tmp/*_metrics_port | xargs -n 10 | sed -e 's, ,"\, ",g' -e 's,^,- targets: [",' -e 's,$,"],'
+sort ~/tmp/*_metrics_port | xargs -n 4 | sed -e 's/ /", "/g' -e 's,^,- targets: [",' -e 's,$,"],' | column -t
 ```
 
-To create there a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
+To create at Hetzner in the project _my_project_ a new VPS with the hostname _my_bridge_, do:
 
 ```bash
 hcloud context use my_project
 ./bin/create-server.sh my_bridge
 ```
 
-The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver,
+The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolve and _openrc_ as the init system,
 configured for the appropriate project:
 
 ```config
