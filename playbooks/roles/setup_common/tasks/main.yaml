@@ -81,6 +81,7 @@
         - firewall
 
     - name: Debian kernel
+      when: not kernel_git_version
       tags:
         - kernel-bin
       block:
@@ -90,7 +91,7 @@
         - name: Check if reboot is needed (Debian kernel)
           ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Ensure newest Debian kernel is used
+        - name: Ensure newest Debian kernel is running
           ansible.builtin.meta: flush_handlers
 
     - name: Build self-compiled kernel
