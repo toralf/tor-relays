@@ -14,12 +14,12 @@
       - "tor_port is defined"
       - "(tor_port | int > 0) and (tor_port | int < 2**16)"
 
-- name: Validate metrics_port
-  when: metrics_port
+- name: Validate tor_port
+  when: tor_port
   ansible.builtin.assert:
     quiet: true
     that:
-      - "metrics_port != tor_port"
+      - "tor_port != metrics_port"
 
 - name: Validate tor_metrics_ddos
   when: tor_metrics_ddos
