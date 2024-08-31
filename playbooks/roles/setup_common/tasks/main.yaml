@@ -84,7 +84,7 @@
       tags:
         - kernel-bin
       block:
-        - name: Ensure newest Debian kernel is installed
+        - name: Ensure desired Debian kernel is installed
           ansible.builtin.import_tasks: kernel-bin.yaml
 
         - name: Check if reboot is needed (Debian kernel)

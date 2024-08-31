@@ -153,5 +153,5 @@
   when: not _kernel_build.changed
   ansible.builtin.apt:
     name:
-      - "linux-image{{ kernel_debian_cloud | ternary('-cloud', '') }}-{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+      - "linux-image{{ _kernel_cloud }}-{{ _kernel_arch }}"
     state: absent
