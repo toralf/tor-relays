@@ -80,18 +80,16 @@
       tags:
         - firewall
 
-    - name: Debian kernel
+    - name: Ensure desired Debian kernel is installed
+      ansible.builtin.import_tasks: kernel-bin.yaml
       tags:
         - kernel-bin
-      block:
-        - name: Ensure desired Debian kernel is installed
-          ansible.builtin.import_tasks: kernel-bin.yaml
 
-        - name: Check if reboot is needed (Debian kernel)
-          ansible.builtin.import_tasks: reboot.yaml
+    - name: Check if reboot is needed
+      ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Ensure newest Debian kernel is running
-          ansible.builtin.meta: flush_handlers
+    - name: Ensure all needed Reboots/Restarts are amde
+      ansible.builtin.meta: flush_handlers
 
     - name: Build self-compiled kernel
       when: kernel_git_version
