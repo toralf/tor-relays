@@ -81,7 +81,6 @@
         - firewall
 
     - name: Debian kernel
-      when: not kernel_git_version
       tags:
         - kernel-bin
       block:
