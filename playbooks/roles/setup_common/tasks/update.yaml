@@ -31,20 +31,9 @@
         - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
         - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
 
-- name: Upgrade
-  block:
-    - name: Upgrade via apt
-      ansible.builtin.apt:
-        upgrade: dist
-      register: _apt_dist
-  rescue:
-    - name: Fix dpkg
-      changed_when: true
-      when: _apt_dist.stdout is search("dpkg was interrupted, you must manually run 'dpkg --configure -a' to correct the problem.")
-      ansible.builtin.command: dpkg --configure -a
-    - name: Upgrade via apt (2nd attempt)
-      ansible.builtin.apt:
-        upgrade: dist
+- name: Update dist
+  ansible.builtin.apt:
+    upgrade: dist
 
 - name: Install or update base software
   ansible.builtin.apt:
