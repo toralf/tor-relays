@@ -3,18 +3,37 @@
   hosts: "!snowflake:!tor"
   roles:
     - role: poweron
+      tags:
+        - never
+        - setup-poweron
     - role: setup_common
+      tags:
+        - info-common
 
 - name: Setup Snowflake
   hosts: snowflake
   roles:
     - role: poweron
+      tags:
+        - never
+        - setup-poweron
     - role: setup_common
+      tags:
+        - info-common
     - role: setup_snowflake
+      tags:
+        - setup-snowflake
 
 - name: Setup Tor
   hosts: tor
   roles:
     - role: poweron
+      tags:
+        - never
+        - setup-poweron
     - role: setup_common
+      tags:
+        - info-common
     - role: setup_tor
+      tags:
+        - setup-tor

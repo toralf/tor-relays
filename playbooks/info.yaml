@@ -3,18 +3,37 @@
   hosts: "!snowflake:!tor"
   roles:
     - role: poweron
+      tags:
+        - never
+        - info-poweron
     - role: info_common
+      tags:
+        - info-common
 
 - name: Info Snowflake
   hosts: snowflake
   roles:
     - role: poweron
+      tags:
+        - never
+        - info-poweron
     - role: info_common
+      tags:
+        - info-common
     - role: info_snowflake
+      tags:
+        - info-snowflake
 
 - name: Info Tor
   hosts: tor
   roles:
     - role: poweron
+      tags:
+        - never
+        - info-poweron
     - role: info_common
+      tags:
+        - info-common
     - role: info_tor
+      tags:
+        - setup-tor
