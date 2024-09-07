@@ -19,7 +19,7 @@
   throttle: 50
   retries: 3
   ansible.builtin.git:
-    repo: "{{ kernel_git_repo_url }}"
+    repo: "{{ kernel_git_repo_url | ternary(kernel_git_repo_url, 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
     dest: /root/linux
     version: "{{ kernel_git_version }}"
     force: true
