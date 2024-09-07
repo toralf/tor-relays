@@ -36,4 +36,4 @@
         - info-common
     - role: info_tor
       tags:
-        - setup-tor
+        - info-tor

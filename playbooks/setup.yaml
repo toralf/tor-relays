@@ -19,7 +19,7 @@
         - setup-poweron
     - role: setup_common
       tags:
-        - info-common
+        - setup-common
     - role: setup_snowflake
       tags:
         - setup-snowflake
@@ -33,7 +33,7 @@
         - setup-poweron
     - role: setup_common
       tags:
-        - info-common
+        - setup-common
     - role: setup_tor
       tags:
         - setup-tor
