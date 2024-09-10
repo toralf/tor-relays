@@ -1,5 +1,5 @@
 ---
-- name: Ensure system is able to ping
+- name: Check if Hetzer system can be pinged
   delegate_to: localhost
   throttle: "{{ jobs }}"
   tags:
