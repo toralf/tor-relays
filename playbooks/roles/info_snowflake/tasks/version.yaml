@@ -8,6 +8,7 @@
   ansible.builtin.shell:
     cmd: |-
       snowflake-proxy --version 2>&1 |
+        head -n 1 |
         cut -f 2- -d ' ' |
         tr ' ' '_'
   register: _proxy_version
