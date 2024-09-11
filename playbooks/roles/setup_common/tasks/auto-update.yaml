@@ -39,8 +39,16 @@
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
   notify: "Reload Systemd"
 
-- name: Ensure Reboot cron job for deferred services is present
+- name: Ensure reboot cron job is present
   ansible.builtin.cron:
-    name: "Reboot if services can't be safely restarted"
+    name: "Reboot if services can't be safely restarted and/or kernel was updated"
     minute: "42"
-    job: "if [[ -s /var/run/reboot-required ]] || needrestart -r l -b | grep -q 'NEEDRESTART-SVC:'; then reboot; fi"
+    job: >-
+      "
+      if [[ -s /var/run/reboot-required ]] ||
+      needrestart -r l -b | grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
+      ; then
+      reboot
+      ;
+      fi
+      "
