@@ -1,4 +1,6 @@
 ---
+# update starts at hh:02, # upgrade starts between hh:10 and hh:30, possible reboot between hh:35 and hh:58
+
 - name: Install or update base software for auto-update
   ansible.builtin.apt:
     name:
@@ -43,7 +45,7 @@
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted and/or kernel was updated"
     hour: "{{ timer_hour }}"
-    minute: "42"
+    minute: "{{ 35 + timer_hour | int }}"
     job: >-
       "
       if [[ -s /var/run/reboot-required ]] ||
