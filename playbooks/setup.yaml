@@ -4,7 +4,6 @@
   roles:
     - role: poweron
       tags:
-        - never
         - setup-poweron
     - role: setup_common
       tags:
@@ -15,7 +14,6 @@
   roles:
     - role: poweron
       tags:
-        - never
         - setup-poweron
     - role: setup_common
       tags:
@@ -29,7 +27,6 @@
   roles:
     - role: poweron
       tags:
-        - never
         - setup-poweron
     - role: setup_common
       tags:
