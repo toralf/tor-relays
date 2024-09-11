@@ -42,6 +42,7 @@
 - name: Ensure reboot cron job is present
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted and/or kernel was updated"
+    hour: "{{ timer_hour }}"
     minute: "42"
     job: >-
       "
