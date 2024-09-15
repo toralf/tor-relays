@@ -21,8 +21,8 @@
     that:
       - "tor_port != metrics_port"
 
-- name: Validate tor_metrics_ddos
-  when: tor_metrics_ddos
+- name: Validate torutils_metrics
+  when: torutils_metrics
   ansible.builtin.assert:
     quiet: true
     that:

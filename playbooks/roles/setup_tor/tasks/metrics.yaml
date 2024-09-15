@@ -2,7 +2,7 @@
 - name: Download DDoS metrics script
   throttle: 50
   retries: 3
-  when: tor_metrics_ddos
+  when: torutils_metrics
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/metrics.sh"
     dest: "/root/metrics.sh"
@@ -15,7 +15,7 @@
     name: "DDoS metrics"
     special_time: reboot
     job: "nice /root/metrics.sh 60"
-    state: "{{ tor_metrics_ddos | ternary('present', 'absent') }}"
+    state: "{{ torutils_metrics | ternary('present', 'absent') }}"
 
 - name: Getting process IDs of any running metrics script
   community.general.pids:
@@ -24,7 +24,7 @@
 
 - name: Ensure no outdated DDoS metrics script is running
   changed_when: _metrics_ddos_killed.changed
-  when: _metrics_ddos_download.changed or not tor_metrics_ddos
+  when: _metrics_ddos_download.changed or not torutils_metrics
   ansible.builtin.shell:
     cmd: |-
       kill -0 "{{ item }}" && kill -9 "{{ item }}"
@@ -38,6 +38,6 @@
 
 - name: Ensure DDoS metrics script is running
   changed_when: _metrics_ddos_started.changed
-  when: tor_metrics_ddos and (_metrics_ddos_pids_running.pids | length == 0)
+  when: torutils_metrics and (_metrics_ddos_pids_running.pids | length == 0)
   ansible.builtin.shell: "nice /root/metrics.sh 60 &"
   register: _metrics_ddos_started
