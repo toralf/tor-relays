@@ -22,7 +22,7 @@
   register: _lyrebird_patched
 
 - name: Build Lyrebird
-  changed_when: true
+  changed_when: false
   ansible.builtin.command:
     cmd: make build
     chdir: /root/lyrebird
