@@ -69,23 +69,6 @@
     - /var/lib/tor/
     - /var/log/tor/
 
-# needed if Tor was previously installed by a Debian package
-- name: Fix ownership of directories
-  changed_when: _rc.rc == 123
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      if [[ $(stat -c '%U' "{{ item }}") != "tor" ]]; then
-        chown -R tor:tor "{{ item }}"
-        exit 123
-      fi
-    executable: /bin/bash
-  with_items:
-    - /var/lib/tor/
-    - /var/log/tor/
-  register: _rc
-
 # test if Tor restart is needed
 - name: Copy Tor
   ansible.builtin.copy:
@@ -118,8 +101,8 @@
   notify: "Restart Tor"
 
 - name: Allow low port
+  changed_when: false
   when: (tor_port | int < 1024) and (not bridge_distribution)
   community.general.capabilities:
     path: /usr/bin/tor
-    capability: cap_net_bind_service=+ep
-    state: present
+    capability: cap_net_bind_service+ep

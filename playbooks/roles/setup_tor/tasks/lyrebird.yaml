@@ -35,11 +35,9 @@
     remote_src: yes
   notify: "Restart Tor"
 
-# for systemd see CapabilityBoundingSet, NoNewPrivileges, PrivateDevices and more
 - name: Allow low port for Lyrebird
+  changed_when: false
   when: tor_port | int < 1024
   community.general.capabilities:
     path: /usr/bin/lyrebird
-    capability: cap_net_bind_service=+ep
-    state: present
-  notify: "Restart Tor"
+    capability: cap_net_bind_service+ep
