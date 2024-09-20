@@ -3,7 +3,7 @@ log_notice: "/var/log/tor/notice.log"
 log_warn: "/var/log/tor/warn.log"
 log_err: "/var/log/tor/err.log"
 
-torrc_config:
+torrc_config_log:
   - name: "Log notice file"
     value: "{{ log_notice }}"
   - name: "Log warn file"

@@ -50,6 +50,6 @@ DirReqStatistics 0
 HiddenServiceStatistics 0
 ExtraInfoStatistics 0
 
-{% for item in torrc_config + torrc_config_all + torrc_config_group + torrc_config_host %}
+{% for item in torrc_config_log + torrc_config_info + torrc_config_host %}
 {{ item.name }} {{ item.value }}
 {% endfor %}
