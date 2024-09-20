@@ -23,7 +23,7 @@ EOF
   chmod 400 ${secrets}
 fi
 
-local_inventory=$(dirname $0)/../inventory/local.yaml
+local_inventory=$(dirname $0)/../inventory/all.yaml
 if [[ ! -s ${local_inventory} ]]; then
   cat <<EOF >${local_inventory}
 ---
