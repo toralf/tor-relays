@@ -2,7 +2,7 @@
 - name: Restart DDoS
   changed_when: true
   listen: "Restart DDoS"
-  when: not bridge_distribution
+  when: firewall_use_ddos
   ansible.builtin.shell:
     cmd: |-
       /root/ipv4-rules.sh save
