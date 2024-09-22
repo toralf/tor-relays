@@ -32,22 +32,15 @@
   notify: "Restart Tor"
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Allow low port
+- name: Configure apt hook to set capabilities for low port
   when: tor_port | int < 1024
-  block:
-    - name: Configure apt hook to use low port for obfs4proxy
-      when: bridge_distribution
-      ansible.builtin.lineinfile:
-        line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/obfs4proxy"; };'
-        path: /etc/apt/apt.conf.d/99-obfs4proxy-capability
-        create: yes
-
-    - name: Configure apt hook to use low port for Tor
-      when: not bridge_distribution
-      ansible.builtin.lineinfile:
-        line: 'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep /usr/bin/tor"; };'
-        path: /etc/apt/apt.conf.d/99-tor-capability
-        create: yes
+  vars:
+    __exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+  ansible.builtin.lineinfile:
+    line: >-
+      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ __exe }}"; };'
+    path: /etc/apt/apt.conf.d/99-tor-lowport
+    create: yes
 
 - name: Ensure that Tor systemd override dir exists
   ansible.builtin.file:
