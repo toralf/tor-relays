@@ -5,4 +5,5 @@ snowflake_patches: []
 
 snowflake_command_args: ""
 
+# metrics could expose potential sensitive information
 snowflake_metrics: false
