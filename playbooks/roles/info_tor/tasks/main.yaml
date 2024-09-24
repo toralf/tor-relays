@@ -12,6 +12,12 @@
         - onionoo
         - wellknown
 
+    - name: Bridge stats
+      when: bridge_distribution
+      ansible.builtin.import_tasks: bridge-stats.yaml
+      tags:
+        - bridge-stats
+
     - name: Bridge line
       when: bridge_distribution
       ansible.builtin.import_tasks: bridgeline.yaml

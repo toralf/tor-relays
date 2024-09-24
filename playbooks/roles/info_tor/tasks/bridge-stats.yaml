@@ -1,0 +1,15 @@
+---
+- name: Get bridge stats
+  changed_when: false
+  ansible.builtin.command:
+    cmd: |-
+      grep "bridge-ips" /var/lib/tor/stats/bridge-stats
+  register: _result
+
+- name: File bridge stats
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    path: "{{ tmp_dir }}/tor_bridge_stats"
+    regex: "^{{ inventory_hostname }} "
