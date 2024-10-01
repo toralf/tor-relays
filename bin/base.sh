@@ -33,6 +33,8 @@ if [[ ! -s ${local_inventory} ]]; then
 all:
   vars:
     jobs: $((2 * $(nproc)))
+    seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
+
 EOF
   chmod 600 ${local_inventory}
 fi
