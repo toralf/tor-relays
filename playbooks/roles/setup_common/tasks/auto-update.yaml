@@ -29,23 +29,26 @@
     - "apt-daily.timer.d/"
     - "apt-daily-upgrade.timer.d/"
 
+# 2x per day at :02
 - name: Configure apt timer
   ansible.builtin.template:
     src: timer.j2
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
   notify: "Reload Systemd"
 
+# 2x per day at :10
 - name: Configure apt upgrade timer
   ansible.builtin.template:
     src: upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
   notify: "Reload Systemd"
 
+# 2x per day between: 30..55
 - name: Ensure reboot cron job is present
   ansible.builtin.cron:
     name: "Reboot if services can't be safely restarted and/or kernel was updated"
-    hour: "{{ timer_hour }}"
-    minute: "{{ 35 + timer_hour | int }}"
+    hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
+    minute: "{{ 30 + 25 | random(seed=seed_host) }}"
     job: >-
       "
       if [[ -s /var/run/reboot-required ]] ||

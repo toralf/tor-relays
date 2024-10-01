@@ -8,12 +8,13 @@ kernel_debian_cloud: true
 kernel_git_repo_url: ""
 kernel_git_version: "" # e.g. "HEAD" or "v6.7.3"
 kernel_git_patches: []
+
+# for too long running tasks, e.g.: kernel compilation
 fire_and_forget: true
 
 metrics_port: ""
 prometheus_server: ""
-
-# apt timer schedules, reboot (for deferred service) is made via cron in the following hour
-timer_hour: "{{ 12 | random(seed=inventory_hostname) }}"
-
 node_metrics: false
+
+# apt timer schedules and related cron job
+timer_hour: "{{ 12 | random(seed=seed_host) }}"
