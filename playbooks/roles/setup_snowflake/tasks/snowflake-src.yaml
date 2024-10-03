@@ -2,6 +2,7 @@
 - name: Add the user
   ansible.builtin.user:
     name: snowflake
+    group: snowflake
 
 - name: Init or update Git repo
   throttle: 20

@@ -2,6 +2,7 @@
 - name: Add the user
   ansible.builtin.user:
     name: tor
+    group: tor
 
 - name: Install or update seccomp lib (non-bridge only)
   when: not bridge_distribution
