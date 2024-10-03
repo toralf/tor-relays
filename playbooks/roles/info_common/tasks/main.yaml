@@ -36,6 +36,11 @@
   tags:
     - uname
 
+- name: Minicoredumper
+  ansible.builtin.import_tasks: minicoredumper.yaml
+  tags:
+    - minicoredumper
+
 - name: Dryrun of unattended-upgrade
   ansible.builtin.import_tasks: dry-update.yaml
   tags:
