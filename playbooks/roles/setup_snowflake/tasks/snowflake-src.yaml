@@ -17,6 +17,7 @@
 
 - name: Apply patches
   throttle: 20
+  retries: 3
   changed_when: _snowflake_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1

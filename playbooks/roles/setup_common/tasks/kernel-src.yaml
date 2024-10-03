@@ -16,7 +16,6 @@
       - lz4
 
 - name: Init or update Linux repo
-  throttle: 50
   retries: 3
   ansible.builtin.git:
     repo: "{{ kernel_git_repo_url | ternary(kernel_git_repo_url, 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
@@ -28,7 +27,7 @@
   register: _kernel_repo
 
 - name: Apply patches for Linux
-  throttle: 50
+  retries: 3
   changed_when: _kernel_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: |-
