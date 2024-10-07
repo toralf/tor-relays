@@ -1,0 +1,13 @@
+---
+- name: Minicoredumper
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      ls -lth /var/lib/minicoredumper/*/* 2>/dev/null |
+        head
+  register: _result
+
+- name: Results of Minicoredumper
+  when: _result.stdout_lines
+  ansible.builtin.debug:
+    var: _result.stdout_lines
