@@ -1,4 +1,8 @@
 ---
+- name: Add the group
+  ansible.builtin.group:
+    name: snowflake
+
 - name: Add the user
   ansible.builtin.user:
     name: snowflake
