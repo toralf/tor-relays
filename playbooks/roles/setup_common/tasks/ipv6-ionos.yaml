@@ -4,9 +4,9 @@
   vars:
     __ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     __a: "{{ (ansible_facts.default_ipv6.address | split(':'))[4] | default('0') }}"
-    __b: "{{ range(0, 65535) | random(seed=seed__address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + __ipv6_prefix) }}"
-    __c: "{{ range(0, 65535) | random(seed=seed__address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + __ipv6_prefix) }}"
-    __d: "{{ range(0, 65535) | random(seed=seed__address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + __ipv6_prefix) }}"
+    __b: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + __ipv6_prefix) }}"
+    __c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + __ipv6_prefix) }}"
+    __d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + __ipv6_prefix) }}"
     __ipv6_new: "{{ __ipv6_prefix }}:{{ '%x' % (__a | int) }}:{{ '%x' % (__b | int) }}:{{ '%x' % (__c | int) }}:{{ '%x' % (__d | int) }}"
   ansible.builtin.debug:
     msg:
