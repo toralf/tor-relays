@@ -12,7 +12,7 @@
     quiet: true
     that:
       - "tor_port is defined"
-      - "(tor_port | int > 0) and (tor_port | int < 2**16)"
+      - "tor_port | int > 0 and tor_port | int < 2**16"
 
 - name: Validate tor_port
   when: tor_port

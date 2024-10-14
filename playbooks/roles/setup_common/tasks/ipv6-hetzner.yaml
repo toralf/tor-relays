@@ -26,7 +26,7 @@
 
 - name: Check that ipv6 is up again
   changed_when: _ip6_up.rc == 42
-  failed_when: (_ip6_up.rc != 0) and (_ip6_up.rc != 42)
+  failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
   ansible.builtin.shell:
     cmd: |-
       rc=0

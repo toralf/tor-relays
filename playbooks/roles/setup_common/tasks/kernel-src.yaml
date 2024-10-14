@@ -44,7 +44,7 @@
 
 - name: Configure Linux
   changed_when: _kernel_configured.rc == 123
-  failed_when: (_kernel_configured.rc != 0) and (_kernel_configured.rc != 123)
+  failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
   ansible.builtin.shell:
     cmd: |-
       set -euf

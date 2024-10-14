@@ -19,7 +19,7 @@
   rescue:
     - name: Power on Hetzner system
       changed_when: _power_on.rc == 0
-      when: (ansible_facts.system_vendor == 'Hetzner') or ('hcloud' in group_names)
+      when: ansible_facts.system_vendor == 'Hetzner' or 'hcloud' in group_names
       ansible.builtin.shell:
         cmd: |-
           set -euf

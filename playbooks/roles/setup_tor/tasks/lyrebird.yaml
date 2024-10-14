@@ -37,7 +37,7 @@
   register: _lyrebird_installed
 
 - name: Allow low port for Lyrebird
-  when: (_lyrebird_installed.changed) and (tor_port | int < 1024)
+  when: _lyrebird_installed.changed and tor_port | int < 1024
   community.general.capabilities:
     path: /usr/bin/lyrebird
     capability: cap_net_bind_service+ep
