@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake-proxy --since "1 hour ago" -r -g ', there were .* connections' -q |
+      journalctl -u snowflake-proxy --since "1 hour ago" -g ', there were .* connections' -q -r |
         tail -n 30 |
         awk '{ print $14 }' |
         xargs
