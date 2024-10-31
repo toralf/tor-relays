@@ -4,7 +4,7 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system_since }}" -q |
-        grep -e 'BUG:' -e 'WARNING:' |
+        grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '------------' |
           while read -r issue; do
             echo "=="
             journalctl --since "{{ log_system_since }}" -q |
