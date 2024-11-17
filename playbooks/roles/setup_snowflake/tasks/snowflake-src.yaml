@@ -50,3 +50,9 @@
     src: snowflake-proxy.service.j2
     dest: /etc/systemd/system/snowflake-proxy.service
   notify: "Restart Snowflake"
+
+- name: Create cron job to restart service in case that systemd refused to do it
+  ansible.builtin.cron:
+    name: "restart service if systemd refused to do it"
+    special_time: hourly
+    job: "systemctl is-failed snowflake-proxy && systemctl start snowflake-proxy"
