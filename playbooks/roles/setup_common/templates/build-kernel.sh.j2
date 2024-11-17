@@ -21,10 +21,8 @@ update-grub           &>/root/make-grub.$suffix.log
 
 ln -snf $PWD /usr/src/linux
 
-if [[ "${1:-}" == reboot ]]; then
+if [[ "${1:-}" == reboot_immediately ]]; then
   reboot
-elif [[ "${1:-}" != no_reboot ]]; then
-  touch /var/run/reboot-required
 else
-  touch /root/make.finished
+  touch /var/run/reboot-required
 fi

@@ -142,7 +142,7 @@
   when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
   changed_when: true
   ansible.builtin.shell:
-    cmd: "{{ fire_and_forget | ternary('nohup /root/build-kernel.sh reboot &', '/root/build-kernel.sh') }}"
+    cmd: "{{ fire_and_forget | ternary('nohup /root/build-kernel.sh reboot_immediately &', '/root/build-kernel.sh') }}"
     executable: /bin/bash
   register: _kernel_build
 
