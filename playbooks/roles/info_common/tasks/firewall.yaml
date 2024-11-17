@@ -12,9 +12,7 @@
 
 - name: File ct drops
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_firewall_ct_drops"
     regex: "^{{ inventory_hostname }} "
@@ -26,9 +24,7 @@
 
 - name: File ct counter
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_firewall_ct_counter"
     regex: "^{{ inventory_hostname }} "

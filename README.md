@@ -110,14 +110,13 @@ For more Prometheus config examples and Grafana dashboards take a look at [this]
 
 ### Misc
 
-The _targets_ for Prometheus can be created by sth. like:
+The _targets_ lines for a static Prometheus inventory file can be created by:
 
 ```bash
 ./site-info.yaml --tags metrics-port
-sort ~/tmp/*_metrics_port | xargs -n 4 | sed -e 's/ /", "/g' -e 's,^,- targets: [",' -e 's,$,"],' | column -t -o ' '
 ```
 
-To create at Hetzner in the project _my_project_ a new VPS with the hostname _my_bridge_, do:
+To create at Hetzner a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
 
 ```bash
 hcloud context use my_project

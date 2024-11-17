@@ -6,9 +6,7 @@
 
 - name: File uname
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_uname"
     regex: "^{{ inventory_hostname }} "

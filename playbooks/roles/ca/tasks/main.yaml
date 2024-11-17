@@ -10,7 +10,6 @@
   block:
     - name: Create local directories
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.file:
         state: directory
         path: "{{ ssl_dir }}/CA/{{ item }}"

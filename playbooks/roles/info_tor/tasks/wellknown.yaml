@@ -4,7 +4,6 @@
 - name: Wellknown for bridges
   when: bridge_distribution
   delegate_to: localhost
-  throttle: 1
   block:
     - name: Ensure hostname is in wellknown file
       ansible.builtin.lineinfile:
@@ -20,7 +19,6 @@
 - name: Wellknown for server
   when: not bridge_distribution
   delegate_to: localhost
-  throttle: 1
   block:
     - name: Ensure hostname is in wellknown files
       ansible.builtin.lineinfile:

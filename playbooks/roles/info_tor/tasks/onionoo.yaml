@@ -9,7 +9,6 @@
 - name: File onionoo
   when: _result.status == 200
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }}
       {{ _result.json.bridges[0].bridgedb_distributor | default('-') }}

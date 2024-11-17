@@ -11,9 +11,7 @@
 
 - name: File connections
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/snowflake_connections"
     regex: "^{{ inventory_hostname }} "

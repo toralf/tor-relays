@@ -21,6 +21,7 @@
       group: root
       mode: "0644"
     ansible.builtin.lineinfile:
+      create: yes
       owner: root
       group: root
       mode: "0644"

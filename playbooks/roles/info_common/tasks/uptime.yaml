@@ -10,9 +10,7 @@
 
 - name: File uptime
   delegate_to: localhost
-  throttle: 1
   ansible.builtin.lineinfile:
-    create: yes
     line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_uptime"
     regex: "^{{ inventory_hostname }} "

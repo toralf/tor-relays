@@ -1,52 +1,57 @@
 ---
-- name: Firewall
-  ansible.builtin.import_tasks: firewall.yaml
-  tags:
-    - firewall
+- name: Main
+  module_defaults:
+    ansible.builtin.lineinfile:
+      create: yes
+  block:
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall
 
-- name: IPv6
-  ansible.builtin.import_tasks: ipv6.yaml
-  tags:
-    - ipv6
-    - never
+    - name: IPv6
+      ansible.builtin.import_tasks: ipv6.yaml
+      tags:
+        - ipv6
+        - never
 
-- name: Issues
-  ansible.builtin.import_tasks: issue.yaml
-  tags:
-    - issue
+    - name: Issues
+      ansible.builtin.import_tasks: issue.yaml
+      tags:
+        - issue
 
-- name: Log system
-  ansible.builtin.import_tasks: log-system.yaml
-  tags:
-    - log-system
+    - name: Log system
+      ansible.builtin.import_tasks: log-system.yaml
+      tags:
+        - log-system
 
-- name: Log unattended
-  ansible.builtin.import_tasks: log-unattended.yaml
-  tags:
-    - log-unattended
+    - name: Log unattended
+      ansible.builtin.import_tasks: log-unattended.yaml
+      tags:
+        - log-unattended
 
-- name: Metrics port
-  when: metrics_port
-  ansible.builtin.import_tasks: metrics.yaml
-  tags:
-    - metrics
+    - name: Metrics port
+      when: metrics_port
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics
 
-- name: Uname
-  ansible.builtin.import_tasks: uname.yaml
-  tags:
-    - uname
+    - name: Uname
+      ansible.builtin.import_tasks: uname.yaml
+      tags:
+        - uname
 
-- name: Minicoredumper
-  ansible.builtin.import_tasks: minicoredumper.yaml
-  tags:
-    - minicoredumper
+    - name: Minicoredumper
+      ansible.builtin.import_tasks: minicoredumper.yaml
+      tags:
+        - minicoredumper
 
-- name: Dryrun of unattended-upgrade
-  ansible.builtin.import_tasks: dry-update.yaml
-  tags:
-    - dry-update
+    - name: Dryrun of unattended-upgrade
+      ansible.builtin.import_tasks: dry-update.yaml
+      tags:
+        - dry-update
 
-- name: Uptime
-  ansible.builtin.import_tasks: uptime.yaml
-  tags:
-    - uptime
+    - name: Uptime
+      ansible.builtin.import_tasks: uptime.yaml
+      tags:
+        - uptime
