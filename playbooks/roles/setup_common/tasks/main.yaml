@@ -104,7 +104,7 @@
         - metrics
         - metrics-common
 
-    - name: Catch kernel build job
+    - name: Work on running kernel build job
       tags:
         - kernel-src
       when: _kernel_build.changed
@@ -119,12 +119,12 @@
           delay: 30
           notify: "Reboot system"
 
-        - name: Cleanup kernel build async job
+        - name: Cleanup kernel build async job file
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
 
-    - name: Ensure kernel build finished
+    - name: Let the kernel build finish before network proxy is started for the very first time
       ansible.builtin.set_fact:
         _first_kernel_build_in_progress: "{{ (_ansible_tmp.changed and fire_and_forget and _kernel_build.changed) | bool }}"
 

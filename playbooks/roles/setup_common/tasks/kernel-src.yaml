@@ -101,10 +101,12 @@
 
       yes '' | make oldconfig >/dev/null
 
+      # if current running kernel does not contain the commit-id, then something changed
       if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
         exit 123
       fi
 
+      # if files do differ, then something changed
       after=$(md5sum .config)
       if [[ ! $before == $after ]]; then
         exit 123
@@ -113,7 +115,7 @@
     executable: /bin/bash
   register: _kernel_configured
 
-- name: Create swap file for small VPS
+- name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
   when: ansible_facts.memtotal_mb < 2048
   ansible.builtin.shell:
     cmd: |-
@@ -130,9 +132,9 @@
     executable: /bin/bash
 
 - name: Create kernel build script
-  ansible.builtin.template:
-    src: "build-kernel.sh.j2"
-    dest: "/root/build-kernel.sh"
+  ansible.builtin.copy:
+    src: build-kernel.sh
+    dest: /root/
     mode: "0700"
   register: _kernel_build_script
 
@@ -141,17 +143,13 @@
   poll: 0
   when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
   changed_when: true
+  vars:
+    __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
   ansible.builtin.shell:
-    cmd: "{{ fire_and_forget | ternary('nohup /root/build-kernel.sh reboot_immediately &', '/root/build-kernel.sh') }}"
+    cmd: |-
+      {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ __j ~ ' reboot_immediately &', '/root/build-kernel.sh ' ~ __j) }}
     executable: /bin/bash
   register: _kernel_build
 
 - name: Flush common handlers (Kernel src)
   ansible.builtin.meta: flush_handlers
-
-- name: Remove Debian kernel
-  when: not _kernel_build.changed
-  ansible.builtin.apt:
-    name:
-      - "linux-image{{ _kernel_cloud }}-{{ _kernel_arch }}"
-    state: absent

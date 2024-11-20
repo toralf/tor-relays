@@ -10,14 +10,9 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 echo -e "\n dis-trust host ssh key ..."
 
-set +e
-xargs -r -n 1 ssh-keygen -R <<<$* >/dev/null
-rc=$?
-set -e
-
-if [[ ${rc} -eq 0 ]]; then
+if xargs -r -n 1 ssh-keygen -R <<<$* >/dev/null; then
   echo -e "\n OK\n"
 else
   echo -e "\n NOT ok\n"
-  exit ${rc}
+  exit 1
 fi

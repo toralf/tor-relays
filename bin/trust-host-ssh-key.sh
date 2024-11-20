@@ -13,18 +13,15 @@ jobs=$((2 * $(nproc)))
 echo -e "\n trust host ssh key ..."
 
 set +e
-for i in $*; do
-  if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
-    echo $i
-  fi
-done |
-  xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a"
-rc=$?
-set -e
-
-if [[ ${rc} -eq 0 ]]; then
+if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" < <(
+  for i in $*; do
+    if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
+      echo $i
+    fi
+  done
+); then
   echo -e "\n OK\n"
 else
   echo -e "\n NOT ok\n"
-  exit ${rc}
+  exit 1
 fi
