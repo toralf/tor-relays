@@ -17,7 +17,7 @@ jobs=$((2 * $(nproc)))
 # wellknown entries can't be cleaned b/c the hostname is on a separate line
 echo -e " deleting local config ..."
 while read -r name; do
-  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" ~/tmp/*_* 2>/dev/null
+  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
   rm -f $(dirname $0)/../secrets/ssl/clients/*/${name}.???
