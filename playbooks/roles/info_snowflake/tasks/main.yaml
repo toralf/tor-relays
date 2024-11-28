@@ -9,6 +9,12 @@
       tags:
         - connections
 
+    - name: Log NAT
+      ansible.builtin.import_tasks: log-nat.yaml
+      tags:
+        - log
+        - log-nat
+
     - name: Log proxy
       ansible.builtin.import_tasks: log-proxy.yaml
       tags:
