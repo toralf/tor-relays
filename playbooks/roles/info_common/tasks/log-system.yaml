@@ -5,6 +5,7 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system_since }}" -q |
+        grep -v 'Speculative Return Stack Overflow: WARNING:' |
         grep -m 10 -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
           -e 'Call Trace:' -e 'invoked oom-killer' -e 'RIP:' -e 'status=9/KILL' -e '.service: Failed'
