@@ -16,9 +16,11 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# Architecture: get available locations
-data_centers=$(hcloud datacenter list --output json | jq -r '.[] | select(.location.name != "sin")')
-locations=$(hcloud location list --output json | jq -r '.[] | select(.name != "sin")')
+# Architecture: exclude expensive ones
+data_centers=$(
+  hcloud datacenter list --output json |
+    jq -r '.[] | select(.location.name != "ash" and .location.name != "hil" and .location.name != "sin")'
+)
 
 server_types=$(hcloud server-type list --output json)
 cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types})
@@ -28,7 +30,7 @@ cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})
 cax11_locations=$(jq -r 'select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${data_centers})
 cpx11_locations=$(jq -r 'select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${data_centers})
 cx22_locations=$(jq -r 'select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${data_centers})
-used_locations=$(jq -r '.name' <<<${locations})
+used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | xargs -n 1 | sort -u)
 
 # OS: use latest Debian
 image_list=$(hcloud image list --type system --output columns=name)
@@ -37,7 +39,7 @@ debian=$(grep '^debian' <<<${image_list} | sort -ur | head -n 1)
 ssh_keys=$(hcloud ssh-key list --output json)
 ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
 
-if [[ -z ${used_locations} || -z ${cax11_locations} || -z ${cpx11_locations} || -z ${cx22_locations} || -z ${debian} || -z ${ssh_key} ]]; then
+if [[ -z ${used_locations} || -z ${debian} || -z ${ssh_key} ]]; then
   echo "API query failed" >&2
   exit 1
 fi
@@ -68,7 +70,7 @@ xargs -n 1 <<<$* |
       loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$used_locations} | shuf -n 1)
     fi
 
-    echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    echo "echo server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
