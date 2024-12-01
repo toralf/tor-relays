@@ -16,7 +16,7 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# Architecture: exclude expensive ones
+# Architecture: exclude expensive ones (US and Singapore)
 data_centers=$(
   hcloud datacenter list --output json |
     jq -r '.[] | select(.location.name != "ash" and .location.name != "hil" and .location.name != "sin")'
@@ -36,6 +36,7 @@ used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | 
 image_list=$(hcloud image list --type system --output columns=name)
 debian=$(grep '^debian' <<<${image_list} | sort -ur | head -n 1)
 
+# currently only 1 key is defined
 ssh_keys=$(hcloud ssh-key list --output json)
 ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
 
@@ -70,14 +71,14 @@ xargs -n 1 <<<$* |
       loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$used_locations} | shuf -n 1)
     fi
 
-    echo "echo server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
 
 diff=$((EPOCHSECONDS - now))
-if [[ $diff -lt 30 ]]; then
+if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
   echo -en "\n waiting ${wait} sec ..."
   sleep ${wait}
