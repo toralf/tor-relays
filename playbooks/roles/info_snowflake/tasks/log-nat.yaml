@@ -5,7 +5,7 @@
     cmd: |-
       journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -g "NAT" -q |
         tail -n 1 |
-        grep -Eo "NAT type:.*" |
+        grep -o "NAT type:.*" |
         cut -f 3- -d ' '
   register: _result
 
