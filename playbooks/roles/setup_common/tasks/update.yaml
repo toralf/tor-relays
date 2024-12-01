@@ -45,6 +45,7 @@
       - gpg-agent
       - htop
       - iptables
+      - logrotate
       - minicoredumper
       - needrestart
       - psmisc
@@ -62,3 +63,18 @@
     job: >-
       echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
       echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
+
+- name: Ensure that logrotate systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/logrotate.timer.d/
+    state: directory
+    mode: "0755"
+  notify:
+    - "Reload Systemd"
+
+- name: Add logrotate systemd override
+  ansible.builtin.template:
+    src: logrotate.override.conf.j2
+    dest: /etc/systemd/system/logrotate.timer.d/override.conf
+  notify:
+    - "Reload Systemd"
