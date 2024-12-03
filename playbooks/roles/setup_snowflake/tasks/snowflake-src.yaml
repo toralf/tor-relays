@@ -8,7 +8,13 @@
     name: snowflake
     group: snowflake
 
-- name: Init or update Git repo
+- name: Prune Snowflake Git repo
+  when: snowflake_prune_git_repo
+  ansible.builtin.file:
+    state: absent
+    path: /root/snowflake
+
+- name: Init or update Snowflake Git repo
   throttle: 20
   retries: 3
   ansible.builtin.git:

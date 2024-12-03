@@ -1,4 +1,10 @@
 ---
+- name: Prune Lyrebird Git repo
+  when: lyrebird_prune_git_repo
+  ansible.builtin.file:
+    state: absent
+    path: /root/lyrebird
+
 - name: Init or update Lyrebird Git repo
   throttle: 20
   retries: 3

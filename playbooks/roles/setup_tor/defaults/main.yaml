@@ -1,9 +1,13 @@
 ---
 tor_build_from_source: true
-lyrebird_git_version: "HEAD"
-lyrebird_patches: []
+
 tor_git_version: "HEAD"
 tor_patches: []
+tor_prune_git_repo: false
+
+lyrebird_git_version: "HEAD"
+lyrebird_patches: []
+lyrebird_prune_git_repo: false
 
 tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is the stable package
 

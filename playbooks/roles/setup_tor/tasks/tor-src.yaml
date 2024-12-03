@@ -14,6 +14,12 @@
     name:
       - libseccomp-dev
 
+- name: Prune Tor Git repo
+  when: tor_prune_git_repo
+  ansible.builtin.file:
+    state: absent
+    path: /root/tor
+
 - name: Init or update Tor Git repo
   throttle: 20
   retries: 3

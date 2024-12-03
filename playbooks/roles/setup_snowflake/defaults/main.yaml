@@ -2,6 +2,7 @@
 snowflake_build_from_source: true
 snowflake_git_version: "HEAD"
 snowflake_patches: []
+snowflake_prune_git_repo: false
 
 # e.g. "-verbose"
 snowflake_command_args: ""
