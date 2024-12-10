@@ -3,17 +3,16 @@
   ansible.builtin.uri:
     url: "https://onionoo.torproject.org/details?search={{ _hashed_fingerprint }}"
     return_content: yes
-    status_code: [200, 404, 503]
   register: _result
 
 - name: File onionoo
-  when: _result.status == 200
   delegate_to: localhost
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }}
+    line: >-
+      {{ inventory_hostname }}
       {{ _result.json.bridges[0].bridgedb_distributor | default('-') }}
       {{ _result.json.bridges[0].advertised_bandwidth | default('-') }}
       running: {{ _result.json.bridges[0].running | default('-') }}
-      blocklist: {{ _result.json.bridges[0].blocklist | default(['-']) | join(',') }}"
+      blocklist: {{ _result.json.bridges[0].blocklist | default(['-']) | join(',') }}
     path: "{{ tmp_dir }}/tor_onionoo"
     regex: "^{{ inventory_hostname }} "
