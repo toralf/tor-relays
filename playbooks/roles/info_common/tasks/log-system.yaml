@@ -1,14 +1,14 @@
 ---
 - name: Get overview of oddities in system log since {{ log_system_since }}
   changed_when: false
-  failed_when: _result.rc == 2
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system_since }}" -q |
-        grep -v 'Speculative Return Stack Overflow: WARNING:' |
-        grep -m 10 -F \
+        grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
+        grep -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
-          -e 'Call Trace:' -e 'invoked oom-killer' -e 'RIP:' -e 'status=9/KILL' -e '.service: Failed'
+          -e 'Call Trace:' -e 'invoked oom-killer' -e 'RIP:' -e 'status=9/KILL' -e '.service: Failed' |
+        tail -n {{ log_lines }}
   register: _result
 
 - name: Findings of oddities in log-system since {{ log_system_since }}

@@ -10,7 +10,11 @@
         echo "{{ log_notice }} is older than $diff seconds" >&2
       fi
 
-      grep -h -v -e 'The IPv4 ORPort address 127.0.0.1 does not match the descriptor address' {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
+      grep -h -v -F \
+        -e 'Please upgrade! This version of Tor' \
+        -e 'The IPv4 ORPort address 127.0.0.1 does not match' {{ log_notice }}.1 {{ log_notice }} \
+        -e 'Unrecognized BridgeDistribution value' \
+        2>/dev/null |
         tail -n {{ log_lines }}
     executable: /bin/bash
   register: _result
