@@ -20,6 +20,7 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
+ExitRelay 0
 NoExec 1
 
 {% if ansible_facts.architecture != 'x86_64' %}
