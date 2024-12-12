@@ -57,13 +57,13 @@ For Tor bridges and Snowflake a lightweight version of that is used..
 The _MyFamily_ value for Tor server is derived from the output of:
 
 ```bash
-./site-info.yaml --tags wellknown
+./site-info.yaml --tags wellknown --limit my_bridge
 ```
 
 in the next run of the setup script:
 
 ```bash
-./site-setup.yaml --tags config
+./site-setup.yaml --tags config --limit my_bridge
 ```
 
 (look [here](./playbooks/roles/setup_tor/vars/main.yaml.) for details).
