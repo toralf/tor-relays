@@ -23,9 +23,9 @@ data_centers=$(
 )
 
 server_types=$(hcloud server-type list --output json)
-cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types})
-cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types})
-cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})
+cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
+cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
+cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
 
 cax11_locations=$(jq -r 'select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${data_centers})
 cpx11_locations=$(jq -r 'select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${data_centers})
