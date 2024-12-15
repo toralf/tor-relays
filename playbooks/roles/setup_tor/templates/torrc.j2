@@ -36,6 +36,7 @@ ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 {% if _my_family %}
 MyFamily {{ _my_family }}
 {% endif %}
+
 {% endif %}
 
 {% if tor_metrics %}
@@ -44,12 +45,6 @@ MetricsPortPolicy accept 127.0.0.1
 {% endif %}
 
 SocksPort 0
-
-# explicitly disable defaults too due to https://gitlab.torproject.org/tpo/core/tor/-/issues/40958
-PaddingStatistics 0
-DirReqStatistics 0
-HiddenServiceStatistics 0
-ExtraInfoStatistics 0
 
 {% for item in torrc_config_log + torrc_config_info + torrc_config_host %}
 {{ item.name }} {{ item.value }}
