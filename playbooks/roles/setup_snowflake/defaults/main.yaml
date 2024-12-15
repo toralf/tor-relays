@@ -4,7 +4,7 @@ snowflake_git_version: "HEAD"
 snowflake_patches: []
 snowflake_prune_git_repo: false
 
-# e.g. "-verbose"
+# e.g. "-verbose" or "-nat-retest-interval 1h -metrics -summary-interval 0h0m15s"
 snowflake_command_args: ""
 
 # metrics could expose potential sensitive information

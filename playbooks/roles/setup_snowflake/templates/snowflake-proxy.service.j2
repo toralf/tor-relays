@@ -8,11 +8,7 @@ After=network-online.target docker.socket firewalld.service
 Wants=network-online.target
 
 [Service]
-{% if snowflake_metrics %}
-ExecStart=/usr/bin/snowflake-proxy {{ snowflake_command_args }} -metrics -summary-interval 0h0m15s
-{% else %}
 ExecStart=/usr/bin/snowflake-proxy {{ snowflake_command_args }}
-{% endif %}
 User=snowflake
 Group=snowflake
 # https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
