@@ -6,9 +6,9 @@
       grep -h -v \
         -e 'opening .*log file.' \
         -e 'Please upgrade! This version of Tor' \
-        -e 'The IPv4 ORPort address 127.0.0.1 does not match' {{ log_warn }}.1 {{ log_warn }} \
+        -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
         -e 'Unrecognized BridgeDistribution value' \
-        2>/dev/null |
+         {{ log_warn }}.1 {{ log_warn }} 2>/dev/null |
         tail -n {{ log_lines }}
   register: _result
 
