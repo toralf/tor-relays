@@ -1,10 +1,14 @@
 ---
 - name: Dry run of unattended-upgrade
   changed_when: false
-  ansible.builtin.command: unattended-upgrade -d --dry-run
+  ansible.builtin.shell:
+    cmd: |-
+      unattended-upgrade -d --dry-run |
+        grep -e 'pkgs that look like they should be upgraded: .' |
+        head
   register: _result
 
 - name: Output of unattended-upgrade dry run
-  when: _result.stdout_lines is not search('No packages found that can be upgraded unattended and no pending auto-removals')
+  when: _result.stdout_lines
   ansible.builtin.debug:
-    msg: "{{ _result.stdout_lines | select('search', 'Checking:') }}"
+    var: _result.stdout_lines
