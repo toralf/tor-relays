@@ -140,3 +140,8 @@
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
+
+    - name: Run a custom command
+      ansible.builtin.import_tasks: custom-command.yaml
+      tags:
+        - custom-command

@@ -21,3 +21,6 @@ timer_hour: "{{ 12 | random(seed=seed_host) }}"
 
 # use a dedicated DDoS solution (usually only at servers)
 firewall_use_ddos: false
+
+# any valid 1-liner
+custom_command: ""
