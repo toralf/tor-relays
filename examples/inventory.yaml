@@ -24,6 +24,9 @@ tor:
           ciissversion:2
       - name: "Nickname"
         value: "{{ ('my_prefix' + inventory_hostname | replace('-', ''))[0:19] }}"
+      # server extra stats
+      - name: "CellStatistics"
+        value: "1"
     tor_metrics: true
     tor_port: "{{ range(16000, 60999) | random(seed=seed_tor_port + seed_host) }}"
   children:
