@@ -45,13 +45,15 @@
   ansible.builtin.cron:
     name: "save ipset"
     special_time: hourly
-    job: "/root/ipv4-rules.sh save; /root/ipv6-rules.sh save"
+    job: >-
+      /root/ipv4-rules.sh save; /root/ipv6-rules.sh save
 
 - name: Create DDoS cron job to update Tor authority ip addresses
   ansible.builtin.cron:
     name: "Tor authority ip addresses update"
     special_time: daily
-    job: "/root/ipv4-rules.sh update; /root/ipv6-rules.sh update"
+    job: >-
+      /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
 - name: Remove base firewall script
   ansible.builtin.file:

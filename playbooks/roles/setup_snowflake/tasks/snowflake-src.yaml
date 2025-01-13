@@ -61,4 +61,5 @@
   ansible.builtin.cron:
     name: "restart service if systemd refused to do it"
     special_time: hourly
-    job: "systemctl is-failed snowflake-proxy && systemctl start snowflake-proxy"
+    job: >-
+      systemctl is-failed snowflake-proxy && systemctl start snowflake-proxy

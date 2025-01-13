@@ -63,4 +63,5 @@
     name: "Reap a hanging apt process"
     hour: "{{ 1 + timer_hour | int }},{{ (13 + timer_hour | int) % 24 }}"
     minute: "13"
-    job: 'pkill -f "apt-get -qq -y update"'
+    job: >-
+      pkill -f "apt-get -qq -y update"
