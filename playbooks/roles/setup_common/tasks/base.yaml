@@ -64,10 +64,10 @@
   ansible.builtin.cron:
     name: "PATH"
     value: /usr/sbin:/usr/bin:/sbin/:/bin
-    env: yes
+    env: true
 
 - name: Set SHELL in crontab
   ansible.builtin.cron:
     name: "SHELL"
     value: /bin/bash
-    env: yes
+    env: true

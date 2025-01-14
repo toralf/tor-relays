@@ -2,7 +2,7 @@
 - name: Query Onionoo
   ansible.builtin.uri:
     url: "https://onionoo.torproject.org/details?search={{ _hashed_fingerprint }}"
-    return_content: yes
+    return_content: true
   register: _result
 
 - name: File onionoo

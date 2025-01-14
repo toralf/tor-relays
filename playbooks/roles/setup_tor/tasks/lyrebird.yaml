@@ -39,7 +39,7 @@
     src: /root/lyrebird/lyrebird
     dest: /usr/bin/
     mode: a+x
-    remote_src: yes
+    remote_src: true
   notify: "Restart Tor"
   register: _lyrebird_installed
 

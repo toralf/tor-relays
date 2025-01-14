@@ -2,7 +2,7 @@
 - name: Query bto
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ _hashed_fingerprint }}"
-    return_content: yes
+    return_content: true
   register: _result
 
 - name: File bto

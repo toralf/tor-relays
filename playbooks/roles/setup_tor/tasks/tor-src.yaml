@@ -85,7 +85,7 @@
   ansible.builtin.copy:
     src: /root/tor/src/app/tor
     dest: /usr/bin/
-    remote_src: yes
+    remote_src: true
     mode: a+x
   register: _binary_tor
   notify: "Restart Tor"

@@ -31,12 +31,12 @@
         country_name: "DE"
         basic_constraints:
           - CA:TRUE
-        basic_constraints_critical: yes
+        basic_constraints_critical: true
         key_usage:
           - keyCertSign
           - digitalSignature
           - cRLSign
-        key_usage_critical: yes
+        key_usage_critical: true
     - name: Generate Root CA certificate
       community.crypto.x509_certificate:
         path: "{{ ssl_dir }}/CA/certs/CA.crt"

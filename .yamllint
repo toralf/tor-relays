@@ -18,4 +18,3 @@ rules:
   octal-values:
     forbid-explicit-octal: true
     forbid-implicit-octal: true
-  truthy: false

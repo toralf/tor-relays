@@ -48,7 +48,7 @@
     src: /root/snowflake/proxy/proxy
     dest: /usr/bin/snowflake-proxy
     mode: a+x
-    remote_src: yes
+    remote_src: true
   notify: "Restart Snowflake"
 
 - name: Add systemd unit

@@ -25,13 +25,13 @@
       group: root
       mode: "0644"
     ansible.builtin.cron:
-      backup: yes
+      backup: true
     ansible.builtin.file:
       owner: root
       group: root
       mode: "0644"
     ansible.builtin.lineinfile:
-      create: yes
+      create: true
       owner: root
       group: root
       mode: "0644"

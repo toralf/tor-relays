@@ -91,7 +91,7 @@
 
     - name: Configure Prometheus node exporter
       ansible.builtin.lineinfile:
-        create: no
+        create: false
         line: >-
           ARGS='
           --web.listen-address=localhost:9100

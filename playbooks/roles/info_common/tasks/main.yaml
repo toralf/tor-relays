@@ -2,7 +2,7 @@
 - name: Main
   module_defaults:
     ansible.builtin.lineinfile:
-      create: yes
+      create: true
   block:
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml

@@ -16,4 +16,3 @@ skip_list:
   - risky-file-permissions
   - risky-shell-pipe
   - var-naming[no-role-prefix]
-  - yaml[truthy]
