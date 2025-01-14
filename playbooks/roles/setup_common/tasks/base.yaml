@@ -59,3 +59,15 @@
   loop:
     - { name: "kernel.sysrq", value: 0 }
     - { name: "net.ipv4.tcp_fin_timeout", value: 10 }
+
+- name: Set PATH in crontab
+  ansible.builtin.cron:
+    name: "PATH"
+    value: /usr/sbin:/usr/bin:/sbin/:/bin
+    env: yes
+
+- name: Set SHELL in crontab
+  ansible.builtin.cron:
+    name: "SHELL"
+    value: /bin/bash
+    env: yes

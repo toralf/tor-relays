@@ -50,12 +50,9 @@
     hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
     minute: "{{ 30 + 25 | random(seed=seed_host) }}"
     job: >-
-      if [[ -s /var/run/reboot-required ]] ||
+      if grep -q 'System restart required' /var/run/reboot-required 2>/dev/null ||
       needrestart -r l -b | grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
-      ; then
-      reboot
-      ;
-      fi
+      ; then pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot; fi
 
 # 2x per day one hour after :13
 - name: Ensure reaper cron job is present
