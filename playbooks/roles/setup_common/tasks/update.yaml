@@ -56,6 +56,12 @@
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 
+- name: De-install base software
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - freeipmi-common
+
 - name: Ensure kernel crash dumps are made using minicoredumper
   ansible.builtin.cron:
     name: "core debug files"
