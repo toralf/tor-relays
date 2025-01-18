@@ -2,7 +2,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# e.g. ./create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
+# e.g.:
+#  ./create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
+#  HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
+#  HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
 set -euf
 export LANG=C.utf8
@@ -16,10 +19,10 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# Architecture: exclude expensive ones (US and Singapore)
+# US and Singapoore are expensive, DE and FI not
 data_centers=$(
   hcloud datacenter list --output json |
-    jq -r '.[] | select(.location.name != "ash" and .location.name != "hil" and .location.name != "sin")'
+    jq -r '.[] | select(.location.name == ("'$(sed -e "s/ /\",\"/g" <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
 )
 
 server_types=$(hcloud server-type list --output json)
@@ -41,16 +44,17 @@ ssh_keys=$(hcloud ssh-key list --output json)
 ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
 
 if [[ -z ${used_locations} || -z ${debian} || -z ${ssh_key} ]]; then
-  echo "API query failed" >&2
+  echo " API query failed" >&2
   exit 1
 fi
 
 now=${EPOCHSECONDS}
 
+set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ -n ${HCLOUD_TYPE-} ]]; then
-      htype=$(xargs -n 1 <<<${HCLOUD_TYPE} | shuf -n 1)
+    if [[ -n ${HCLOUD_TYPES-} ]]; then
+      htype=$(xargs -n 1 <<<${HCLOUD_TYPES} | shuf -n 1)
     else
       # default: smallest type
       case ${name} in
@@ -61,14 +65,25 @@ xargs -n 1 <<<$* |
       esac
     fi
 
+    if [[ -z $htype ]]; then
+      echo " error: empty htype for $name" >&2
+      exit 4
+    fi
+
     if [[ ${htype} == "cax11" ]]; then
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cax11_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${cax11_locations} | shuf -n 1)
     elif [[ ${htype} == "cpx11" ]]; then
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cpx11_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${cpx11_locations} | shuf -n 1)
     elif [[ ${htype} == "cx22" ]]; then
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$cx22_locations} | shuf -n 1)
+      loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1)
     else
-      loc=$(xargs -n 1 <<<${HCLOUD_LOCATION:-$used_locations} | shuf -n 1)
+      echo " error: unknown htype ${htype} for $name" >&2
+      exit 3
+    fi
+
+    if [[ -z $loc ]]; then
+      echo " error: empty loc for htype ${htype} for $name" >&2
+      exit 4
     fi
 
     echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
@@ -77,6 +92,7 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
+# wait half a minute before ssh to the instance
 diff=$((EPOCHSECONDS - now))
 if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
