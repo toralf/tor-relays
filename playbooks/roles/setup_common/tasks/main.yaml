@@ -142,6 +142,7 @@
         - auto-update
 
     - name: Run a custom command
+      when: custom_command
       ansible.builtin.import_tasks: custom-command.yaml
       tags:
         - custom-command

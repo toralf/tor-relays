@@ -1,7 +1,6 @@
 ---
 - name: Run a custom command
   changed_when: true
-  when: custom_command
   failed_when: false
   ansible.builtin.shell:
     cmd: "{{ custom_command }}"
