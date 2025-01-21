@@ -1,15 +1,15 @@
 ---
-- name: Get NAT type from logs
+- name: Get NAT type
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -g "NAT" -q |
+      journalctl -u snowflake-proxy -g "NAT" -q |
         tail -n 1 |
         grep -o "NAT type:.*" |
         cut -f 3- -d ' '
   register: _result
 
-- name: File NAT
+- name: File NAT type
   delegate_to: localhost
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
