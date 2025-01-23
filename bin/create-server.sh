@@ -19,7 +19,7 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# US and Singapoore are expensive, DE and FI not
+# US and Singapore are more expensive and/or traffic limited
 data_centers=$(
   hcloud datacenter list --output json |
     jq -r '.[] | select(.location.name == ("'$(sed -e "s/ /\",\"/g" <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
@@ -35,11 +35,11 @@ cpx11_locations=$(jq -r 'select(.server_types.available | contains(['${cpx11_id}
 cx22_locations=$(jq -r 'select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${data_centers})
 used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | xargs -n 1 | sort -u)
 
-# OS: use latest Debian
+# OS: use recent Debian
 image_list=$(hcloud image list --type system --output columns=name)
 debian=$(grep '^debian' <<<${image_list} | sort -ur | head -n 1)
 
-# currently only 1 key is defined
+# currently only 1 key is used
 ssh_keys=$(hcloud ssh-key list --output json)
 ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
 
