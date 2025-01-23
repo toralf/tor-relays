@@ -56,7 +56,15 @@
   ansible.builtin.apt:
     name: "{{ additional_software }}"
 
-- name: De-install base software
+# openipmi might be a left over from earlier IONOS install images
+- name: Disable openipmi service
+  failed_when: false
+  ansible.builtin.systemd_service:
+    name: openipmi
+    enabled: false
+    state: stopped
+
+- name: De-install openipmi
   ansible.builtin.apt:
     state: absent
     name:
