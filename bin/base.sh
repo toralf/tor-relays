@@ -29,10 +29,10 @@ if [[ ! -s ${local_inventory} ]]; then
 ---
 # created by $0 at $(date)
 
-# 2x vCPU
+# for localhost set upper job count to vCPU count
 all:
   vars:
-    jobs: $((2 * $(nproc)))
+    jobs: $(nproc)
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
 
 EOF
