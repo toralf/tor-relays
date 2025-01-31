@@ -34,7 +34,7 @@ like in this [example](./examples/inventory.yaml) for an Ansible inventory.
 1. deploy it
 
    ```bash
-   ./site-setup.yaml --limit my_bridge
+   ./site.yaml --limit my_bridge
    ```
 
 1. enjoy it:
@@ -63,7 +63,7 @@ The _MyFamily_ value for Tor server is derived from the output of:
 in the next run of the setup script:
 
 ```bash
-./site-setup.yaml --tags config --limit my_bridge
+./site.yaml --tags config --limit my_bridge
 ```
 
 (look [here](./playbooks/roles/setup_tor/vars/main.yaml.) for details).
@@ -89,12 +89,16 @@ Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from 
 
 ### Metrics
 
-If a Prometheus server is configured (`prometheus_server`) then inbound traffic from its ip to the local metrics port is allowed by a firewall rule
+If a Prometheus server is configured (`prometheus_server`) then inbound traffic from its ip to the
+local metrics port is allowed by a firewall rule
 ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
-An Nginx is used to encrypt the metrics data transfer on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
+An Nginx is used to encrypt the metrics data transfer on transit
+([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
 using the certificate of a self-signed CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-This CA key has to be put into the Prometheus config to enable the TLS traffic ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
-Configure a `metrics_port` to expose several kind of metrics at https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
+This CA key has to be put into the Prometheus config to enable the TLS traffic
+([example](https://github.com/toralf/torutils/tree/main/dashboards)).
+Configure a `metrics_port` to expose several kind of metrics at
+https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
 (i.e. the metrics port is pseudo-randomly choosen using _seed_metrics_):
 
 ```yaml
@@ -108,13 +112,34 @@ snowflake:
 In addition the _Prometheus node exporter_ is deployed by: `node_metrics: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
-### Misc
+My static prometheus config contains something like:
 
-The _targets_ lines for a static Prometheus inventory file can be created by:
+```yaml
+- job_name: "Tor-Snowflake-hx"
+   metrics_path: '/metrics-snowflake'
+   scheme: https
+   tls_config:
+   ca_file: 'CA.crt'
+   file_sd_configs:
+   - files:
+      - 'targets_snowflake-hx.yaml'
+   relabel_configs:
+   - source_labels: [__address__]
+      target_label: instance
+      regex: "([^:]+).*"
+      replacement: '${1}'
+...
+```
+
+The _targets_ line for the static Prometheus targets file is created by:
 
 ```bash
-./site-info.yaml --tags metrics-port
+./site-info.yaml --tags metrics --limit my_bridge
+
+grep my_bridge ~/tmp/all_metrics_port
 ```
+
+### Misc
 
 To create at Hetzner a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
 
