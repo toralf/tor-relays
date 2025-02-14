@@ -50,6 +50,14 @@ fi
 
 now=${EPOCHSECONDS}
 
+xargs -n 1 <<<$* |
+  while read -r name; do
+    if [[ ! $name =~ ^[a-z0-9\-]+$ ]]; then
+      echo " contains invalid letters: $name" >&2
+      exit 2
+    fi
+  done
+
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
@@ -92,7 +100,7 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
-# wait half a minute before ssh to the instance
+# wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))
 if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
