@@ -43,7 +43,7 @@
       when: firewall_use_ddos
       ansible.builtin.import_tasks: firewall-ddos.yaml
       tags:
-        - firewall-ddos
+        - firewall
 
     - name: Debian
       when: not tor_build_from_source
