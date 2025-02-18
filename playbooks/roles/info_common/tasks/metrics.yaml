@@ -1,7 +1,12 @@
 ---
 - name: File metrics port
+  when: metrics_port
+  vars:
+    __nm: "{{ (node_metrics | default(false)) | ternary(' # node_metrics', '') }}"
+    __sm: "{{ (snowflake_metrics | default(false)) | ternary(' # snowflake_metrics', '') }}"
+    __tm: "{{ (tor_metrics | default(false)) | ternary(' # tor_metrics', '') }}"
   delegate_to: localhost
   ansible.builtin.lineinfile:
-    line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
+    line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]{{ __nm }}{{ __sm }}{{ __tm }}'
     path: "{{ tmp_dir }}/all_metrics_port"
     regex: '"{{ inventory_hostname }}:'
