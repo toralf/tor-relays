@@ -22,7 +22,7 @@ jobs=$((2 * $(nproc)))
 # US and Singapore are more expensive and/or traffic limited
 data_centers=$(
   hcloud datacenter list --output json |
-    jq -r '.[] | select(.location.name == ("'$(sed -e "s/ /\",\"/g" <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
+    jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
 )
 
 server_types=$(hcloud server-type list --output json)
