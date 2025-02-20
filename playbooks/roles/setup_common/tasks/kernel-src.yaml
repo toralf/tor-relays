@@ -26,6 +26,12 @@
     single_branch: true
   register: _kernel_repo
 
+- name: Clean Linux repo
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git clean -f
+    chdir: /root/linux
+
 - name: Apply patches for Linux
   retries: 3
   changed_when: _kernel_patched.stdout_lines is search('patching file ')

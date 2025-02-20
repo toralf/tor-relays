@@ -32,6 +32,12 @@
     single_branch: true
   register: _tor_repo
 
+- name: Clean
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git clean -f
+    chdir: /root/tor
+
 - name: Apply patches
   throttle: 20
   changed_when: _tor_patched.stdout_lines is search('patching file ')

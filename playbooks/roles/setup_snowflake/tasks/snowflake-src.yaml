@@ -25,6 +25,12 @@
     depth: 1
     single_branch: true
 
+- name: Clean
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git clean -f
+    chdir: /root/snowflake
+
 - name: Apply patches
   throttle: 20
   retries: 3

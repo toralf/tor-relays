@@ -16,6 +16,12 @@
     depth: 1
     single_branch: true
 
+- name: Clean Lyrebird repo
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git clean -f
+    chdir: /root/lyrebird
+
 - name: Apply patches for Lyrebird
   throttle: 20
   retries: 3
