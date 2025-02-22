@@ -10,6 +10,13 @@
     name: ssh
     state: reloaded
 
+- name: Restart Nginx
+  listen: "Restart Nginx"
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: restarted
+    no_block: true
+
 - name: Reload Nginx
   listen: "Reload Nginx"
   ansible.builtin.systemd_service:

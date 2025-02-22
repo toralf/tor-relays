@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     name:
       - nginx
-  notify: "Reload Nginx"
+  notify: "Restart Nginx"
 
 - name: Generate host private key
   delegate_to: localhost
@@ -23,10 +23,6 @@
       - "DNS:{{ inventory_hostname }}"
       - "IP:{{ ansible_facts.default_ipv4.address }}"
       - "IP:{{ ansible_facts.default_ipv6.address }}"
-    key_usage:
-      - digitalSignature
-      - nonRepudiation
-      - keyEncipherment
 
 - name: Generate host certificate
   delegate_to: localhost
@@ -75,7 +71,6 @@
           - prometheus-node-exporter
       notify: "Restart Prometheus node exporter"
 
-    # needed if manually disabled
     - name: Enable Prometheus node exporter at boot
       ansible.builtin.systemd_service:
         name: prometheus-node-exporter
