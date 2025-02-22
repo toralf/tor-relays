@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# creates secrets and local dirs
+# creates secrets and local dirs once
 
 set -euf
 export LANG=C.utf8
@@ -39,5 +39,5 @@ EOF
   chmod 600 ${local_inventory}
 fi
 
-# info files go to ~/tmp, CA and ecrtificates to ./secrets within this repo
+# issue files go to ~/tmp, Root CA and certificates to ./secrets in this repo
 mkdir -p ${HOME}/tmp/{kconfigs,issues} $(dirname $0)/../secrets/ssl/{CA,clients}/{certs,csrs,keys}
