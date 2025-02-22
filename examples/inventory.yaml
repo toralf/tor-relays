@@ -24,15 +24,24 @@ tor:
           ciissversion:2
       - name: "Nickname"
         value: "{{ ('my_prefix' + inventory_hostname | replace('-', ''))[0:19] }}"
-      # server extra stats
-      - name: "CellStatistics"
-        value: "1"
     tor_metrics: true
     tor_port: "{{ range(16000, 60999) | random(seed=seed_tor_port + seed_host) }}"
   children:
+    server:
     private:
     public:
-    server:
+
+server:
+  vars:
+    # # for exits:
+    # additional_software:
+    #   - "dns-root-data"
+    #   - "unbound"
+    bridge_distribution: ""
+    firewall_use_ddos: true
+    node_metrics: true
+  hosts:
+    my_first_server:
 
 private:
   vars:
@@ -45,15 +54,3 @@ public:
     bridge_distribution: "any"
   children:
     my_first_public_bridge:
-
-# for exits:
-#   additional_software:
-#     - "dns-root-data"
-#     - "unbound"
-server:
-  vars:
-    bridge_distribution: ""
-    firewall_use_ddos: true
-    node_metrics: true
-  hosts:
-    my_first_server:
