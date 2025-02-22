@@ -45,7 +45,7 @@
     dest: /etc/nginx/conf.d/
   notify: "Reload Nginx"
 
-- name: Copy host certificate
+- name: Create host certificate
   ansible.builtin.copy:
     content: "{{
       lookup('file','{{ ssl_dir }}/clients/certs/{{ inventory_hostname }}.crt')+'\n'+
