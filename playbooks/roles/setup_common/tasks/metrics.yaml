@@ -27,7 +27,6 @@
       - digitalSignature
       - nonRepudiation
       - keyEncipherment
-      - dataEncipherment
 
 - name: Generate host certificate
   delegate_to: localhost
@@ -35,8 +34,8 @@
   community.crypto.x509_certificate:
     path: "{{ ca_dir }}/clients/certs/{{ inventory_hostname }}.crt"
     csr_path: "{{ ca_dir }}/clients/csrs/{{ inventory_hostname }}.csr"
-    ownca_path: "{{ ca_dir }}/CA/certs/CA.crt"
-    ownca_privatekey_path: "{{ ca_dir }}/CA/keys/CA.key"
+    ownca_path: "{{ ca_dir }}/RootCA/certs/CA.crt"
+    ownca_privatekey_path: "{{ ca_dir }}/RootCA/keys/CA.key"
     provider: ownca
 
 - name: Copy host key
@@ -49,7 +48,7 @@
   ansible.builtin.copy:
     content: "{{
       lookup('file','{{ ca_dir }}/clients/certs/{{ inventory_hostname }}.crt')+'\n'+
-      lookup('file','{{ ca_dir }}/CA/certs/CA.crt')+'\n'
+      lookup('file','{{ ca_dir }}/RootCA/certs/CA.crt')+'\n'
       }}"
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
   notify: "Reload Nginx"
