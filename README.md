@@ -13,14 +13,18 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
    cd ./tor-relays
    ```
 
-1. run once at your local machine: create seeds, local dirs _~/tmp_ and _./secrets_ and a self-signed CA:
+1. create:
+
+   - seeds
+   - local dirs _~/tmp_ and _./secrets_
+   - and a self-signed Root CA
 
    ```bash
    bash ./bin/base.sh
-   ansible-playbook playbooks/ca.yaml -i ./inventory -e @secrets/local.yaml --tags ca
+   ansible-playbook playbooks/ca.yaml -e @secrets/local.yaml --tags ca
    ```
 
-1. add the bridge to the group _tor_:
+1. add your bridge to the inventory group _tor_:
 
    ```yaml
    ---
@@ -29,7 +33,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
        my_bridge:
    ```
 
-like in this [example](./examples/inventory.yaml) for an Ansible inventory.
+   ([example](./examples/inventory.yaml) for a static Ansible inventory).
 
 1. deploy it
 
@@ -37,13 +41,13 @@ like in this [example](./examples/inventory.yaml) for an Ansible inventory.
    ./site.yaml --limit my_bridge
    ```
 
-1. enjoy it:
+1. inspect it:
 
    ```bash
-   ./site-info.yaml --limit my_bridge
-
    grep "my_bridge" ~/tmp/*
    ```
+
+1. enjoy it:
 
 ## Details
 
