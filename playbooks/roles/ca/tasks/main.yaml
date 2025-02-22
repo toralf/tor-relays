@@ -13,7 +13,7 @@
       delegate_to: localhost
       ansible.builtin.file:
         state: directory
-        path: "{{ ssl_dir }}/CA/{{ item }}"
+        path: "{{ ca_dir }}/CA/{{ item }}"
         owner: "tfoerste"
         group: "tfoerste"
         mode: "0755"
@@ -23,11 +23,11 @@
         - keys/
     - name: Generate Root CA private key
       community.crypto.openssl_privatekey:
-        path: "{{ ssl_dir }}/CA/keys/CA.key"
+        path: "{{ ca_dir }}/CA/keys/CA.key"
     - name: Generate Root CA CSR
       community.crypto.openssl_csr:
-        path: "{{ ssl_dir }}/CA/csrs/CA.csr"
-        privatekey_path: "{{ ssl_dir }}/CA/keys/CA.key"
+        path: "{{ ca_dir }}/CA/csrs/CA.csr"
+        privatekey_path: "{{ ca_dir }}/CA/keys/CA.key"
         common_name: "ROOT CA tor-relays"
         country_name: "DE"
         basic_constraints:
@@ -40,7 +40,7 @@
         key_usage_critical: true
     - name: Generate Root CA certificate
       community.crypto.x509_certificate:
-        path: "{{ ssl_dir }}/CA/certs/CA.crt"
-        privatekey_path: "{{ ssl_dir }}/CA/keys/CA.key"
-        csr_path: "{{ ssl_dir }}/CA/csrs/CA.csr"
+        path: "{{ ca_dir }}/CA/certs/CA.crt"
+        privatekey_path: "{{ ca_dir }}/CA/keys/CA.key"
+        csr_path: "{{ ca_dir }}/CA/csrs/CA.csr"
         provider: selfsigned

@@ -12,7 +12,7 @@ facts_subset:
   - "hardware"
 
 # store certificates and more
-ssl_dir: "{{ playbook_dir }}/../secrets/ssl"
+ca_dir: "{{ playbook_dir }}/../secrets/ca"
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
