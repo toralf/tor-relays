@@ -4,6 +4,7 @@
 
 - name: Generate CA
   delegate_to: localhost
+  run_once: true
   tags:
     - ca
     - never
@@ -17,9 +18,9 @@
         group: "tfoerste"
         mode: "0755"
       with_items:
-        - keys/
-        - csrs/
         - certs/
+        - csrs/
+        - keys/
     - name: Generate Root CA private key
       community.crypto.openssl_privatekey:
         path: "{{ ssl_dir }}/CA/keys/CA.key"

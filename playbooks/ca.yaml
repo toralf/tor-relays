@@ -2,7 +2,7 @@
 - name: CA
   hosts: all
   run_once: true
-  strategy: linear
+  strategy: ansible.builtin.linear
   roles:
     - role: ca
       tags:
