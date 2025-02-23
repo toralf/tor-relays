@@ -39,5 +39,7 @@
 - name: Ensure DDoS metrics script is running
   changed_when: _metrics_ddos_started.changed
   when: torutils_metrics and (_metrics_ddos_pids_running.pids | length == 0)
-  ansible.builtin.shell: "nice /root/metrics.sh 60 &"
+  ansible.builtin.shell:
+    cmd: |-
+      nice /root/metrics.sh 15 &
   register: _metrics_ddos_started
