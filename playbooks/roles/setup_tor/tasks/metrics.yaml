@@ -14,7 +14,7 @@
     name: "DDoS metrics"
     special_time: reboot
     job: >-
-      nice /root/metrics.sh 60
+      nice /root/metrics.sh 15
     state: "{{ torutils_metrics | ternary('present', 'absent') }}"
 
 - name: Getting process IDs of any running metrics script
