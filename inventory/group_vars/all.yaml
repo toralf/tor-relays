@@ -11,8 +11,13 @@ facts_subset:
   - "distribution"
   - "hardware"
 
-# store certificates and more
+# where to store certificate materials
 ca_dir: "{{ playbook_dir }}/../secrets/ca"
+
+# the self-signed Root CA
+ca_name: "RootCA"
+ca_common_name: "ROOT CA tor-relays"
+ca_country_name: "DE"
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"

@@ -9,16 +9,16 @@
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.openssl_privatekey:
-    path: "{{ ca_dir }}/clients/keys/{{ inventory_hostname }}.key"
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
 
 - name: Generate host CSR
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.openssl_csr:
-    path: "{{ ca_dir }}/clients/csrs/{{ inventory_hostname }}.csr"
-    privatekey_path: "{{ ca_dir }}/clients/keys/{{ inventory_hostname }}.key"
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
     common_name: "{{ inventory_hostname }}"
-    country_name: "DE"
+    country_name: "{{ ca_country_name }}"
     subject_alt_name:
       - "DNS:{{ inventory_hostname }}"
       - "IP:{{ ansible_facts.default_ipv4.address }}"
@@ -28,24 +28,24 @@
   delegate_to: localhost
   throttle: "{{ jobs }}"
   community.crypto.x509_certificate:
-    path: "{{ ca_dir }}/clients/certs/{{ inventory_hostname }}.crt"
-    csr_path: "{{ ca_dir }}/clients/csrs/{{ inventory_hostname }}.csr"
-    ownca_path: "{{ ca_dir }}/RootCA/certs/CA.crt"
-    ownca_privatekey_path: "{{ ca_dir }}/RootCA/keys/CA.key"
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/certs/{{ inventory_hostname }}.crt"
+    csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
+    ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
     provider: ownca
 
-- name: Copy host key
+- name: Copy host key to NGinx
   ansible.builtin.copy:
-    src: "{{ ca_dir }}/clients/keys/{{ inventory_hostname }}.key"
+    src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
   notify: "Reload Nginx"
 
-- name: Create host certificate
+- name: Create NGinx certificate
   ansible.builtin.copy:
-    content: "{{
-      lookup('file','{{ ca_dir }}/clients/certs/{{ inventory_hostname }}.crt')+'\n'+
-      lookup('file','{{ ca_dir }}/RootCA/certs/CA.crt')+'\n'
-      }}"
+    content: |
+      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/clients/certs/{{ inventory_hostname }}.crt") }}
+      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt") }}
+
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
   notify: "Reload Nginx"
 
@@ -53,7 +53,6 @@
   ansible.builtin.template:
     src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
-    mode: "0644"
   notify: "Reload Nginx"
 
 - name: Remove Nginx default listener
@@ -87,12 +86,12 @@
       ansible.builtin.lineinfile:
         create: false
         line: >-
-          ARGS='
+          ARGS="
           --web.listen-address=localhost:9100
           --collector.tcpstat
           --collector.textfile.directory=/var/lib/node_exporter/
           --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
-          '
+          "
         path: /etc/default/prometheus-node-exporter
         regex: "^ARGS="
       notify: "Restart Prometheus node exporter"

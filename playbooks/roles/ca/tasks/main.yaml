@@ -2,34 +2,32 @@
 # https://arminreiter.com/2022/01/create-your-own-certificate-authority-ca-using-openssl/
 # https://gist.github.com/klo2k/6506d161e9a096f74e4122f98665ce70
 
-- name: Generate CA
+- name: Generate Root CA
   delegate_to: localhost
   run_once: true
   tags:
     - ca
     - never
   block:
-    - name: Create local directories
+    - name: Create local directories for Root CA
       delegate_to: localhost
       ansible.builtin.file:
         state: directory
-        path: "{{ ca_dir }}/RootCA/{{ item }}"
-        owner: "tfoerste"
-        group: "tfoerste"
+        path: "{{ ca_dir }}/{{ ca_name }}/clients/{{ item }}/"
         mode: "0755"
       with_items:
-        - certs/
-        - csrs/
-        - keys/
+        - certs
+        - csrs
+        - keys
     - name: Generate Root CA private key
       community.crypto.openssl_privatekey:
-        path: "{{ ca_dir }}/RootCA/keys/CA.key"
+        path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
     - name: Generate Root CA CSR
       community.crypto.openssl_csr:
-        path: "{{ ca_dir }}/RootCA/csrs/CA.csr"
-        privatekey_path: "{{ ca_dir }}/RootCA/keys/CA.key"
-        common_name: "ROOT CA tor-relays"
-        country_name: "DE"
+        path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.csr"
+        privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
+        common_name: "{{ ca_common_name }}"
+        country_name: "{{ ca_country_name }}"
         basic_constraints:
           - CA:TRUE
         basic_constraints_critical: true
@@ -40,7 +38,7 @@
         key_usage_critical: true
     - name: Generate Root CA certificate
       community.crypto.x509_certificate:
-        path: "{{ ca_dir }}/RootCA/certs/CA.crt"
-        privatekey_path: "{{ ca_dir }}/RootCA/keys/CA.key"
-        csr_path: "{{ ca_dir }}/RootCA/csrs/CA.csr"
+        path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
+        privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
+        csr_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.csr"
         provider: selfsigned

@@ -98,8 +98,8 @@ local metrics port is allowed by a firewall rule
 ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
 An Nginx is used to encrypt the metrics data transfer on transit
 ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
-using the certificate of a self-signed CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-This CA key has to be put into the Prometheus config to enable the TLS traffic
+using the certificate of a self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
+This Root CA key has to be put into the Prometheus config to enable the TLS traffic
 ([example](https://github.com/toralf/torutils/tree/main/dashboards)).
 Configure a `metrics_port` to expose several kind of metrics at
 https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
@@ -123,7 +123,7 @@ My static prometheus config contains something like:
    metrics_path: '/metrics-snowflake'
    scheme: https
    tls_config:
-   ca_file: 'CA.crt'
+   ca_file: 'RootCA.crt'
    file_sd_configs:
    - files:
       - 'targets_snowflake-hx.yaml'
