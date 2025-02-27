@@ -30,7 +30,7 @@
     dest: /etc/sysctl.d/
   register: _sysctl_state
 
-- name: "Ensure sysctl is reloaded"
+- name: "Ensure sysctl is up to date"
   when: _sysctl_state.changed
   changed_when: true
   ansible.builtin.command: sysctl --system
@@ -54,11 +54,12 @@
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/21tor-generic.conf
+    sysctl_file: /etc/sysctl.d/21tor-common.conf
     sysctl_set: true
   loop:
     - { name: "kernel.sysrq", value: 0 }
     - { name: "net.ipv4.tcp_fin_timeout", value: 10 }
+    - { name: "net.ipv4.tcp_notsent_lowat", value: 131072 }
 
 - name: Set PATH in crontab
   ansible.builtin.cron:
