@@ -44,6 +44,7 @@
   register: _snowflake_patched
 
 - name: Build
+  retries: 3
   changed_when: false
   ansible.builtin.command:
     cmd: go build -v

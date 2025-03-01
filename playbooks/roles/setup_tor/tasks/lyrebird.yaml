@@ -35,6 +35,7 @@
   register: _lyrebird_patched
 
 - name: Build Lyrebird
+  retries: 3
   changed_when: false
   ansible.builtin.command:
     cmd: make build
