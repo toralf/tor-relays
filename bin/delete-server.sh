@@ -14,8 +14,8 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# wellknown entries can't be cleaned b/c the hostname is on a separate line
-echo -e " deleting local config ..."
+# wellknown entries must be cleaned manually
+echo -e " deleting local facts, DNS and ssl ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
