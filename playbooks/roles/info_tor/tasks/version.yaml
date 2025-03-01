@@ -18,20 +18,20 @@
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
-      if cd /root/lyrebird 2>/dev/null; then
+      if cd /root/lyrebird; then
         git rev-parse --verify HEAD | cut -c -12
       else
         obfs4proxy --version || lyrebird --version
       fi
     executable: /bin/bash
-  register: _proxy
+  register: _proxy_version
 
 - name: File version
   delegate_to: localhost
   throttle: "{{ ansible_facts.processor_vcpus }}"
   vars:
     __package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
-    __version: "{{ _tor.stdout }} {{ _proxy.stdout | default('-') }}"
+    __version: "{{ _tor.stdout | default('-') }} {{ _proxy_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} tor {{ __version }} {{ __package }}"
     path: "{{ tmp_dir }}/tor_version"
