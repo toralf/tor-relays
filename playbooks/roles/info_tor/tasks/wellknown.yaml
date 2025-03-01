@@ -17,8 +17,9 @@
         insertafter: "^# {{ inventory_hostname }}\n"
 
 - name: Wellknown for server
-  when: not bridge_distribution
   delegate_to: localhost
+  throttle: "{{ ansible_facts.processor_vcpus }}"
+  when: not bridge_distribution
   block:
     - name: Ensure hostname is in wellknown files
       ansible.builtin.lineinfile:

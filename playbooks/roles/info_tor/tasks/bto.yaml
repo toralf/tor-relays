@@ -7,6 +7,7 @@
 
 - name: File bto
   delegate_to: localhost
+  throttle: "{{ ansible_facts.processor_vcpus }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', ' obfs4 ') | first | default('n/a')}}"
     path: "{{ tmp_dir }}/tor_bto"

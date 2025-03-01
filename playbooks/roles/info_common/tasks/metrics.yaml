@@ -1,6 +1,7 @@
 ---
 - name: File metrics port
   delegate_to: localhost
+  throttle: "{{ ansible_facts.processor_vcpus }}"
   when: metrics_port
   vars:
     __nm: "{{ (node_metrics | default(false)) | ternary(' # node_metrics', '') }}"
