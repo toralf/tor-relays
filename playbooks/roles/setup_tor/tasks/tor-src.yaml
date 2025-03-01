@@ -21,7 +21,7 @@
     path: /root/tor
 
 - name: Init or update Tor Git repo
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   retries: 3
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
@@ -39,7 +39,7 @@
     chdir: /root/tor
 
 - name: Apply patches
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: curl -s {{ item }} | patch -p 1

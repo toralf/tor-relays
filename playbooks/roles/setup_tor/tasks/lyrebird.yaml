@@ -6,7 +6,7 @@
     path: /root/lyrebird
 
 - name: Init or update Lyrebird Git repo
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   retries: 3
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
@@ -23,7 +23,7 @@
     chdir: /root/lyrebird
 
 - name: Apply patches for Lyrebird
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   retries: 3
   changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:

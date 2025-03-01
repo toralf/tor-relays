@@ -80,10 +80,10 @@
       tags:
         - firewall
 
-    - name: Ensure desired Debian kernel is installed
-      ansible.builtin.import_tasks: kernel-bin.yaml
+    - name: Ensure desired distribution kernel is installed
+      ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
-        - kernel-bin
+        - kernel-dist
 
     - name: Check if reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
@@ -102,7 +102,6 @@
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
-        - metrics-common
 
     - name: Work on running kernel build job
       tags:

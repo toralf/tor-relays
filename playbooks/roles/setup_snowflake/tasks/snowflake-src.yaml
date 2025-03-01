@@ -15,7 +15,7 @@
     path: /root/snowflake
 
 - name: Init or update Snowflake Git repo
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   retries: 3
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
@@ -32,7 +32,7 @@
     chdir: /root/snowflake
 
 - name: Apply patches
-  throttle: 20
+  throttle: "{{ torproject_connections }}"
   retries: 3
   changed_when: _snowflake_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:

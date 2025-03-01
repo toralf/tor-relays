@@ -33,13 +33,13 @@
       daemon_reload: true
       enabled: true
   block:
-    - name: FW for Tor
+    - name: Firewall for Tor
       when: not firewall_use_ddos
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
 
-    - name: DDoS for Tor
+    - name: DDoS firewall for Tor
       when: firewall_use_ddos
       ansible.builtin.import_tasks: firewall-ddos.yaml
       tags:
@@ -71,9 +71,8 @@
             - lyrebird
 
     - name: Metrics
-      ansible.builtin.import_tasks: metrics.yaml
+      ansible.builtin.import_tasks: metrics-ddos.yaml
       tags:
-        - metrics
         - metrics-ddos
 
     - name: Config
