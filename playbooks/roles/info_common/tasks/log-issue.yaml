@@ -22,7 +22,7 @@
   block:
     - name: Findings since {{ log_system_since }}
       delegate_to: localhost
-      throttle: "{{ jobs }}"
+      throttle: "{{ ansible_facts.processor_vcpus }}"
       ansible.builtin.copy:
         content: "{{ _result.stdout ~ '\n' }}"
         dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.log"
@@ -38,7 +38,7 @@
 
     - name: Download Linux kernel config
       # fetch defaults to localhost
-      throttle: "{{ jobs }}"
+      throttle: "{{ ansible_facts.processor_vcpus }}"
       ansible.builtin.fetch:
         src: "{{ _config_fname.stdout }}"
         dest: "{{ tmp_dir }}/issues/{{ inventory_hostname }}.config"

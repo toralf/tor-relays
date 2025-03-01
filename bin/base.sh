@@ -32,9 +32,7 @@ if [[ ! -s ${local_inventory} ]]; then
 # for localhost set upper job count to vCPU count
 all:
   vars:
-    # for delegate to localhost
-    jobs: $(nproc)
-    # for git clone etc.
+    # throttle Git API calls
     torproject_connections: 20
     # base for various pseudo-randomzied settings
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
