@@ -7,6 +7,7 @@
         tail -n 4
   register: _result
 
-- name: File clients
+- name: Results of Heartbeat
+  when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines
