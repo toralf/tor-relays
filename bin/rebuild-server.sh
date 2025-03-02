@@ -31,8 +31,18 @@ while read -r name; do
   rm -f $(dirname $0)/../.ansible_facts/${name}
 done < <(xargs -n 1 <<<$*)
 
+now=${EPOCHSECONDS}
+
 echo -e "\n rebuilding ..."
 xargs -t -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$debian} <<<$*
+
+# wait half a minute before ssh into the instance
+diff=$((EPOCHSECONDS - now))
+if [[ ${diff} -lt 30 ]]; then
+  wait=$((30 - diff))
+  echo -en "\n waiting ${wait} sec ..."
+  sleep ${wait}
+fi
 
 while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
   echo -e "\n waiting 5 sec ...\n"
