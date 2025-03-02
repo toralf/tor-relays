@@ -84,7 +84,6 @@
       ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
         - kernel
-        - kernel-dist
 
     - name: Check if reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
@@ -97,7 +96,6 @@
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel
-        - kernel-src
 
     - name: Metrics
       when: metrics_port
@@ -108,7 +106,6 @@
     - name: Work on running kernel build job
       tags:
         - kernel
-        - kernel-src
       when: _kernel_build.changed
       block:
         - name: Ensure kernel build finished

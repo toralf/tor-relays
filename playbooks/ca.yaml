@@ -5,6 +5,3 @@
   strategy: ansible.builtin.linear
   roles:
     - role: ca
-      tags:
-        - ca
-        - never

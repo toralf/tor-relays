@@ -45,19 +45,16 @@
     - name: Log
       ansible.builtin.import_tasks: log-notice.yaml
       tags:
-        - log
         - log-notice
 
     - name: Log warn
       ansible.builtin.import_tasks: log-warn.yaml
       tags:
-        - log
         - log-warn
 
     - name: Log err
       ansible.builtin.import_tasks: log-err.yaml
       tags:
-        - log
         - log-err
 
     - name: Onionoo
