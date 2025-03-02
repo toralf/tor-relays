@@ -13,7 +13,6 @@
     - role: setup_common
     - role: info_common
     - role: setup_snowflake
-    - role: info_snowflake
 
 - name: Setup Tor
   hosts: tor
@@ -22,4 +21,3 @@
     - role: setup_common
     - role: info_common
     - role: setup_tor
-    - role: info_tor
