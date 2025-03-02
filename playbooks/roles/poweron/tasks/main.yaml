@@ -10,7 +10,7 @@
       changed_when: _ping_result.rc != 0
       failed_when: _ping_result.rc != 0
       ansible.builtin.shell:
-        cmd: >-
+        cmd: |-
           ping -c 1 {{ inventory_hostname }} &>/dev/null ||
           ping -c 2 {{ inventory_hostname }} &>/dev/null ||
           ping -c 4 {{ inventory_hostname }} &>/dev/null
