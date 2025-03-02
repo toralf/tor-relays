@@ -17,28 +17,32 @@
   ansible.builtin.copy:
     src: 00_debian.cfg
     dest: /etc/cloud/cloud.cfg.d/
+  register: _deactivate_hetzner_network_configurator
 
-- name: Restart network service
-  when: _cloud_init.changed
-  ansible.builtin.systemd_service:
-    name: networking
-    state: restarted
+- name: Act on network changes
+  when: _cloud_init.changed or _deactivate_hetzner_network_configurator.changed
+  block:
+    - name: Restart network service
+      ansible.builtin.systemd_service:
+        name: networking
+        state: restarted
 
-- name: Check that ipv6 is up again
-  changed_when: _ip6_up.rc == 42
-  failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
-  ansible.builtin.shell:
-    cmd: |-
-      rc=0
-      while ip -6 a | grep -q ' tentative'; do
-        rc=42
-        sleep 1
-      done
-      exit $rc
-  register: _ip6_up
+    - name: Check that ipv6 is up again
+      changed_when: _ip6_up.rc == 42
+      failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
+      ansible.builtin.shell:
+        cmd: |-
+          rc=0
 
-- name: Gather ipv6 facts
-  when: _cloud_init.changed
-  ansible.builtin.setup:
-    gather_subset:
-      - "default_ipv6"
+          while ip -6 a | grep -q ' tentative'; do
+            rc=42
+            sleep 1
+          done
+
+          exit $rc
+      register: _ip6_up
+
+    - name: Gather ipv6 facts
+      ansible.builtin.setup:
+        gather_subset:
+          - "default_ipv6"
