@@ -7,7 +7,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      snowflake-proxy --version |
+      snowflake-proxy --version 2>&1 |
         head -n 1 |
         cut -f 2- -d ' ' |
         tr ' ' '_'
