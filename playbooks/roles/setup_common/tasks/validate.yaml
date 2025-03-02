@@ -3,7 +3,7 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "ansible_facts.distribution == 'Debian'"
+      - "ansible_facts.distribution in ('Debian', 'Ubuntu')"
 
 - name: Validate metrics_port
   when: metrics_port

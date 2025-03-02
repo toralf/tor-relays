@@ -29,9 +29,9 @@
       tags:
         - firewall
 
-    - name: Debian
+    - name: Distribution
       when: not snowflake_build_from_source
-      ansible.builtin.import_tasks: snowflake-debian.yaml
+      ansible.builtin.import_tasks: snowflake-dist.yaml
       tags:
         - snowflake
 

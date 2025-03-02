@@ -43,16 +43,16 @@
       when: firewall_use_ddos
       ansible.builtin.import_tasks: firewall-ddos.yaml
       tags:
-        - firewall
+        - firewall-ddos
 
-    - name: Debian
+    - name: Distribution
       when: not tor_build_from_source
-      ansible.builtin.import_tasks: tor-debian.yaml
+      ansible.builtin.import_tasks: tor-dist.yaml
       tags:
         - tor
 
     - name: Build from source
-      when: tor_build_from_source
+      when: tor_build_from_source and ansible_facts.distribution in ('Debian', 'Ubuntu')
       block:
         - name: Tools
           ansible.builtin.import_tasks: tools-src.yaml

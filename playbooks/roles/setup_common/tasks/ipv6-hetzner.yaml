@@ -1,6 +1,5 @@
 ---
 - name: Generate a pseudo-random choosen ipv6 address
-  failed_when: ansible_facts.default_ipv6.prefix != "64"
   vars:
     __ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     __a: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'A' + __ipv6_prefix) }}"
@@ -46,3 +45,9 @@
       ansible.builtin.setup:
         gather_subset:
           - "default_ipv6"
+
+- name: Ensure Ipv6 address is non-default
+  failed_when: ansible_facts.default_ipv6.address is search('::1$')
+  ansible.builtin.debug:
+    var: ansible_facts.default_ipv6
+    verbosity: 1

@@ -1,0 +1,66 @@
+---
+- name: Enable Tor Debian repository
+  when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+  block:
+    - name: Install or update Release key
+      ansible.builtin.apt:
+        name:
+          - deb.torproject.org-keyring
+
+    - name: Get Tor repository apt key
+      ansible.builtin.apt_key:
+        url: "https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc"
+        state: present
+
+    - name: Configure repository "torproject"
+      ansible.builtin.apt_repository:
+        filename: "torproject"
+        repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
+        state: present
+
+    - name: Configure repository "torproject" for tor_debian_target "{{ tor_debian_target }}"
+      when: tor_debian_target
+      ansible.builtin.apt_repository:
+        filename: "torproject"
+        repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
+        state: present
+
+    - name: Install or update Tor + obfs4proxy
+      ansible.builtin.apt:
+        default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
+        name:
+          - tor
+          - tor-geoipdb
+          - obfs4proxy
+      notify: "Restart Tor"
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+- name: Configure apt hook to set capabilities for low port
+  when: tor_port | int < 1024
+  vars:
+    __exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+  ansible.builtin.lineinfile:
+    line: >-
+      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ __exe }}"; };'
+    path: /etc/apt/apt.conf.d/99-tor-lowport
+
+- name: Ensure that Tor systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/tor@default.service.d/
+    state: directory
+    mode: "0755"
+
+- name: Add Tor systemd override
+  ansible.builtin.template:
+    src: tor.override.conf.j2
+    dest: /etc/systemd/system/tor@default.service.d/override.conf
+  notify:
+    - "Reload Systemd"
+
+- name: Set sysctl max user namespaces
+  ansible.posix.sysctl:
+    name: user.max_user_namespaces
+    value: "0" # Debian  bookworm default: 14886
+    sysctl_file: /etc/sysctl.d/21tor-relay.conf
+    sysctl_set: true
+  notify: "Restart Tor"

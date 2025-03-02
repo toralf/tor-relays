@@ -1,5 +1,6 @@
 ---
 - name: Install or update toolchain for Tor build
+  when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   ansible.builtin.apt:
     name:
       - automake
@@ -9,6 +10,12 @@
       - libssl-dev
       - logrotate
       - zlib1g-dev
+
+- name: Install or update toolchain for Tor build
+  when: ansible_facts.distribution in ('Ubuntu')
+  ansible.builtin.apt:
+    name:
+      - autotools-dev
 
 - name: Install or update Go for Tor proxy build
   ansible.builtin.apt:
