@@ -1,161 +1,176 @@
 ---
-- name: Install or update toolchain for Linux
-  ansible.builtin.apt:
-    name:
-      - bc
-      - bison
-      - build-essential
-      - cpio
-      - dwarves
-      - flex
-      - git
-      - kmod
-      - libelf-dev
-      - libncurses5-dev
-      - libssl-dev
-      - lz4
+- name: Stat make.log
+  ansible.builtin.stat:
+    path: /root/make.log
+  register: _make_log
 
-- name: Init or update Linux repo
-  retries: 3
-  ansible.builtin.git:
-    repo: "{{ kernel_git_repo_url | ternary(kernel_git_repo_url, 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
-    dest: /root/linux
-    version: "{{ kernel_git_version }}"
-    force: true
-    depth: 1
-    single_branch: true
-  register: _kernel_repo
+- name: Gather "date_time" facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "date_time"
 
-- name: Clean Linux repo
-  changed_when: false
-  ansible.builtin.command:
-    cmd: git clean -f
-    chdir: /root/linux
-
-- name: Apply patches for Linux
-  retries: 3
-  changed_when: _kernel_patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-      set -o pipefail
-
-      curl -s {{ item }} | patch -p 1
-    chdir: /root/linux
-    executable: /bin/bash
-  loop_control:
-    label: "{{ item }}"
-  loop: "{{ kernel_git_patches }}"
-  register: _kernel_patched
-
-- name: Configure Linux
-  changed_when: _kernel_configured.rc == 123
-  failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      [[ -s .config ]] && before=$(md5sum .config) || before="0"
-      yes '' | make localmodconfig >/dev/null
-
-      cat <<EOF >>.config
-
-      CONFIG_LOCALVERSION=""
-      CONFIG_LOCALVERSION_AUTO=y
-
-      PROC_MEM_ALWAYS_FORCE=n
-      PROC_MEM_FORCE_PTRACE=n
-      PROC_MEM_NO_FORCE=y
-
-      CONFIG_BPF=n
-
-      CONFIG_NETFILTER_EGRESS=n
-      CONFIG_NETFILTER_INGRESS=n
-      CONFIG_NF_CT_PROTO_DCCP=n
-      CONFIG_NF_CT_PROTO_SCTP=n
-      CONFIG_NF_CT_PROTO_UDPLITE=n
-      CONFIG_NF_TABLES_ARP=n
-      CONFIG_NF_TABLES_NETDEV=n
-
-      CONFIG_IP_NF_FILTER=m
-      CONFIG_IP_NF_IPTABLES=m
-      CONFIG_IP_NF_NAT=m
-      {{ firewall_use_ddos | ternary('CONFIG_IP_SET=m', '') }}
-      {{ firewall_use_ddos | ternary('CONFIG_IP_SET_HASH_IP=m', '') }}
-      CONFIG_IP6_NF_FILTER=m
-      CONFIG_IP6_NF_IPTABLES=m
-      CONFIG_IP6_NF_NAT=m
-      CONFIG_NETFILTER_XT_MATCH_COMMENT=m
-      CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
-      CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
-      CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
-      CONFIG_NETFILTER_XT_MATCH_LIMIT=m
-      CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
-      CONFIG_NETFILTER_XT_MATCH_STATE=m
-      CONFIG_NETFILTER_XT_NAT=m
-      CONFIG_NETFILTER_XT_SET=m
-      CONFIG_NF_CONNTRACK=m
-      CONFIG_NF_NAT=m
-      CONFIG_NF_TABLES=m
-      CONFIG_NF_TABLES_INET=y
-      CONFIG_NF_TABLES_IPV4=y
-      CONFIG_NF_TABLES_IPV6=y
-      CONFIG_NFT_LIMIT=m
-      CONFIG_NFT_NAT=m
-
-      EOF
-
-      yes '' | make oldconfig >/dev/null
-
-      # if current running kernel does not contain the commit-id, then something changed
-      if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
-        exit 123
-      fi
-
-      # if files do differ, then something changed
-      after=$(md5sum .config)
-      if [[ ! $before == $after ]]; then
-        exit 123
-      fi
-    chdir: /root/linux
-    executable: /bin/bash
-  register: _kernel_configured
-
-- name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
-  when: ansible_facts.memtotal_mb < 2048
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      fallocate -l 2G /swapfile
-      chmod 600 /swapfile
-      mkswap /swapfile
-      if ! grep -q "^/swapfile " /etc/fstab; then
-        echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
-      fi
-      swapon /swapfile
-    creates: /swapfile
-    executable: /bin/bash
-
-- name: Create kernel build script
-  ansible.builtin.copy:
-    src: build-kernel.sh
-    dest: /root/
-    mode: "0700"
-  register: _kernel_build_script
-
-- name: Build Linux
-  async: 3600
-  poll: 0
-  when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
-  changed_when: true
+- name: Ensure that make is not in progress
+  when: _age | int > 60
   vars:
-    __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
-  ansible.builtin.shell:
-    cmd: |-
-      {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ __j ~ ' reboot_immediately &', '/root/build-kernel.sh ' ~ __j) }}
-    executable: /bin/bash
-  register: _kernel_build
+    _age: "{{ ansible_facts.date_time.epoch | float - _make_log.stat.atime | default(0) }}"
+  block:
+    - name: Install or update toolchain for Linux
+      ansible.builtin.apt:
+        name:
+          - bc
+          - bison
+          - build-essential
+          - cpio
+          - dwarves
+          - flex
+          - git
+          - kmod
+          - libelf-dev
+          - libncurses5-dev
+          - libssl-dev
+          - lz4
 
-- name: Flush common handlers (Kernel src)
-  ansible.builtin.meta: flush_handlers
+    - name: Init or update Linux repo
+      retries: 3
+      ansible.builtin.git:
+        repo: "{{ kernel_git_repo_url | ternary(kernel_git_repo_url, 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
+        dest: /root/linux
+        version: "{{ kernel_git_version }}"
+        force: true
+        depth: 1
+        single_branch: true
+      register: _kernel_repo
+
+    - name: Clean Linux repo
+      changed_when: false
+      ansible.builtin.command:
+        cmd: git clean -f
+        chdir: /root/linux
+
+    - name: Apply patches for Linux
+      retries: 3
+      changed_when: _kernel_patched.stdout_lines is search('patching file ')
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+          set -o pipefail
+
+          curl -s {{ item }} | patch -p 1
+        chdir: /root/linux
+        executable: /bin/bash
+      loop_control:
+        label: "{{ item }}"
+      loop: "{{ kernel_git_patches }}"
+      register: _kernel_patched
+
+    - name: Configure Linux
+      changed_when: _kernel_configured.rc == 123
+      failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          [[ -s .config ]] && before=$(md5sum .config) || before="0"
+          yes '' | make localmodconfig >/dev/null
+
+          cat <<EOF >>.config
+
+          CONFIG_LOCALVERSION=""
+          CONFIG_LOCALVERSION_AUTO=y
+
+          PROC_MEM_ALWAYS_FORCE=n
+          PROC_MEM_FORCE_PTRACE=n
+          PROC_MEM_NO_FORCE=y
+
+          CONFIG_BPF=n
+
+          CONFIG_NETFILTER_EGRESS=n
+          CONFIG_NETFILTER_INGRESS=n
+          CONFIG_NF_CT_PROTO_DCCP=n
+          CONFIG_NF_CT_PROTO_SCTP=n
+          CONFIG_NF_CT_PROTO_UDPLITE=n
+          CONFIG_NF_TABLES_ARP=n
+          CONFIG_NF_TABLES_NETDEV=n
+
+          CONFIG_IP_NF_FILTER=m
+          CONFIG_IP_NF_IPTABLES=m
+          CONFIG_IP_NF_NAT=m
+          {{ firewall_use_ddos | ternary('CONFIG_IP_SET=m', '') }}
+          {{ firewall_use_ddos | ternary('CONFIG_IP_SET_HASH_IP=m', '') }}
+          CONFIG_IP6_NF_FILTER=m
+          CONFIG_IP6_NF_IPTABLES=m
+          CONFIG_IP6_NF_NAT=m
+          CONFIG_NETFILTER_XT_MATCH_COMMENT=m
+          CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
+          CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
+          CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
+          CONFIG_NETFILTER_XT_MATCH_LIMIT=m
+          CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
+          CONFIG_NETFILTER_XT_MATCH_STATE=m
+          CONFIG_NETFILTER_XT_NAT=m
+          CONFIG_NETFILTER_XT_SET=m
+          CONFIG_NF_CONNTRACK=m
+          CONFIG_NF_NAT=m
+          CONFIG_NF_TABLES=m
+          CONFIG_NF_TABLES_INET=y
+          CONFIG_NF_TABLES_IPV4=y
+          CONFIG_NF_TABLES_IPV6=y
+          CONFIG_NFT_LIMIT=m
+          CONFIG_NFT_NAT=m
+
+          EOF
+
+          yes '' | make oldconfig >/dev/null
+
+          # if current running kernel does not contain the commit-id, then something changed
+          if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
+            exit 123
+          fi
+
+          # if files do differ, then something changed
+          after=$(md5sum .config)
+          if [[ ! $before == $after ]]; then
+            exit 123
+          fi
+        chdir: /root/linux
+        executable: /bin/bash
+      register: _kernel_configured
+
+    - name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
+      when: ansible_facts.memtotal_mb < 2048
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          fallocate -l 2G /swapfile
+          chmod 600 /swapfile
+          mkswap /swapfile
+          if ! grep -q "^/swapfile " /etc/fstab; then
+            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+          fi
+          swapon /swapfile
+        creates: /swapfile
+        executable: /bin/bash
+
+    - name: Create kernel build script
+      ansible.builtin.copy:
+        src: build-kernel.sh
+        dest: /root/
+        mode: "0700"
+      register: _kernel_build_script
+
+    - name: Build Linux
+      async: 3600
+      poll: 0
+      when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
+      changed_when: true
+      vars:
+        __j: "{{ (ansible_facts.memtotal_mb <= 2048) | ternary(1, ansible_facts.processor_vcpus) }}"
+      ansible.builtin.shell:
+        cmd: |-
+          {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ __j ~ ' reboot_immediately &', '/root/build-kernel.sh ' ~ __j) }}
+        executable: /bin/bash
+      register: _kernel_build
+
+    - name: Flush common handlers (Kernel src)
+      ansible.builtin.meta: flush_handlers
