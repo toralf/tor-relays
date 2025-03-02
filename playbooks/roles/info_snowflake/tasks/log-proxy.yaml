@@ -5,11 +5,9 @@
     cmd: |-
       journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -q |
         grep -v \
-          -e '   .=' \
-          -e 'client connected' \
-          -e ' Proxy connection closed' \
-          -e ': sctp ERROR: .* stream 1 not found' \
-          -e  ', there were .* completed connections' |
+          -e ' client connected' \
+          -e ' completed successful connections.' \
+          -e ' Proxy connection closed' |
         tail -n {{ log_lines }}
   register: _result
 
