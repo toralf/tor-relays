@@ -1,5 +1,5 @@
 ---
-- name: Get interesting log entries
+- name: Get proxy log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
