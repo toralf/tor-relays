@@ -1,5 +1,5 @@
 ---
-- name: File tor metrics ready for Prometheus
+- name: Metrics for Prometheus
   delegate_to: localhost
   throttle: "{{ ansible_facts.processor_vcpus }}"
   when: tor_metrics and metrics_port
@@ -7,4 +7,3 @@
     line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
     path: "{{ tmp_dir }}/tor_metrics.yaml"
     regex: '^- targets: \["{{ inventory_hostname }}:'
-    create: true
