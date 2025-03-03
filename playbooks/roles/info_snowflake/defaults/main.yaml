@@ -2,3 +2,5 @@
 log_lines: 10
 
 log_proxy_since: "1 day ago"
+
+snowflake_metrics: false

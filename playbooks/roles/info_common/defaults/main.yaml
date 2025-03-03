@@ -5,3 +5,5 @@ log_unattended: "/var/log/unattended-upgrades/unattended-upgrades-dpkg.log"
 log_system_since: "1 day ago"
 
 metrics_port: ""
+
+node_metrics: false

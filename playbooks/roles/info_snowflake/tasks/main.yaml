@@ -19,6 +19,11 @@
       tags:
         - log-proxy
 
+    - name: Metrics port
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics
+
     - name: Uptime
       ansible.builtin.import_tasks: uptime.yaml
       tags:

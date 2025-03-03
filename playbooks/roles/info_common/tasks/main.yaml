@@ -31,7 +31,6 @@
         - log-unattended
 
     - name: Metrics port
-      when: metrics_port
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics

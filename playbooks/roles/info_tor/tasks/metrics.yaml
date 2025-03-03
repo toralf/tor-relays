@@ -1,10 +1,10 @@
 ---
-- name: File node metrics ready for Prometheus
+- name: File tor metrics ready for Prometheus
   delegate_to: localhost
   throttle: "{{ ansible_facts.processor_vcpus }}"
-  when: node_metrics and metrics_port
+  when: tor_metrics and metrics_port
   ansible.builtin.lineinfile:
     line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
-    path: "{{ tmp_dir }}/node_metrics.yaml"
+    path: "{{ tmp_dir }}/tor_metrics.yaml"
     regex: '^- targets: \["{{ inventory_hostname }}:'
     create: true

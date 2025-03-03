@@ -57,6 +57,11 @@
       tags:
         - log-err
 
+    - name: Metrics port
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics
+
     - name: Onionoo
       when: bridge_distribution
       ansible.builtin.import_tasks: onionoo.yaml
