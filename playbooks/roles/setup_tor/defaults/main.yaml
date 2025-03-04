@@ -25,4 +25,9 @@ firewall_use_ddos: false
 tor_metrics: false
 
 # this is CPU consuming
-torutils_metrics: false
+ddos_metrics: false
+
+# DDoS environment variables
+ddos_allow_prometheus: ""
+ddos_add_bridge_v4: ""
+ddos_add_bridge_v6: ""

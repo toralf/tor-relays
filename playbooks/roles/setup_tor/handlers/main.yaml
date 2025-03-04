@@ -8,8 +8,8 @@
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
 
-      {{ _add_remote_service }} /root/ipv4-rules.sh start
-      /root/ipv6-rules.sh start
+      {{ ddos_allow_prometheus }} {{ ddos_add_bridge_v4 }} /root/ipv4-rules.sh start
+      {{ ddos_add_bridge_v6 }} /root/ipv6-rules.sh start
 
 - name: Reload Systemd
   listen: "Reload Systemd"

@@ -5,6 +5,17 @@
       - ipset
       - jq
 
+- name: Allow Prometheus by DDoS
+  when: metrics_port and prometheus_server
+  ansible.builtin.set_fact:
+    ddos_allow_prometheus: 'ADD_REMOTE_SERVICES="{{ prometheus_server }}>{{ metrics_port }}"'
+
+- name: Secure bridge by DDoS
+  when: firewall_use_ddos and bridge_distribution
+  ansible.builtin.set_fact:
+    ddos_add_bridge_v4: 'CONFIGURED_RELAYS="{{ ansible_facts.default_ipv4.address }}:{{ tor_port }}"'
+    ddos_add_bridge_v6: 'CONFIGURED_RELAYS6="[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}"'
+
 - name: Download DDoS solution
   retries: 3
   ansible.builtin.get_url:
@@ -38,7 +49,9 @@
   ansible.builtin.cron:
     name: "start firewall"
     special_time: reboot
-    job: "{{ _add_remote_service }} /root/ipv4-rules.sh start; /root/ipv6-rules.sh start"
+    job: >-
+      {{ ddos_allow_prometheus }} {{ ddos_add_bridge_v4 }} /root/ipv4-rules.sh start;
+      {{ ddos_add_bridge_v6 }} /root/ipv6-rules.sh start
   notify: "Restart DDoS"
 
 - name: Create DDoS cron job to save ipsets
@@ -46,14 +59,16 @@
     name: "save ipset"
     special_time: hourly
     job: >-
-      /root/ipv4-rules.sh save; /root/ipv6-rules.sh save
+      /root/ipv4-rules.sh save;
+      /root/ipv6-rules.sh save
 
 - name: Create DDoS cron job to update Tor authority ip addresses
   ansible.builtin.cron:
     name: "Tor authority ip addresses update"
     special_time: daily
     job: >-
-      /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
+      /root/ipv4-rules.sh update;
+      /root/ipv6-rules.sh update
 
 - name: Remove base firewall script
   ansible.builtin.file:

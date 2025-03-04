@@ -1,3 +1,0 @@
----
-# needed for the DDoS solution
-_add_remote_service: '{{ (metrics_port and prometheus_server) | ternary(''ADD_REMOTE_SERVICES="'' + prometheus_server + ''>'' + metrics_port + ''"'', '''') }}'
