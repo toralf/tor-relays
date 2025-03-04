@@ -37,6 +37,12 @@
       tags:
         - clients
 
+    - name: DDoS ipsets
+      when: firewall_use_ddos
+      ansible.builtin.import_tasks: ddos.yaml
+      tags:
+        - ddos
+
     - name: Heartbeat
       ansible.builtin.import_tasks: heartbeat.yaml
       tags:

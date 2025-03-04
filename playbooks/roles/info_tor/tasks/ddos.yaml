@@ -1,0 +1,10 @@
+---
+- name: Download DDoS IpSets
+  throttle: "{{ ansible_facts.processor_vcpus }}"
+  ansible.builtin.fetch:
+    src: "/var/tmp/{{ item }}-{{ tor_port }}"
+    dest: "{{ tmp_dir }}/ddos/{{ inventory_hostname }}.{{ item }}-{{ tor_port }}"
+    flat: true
+  with_items:
+    - tor-ddos
+    - tor-ddos6

@@ -42,4 +42,4 @@ EOF
 fi
 
 # issue files go to ~/tmp, Root CA and certificates to ./secrets in this repo
-mkdir -p ${HOME}/tmp/{kconfigs,issues} $(dirname $0)/../secrets/ssl/{CA,clients}/{certs,csrs,keys}
+mkdir -p ${HOME}/tmp/{ddos,kconfigs,issues} $(dirname $0)/../secrets/ssl/{CA,clients}/{certs,csrs,keys}
