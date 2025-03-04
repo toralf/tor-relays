@@ -10,7 +10,7 @@
 
 - name: File uptime
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_uptime"

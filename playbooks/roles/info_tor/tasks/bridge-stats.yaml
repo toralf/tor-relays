@@ -8,7 +8,7 @@
 
 - name: File bridge stats
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_bridge_stats"

@@ -18,7 +18,7 @@
 
 - name: File uptime
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   vars:
     __starttime: "{{ _service.status.ExecMainStartTimestamp | default('-') }}"
     __changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"

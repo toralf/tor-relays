@@ -7,13 +7,13 @@
 
 - name: Generate host private key
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_privatekey:
     path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
 
 - name: Generate host CSR
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_csr:
     path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
     privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
@@ -26,7 +26,7 @@
 
 - name: Generate host certificate
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   community.crypto.x509_certificate:
     path: "{{ ca_dir }}/{{ ca_name }}/clients/certs/{{ inventory_hostname }}.crt"
     csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"

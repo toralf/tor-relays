@@ -28,7 +28,7 @@
 
 - name: File version
   delegate_to: localhost
-  throttle: "{{ ansible_facts.processor_vcpus }}"
+  throttle: "{{ concurrent_local_jobs }}"
   vars:
     __package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
     __version: "{{ _tor.stdout | default('-') }} {{ _proxy_version.stdout | default('-') }}"
