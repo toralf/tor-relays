@@ -31,3 +31,5 @@ ddos_metrics: false
 ddos_allow_prometheus: ""
 ddos_add_bridge_v4: ""
 ddos_add_bridge_v6: ""
+
+my_family: ""

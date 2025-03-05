@@ -1,10 +1,5 @@
 ---
 - name: Configure torrc
-  vars:
-    # RSA fingerprints have to be created before by the task "wellknown"
-    _rsa_fp_all: "{{ lookup('ansible.builtin.file', '~/tmp/rsa-fingerprint.txt', errors='ignore') | regex_replace('#.*\n', '') | split('\n')}}"
-    # https://gitlab.torproject.org/tpo/core/tor/-/issues/40837
-    _my_family: "{{ _rsa_fp_all[0:360] | join(',') }}"
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
