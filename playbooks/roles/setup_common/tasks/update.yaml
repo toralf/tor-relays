@@ -50,6 +50,7 @@
       - needrestart
       - psmisc
       - python3-psutil
+      - rsync
 
 - name: Install or update additional software
   when: additional_software

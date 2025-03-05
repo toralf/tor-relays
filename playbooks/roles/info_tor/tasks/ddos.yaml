@@ -1,10 +1,11 @@
 ---
 - name: Download DDoS IpSets
+  delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  ansible.builtin.fetch:
+  ansible.posix.synchronize:
+    mode: pull
     src: "/var/tmp/{{ item }}-{{ tor_port }}"
     dest: "{{ tmp_dir }}/ddos/{{ inventory_hostname }}.{{ item }}-{{ tor_port }}"
-    flat: true
   with_items:
     - tor-ddos
     - tor-ddos6
