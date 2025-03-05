@@ -86,7 +86,7 @@
     - "v4"
     - "v6"
 
-- name: Remove persistent iptables package
+- name: Remove package iptables-persistent
   ansible.builtin.apt:
     name:
       - iptables-persistent
