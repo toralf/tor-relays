@@ -1,9 +1,8 @@
 ---
-- name: Metrics for Prometheus
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  when: node_metrics | default(false) and metrics_port | default("")
-  ansible.builtin.lineinfile:
-    line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
-    path: "{{ tmp_dir }}/node_metrics.yaml"
-    regex: '^- targets: \["{{ inventory_hostname }}:'
+- name: Main
+  block:
+    - name: Metrics
+      when: metrics_port | default("")
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics

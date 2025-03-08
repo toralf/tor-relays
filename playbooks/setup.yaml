@@ -11,13 +11,13 @@
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_metrics
     - role: setup_snowflake
+    - role: info_metrics
 
 - name: Setup Tor
   hosts: tor
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_metrics
     - role: setup_tor
+    - role: info_metrics

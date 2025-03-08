@@ -1,9 +1,0 @@
----
-- name: Metrics for Prometheus
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  when: tor_metrics and metrics_port
-  ansible.builtin.lineinfile:
-    line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
-    path: "{{ tmp_dir }}/tor_metrics.yaml"
-    regex: '^- targets: \["{{ inventory_hostname }}:'
