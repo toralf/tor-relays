@@ -4,14 +4,14 @@
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_common
+    - role: info_metrics
 
 - name: Setup Snowflake
   hosts: snowflake
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_common
+    - role: info_metrics
     - role: setup_snowflake
 
 - name: Setup Tor
@@ -19,5 +19,5 @@
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_common
+    - role: info_metrics
     - role: setup_tor
