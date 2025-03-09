@@ -20,6 +20,9 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.get_url:
+      mode: "0744"
+      force: true
     ansible.builtin.lineinfile:
       create: true
       owner: root
@@ -71,6 +74,7 @@
             - lyrebird
 
     - name: Metrics
+      when: ddos_metrics
       ansible.builtin.import_tasks: metrics-ddos.yaml
       tags:
         - metrics-ddos

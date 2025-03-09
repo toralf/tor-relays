@@ -21,8 +21,6 @@
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
     dest: "/root/{{ item }}"
-    mode: "0744"
-    force: true
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh

@@ -1,12 +1,9 @@
 ---
 - name: Download DDoS metrics script
   retries: 3
-  when: ddos_metrics
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/metrics.sh"
     dest: "/root/metrics.sh"
-    mode: "0744"
-    force: true
   register: _ddos_metrics_download
 
 - name: Cron job for DDoS metrics
@@ -38,7 +35,7 @@
 
 - name: Ensure DDoS metrics script is running
   changed_when: _ddos_metrics_started.changed
-  when: ddos_metrics and (_ddos_metrics_pids_running.pids | length == 0)
+  when: _ddos_metrics_pids_running.pids | length == 0
   ansible.builtin.shell:
     cmd: |-
       nice /root/metrics.sh 15 &
