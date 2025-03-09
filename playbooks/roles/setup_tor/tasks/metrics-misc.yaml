@@ -1,0 +1,16 @@
+---
+- name: Init or update Tor Stem repo
+  throttle: "{{ torproject_connections }}"
+  retries: 3
+  ansible.builtin.git:
+    repo: https://github.com/torproject/stem.git
+    dest: /root/stem
+    force: true
+    depth: 1
+    single_branch: true
+
+- name: Download info.py
+  retries: 3
+  ansible.builtin.get_url:
+    url: https://github.com/toralf/torutils/raw/main/info.py
+    dest: /root/info.py

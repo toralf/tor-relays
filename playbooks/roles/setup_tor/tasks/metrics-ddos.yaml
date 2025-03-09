@@ -2,8 +2,8 @@
 - name: Download DDoS metrics script
   retries: 3
   ansible.builtin.get_url:
-    url: "https://github.com/toralf/torutils/raw/main/metrics.sh"
-    dest: "/root/metrics.sh"
+    url: https://github.com/toralf/torutils/raw/main/metrics.sh
+    dest: /root/metrics.sh
   register: _ddos_metrics_download
 
 - name: Cron job for DDoS metrics
