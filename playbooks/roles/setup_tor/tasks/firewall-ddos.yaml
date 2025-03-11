@@ -5,17 +5,6 @@
       - ipset
       - jq
 
-- name: Allow Prometheus by DDoS
-  when: metrics_port and prometheus_server
-  ansible.builtin.set_fact:
-    ddos_allow_prometheus: 'ADD_REMOTE_SERVICES="{{ prometheus_server }}>{{ metrics_port }}"'
-
-- name: Secure bridge by DDoS
-  when: firewall_use_ddos and bridge_distribution
-  ansible.builtin.set_fact:
-    ddos_add_bridge_v4: 'CONFIGURED_RELAYS="{{ ansible_facts.default_ipv4.address }}:{{ tor_port }}"'
-    ddos_add_bridge_v6: 'CONFIGURED_RELAYS6="[{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}"'
-
 - name: Download DDoS solution
   retries: 3
   ansible.builtin.get_url:

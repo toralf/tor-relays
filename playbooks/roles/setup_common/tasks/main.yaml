@@ -124,12 +124,6 @@
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
 
-    # Let the first kernel build succeed and the system been rebooted
-    # before Tor or Snowflake is started for the very first time
-    - name: Test at first Kernel build
-      ansible.builtin.set_fact:
-        _first_kernel_build_in_progress: "{{ (_ansible_tmp.changed and fire_and_forget and _kernel_build.changed) | bool }}"
-
     - name: Check if reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
       tags:

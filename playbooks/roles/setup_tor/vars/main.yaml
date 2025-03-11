@@ -1,0 +1,10 @@
+---
+# set_fact works in tasks but in handlers thoses values are not known
+ddos_allow_prometheus: >-
+  {{ (metrics_port and prometheus_server) | ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
+
+ddos_add_bridge_v4: >-
+  {{ (firewall_use_ddos and bridge_distribution) | ternary('CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"', '') }}
+
+ddos_add_bridge_v6: >-
+  {{ (firewall_use_ddos and bridge_distribution) | ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}

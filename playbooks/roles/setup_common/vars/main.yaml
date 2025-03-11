@@ -1,0 +1,5 @@
+---
+# handlers do ignore set_fact values
+
+# Let the first kernel build succeed and the system been rebooted before a network app is started for the very first time
+_first_kernel_build_in_progress: "{{ (_ansible_tmp.changed and fire_and_forget and _kernel_build.changed) | bool }}"
