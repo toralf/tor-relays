@@ -18,7 +18,8 @@ if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o Con
     if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
       echo $i
     fi
-  done
+  done |
+    sort
 ); then
   echo -e "\n OK\n"
 else
