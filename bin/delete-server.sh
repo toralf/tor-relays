@@ -15,12 +15,12 @@ echo -e "\n using Hetzner project ${project:?}\n"
 jobs=$((2 * $(nproc)))
 
 # wellknown entries must be cleaned manually
-echo -e " deleting local facts, DNS and ssl ..."
+echo -e " deleting local system data, DNS and ssl ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
-  rm -f $(dirname $0)/../secrets/ssl/clients/*/${name}.???
+  rm -f $(dirname $0)/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
