@@ -44,7 +44,7 @@
   register: _snowflake_patched
 
 - name: Build
-  retries: 6
+  throttle: "{{ torproject_connections }}"
   changed_when: false
   ansible.builtin.command:
     cmd: go build -v

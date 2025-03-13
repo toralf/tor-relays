@@ -35,7 +35,7 @@
   register: _lyrebird_patched
 
 - name: Build Lyrebird
-  retries: 3
+  throttle: "{{ torproject_connections }}"
   changed_when: false
   ansible.builtin.command:
     cmd: make build
