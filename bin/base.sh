@@ -36,11 +36,11 @@ all:
     concurrent_local_jobs: $(nproc)
     # throttle Git API calls
     torproject_connections: 20
-    # base for various pseudo-randomzied settings
+    # seed for various system-specific pseudo-randomized settings
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
 EOF
   chmod 600 ${local_inventory}
 fi
 
-# issue files go to ~/tmp, Root CA and certificates to ./secrets in this repo
-mkdir -p ${HOME}/tmp/{ddos,kconfigs,issues} $(dirname $0)/../secrets/ssl/{CA,clients}/{certs,csrs,keys}
+# issue files go to ~/tmp, Root CA and certificates stores their files under ./secrets on their own
+mkdir -p ${HOME}/tmp/{ddos,kconfigs,issues}

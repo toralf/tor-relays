@@ -24,7 +24,7 @@ debian=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
 # wellknown entries must be cleaned manually
-echo -e " deleting local facts ..."
+echo -e " deleting local system data ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
