@@ -28,7 +28,7 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.x509_certificate:
-    path: "{{ ca_dir }}/{{ ca_name }}/clients/certs/{{ inventory_hostname }}.crt"
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt"
     csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
     ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
     ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
@@ -43,7 +43,7 @@
 - name: Create NGinx certificate
   ansible.builtin.copy:
     content: |
-      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/clients/certs/{{ inventory_hostname }}.crt") }}
+      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt") }}
       {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt") }}
 
     dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
