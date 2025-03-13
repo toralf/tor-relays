@@ -108,6 +108,10 @@ if [[ ${diff} -lt 30 ]]; then
   sleep ${wait}
 fi
 
+# clean up any left overs
+xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
+
+# establish trust relationship to remote system
 while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
   echo -e "\n waiting 5 sec ...\n"
   sleep 5
