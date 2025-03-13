@@ -2,6 +2,5 @@
 - name: CA
   hosts: all
   run_once: true
-  strategy: ansible.builtin.linear
   roles:
     - role: ca
