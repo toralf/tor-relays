@@ -1,4 +1,13 @@
 ---
+- name: Setup Common
+  hosts: all
+  roles:
+    - role: poweron
+    - role: setup_common
+  tags:
+    - never
+    - setup-common
+
 - name: Setup Misc
   hosts: "!snowflake:!tor"
   roles:

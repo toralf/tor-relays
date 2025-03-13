@@ -1,4 +1,12 @@
 ---
+- name: Info Common
+  hosts: all
+  roles:
+    - role: info_common
+  tags:
+    - never
+    - info-common
+
 - name: Info Misc
   hosts: "!snowflake:!tor"
   roles:
