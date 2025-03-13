@@ -11,7 +11,7 @@
 
 - name: File NAT type
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/snowflake_nat"

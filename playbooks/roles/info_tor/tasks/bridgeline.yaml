@@ -11,7 +11,7 @@
 
 - name: File bridgeline
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   vars:
     _torport: "{{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }}"
   ansible.builtin.lineinfile:

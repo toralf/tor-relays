@@ -18,7 +18,7 @@
 
 - name: File uptime
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   vars:
     __starttime: "{{ _service.status.ExecMainStartTimestamp | default('-') }}"
     __changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"

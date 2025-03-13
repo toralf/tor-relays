@@ -19,7 +19,7 @@
 
 - name: Findings
   when: _result.stdout
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   block:
     - name: Findings since {{ log_system_since }}
       delegate_to: localhost

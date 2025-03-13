@@ -7,7 +7,7 @@
 
 - name: File onionoo
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   ansible.builtin.lineinfile:
     line: >-
       {{ inventory_hostname }}

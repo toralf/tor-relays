@@ -15,7 +15,7 @@
 
 - name: File version
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   vars:
     __package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
     __version: "{{ _proxy_version.stdout | default('-') }}"

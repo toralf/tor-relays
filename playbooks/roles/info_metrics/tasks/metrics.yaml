@@ -1,7 +1,7 @@
 ---
 - name: File Metrics
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   module_defaults:
     ansible.builtin.lineinfile:
       line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'

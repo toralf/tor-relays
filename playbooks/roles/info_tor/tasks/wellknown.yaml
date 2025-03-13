@@ -18,7 +18,7 @@
 
 - name: Wellknown for server
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  throttle: 1
   when: not bridge_distribution
   block:
     - name: Ensure hostname is in wellknown files
