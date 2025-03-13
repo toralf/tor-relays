@@ -52,6 +52,12 @@
       tags:
         - base
 
+    - name: Run a custom command
+      when: custom_command
+      ansible.builtin.import_tasks: custom-command.yaml
+      tags:
+        - custom-command
+
     - name: Update
       ansible.builtin.import_tasks: update.yaml
       tags:
@@ -80,23 +86,26 @@
       tags:
         - firewall
 
-    - name: Ensure desired distribution kernel is installed
+    - name: Distribution kernel
       when: ansible_facts.distribution == 'Debian'
-      ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
         - kernel
+      block:
+        - name: Ensure desired distribution kernel is installed
+          ansible.builtin.import_tasks: kernel-dist.yaml
 
-    - name: Check if reboot is needed
-      ansible.builtin.import_tasks: reboot.yaml
+        - name: Check if reboot is needed (after dist kernel)
+          ansible.builtin.import_tasks: reboot.yaml
 
-    - name: Ensure scheduled reboot/restart is made
+    - name: Ensure service restarts and/or reboot into new kernel is made
       ansible.builtin.meta: flush_handlers
 
-    - name: Build self-compiled kernel
+    - name: Self-compiled kernel
       when: kernel_git_version
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel
+        - kernel-src
 
     - name: Metrics
       when: metrics_port
@@ -104,12 +113,12 @@
       tags:
         - metrics
 
-    - name: Work on running kernel build job
+    - name: Handle kernel build job
       tags:
         - kernel
       when: _kernel_build.changed
       block:
-        - name: Ensure kernel build finished
+        - name: Wait till kernel build finished
           when: not fire_and_forget
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
@@ -124,21 +133,12 @@
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
 
-    - name: Check if reboot is needed
-      ansible.builtin.import_tasks: reboot.yaml
-      tags:
-        - reboot
-
-    - name: Flush common handlers before finalizing
-      ansible.builtin.meta: flush_handlers
-
     - name: Configure auto update
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
 
-    - name: Run a custom command
-      when: custom_command
-      ansible.builtin.import_tasks: custom-command.yaml
+    - name: Explicit check if reboot is needed
+      ansible.builtin.import_tasks: reboot.yaml
       tags:
-        - custom-command
+        - reboot

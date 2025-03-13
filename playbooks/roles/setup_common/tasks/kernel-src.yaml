@@ -1,20 +1,20 @@
 ---
+- name: Gather current time of remote system
+  ansible.builtin.setup:
+    gather_subset:
+      - "date_time"
+
 - name: Stat make.log
   ansible.builtin.stat:
     path: /root/make.log
   register: _make_log
 
-- name: Gather "date_time" facts
-  ansible.builtin.setup:
-    gather_subset:
-      - "date_time"
-
-- name: Ensure that make is not in progress
+- name: Self-compiled kernel
   when: _age | int > 60
   vars:
-    _age: "{{ ansible_facts.date_time.epoch | float - _make_log.stat.atime | default(0) }}"
+    _age: "{{ (ansible_facts.date_time.epoch | float) - (_make_log.stat.atime | default(0)) }}"
   block:
-    - name: Install or update toolchain for Linux
+    - name: Install or update toolchain
       ansible.builtin.apt:
         name:
           - bc
@@ -171,6 +171,3 @@
           {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ __j ~ ' reboot_immediately &', '/root/build-kernel.sh ' ~ __j) }}
         executable: /bin/bash
       register: _kernel_build
-
-    - name: Flush common handlers (Kernel src)
-      ansible.builtin.meta: flush_handlers
