@@ -68,7 +68,7 @@
         - ipv6
       block:
         - name: IPv6 Hetzner
-          when: ansible_facts.system_vendor == 'Hetzner' and ansible_facts.distribution == 'Debian'
+          when: ansible_facts.system_vendor == 'Hetzner'
           ansible.builtin.import_tasks: ipv6-hetzner.yaml
 
         - name: IPv6 IONOS
@@ -87,7 +87,6 @@
         - firewall
 
     - name: Distribution kernel
-      when: ansible_facts.distribution == 'Debian'
       tags:
         - kernel
       block:
@@ -97,7 +96,7 @@
         - name: Check if reboot is needed (after dist kernel)
           ansible.builtin.import_tasks: reboot.yaml
 
-    - name: Ensure service restarts and/or reboot into new kernel is made
+    - name: Ensure service restarts and/or needed reboot is made
       ansible.builtin.meta: flush_handlers
 
     - name: Self-compiled kernel

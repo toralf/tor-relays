@@ -1,5 +1,5 @@
 ---
-- name: Generate a pseudo-random choosen ipv6 address
+- name: Change IPv6 to non-default
   vars:
     __ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     __a: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'A' + __ipv6_prefix) }}"
@@ -7,46 +7,71 @@
     __c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + __ipv6_prefix) }}"
     __d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + __ipv6_prefix) }}"
     _ipv6_new: "{{ __ipv6_prefix }}:{{ '%x' % (__a | int) }}:{{ '%x' % (__b | int) }}:{{ '%x' % (__c | int) }}:{{ '%x' % (__d | int) }}"
-  ansible.builtin.template:
-    src: 50-cloud-init.j2
-    dest: /etc/network/interfaces.d/50-cloud-init
-  register: _cloud_init
-
-- name: Deactivate the Hetzner network configurator
-  ansible.builtin.copy:
-    src: 00_debian.cfg
-    dest: /etc/cloud/cloud.cfg.d/
-  register: _deactivate_hetzner_network_configurator
-
-- name: Act on network changes
-  when: _cloud_init.changed or _deactivate_hetzner_network_configurator.changed
   block:
-    - name: Restart network service
-      ansible.builtin.systemd_service:
-        name: networking
-        state: restarted
+    - name: Change IPv6 for Debian
+      when: ansible_facts.distribution == 'Debian'
+      block:
+        - name: Set IPv6 address for Debian
+          ansible.builtin.template:
+            src: 50-cloud-init.j2
+            dest: /etc/network/interfaces.d/50-cloud-init
+          register: _ipv6_address
 
-    - name: Check that ipv6 is up again
-      changed_when: _ip6_up.rc == 42
-      failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
-      ansible.builtin.shell:
-        cmd: |-
-          rc=0
+        - name: Deactivate the Hetzner network configurator for Debian
+          ansible.builtin.copy:
+            src: 00_debian.cfg
+            dest: /etc/cloud/cloud.cfg.d/
+          register: _deactivate_hetzner_network_configurator
 
-          while ip -6 a | grep -q ' tentative'; do
-            rc=42
-            sleep 1
-          done
+        - name: Act on network changes for Debian
+          when: _ipv6_address.changed or _deactivate_hetzner_network_configurator.changed
+          ansible.builtin.systemd_service:
+            name: networking
+            state: restarted
 
-          exit $rc
-      register: _ip6_up
+    - name: Change IPv6 for Debian
+      when: ansible_facts.distribution == 'Ubuntu'
+      block:
+        - name: Set IPv6 address for Ubuntu
+          ansible.builtin.lineinfile:
+            line: '      - "{{ _ipv6_new }}/64"'
+            path: /etc/netplan/50-cloud-init.yaml
+            regex: '      - "{{ __ipv6_prefix }}:'
+          register: _ipv6_address
 
-    - name: Gather ipv6 facts
-      ansible.builtin.setup:
-        gather_subset:
-          - "default_ipv6"
+        - name: Act on network changes for Ubuntu
+          when: _ipv6_address.changed
+          changed_when: true
+          failed_when: _netplan.rc != 0
+          ansible.builtin.shell:
+            cmd: |-
+              set -e
+              sudo netplan generate
+              sudo netplan apply
+            executable: /bin/bash
+          register: _netplan
 
-- name: Ensure Ipv6 address is non-default
+- name: Check that IPv6 is up
+  changed_when: _ip6_up.rc == 42
+  failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
+  ansible.builtin.shell:
+    cmd: |-
+      rc=0
+
+      while ip -6 a | grep -q ' tentative'; do
+        rc=42
+        sleep 1
+      done
+
+      exit $rc
+  register: _ip6_up
+
+- name: Gather IPv6 facts
+  ansible.builtin.setup:
+    gather_subset:
+      - "default_ipv6"
+
+- name: Ensure IPv6 address is non-default
   failed_when: ansible_facts.default_ipv6.address is search('::1$')
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6

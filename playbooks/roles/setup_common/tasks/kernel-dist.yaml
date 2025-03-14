@@ -1,20 +1,23 @@
 ---
-- name: Install desired Debian kernel flavour
-  when: kernel_debian_backports or kernel_debian_cloud
-  vars:
-    _kernel_arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-    _kernel_cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
-  ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
-    name:
-      - "linux-image{{ _kernel_cloud }}-{{ _kernel_arch }}"
-  notify: "Reboot system"
+- name: Debian kernel
+  when: ansible_facts.distribution == 'Debian'
+  block:
+    - name: Install desired Debian kernel flavour
+      when: kernel_debian_backports or kernel_debian_cloud
+      vars:
+        _kernel_arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+        _kernel_cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
+      ansible.builtin.apt:
+        default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
+        name:
+          - "linux-image{{ _kernel_cloud }}-{{ _kernel_arch }}"
+      notify: "Reboot system"
 
-- name: Remove non-Cloud kernel
-  when: kernel_debian_cloud
-  vars:
-    _kernel_arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-  ansible.builtin.apt:
-    name:
-      - "linux-image-{{ _kernel_arch }}"
-    state: absent
+    - name: Remove non-Cloud Debian kernel
+      when: kernel_debian_cloud
+      vars:
+        _kernel_arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+      ansible.builtin.apt:
+        name:
+          - "linux-image-{{ _kernel_arch }}"
+        state: absent
