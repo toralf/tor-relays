@@ -18,9 +18,10 @@
       when: ansible_facts.distribution == 'Debian'
       block:
         - name: Set IPv6 address for Debian
-          ansible.builtin.template:
-            src: 50-cloud-init.j2
-            dest: /etc/network/interfaces.d/50-cloud-init
+          ansible.builtin.lineinfile:
+            line: "    address {{ _ipv6_new }}/64"
+            path: /etc/network/interfaces.d/50-cloud-init
+            regex: "^    address 2a01:"
           register: _ipv6_address
 
         - name: Act on network changes for Debian

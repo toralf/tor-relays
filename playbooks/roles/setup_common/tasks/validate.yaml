@@ -6,14 +6,14 @@
       - "ansible_facts.distribution in ('Debian', 'Ubuntu')"
 
 - name: Validate metrics_port
-  when: metrics_port is defined
+  when: metrics_port is defined and metrics_port
   ansible.builtin.assert:
     quiet: true
     that:
       - "metrics_port | int > 0 and metrics_port | int < 2**16"
 
 - name: Validate prometheus_server
-  when: prometheus_server is defined
+  when: prometheus_server is defined and prometheus_server
   ansible.builtin.assert:
     quiet: true
     that:
@@ -23,7 +23,7 @@
   loop: "{{ prometheus_server | split(',') }}"
 
 - name: Validate RAM for kernel src
-  when: kernel_git_version is defined
+  when: kernel_git_version is defined and kernel_git_version
   ansible.builtin.assert:
     quiet: true
     that:
