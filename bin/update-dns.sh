@@ -34,8 +34,7 @@ done
 echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
 trap Exit INT QUIT TERM EXIT
 
-hcloud server list --output columns=name,ipv4 |
-  grep -v '^NAME' |
+hcloud server list --output noheader --output columns=name,ipv4 |
   sort |
   while read -r name ipv4; do
     printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}

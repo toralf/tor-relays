@@ -36,8 +36,8 @@ cx22_locations=$(jq -r 'select(.server_types.available | contains(['${cx22_id}']
 used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | xargs -n 1 | sort -u)
 
 # default OS: recent Debian
-image_list=$(hcloud image list --type system --output columns=name)
-debian=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
+image_list=$(hcloud image list --type system --output noheader --output columns=name | sort -ur --version-sort)
+debian=$(grep '^debian' <<<${image_list} | head -n 1)
 
 # currently only 1 key is used
 ssh_keys=$(hcloud ssh-key list --output json)
@@ -52,8 +52,8 @@ now=${EPOCHSECONDS}
 
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ ! $name =~ ^[a-z0-9\-]+$ ]]; then
-      echo " contains invalid letters: $name" >&2
+    if [[ ! ${name} =~ ^[a-z0-9\-]+$ ]]; then
+      echo " contains invalid letters: ${name}" >&2
       exit 2
     fi
   done
@@ -74,7 +74,7 @@ xargs -n 1 <<<$* |
     fi
 
     if [[ -z $htype ]]; then
-      echo " error: empty htype for $name" >&2
+      echo " error: empty htype for ${name}" >&2
       exit 4
     fi
 
@@ -85,12 +85,12 @@ xargs -n 1 <<<$* |
     elif [[ ${htype} == "cx22" ]]; then
       loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1)
     else
-      echo " error: unknown htype ${htype} for $name" >&2
+      echo " error: unknown htype ${htype} for ${name}" >&2
       exit 3
     fi
 
     if [[ -z $loc ]]; then
-      echo " error: empty loc for htype ${htype} for $name" >&2
+      echo " error: empty loc for htype ${htype} for ${name}" >&2
       exit 4
     fi
 

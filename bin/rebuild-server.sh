@@ -18,7 +18,7 @@ echo -e "\n using Hetzner project ${project:?}\n"
 jobs=$((2 * $(nproc)))
 
 # default OS: recent Debian
-image_list=$(hcloud image list --type system --output columns=name)
+image_list=$(hcloud image list --type system --output noheader --output columns=name)
 debian=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
 
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
