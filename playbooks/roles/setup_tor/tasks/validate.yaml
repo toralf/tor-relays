@@ -1,5 +1,5 @@
 ---
-- name: Validate ipv6 address
+- name: Validate IPv6 address
   ansible.builtin.assert:
     quiet: true
     that:
@@ -14,14 +14,14 @@
       - "tor_port | int > 0 and tor_port | int < 2**16"
 
 - name: Validate tor_port
-  when: tor_port
+  when: tor_port is defined
   ansible.builtin.assert:
     quiet: true
     that:
       - "tor_port != metrics_port"
 
 - name: Validate ddos_metrics
-  when: ddos_metrics
+  when: ddos_metrics is defined
   ansible.builtin.assert:
     quiet: true
     that:

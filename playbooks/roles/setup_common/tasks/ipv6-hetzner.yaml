@@ -1,4 +1,10 @@
 ---
+- name: Ensure IPv6 address has valid prefix
+  failed_when: ansible_facts.default_ipv6.address is match('fe80::')
+  ansible.builtin.debug:
+    var: ansible_facts.default_ipv6
+    verbosity: 1
+
 - name: Change IPv6 to non-default
   vars:
     __ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
@@ -17,12 +23,6 @@
             dest: /etc/network/interfaces.d/50-cloud-init
           register: _ipv6_address
 
-        - name: Deactivate the Hetzner network configurator for Debian
-          ansible.builtin.copy:
-            src: 00_debian.cfg
-            dest: /etc/cloud/cloud.cfg.d/
-          register: _deactivate_hetzner_network_configurator
-
         - name: Act on network changes for Debian
           when: _ipv6_address.changed or _deactivate_hetzner_network_configurator.changed
           ansible.builtin.systemd_service:
@@ -37,6 +37,7 @@
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
             regex: '      - "{{ __ipv6_prefix }}:'
+            mode: "0600"
           register: _ipv6_address
 
         - name: Act on network changes for Ubuntu

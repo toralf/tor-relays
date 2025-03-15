@@ -1,5 +1,5 @@
 ---
-- name: Validate ipv6 address
+- name: Validate IPv6 address
   ansible.builtin.assert:
     quiet: true
     that:
