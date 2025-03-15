@@ -86,12 +86,12 @@
       ansible.builtin.lineinfile:
         create: false
         line: >-
-          ARGS="
+          ARGS='
           --web.listen-address=localhost:9100
           --collector.tcpstat
           --collector.textfile.directory=/var/lib/node_exporter/
           --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
-          "
+          '
         path: /etc/default/prometheus-node-exporter
         regex: "^ARGS="
       notify: "Restart Prometheus node exporter"
