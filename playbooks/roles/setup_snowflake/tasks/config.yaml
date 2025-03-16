@@ -6,3 +6,14 @@
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
   notify: "Restart Snowflake"
+
+- name: Sync Geoip DB
+  throttle: "{{ concurrent_local_jobs }}"
+  when: tor_geoip_path
+  ansible.posix.synchronize:
+    src: "{{ tor_geoip_path }}"
+    dest: "/usr/share/tor/"
+    recursive: true
+    owner: false
+    group: false
+  notify: "Restart Snowflake"

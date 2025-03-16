@@ -9,3 +9,6 @@ snowflake_command_args: ""
 
 # metrics could expose potential sensitive information
 snowflake_metrics: false
+
+# local path to tor geoip data:
+tor_geoip_path: ""
