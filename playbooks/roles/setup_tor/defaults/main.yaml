@@ -18,13 +18,13 @@ torrc_config_host: []
 # safe default: Tor private bridge
 bridge_distribution: "none"
 
-# use a dedicated DDoS solution (usually only at servers)
+# use a dedicated DDoS solution
 firewall_use_ddos: false
 
 # metrics could expose potential sensitive information
 tor_metrics: false
 
-# this is CPU consuming
+# it is CPU consuming
 ddos_metrics: false
 
 # DDoS environment variables

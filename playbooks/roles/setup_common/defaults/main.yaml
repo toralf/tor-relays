@@ -9,12 +9,12 @@ kernel_git_repo_url: ""
 kernel_git_version: "" # e.g. "HEAD" or "v6.7.3"
 kernel_git_patches: []
 
-# for too long running tasks, e.g.: kernel compilation
-fire_and_forget: true
+# kernel build
+fire_and_forget: false
 
 metrics_port: ""
-prometheus_server: ""
 node_metrics: false
+prometheus_server: ""
 
 # apt timer schedules and related cron job
 timer_hour: "{{ 12 | random(seed=seed_host) }}"

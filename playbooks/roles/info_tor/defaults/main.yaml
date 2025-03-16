@@ -4,3 +4,5 @@ log_lines: 10
 bridge_distribution: ""
 
 ddos_metrics: false
+
+firewall_use_ddos: false
