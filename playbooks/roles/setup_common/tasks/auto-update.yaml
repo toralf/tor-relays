@@ -52,13 +52,24 @@
     job: >-
       pkill -f "apt-get -qq -y update"
 
-# 2x per day between: :30 and :55
+# 2x per day between :30 and :39
 - name: Ensure reboot cron job is present
   ansible.builtin.cron:
-    name: "Reboot if services can't be safely restarted and/or kernel was updated"
+    name: "Reboot if it is required"
     hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
-    minute: "{{ 30 + 25 | random(seed=seed_host) }}"
+    minute: "{{ 30 + 10 | random(seed=seed_host) }}"
     job: >-
-      if grep -q 'System restart required' /var/run/reboot-required 2>/dev/null ||
-      needrestart -r l -b | grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
-      ; then pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot; fi
+      if grep 'System restart required' /var/run/reboot-required 2>/dev/null; then
+      pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd' || reboot;
+      fi
+
+# 2x per day between :40 and :49
+- name: Ensure reboot cron job is present
+  ansible.builtin.cron:
+    name: "Reboot if needrestart adviced it"
+    hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
+    minute: "{{ 40 + 10 | random(seed=seed_host) }}"
+    job: >-
+      if needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'; then
+      pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd' || reboot;
+      fi

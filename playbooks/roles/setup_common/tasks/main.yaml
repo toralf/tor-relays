@@ -133,6 +133,7 @@
             mode: cleanup
 
     - name: Configure auto update
+      when: auto_update
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
