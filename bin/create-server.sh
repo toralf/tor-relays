@@ -19,7 +19,7 @@ echo -e "\n using Hetzner project ${project:?}\n"
 
 jobs=$((2 * $(nproc)))
 
-# US and Singapore are more expensive and/or traffic limited
+# both US and Singapore are more expensive and have less traffic incl.
 data_centers=$(
   hcloud datacenter list --output json |
     jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
@@ -37,13 +37,16 @@ used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | 
 
 # default OS: recent Debian
 image_list=$(hcloud image list --type system --output noheader --output columns=name | sort -ur --version-sort)
-debian=$(grep '^debian' <<<${image_list} | head -n 1)
+image_default=$(grep '^debian' <<<${image_list} | head -n 1)
+
+# image snapshots (if any)
+snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
 
 # currently only 1 key is used
 ssh_keys=$(hcloud ssh-key list --output json)
 ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
 
-if [[ -z ${used_locations} || -z ${debian} || -z ${ssh_key} ]]; then
+if [[ -z ${used_locations} || -z ${ssh_key} ]]; then
   echo " API query failed" >&2
   exit 1
 fi
@@ -61,46 +64,64 @@ xargs -n 1 <<<$* |
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
+    # the silicon
     if [[ -n ${HCLOUD_TYPES-} ]]; then
       htype=$(xargs -n 1 <<<${HCLOUD_TYPES} | shuf -n 1)
     else
       # default: smallest type
       case ${name} in
-      *-amd | *-amd-*) htype="cpx11" ;;
-      *-arm | *-arm-*) htype="cax11" ;;
-      *-intel | *-intel-*) htype="cx22" ;;
+      *-amd-*) htype="cpx11" ;;
+      *-arm-*) htype="cax11" ;;
+      *-intel-*) htype="cx22" ;;
       *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
       esac
     fi
 
-    if [[ -z $htype ]]; then
-      echo " error: empty htype for ${name}" >&2
-      exit 4
-    fi
-
-    if [[ ${htype} == "cax11" ]]; then
-      loc=$(xargs -n 1 <<<${cax11_locations} | shuf -n 1)
-    elif [[ ${htype} == "cpx11" ]]; then
-      loc=$(xargs -n 1 <<<${cpx11_locations} | shuf -n 1)
-    elif [[ ${htype} == "cx22" ]]; then
-      loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1)
-    else
-      echo " error: unknown htype ${htype} for ${name}" >&2
+    if [[ -z ${htype} ]]; then
+      echo " error: no htype for ${name}" >&2
       exit 3
     fi
 
-    if [[ -z $loc ]]; then
-      echo " error: empty loc for htype ${htype} for ${name}" >&2
+    # e.g. US have only AMD
+    case ${htype} in
+    cax11) loc=$(xargs -n 1 <<<${cax11_locations} | shuf -n 1) ;;
+    cpx11) loc=$(xargs -n 1 <<<${cpx11_locations} | shuf -n 1) ;;
+    cx22) loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1) ;;
+    *)
+      echo " error: no loc for ${name}" >&2
       exit 4
+      ;;
+    esac
+
+    image=""
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      if [[ ${HCLOUD_IMAGE} == "snapshot" ]]; then
+        # image shapshots are sorted from newest to oldest
+        while read -r id description; do
+          if [[ ${name} =~ ${description} ]]; then
+            image=${id}
+            break
+          fi
+        done <<<${snapshots}
+      else
+        image=${HCLOUD_IMAGE}
+      fi
+    else
+      image=${image_default}
     fi
 
-    echo "server create --image ${HCLOUD_IMAGE:-$debian} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    if [[ -z ${image} ]]; then
+      echo " error: no image for ${name}" >&2
+      exit 5
+    fi
+
+    echo "server create --image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
   xargs -t -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
 
-# wait half a minute before ssh into the instance
+# wait at least half a minute to let a system come up
 diff=$((EPOCHSECONDS - now))
 if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
@@ -108,10 +129,10 @@ if [[ ${diff} -lt 30 ]]; then
   sleep ${wait}
 fi
 
-# clean up any left overs
+# clean up any left over SSH key
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
-# establish trust relationship to remote system
+# establish SSH trust relationship
 while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
   echo -e "\n waiting 5 sec ...\n"
   sleep 5

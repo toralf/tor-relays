@@ -19,7 +19,7 @@ jobs=$((2 * $(nproc)))
 
 # default OS: recent Debian
 image_list=$(hcloud image list --type system --output noheader --output columns=name)
-debian=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
+image_default=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
 
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
@@ -34,7 +34,7 @@ done < <(xargs -n 1 <<<$*)
 now=${EPOCHSECONDS}
 
 echo -e "\n rebuilding ..."
-xargs -t -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$debian} <<<$*
+xargs -t -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$image_default} <<<$*
 
 # wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))
