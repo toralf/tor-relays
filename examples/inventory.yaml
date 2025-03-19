@@ -14,7 +14,7 @@ snowflake:
 
 tor:
   vars:
-    torrc_config_all:
+    torrc_config_group:
       - name: "ContactInfo"
         value: >-
           email:a.b[]c.d

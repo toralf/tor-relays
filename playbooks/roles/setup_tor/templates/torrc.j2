@@ -33,10 +33,6 @@ SandBox 1
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
-{% if my_family %}
-MyFamily {{ my_family }}
-{% endif %}
-
 {% endif %}
 
 {% if tor_metrics %}
@@ -46,6 +42,6 @@ MetricsPortPolicy accept 127.0.0.1
 
 SocksPort 0
 
-{% for item in torrc_config_log + torrc_config_info + torrc_config_host %}
+{% for item in torrc_config_log + torrc_config_group + torrc_config_hosts %}
 {{ item.name }} {{ item.value }}
 {% endfor %}
