@@ -11,3 +11,13 @@
   ansible.builtin.template:
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
+
+- name: Copy the secret_family_key file if given
+  ansible.builtin.copy:
+    src: "{{ secret_family_key }}"
+    dest: /var/lib/tor/keys/
+    mode: "0600"
+    owner: tor
+    group: tor
+  notify:
+    - "Restart Tor"

@@ -31,3 +31,6 @@ ddos_metrics: false
 ddos_allow_prometheus: ""
 ddos_add_bridge_v4: ""
 ddos_add_bridge_v6: ""
+
+# full file name to the secrets of a FamilyId config value
+secret_family_key: ""
