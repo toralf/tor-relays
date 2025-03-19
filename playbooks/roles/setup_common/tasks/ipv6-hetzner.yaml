@@ -25,7 +25,7 @@
           register: _ipv6_address
 
         - name: Act on network changes for Debian
-          when: _ipv6_address.changed or _deactivate_hetzner_network_configurator.changed
+          when: _ipv6_address.changed
           ansible.builtin.systemd_service:
             name: networking
             state: restarted
