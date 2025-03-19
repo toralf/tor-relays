@@ -43,4 +43,4 @@ EOF
 fi
 
 # issue files go to ~/tmp, Root CA and certificates stores their files under ./secrets on their own
-mkdir -p ${HOME}/tmp/{ddos,kconfigs,issues}
+mkdir -p ${HOME}/tmp/{ddos,ddos6,kconfigs,issues}

@@ -4,8 +4,8 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.posix.synchronize:
     mode: pull
-    src: "/var/tmp/{{ item }}-{{ tor_port }}"
-    dest: "{{ tmp_dir }}/ddos/{{ inventory_hostname }}.{{ item }}-{{ tor_port }}"
+    src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"
+    dest: "{{ tmp_dir }}/{{ item }}/{{ inventory_hostname }}"
   with_items:
-    - tor-ddos
-    - tor-ddos6
+    - ddos
+    - ddos6
