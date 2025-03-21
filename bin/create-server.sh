@@ -88,26 +88,23 @@ xargs -n 1 <<<$* |
     cpx11) loc=$(xargs -n 1 <<<${cpx11_locations} | shuf -n 1) ;;
     cx22) loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1) ;;
     *)
-      echo " error: no loc for ${name}" >&2
+      echo " error: no location for ${name}" >&2
       exit 4
       ;;
     esac
 
-    image=""
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      if [[ ${HCLOUD_IMAGE} == "snapshot" ]]; then
-        # image shapshots are sorted from newest to oldest
-        while read -r id description; do
-          if [[ ${name} =~ ${description} ]]; then
-            image=${id}
-            break
-          fi
-        done <<<${snapshots}
-      else
-        image=${HCLOUD_IMAGE}
-      fi
-    else
-      image=${image_default}
+    # HCLOUD_DEFAULT_IMAGE rules for "snapshot" if no "description" matches "name"
+    image=${HCLOUD_DEFAULT_IMAGE:-$image_default}
+    if [[ ${HCLOUD_IMAGE-} == "snapshot" ]]; then
+      # shapshots are sorted from newest to oldest
+      while read -r id description; do
+        if [[ ${name} =~ ${description} ]]; then
+          image=${id}
+          break
+        fi
+      done <<<${snapshots}
+    elif [[ -n ${HCLOUD_IMAGE-} ]]; then
+      image=${HCLOUD_IMAGE}
     fi
 
     if [[ -z ${image} ]]; then
@@ -121,7 +118,7 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
-# wait at least half a minute to let a system come up
+# wait at least half a minute to let (the first created) system come up
 diff=$((EPOCHSECONDS - now))
 if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
