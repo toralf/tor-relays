@@ -10,14 +10,15 @@
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Configure SSH
+- name: Configure SSHd
   ansible.builtin.copy:
     src: 00sshd.conf
     dest: /etc/ssh/sshd_config.d/
   notify:
     - "Reload SSH"
 
-- name: Remove SSH cloud init config at IONOS systems
+- name: Remove SSHd config for cloud init at IONOS systems
+  when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.file:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     state: absent
@@ -50,7 +51,7 @@
     src: .selected_editor
     dest: /root/
 
-- name: Change sysctl values
+- name: Set certain sysctl values for Tor
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
