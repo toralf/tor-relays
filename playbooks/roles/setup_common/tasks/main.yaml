@@ -64,6 +64,7 @@
         - update
 
     - name: IPv6
+      when: not is_a_snapshot_image
       tags:
         - ipv6
       block:
@@ -133,7 +134,7 @@
             mode: cleanup
 
     - name: Configure auto update
-      when: auto_update
+      when: not is_a_snapshot_image
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
