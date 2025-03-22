@@ -25,5 +25,5 @@ firewall_use_ddos: false
 # any valid 1-liner
 custom_command: ""
 
-# will skip certain tasks
-is_a_snapshot_image: true
+# skip certain tasks for image being snapshotted
+is_a_snapshot_image: false
