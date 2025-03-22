@@ -12,7 +12,7 @@
 
     - name: Ensure fingerprint is in wellknown file
       ansible.builtin.lineinfile:
-        line: "{{ _hashed_fingerprint }}"
+        line: "{{ _fingerprint_hashed }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 

@@ -1,11 +1,11 @@
 ---
-- name: Query bto
+- name: Query b.t.o.
   ansible.builtin.uri:
-    url: "https://bridges.torproject.org/status?id={{ _hashed_fingerprint }}"
+    url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
     return_content: true
   register: _result
 
-- name: File bto
+- name: File b.t.o.
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

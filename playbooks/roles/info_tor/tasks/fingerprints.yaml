@@ -1,36 +1,33 @@
 ---
-- name: RSA fingerprint
+- name: Get fingerprint
   changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      cut -f 2 -d ' ' /var/lib/tor/fingerprint |
-        grep . ||
-      echo "-"
+  ansible.builtin.command:
+    cmd: cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: _result
 
 - name: Set fact _fingerprint
   ansible.builtin.set_fact:
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
-- name: ED25519 fingerprint
-  block:
-    - name: Get ED25519 fingerprint
-      changed_when: false
-      ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
-      register: _result
+- name: Get ED25519 fingerprint
+  changed_when: false
+  ansible.builtin.command:
+    cmd: cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
+  register: _result
 
-    - name: Set fact _fingerprint_ed25519
-      ansible.builtin.set_fact:
-        _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
+- name: Set fact _fingerprint_ed25519
+  ansible.builtin.set_fact:
+    _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
 - name: Hashed fingerprint
   when: bridge_distribution
   block:
-    - name: Get hashed fingerprint
+    - name: Get hashed fingerprint of a bridge
       changed_when: false
-      ansible.builtin.command: cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
+      ansible.builtin.command:
+        cmd: cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
       register: _result
 
-    - name: Set fact _hashed_fingerprint
+    - name: Set fact _fingerprint_hashed
       ansible.builtin.set_fact:
-        _hashed_fingerprint: "{{ _result.stdout_lines[0] }}"
+        _fingerprint_hashed: "{{ _result.stdout_lines[0] }}"

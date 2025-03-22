@@ -1,7 +1,7 @@
 ---
 - name: Query Onionoo
   ansible.builtin.uri:
-    url: "https://onionoo.torproject.org/details?search={{ _hashed_fingerprint }}"
+    url: "https://onionoo.torproject.org/details?search={{ _fingerprint_hashed }}"
     return_content: true
   register: _result
 
