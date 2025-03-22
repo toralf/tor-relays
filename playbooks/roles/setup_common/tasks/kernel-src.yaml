@@ -156,11 +156,11 @@
       ansible.builtin.copy:
         src: build-kernel.sh
         dest: /root/
-        mode: "0700"
+        mode: "0744"
       register: _kernel_build_script
 
     - name: Build Linux
-      async: 3600
+      async: 4500
       poll: 0
       when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
       changed_when: true
