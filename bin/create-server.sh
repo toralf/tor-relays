@@ -93,7 +93,7 @@ xargs -n 1 <<<$* |
       ;;
     esac
 
-    # HCLOUD_DEFAULT_IMAGE rules for "snapshot" if no "description" matches "name"
+    # HCLOUD_DEFAULT_IMAGE rules for "snapshot" if "name" does not match a "description"
     image=${HCLOUD_DEFAULT_IMAGE:-$image_default}
     if [[ ${HCLOUD_IMAGE-} == "snapshot" ]]; then
       # shapshots are sorted from newest to oldest
