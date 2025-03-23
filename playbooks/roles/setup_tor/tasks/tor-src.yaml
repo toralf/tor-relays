@@ -68,7 +68,7 @@
           --enable-module-relay --disable-module-dirauth \
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
           1>>make.log
-      make clean
+      make clean 1>>make.log
       make -j {{ ansible_facts.processor_vcpus }} 1>>make.log
     executable: /bin/bash
     chdir: /root/tor
