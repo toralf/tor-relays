@@ -58,10 +58,8 @@
 
       truncate -s 0 make.log
 
-      if [[ ! -x ./configure ]]; then
-        rm -f Makefile
-        ./autogen.sh 1>>make.log
-      fi
+      rm -f configure Makefile
+      ./autogen.sh 1>>make.log
 
       ./configure --prefix=/usr \
           --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc \
@@ -70,7 +68,7 @@
           --enable-module-relay --disable-module-dirauth \
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
           1>>make.log
-
+      make clean
       make -j {{ ansible_facts.processor_vcpus }} 1>>make.log
     executable: /bin/bash
     chdir: /root/tor
