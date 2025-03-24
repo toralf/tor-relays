@@ -42,6 +42,11 @@ MetricsPortPolicy accept 127.0.0.1
 
 SocksPort 0
 
+HardwareAccel 1
+
+# CookieAuthentication 1
+# ControlPort 127.0.0.1:19051
+
 {% for item in torrc_config_log + torrc_config_group + torrc_config_hosts %}
 {{ item.name }} {{ item.value }}
 {% endfor %}
