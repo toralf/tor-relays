@@ -13,6 +13,25 @@
         name:
           - iptables-persistent
 
+    - name: Load nf_conntrack module
+      changed_when: false
+      ansible.builtin.command:
+        cmd: modprobe nf_conntrack
+
+    - name: Set certain sysctl values for native firewall
+      vars:
+        max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**16) | int, (2**18) | int) }}"
+      ansible.posix.sysctl:
+        name: "{{ item.name }}"
+        value: "{{ item.value }}"
+        sysctl_file: 21firewall.conf
+        sysctl_set: true
+      loop:
+        - { name: net.core.somaxconn, value: "{{ max }}" }
+        - { name: net.ipv4.tcp_max_syn_backlog, value: "{{ max }}" }
+        - { name: net.netfilter.nf_conntrack_buckets, value: "{{ max }}" }
+        - { name: net.netfilter.nf_conntrack_max, value: "{{ max }}" }
+
     - name: Create firewall script
       ansible.builtin.template:
         src: "firewall-ip{{ item }}.sh.j2"
