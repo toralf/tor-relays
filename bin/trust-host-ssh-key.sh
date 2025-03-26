@@ -8,12 +8,12 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-jobs=$((2 * $(nproc)))
+jobs=$(nproc)
 
-echo -e "\n trust host ssh key ..."
+echo -e "\n trusting ssh host key ..."
 
 set +e
-if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" < <(
+if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" &>/dev/null < <(
   for i in $*; do
     if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
       echo $i
@@ -21,8 +21,8 @@ if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o Con
   done |
     sort
 ); then
-  echo -e "\n OK\n"
+  echo -e " OK"
 else
-  echo -e "\n NOT ok\n"
+  echo -e " NOT ok"
   exit 1
 fi

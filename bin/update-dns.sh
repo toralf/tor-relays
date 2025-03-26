@@ -16,7 +16,7 @@ hash -r hcloud rc-service unbound
 
 [[ $# -le 1 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}\n"
+echo -e "\n using Hetzner project ${project:?}"
 
 hconf=/etc/unbound/hetzner-${project}.conf
 if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
@@ -24,7 +24,7 @@ if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   exit 1
 fi
 
-echo -e "\n checking DNS ..."
+echo -e " checking DNS ..."
 
 # do not change the resolver config file in parallel
 while [[ -e ${hconf}.new ]]; do

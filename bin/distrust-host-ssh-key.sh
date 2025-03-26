@@ -8,11 +8,11 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-echo -e "\n dis-trust host ssh key ..."
+echo -e "\n dis-trusting ssh host key ..."
 
-if xargs -r -n 1 ssh-keygen -R <<<$* >/dev/null; then
-  echo -e "\n OK\n"
+if xargs -r -n 1 ssh-keygen -R <<<$* &>/dev/null; then
+  echo -e " OK"
 else
-  echo -e "\n NOT ok\n"
+  echo -e " NOT ok"
   exit 1
 fi

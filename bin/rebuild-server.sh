@@ -13,9 +13,10 @@ hash -r hcloud
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}\n"
+echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((2 * $(nproc)))
+[[ ${jobs} -gt 48 ]] && jobs=48
 
 # default OS: recent Debian
 image_list=$(hcloud image list --type system --output noheader --output columns=name)
@@ -33,8 +34,8 @@ done < <(xargs -n 1 <<<$*)
 
 now=${EPOCHSECONDS}
 
-echo -e "\n rebuilding ..."
-xargs -t -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$image_default} <<<$*
+echo -e " rebuilding ..."
+xargs -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$image_default} <<<$*
 
 # wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))

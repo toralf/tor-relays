@@ -10,9 +10,10 @@ hash -r hcloud rc-service unbound
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}\n"
+echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((2 * $(nproc)))
+[[ ${jobs} -gt 48 ]] && jobs=48
 
 # wellknown entries must be cleaned manually
 echo -e " deleting local system data, DNS and ssl ..."
@@ -24,23 +25,8 @@ while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
-if [[ ${SNAPSHOT_HALT_BEFORE:-0} -eq 1 || ${SNAPSHOT:-0} -eq 1 ]]; then
-  if [[ ${SNAPSHOT_HALT_BEFORE:-0} -eq 1 ]]; then
-    echo -e "\n shutdown ..."
-    xargs -t -r -P ${jobs} -n 1 hcloud --quiet server shutdown <<<$*
-
-    sleep 10
-
-    echo -e "\n poweroff ..."
-    xargs -t -r -P ${jobs} -n 1 hcloud --quiet server poweroff <<<$*
-  fi
-
-  echo -e "\n snapshot ..."
-  xargs -t -r -P ${jobs} -I '{}' -n 1 hcloud --quiet server create-image --type snapshot --description "{}-${EPOCHSECONDS}" {} <<<$*
-fi
-
 echo -e "\n deleting ..."
-xargs -t -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
+xargs -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 
 echo -e "\n reloading DNS resolver ..." >&2
 sudo rc-service unbound reload

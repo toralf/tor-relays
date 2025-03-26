@@ -15,9 +15,10 @@ hash -r hcloud jq
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}\n"
+echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((2 * $(nproc)))
+[[ ${jobs} -gt 48 ]] && jobs=48
 
 # both US and Singapore are more expensive and have less traffic incl.
 data_centers=$(
@@ -53,14 +54,12 @@ fi
 
 now=${EPOCHSECONDS}
 
-xargs -n 1 <<<$* |
-  while read -r name; do
-    if [[ ! ${name} =~ ^[a-z0-9\-]+$ ]]; then
-      echo " contains invalid letters: ${name}" >&2
-      exit 2
-    fi
-  done
+if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
+  echo " ^^ invalid hostname" >&2
+  exit 2
+fi
 
+echo -e " creating ..."
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
@@ -114,7 +113,7 @@ xargs -n 1 <<<$* |
 
     echo "server create --image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
-  xargs -t -r -P ${jobs} -L 1 hcloud --quiet
+  xargs -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
 
@@ -131,7 +130,7 @@ xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
 # establish SSH trust relationship
 while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
-  echo -e "\n waiting 5 sec ...\n"
+  echo -e " waiting 5 sec ..."
   sleep 5
   echo
 done
