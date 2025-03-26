@@ -6,6 +6,7 @@
   register: _result
 
 - name: Set fact _fingerprint
+  when: _result.stdout_lines | length > 0
   ansible.builtin.set_fact:
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
@@ -16,6 +17,7 @@
   register: _result
 
 - name: Set fact _fingerprint_ed25519
+  when: _result.stdout_lines | length > 0
   ansible.builtin.set_fact:
     _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
@@ -29,5 +31,6 @@
       register: _result
 
     - name: Set fact _fingerprint_hashed
+      when: _result.stdout_lines | length > 0
       ansible.builtin.set_fact:
         _fingerprint_hashed: "{{ _result.stdout_lines[0] }}"

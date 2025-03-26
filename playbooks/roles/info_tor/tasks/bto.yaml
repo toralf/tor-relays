@@ -8,7 +8,8 @@
 - name: File b.t.o.
   delegate_to: localhost
   throttle: 1
+  when: _result.content is defined
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', ' obfs4 ') | first | default('n/a')}}"
+    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('search', ' obfs4 ') | first | default('n/a') }}"
     path: "{{ tmp_dir }}/tor_bto"
     regex: "^{{ inventory_hostname }} "

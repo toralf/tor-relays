@@ -12,8 +12,7 @@
   when: tor_geoip_path
   ansible.posix.synchronize:
     src: "{{ tor_geoip_path }}"
-    dest: "/usr/share/tor/"
-    recursive: true
+    dest: /usr/share/tor/
     owner: false
     group: false
   notify: "Restart Snowflake"

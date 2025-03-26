@@ -1,7 +1,7 @@
 ---
-log_notice: "/var/log/tor/notice.log"
-log_warn: "/var/log/tor/warn.log"
-log_err: "/var/log/tor/err.log"
+log_notice: /var/log/tor/notice.log
+log_warn: /var/log/tor/warn.log
+log_err: /var/log/tor/err.log
 
 torrc_config_log:
   - name: "Log notice file"

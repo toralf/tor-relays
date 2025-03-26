@@ -6,7 +6,7 @@ kernel_debian_backports: true
 kernel_debian_cloud: true
 
 kernel_git_repo_url: ""
-kernel_git_version: "" # e.g. "HEAD" or "v6.7.3"
+kernel_git_version: "" # e.g. HEAD or "v6.7.3"
 kernel_git_patches: []
 
 # kernel build

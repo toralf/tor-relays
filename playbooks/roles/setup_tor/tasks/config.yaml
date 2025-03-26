@@ -12,7 +12,7 @@
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
 
-- name: Copy the secret_family_key file to a server
+- name: Install the secret_family_key file
   when: secret_family_key
   ansible.builtin.copy:
     src: "{{ secret_family_key }}"

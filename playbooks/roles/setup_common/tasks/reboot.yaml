@@ -1,5 +1,5 @@
 ---
-- name: Check if reboot_required does exist
+- name: Look for reboot_required file
   changed_when: _reboot_required.stat.exists
   ansible.builtin.stat:
     path: /var/run/reboot-required

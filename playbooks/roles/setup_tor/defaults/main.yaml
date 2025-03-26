@@ -1,22 +1,22 @@
 ---
 tor_build_from_source: true
 
-tor_git_version: "HEAD"
+tor_git_version: HEAD
 tor_patches: []
 tor_prune_git_repo: false
 
-lyrebird_git_version: "HEAD"
+lyrebird_git_version: HEAD
 lyrebird_patches: []
 lyrebird_prune_git_repo: false
 
-tor_debian_target: "" # e.g. "tor-nightly-main-bookworm", default is the stable package
+tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is the stable package
 
 # 2 lists for additional torrc values
 torrc_config_group: []
 torrc_config_hosts: []
 
 # safe default: Tor private bridge
-bridge_distribution: "none"
+bridge_distribution: none
 
 # use a dedicated DDoS solution
 firewall_use_ddos: false

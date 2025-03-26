@@ -19,8 +19,8 @@
         dest: "/root/firewall-ip{{ item }}.sh"
         mode: "0700"
       with_items:
-        - "v4"
-        - "v6"
+        - v4
+        - v6
       register: _fw_scripts
 
     - name: Save iptables state
@@ -29,8 +29,8 @@
         state: saved
         path: "/etc/iptables/rules.{{ item }}"
       with_items:
-        - "v4"
-        - "v6"
+        - v4
+        - v6
       register: _fw_old
 
     - name: Reset firewall
@@ -41,8 +41,8 @@
           ansible.builtin.command:
             cmd: "/root/firewall-ip{{ item }}.sh start"
           with_items:
-            - "v4"
-            - "v6"
+            - v4
+            - v6
 
         - name: Save iptables state of setup
           community.general.iptables_state:
@@ -50,5 +50,5 @@
             state: saved
             path: "/etc/iptables/rules.{{ item }}"
           with_items:
-            - "v4"
-            - "v6"
+            - v4
+            - v6
