@@ -3,9 +3,9 @@
 # set -x
 
 # e.g.:
-#  create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
-#  HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
-#  HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
+#   create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
+#   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
+#   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
 set -euf
 export LANG=C.utf8
@@ -17,7 +17,7 @@ hash -r hcloud jq
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((2 * $(nproc)))
+jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
 # both US and Singapore are more expensive and have less traffic incl.

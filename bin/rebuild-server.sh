@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#  ./rebuild-server.sh foo bar
+#   ./rebuild-server.sh foo bar
 
 set -u # no -ef here
 export LANG=C.utf8
@@ -15,7 +15,7 @@ hash -r hcloud
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((2 * $(nproc)))
+jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
 # default OS: recent Debian
@@ -24,7 +24,7 @@ image_default=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head
 
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
-# wellknown entries must be cleaned manually
+# wellknown entries are not cleaned
 echo -e " deleting local system data ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
@@ -46,7 +46,7 @@ if [[ ${diff} -lt 30 ]]; then
 fi
 
 while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
-  echo -e "\n waiting 5 sec ...\n"
+  echo -e " waiting 5 sec ..."
   sleep 5
   echo
 done

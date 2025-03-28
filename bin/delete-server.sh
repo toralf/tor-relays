@@ -12,10 +12,10 @@ hash -r hcloud rc-service unbound
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((2 * $(nproc)))
+jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-# wellknown entries must be cleaned manually
+# wellknown entries are not cleaned
 echo -e " deleting local system data, DNS and ssl ..."
 while read -r name; do
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
@@ -25,10 +25,10 @@ while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
-echo -e "\n deleting ..."
+echo -e " deleting ..."
 xargs -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 
-echo -e "\n reloading DNS resolver ..." >&2
+echo -e " reloading DNS resolver ..." >&2
 sudo rc-service unbound reload
 
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
