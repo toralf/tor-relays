@@ -1,97 +1,38 @@
 ---
-- name: Install or update Nginx
+- name: Install Prometheus node exporter
   ansible.builtin.apt:
     name:
-      - nginx
-  notify: "Restart Nginx"
+      - prometheus-node-exporter
+  notify: "Restart Prometheus node exporter"
 
-- name: Generate host private key
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  community.crypto.openssl_privatekey:
-    path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+- name: Enable Prometheus node exporter at boot
+  ansible.builtin.systemd_service:
+    name: prometheus-node-exporter
+  notify: "Restart Prometheus node exporter"
 
-- name: Generate host CSR
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  community.crypto.openssl_csr:
-    path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
-    privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
-    common_name: "{{ inventory_hostname }}"
-    country_name: "{{ ca_country_name }}"
-    subject_alt_name:
-      - "DNS:{{ inventory_hostname }}"
-      - "IP:{{ ansible_facts.default_ipv4.address }}"
-      - "IP:{{ ansible_facts.default_ipv6.address }}"
+- name: Create Prometheus node exporter data directory
+  ansible.builtin.file:
+    path: /var/lib/node_exporter/
+    state: directory
+    mode: "0755"
+  notify: "Restart Prometheus node exporter"
 
-- name: Generate host certificate
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  community.crypto.x509_certificate:
-    path: "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt"
-    csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
-    ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
-    ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
-    provider: ownca
+- name: Configure Prometheus node exporter
+  ansible.builtin.lineinfile:
+    create: false
+    line: >-
+      ARGS='
+      --web.listen-address=localhost:9100
+      --collector.tcpstat
+      --collector.textfile.directory=/var/lib/node_exporter/
+      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
+      '
+    path: /etc/default/prometheus-node-exporter
+    regex: "^ARGS="
+  notify: "Restart Prometheus node exporter"
 
-- name: Copy host key to NGinx
-  ansible.builtin.copy:
-    src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
-    dest: /etc/nginx/conf.d/
-  notify: "Reload Nginx"
-
-- name: Create NGinx certificate
-  ansible.builtin.copy:
-    content: |
-      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt") }}
-      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt") }}
-
-    dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
-  notify: "Reload Nginx"
-
-- name: Configure Nginx
+- name: Create nginx metrics configuration
   ansible.builtin.template:
     src: metrics.conf.j2
     dest: /etc/nginx/conf.d/metrics.conf
-  notify: "Reload Nginx"
-
-- name: Remove Nginx default listener
-  ansible.builtin.file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: "Reload Nginx"
-
-- name: Prometheus node exporter
-  when: node_metrics
-  block:
-    - name: Install Prometheus node exporter
-      ansible.builtin.apt:
-        name:
-          - prometheus-node-exporter
-      notify: "Restart Prometheus node exporter"
-
-    - name: Enable Prometheus node exporter at boot
-      ansible.builtin.systemd_service:
-        name: prometheus-node-exporter
-      notify: "Restart Prometheus node exporter"
-
-    - name: Create Prometheus node exporter data directory
-      ansible.builtin.file:
-        path: /var/lib/node_exporter/
-        state: directory
-        mode: "0755"
-      notify: "Restart Prometheus node exporter"
-
-    - name: Configure Prometheus node exporter
-      ansible.builtin.lineinfile:
-        create: false
-        line: >-
-          ARGS='
-          --web.listen-address=localhost:9100
-          --collector.tcpstat
-          --collector.textfile.directory=/var/lib/node_exporter/
-          --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
-          '
-        path: /etc/default/prometheus-node-exporter
-        regex: "^ARGS="
-      notify: "Restart Prometheus node exporter"
+  notify: "Reload nginx"

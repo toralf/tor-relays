@@ -27,3 +27,6 @@ custom_command: ""
 
 # skip certain tasks for image being snapshotted
 is_a_snapshot_image: false
+
+# whether nginx should have a default listener
+nginx_listener_default: false
