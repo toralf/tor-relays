@@ -5,11 +5,6 @@
       - prometheus-node-exporter
   notify: "Restart Prometheus node exporter"
 
-- name: Enable Prometheus node exporter at boot
-  ansible.builtin.systemd_service:
-    name: prometheus-node-exporter
-  notify: "Restart Prometheus node exporter"
-
 - name: Create Prometheus node exporter data directory
   ansible.builtin.file:
     path: /var/lib/node_exporter/
@@ -29,4 +24,9 @@
       '
     path: /etc/default/prometheus-node-exporter
     regex: "^ARGS="
+  notify: "Restart Prometheus node exporter"
+
+- name: Enable Prometheus node exporter at boot
+  ansible.builtin.systemd_service:
+    name: prometheus-node-exporter
   notify: "Restart Prometheus node exporter"

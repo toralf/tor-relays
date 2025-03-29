@@ -1,0 +1,71 @@
+---
+- name: Install or update nginx
+  ansible.builtin.apt:
+    name:
+      - nginx
+  notify: "Restart nginx"
+
+- name: Generate host key
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.openssl_privatekey:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+
+- name: Generate host CSR
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.openssl_csr:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+    common_name: "{{ inventory_hostname }}"
+    country_name: "{{ ca_country_name }}"
+    subject_alt_name:
+      - "DNS:{{ inventory_hostname }}"
+      - "IP:{{ ansible_facts.default_ipv4.address }}"
+      - "IP:{{ ansible_facts.default_ipv6.address }}"
+
+- name: Generate host certificate
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.x509_certificate:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt"
+    csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
+    ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
+    provider: ownca
+
+- name: Copy host key
+  ansible.builtin.copy:
+    src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+    dest: /etc/nginx/conf.d/
+    mode: "0600"
+  notify: "Reload nginx"
+
+- name: Compile nginx certificate
+  ansible.builtin.copy:
+    content: |
+      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt") }}
+      {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt") }}
+
+    dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
+  notify: "Reload nginx"
+
+- name: Remove nginx default listener
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: "Reload nginx"
+
+- name: Handle nginx default configuration
+  when: nginx_listener_default
+  ansible.builtin.template:
+    src: nginx_default.conf.j2
+    dest: /etc/nginx/conf.d/default.conf
+  notify: "Reload nginx"
+
+- name: Handle nginx metrics configuration
+  when: metrics_port
+  ansible.builtin.template:
+    src: nginx_metrics.conf.j2
+    dest: /etc/nginx/conf.d/metrics.conf
+  notify: "Reload nginx"

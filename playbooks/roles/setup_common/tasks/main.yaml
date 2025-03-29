@@ -114,6 +114,7 @@
         - nginx
 
     - name: Metrics
+      when: node_metrics
       ansible.builtin.import_tasks: metrics.yaml
       tags:
         - metrics
