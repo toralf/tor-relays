@@ -25,7 +25,7 @@ while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
-echo -e " deleting ..."
+echo -e " deleting $(cut -c -10 <<<$*)..."
 xargs -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
 
 echo -e " reloading DNS resolver ..." >&2

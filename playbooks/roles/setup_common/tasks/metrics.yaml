@@ -30,9 +30,3 @@
     path: /etc/default/prometheus-node-exporter
     regex: "^ARGS="
   notify: "Restart Prometheus node exporter"
-
-- name: Create nginx metrics configuration
-  ansible.builtin.template:
-    src: metrics.conf.j2
-    dest: /etc/nginx/conf.d/metrics.conf
-  notify: "Reload nginx"

@@ -34,7 +34,7 @@ done < <(xargs -n 1 <<<$*)
 
 now=${EPOCHSECONDS}
 
-echo -e " rebuilding ..."
+echo -e " rebuilding $(cut -c -10 <<<$*)..."
 xargs -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$image_default} <<<$*
 
 # wait half a minute before ssh into the instance
