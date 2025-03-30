@@ -48,6 +48,11 @@
       tags:
         - heartbeat
 
+    - name: Log err
+      ansible.builtin.import_tasks: log-err.yaml
+      tags:
+        - log-err
+
     - name: Log
       ansible.builtin.import_tasks: log-notice.yaml
       tags:
@@ -57,11 +62,6 @@
       ansible.builtin.import_tasks: log-warn.yaml
       tags:
         - log-warn
-
-    - name: Log err
-      ansible.builtin.import_tasks: log-err.yaml
-      tags:
-        - log-err
 
     - name: Onionoo
       when: bridge_distribution
