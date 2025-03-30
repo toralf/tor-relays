@@ -15,6 +15,12 @@
         - ipv6
         - never
 
+    - name: Kernel config
+      ansible.builtin.import_tasks: kernel-config.yaml
+      tags:
+        - kernel-config
+        - never
+
     - name: Log Issues
       ansible.builtin.import_tasks: log-issue.yaml
       tags:
