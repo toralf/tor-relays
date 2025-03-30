@@ -4,6 +4,11 @@
     ansible.builtin.lineinfile:
       create: true
   block:
+    - name: Dryrun of unattended-upgrade
+      ansible.builtin.import_tasks: dry-update.yaml
+      tags:
+        - dry-update
+
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
       tags:
@@ -21,6 +26,11 @@
         - kernel-config
         - never
 
+    - name: Log unattended
+      ansible.builtin.import_tasks: log-unattended.yaml
+      tags:
+        - log-unattended
+
     - name: Log Issues
       ansible.builtin.import_tasks: log-issue.yaml
       tags:
@@ -31,25 +41,15 @@
       tags:
         - log-system
 
-    - name: Log unattended
-      ansible.builtin.import_tasks: log-unattended.yaml
-      tags:
-        - log-unattended
-
-    - name: Uname
-      ansible.builtin.import_tasks: uname.yaml
-      tags:
-        - uname
-
     - name: Minicoredumper
       ansible.builtin.import_tasks: minicoredumper.yaml
       tags:
         - minicoredumper
 
-    - name: Dryrun of unattended-upgrade
-      ansible.builtin.import_tasks: dry-update.yaml
+    - name: Uname
+      ansible.builtin.import_tasks: uname.yaml
       tags:
-        - dry-update
+        - uname
 
     - name: Uptime
       ansible.builtin.import_tasks: uptime.yaml
