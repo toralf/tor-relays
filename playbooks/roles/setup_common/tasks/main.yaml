@@ -130,11 +130,11 @@
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result
           until: _job_result.finished
-          retries: 150
+          retries: 120
           delay: 30
           notify: "Reboot system"
 
-        - name: Cleanup kernel build async job file
+        - name: Cleanup kernel build async job
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
