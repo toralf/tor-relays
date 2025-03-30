@@ -10,7 +10,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 echo -e "\n dis-trusting $(wc -w <<<$*) ssh host key/s ..."
 
-if xargs -r -n 1 ssh-keygen -R <<<$* &>/dev/null; then
+# file-locking of ssh-keygen doesn't work
+if xargs -r -P 1 -n 1 ssh-keygen -R <<<$* &>/dev/null; then
   echo -e " OK"
 else
   echo -e " NOT ok"
