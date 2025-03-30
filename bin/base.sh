@@ -32,9 +32,9 @@ if [[ ! -s ${local_inventory} ]]; then
 # for localhost set upper job count to vCPU count
 all:
   vars:
-    # throttle local work
+    # throttle local processes
     concurrent_local_jobs: $(nproc)
-    # throttle Git API calls
+    # throttle Git connections
     torproject_connections: 20
     # seed for various system-specific pseudo-randomized settings
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
@@ -42,5 +42,5 @@ EOF
   chmod 600 ${local_inventory}
 fi
 
-# issue files go to ~/tmp, Root CA and certificates stores their files under ./secrets on their own
-mkdir -p ${HOME}/tmp/{ddos,ddos6,kconfigs,issues}
+# Root CA and certificates are stored under ./secrets
+mkdir -p ${HOME}/tmp/{ddos,ddos6,kconfig,issue}
