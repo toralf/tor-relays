@@ -17,6 +17,13 @@
   notify:
     - "Reload SSH"
 
+- name: Check count of authorized_keys
+  changed_when: false
+  failed_when: authorized_keys.stdout_lines | length != 1
+  ansible.builtin.command:
+    cmd: cat /root/.ssh/authorized_keys
+  register: authorized_keys
+
 - name: Remove SSHd config for cloud init at IONOS systems
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.file:
@@ -63,7 +70,6 @@
     - { name: kernel.sysrq, value: 0 }
     - { name: net.ipv4.tcp_fin_timeout, value: 10 }
     - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
-    - { name: net.ipv4.tcp_syncookies, value: 1 }
 
 - name: Set PATH in crontab
   ansible.builtin.cron:
