@@ -92,16 +92,18 @@ xargs -n 1 <<<$* |
       ;;
     esac
 
-    # HCLOUD_DEFAULT_IMAGE rules for "snapshot" if "name" does not match a "description"
+    # HCLOUD_DEFAULT_IMAGE takes effect for the "HCLOUD_IMAGE=snapshot" case if "name" does not match a "description"
     image=${HCLOUD_DEFAULT_IMAGE:-$image_default}
     if [[ ${HCLOUD_IMAGE-} == "snapshot" ]]; then
-      # shapshots are sorted from newest to oldest
-      while read -r id description; do
-        if [[ ${name} =~ ${description} ]]; then
-          image=${id}
-          break
-        fi
-      done <<<${snapshots}
+      if [[ -n ${snapshots} ]]; then
+        # shapshots are sorted from newest to oldest
+        while read -r id description; do
+          if [[ ${name} =~ ${description} ]]; then
+            image=${id}
+            break
+          fi
+        done <<<${snapshots}
+      fi
     elif [[ -n ${HCLOUD_IMAGE-} ]]; then
       image=${HCLOUD_IMAGE}
     fi
