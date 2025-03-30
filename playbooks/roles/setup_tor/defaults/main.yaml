@@ -15,6 +15,9 @@ tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is the stable pa
 torrc_config_group: []
 torrc_config_hosts: []
 
+# the ORPort
+tor_port: ""
+
 # safe default: Tor private bridge
 bridge_distribution: none
 
