@@ -24,13 +24,14 @@ if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
   exit 1
 fi
 
-echo -e " checking DNS ..."
+echo -e " updating DNS ..."
 
-# do not change the resolver config file in parallel
+# do not change a config file in parallel
 while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
+
 echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
 trap Exit INT QUIT TERM EXIT
 

@@ -8,7 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-echo -e "\n dis-trusting ssh host key ..."
+echo -e "\n dis-trusting $(wc -w <<<$*) ssh host key/s ..."
 
 if xargs -r -n 1 ssh-keygen -R <<<$* &>/dev/null; then
   echo -e " OK"

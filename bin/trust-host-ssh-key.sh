@@ -10,7 +10,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 jobs=$(nproc)
 
-echo -e "\n trusting ssh host key ..."
+echo -e "\n trusting $(wc -w <<<$*) ssh host key/s ..."
 
 set +e
 if xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" &>/dev/null < <(

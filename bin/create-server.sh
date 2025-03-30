@@ -59,7 +59,7 @@ if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
   exit 2
 fi
 
-echo -e " creating $(cut -c -16 <<<$*)..."
+echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
