@@ -59,9 +59,15 @@
         - custom-command
 
     - name: Update
+      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
       ansible.builtin.import_tasks: update.yaml
       tags:
         - update
+
+    - name: Config
+      ansible.builtin.import_tasks: config.yaml
+      tags:
+        - config
 
     - name: IPv6
       when: not is_a_snapshot_image
@@ -140,7 +146,7 @@
             mode: cleanup
 
     - name: Configure auto update
-      when: not is_a_snapshot_image
+      when: not is_a_snapshot_image and ansible_facts.distribution in ('Debian', 'Ubuntu')
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
