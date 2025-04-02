@@ -1,75 +1,78 @@
 ---
-- name: Ensure Debian repos for Hetzner VPS are HTTPs
-  when: ansible_facts.system_vendor == 'Hetzner' and ansible_facts.distribution in ('Debian')
+- name: Update Debian
+  when: ansible_facts.distribution in ('Debian')
   block:
-    - name: Remove HTTP repos
-      retries: 3
-      ansible.builtin.apt_repository:
-        repo: "deb http://{{ item }}"
+    - name: Ensure Debian repos for Hetzner VPS are HTTPs
+      when: ansible_facts.system_vendor == 'Hetzner'
+      block:
+        - name: Remove HTTP repos
+          retries: 3
+          ansible.builtin.apt_repository:
+            repo: "deb http://{{ item }}"
+            state: absent
+          with_items:
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports main contrib non-free-firmware"
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+            - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security main contrib non-free"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+            - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security main contrib non-free-firmware"
+
+        - name: Add HTTPs repos
+          ansible.builtin.apt_repository:
+            repo: "deb https://{{ item }} main contrib non-free-firmware"
+            state: present
+          with_items:
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}"
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports"
+            - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates"
+            - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }}"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
+            - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
+            - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
+
+    - name: Upgrade dist
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+
+    - name: Install or update base software
+      ansible.builtin.apt:
+        name:
+          - conntrack
+          - cron
+          - gpg
+          - gpg-agent
+          - htop
+          - iptables
+          - logrotate
+          - minicoredumper
+          - needrestart
+          - psmisc
+          - python3-psutil
+          - rsync
+
+    - name: Install or update additional software
+      when: additional_software
+      ansible.builtin.apt:
+        name: "{{ additional_software }}"
+
+    # openipmi might be a left over from earlier IONOS install images
+    - name: Disable openipmi service
+      failed_when: false
+      ansible.builtin.systemd_service:
+        name: openipmi
+        enabled: false
+        state: stopped
+
+    - name: De-install openipmi
+      ansible.builtin.apt:
         state: absent
-      with_items:
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security main contrib non-free"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
-        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security main contrib non-free-firmware"
-
-    - name: Add HTTPs repos
-      ansible.builtin.apt_repository:
-        repo: "deb https://{{ item }} main contrib non-free-firmware"
-        state: present
-      with_items:
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates"
-        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
-        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
-
-- name: Update dist
-  ansible.builtin.apt:
-    upgrade: dist
-
-- name: Install or update base software
-  ansible.builtin.apt:
-    name:
-      - chrony
-      - conntrack
-      - cron
-      - gpg
-      - gpg-agent
-      - htop
-      - iptables
-      - logrotate
-      - minicoredumper
-      - needrestart
-      - psmisc
-      - python3-psutil
-      - rsync
-
-- name: Install or update additional software
-  when: additional_software
-  ansible.builtin.apt:
-    name: "{{ additional_software }}"
-
-# openipmi might be a left over from earlier IONOS install images
-- name: Disable openipmi service
-  failed_when: false
-  ansible.builtin.systemd_service:
-    name: openipmi
-    enabled: false
-    state: stopped
-
-- name: De-install openipmi
-  ansible.builtin.apt:
-    state: absent
-    name:
-      - freeipmi-common
+        name:
+          - freeipmi-common
 
 - name: Ensure kernel crash dumps are made using minicoredumper
   ansible.builtin.cron:
@@ -79,7 +82,7 @@
       echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
       echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
 
-- name: Ensure that logrotate systemd override dir exists
+- name: Ensure that logrotate systemd override directory does exist
   ansible.builtin.file:
     path: /etc/systemd/system/logrotate.timer.d/
     state: directory
@@ -87,7 +90,7 @@
   notify:
     - "Reload Systemd"
 
-- name: Add logrotate systemd override
+- name: Add logrotate systemd override config
   ansible.builtin.template:
     src: logrotate.override.conf.j2
     dest: /etc/systemd/system/logrotate.timer.d/override.conf
