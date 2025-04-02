@@ -1,7 +1,7 @@
 ---
 - name: Check if Hetzer system can be pinged
   delegate_to: localhost
-  throttle: 1
+  throttle: "{{ concurrent_local_jobs }}"
   tags:
     - poweron
     - never
