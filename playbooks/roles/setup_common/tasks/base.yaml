@@ -59,8 +59,6 @@
     dest: /root/
 
 - name: Set certain common sysctl values
-  vars:
-    max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**16) | int, (2**18) | int) }}"
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
