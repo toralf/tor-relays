@@ -13,7 +13,7 @@
       {{ inventory_hostname }}
       {{ _result.json.bridges[0].bridgedb_distributor | default('-') }}
       {{ _result.json.bridges[0].advertised_bandwidth | default('-') }}
+      {{ _result.json.bridges[0].transports | default(['n/a']) | join(',') }}
       running: {{ _result.json.bridges[0].running | default('-') }}
-      blocklist: {{ _result.json.bridges[0].blocklist | default(['-']) | join(',') }}
     path: "{{ tmp_dir }}/tor_onionoo"
     regex: "^{{ inventory_hostname }} "
