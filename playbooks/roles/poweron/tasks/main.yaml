@@ -1,33 +1,42 @@
 ---
-- name: Check if Hetzer system can be pinged
+- name: Poweron
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   tags:
     - poweron
-    - never
   block:
-    - name: Ping
-      changed_when: _ping_result.rc != 0
-      failed_when: _ping_result.rc != 0
+    - name: Check if it is up
+      changed_when: _is_up.rc != 0
+      failed_when: false # avoid ansible output spam
       ansible.builtin.shell:
         cmd: |-
-          ping -c 1 {{ inventory_hostname }} &>/dev/null ||
-          ping -c 2 {{ inventory_hostname }} &>/dev/null ||
-          ping -c 4 {{ inventory_hostname }} &>/dev/null
+          ping -q -c 1 {{ inventory_hostname }} ||
+          ping -q -c 2 {{ inventory_hostname }} ||
+          ping -q -c 4 {{ inventory_hostname }}
         executable: /bin/bash
-      register: _ping_result
-  rescue:
-    - name: Power on Hetzner system
-      changed_when: _power_on.rc == 0
-      when: ansible_facts.system_vendor == 'Hetzner' or 'hcloud' in group_names
+      register: _is_up
+
+    - name: Power on it
+      when: _is_up.rc != 0
+      changed_when: true
+      failed_when: _powered_on.rc != 0
       ansible.builtin.shell:
         cmd: |-
           set -euf
 
-          hcloud server poweroff {{ inventory_hostname }}
-          sleep 2
-          hcloud server poweron {{ inventory_hostname }}
-          sleep 15
-          ping -c 4 {{ inventory_hostname }} &>/dev/null
+          if hcloud --quiet server shutdown {{ inventory_hostname }} && hcloud --quiet server poweroff {{ inventory_hostname }}; then
+            sleep 3
+          fi
+
+          if hcloud --quiet server poweron {{ inventory_hostname }}; then
+            sleep 15
+            i=20
+            while (( i-- )); do
+              ping -q -c 2 {{ inventory_hostname }} && exit 0
+            done
+            exit 2
+          else
+            exit 1
+          fi
         executable: /bin/bash
-      register: _power_on
+      register: _powered_on

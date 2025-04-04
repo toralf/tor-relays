@@ -1,20 +1,23 @@
 ---
-- name: Setup Misc
+- name: Snapshot common
   hosts: "!snowflake:!tor"
   roles:
+    - role: poweron
     - role: setup_common
-    - role: info_metrics
+    - role: snapshot
 
-- name: Setup Snowflake
+- name: Snapshot Snowflake
   hosts: snowflake
   roles:
+    - role: poweron
     - role: setup_common
     - role: setup_snowflake
-    - role: info_metrics
+    - role: snapshot
 
-- name: Setup Tor
+- name: Snapshot Tor
   hosts: tor
   roles:
+    - role: poweron
     - role: setup_common
     - role: setup_tor
-    - role: info_metrics
+    - role: snapshot
