@@ -27,14 +27,14 @@ data_centers=$(
 )
 
 server_types=$(hcloud server-type list --output json)
-cax11_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
-cpx11_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
-cx22_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
+cax_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
+cpx_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
+cx_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
 
-cax11_locations=$(jq -r 'select(.server_types.available | contains(['${cax11_id}'])) | .location.name' <<<${data_centers})
-cpx11_locations=$(jq -r 'select(.server_types.available | contains(['${cpx11_id}'])) | .location.name' <<<${data_centers})
-cx22_locations=$(jq -r 'select(.server_types.available | contains(['${cx22_id}'])) | .location.name' <<<${data_centers})
-used_locations=$(echo ${cax11_locations} ${cpx11_locations} ${cx22_locations} | xargs -n 1 | sort -u)
+cax_locations=$(jq -r 'select(.server_types.available | contains(['${cax_id}'])) | .location.name' <<<${data_centers})
+cpx_locations=$(jq -r 'select(.server_types.available | contains(['${cpx_id}'])) | .location.name' <<<${data_centers})
+cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
+used_locations=$(echo ${cax_locations} ${cpx_locations} ${cx_locations} | xargs -n 1 | sort -u)
 
 # default OS: recent Debian
 image_list=$(hcloud image list --type system --output noheader --output columns=name | sort -ur --version-sort)
@@ -67,13 +67,25 @@ xargs -n 1 <<<$* |
     if [[ -n ${HCLOUD_TYPES-} ]]; then
       htype=$(xargs -n 1 <<<${HCLOUD_TYPES} | shuf -n 1)
     else
-      # default: smallest type
-      case ${name} in
-      *-amd-*) htype="cpx11" ;;
-      *-arm-*) htype="cax11" ;;
-      *-intel-*) htype="cx22" ;;
-      *) htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1) ;;
-      esac
+      # fallback: smallest type
+      htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1)
+
+      if [[ ${name} =~ ^hi ]]; then
+        # for snapshot images at elast 3 vCPU
+        case ${name} in
+        *-amd-*) htype="cpx21" ;;
+        *-arm-*) htype="cax21" ;;
+        *-intel-*) htype="cx32" ;;
+        esac
+
+      else
+        # default: smallest type
+        case ${name} in
+        *-amd-*) htype="cpx11" ;;
+        *-arm-*) htype="cax11" ;;
+        *-intel-*) htype="cx22" ;;
+        esac
+      fi
     fi
 
     if [[ -z ${htype} ]]; then
@@ -83,9 +95,9 @@ xargs -n 1 <<<$* |
 
     # e.g. US have only AMD
     case ${htype} in
-    cax11) loc=$(xargs -n 1 <<<${cax11_locations} | shuf -n 1) ;;
-    cpx11) loc=$(xargs -n 1 <<<${cpx11_locations} | shuf -n 1) ;;
-    cx22) loc=$(xargs -n 1 <<<${cx22_locations} | shuf -n 1) ;;
+    cax*) loc=$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+    cpx*) loc=$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+    cx*) loc=$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
     *)
       echo " error: no location for ${name}" >&2
       exit 4
