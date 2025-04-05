@@ -4,6 +4,7 @@
   roles:
     - role: poweron
     - role: setup_common
+    - role: info_common
     - role: snapshot
 
 - name: Snapshot Snowflake
@@ -12,6 +13,8 @@
     - role: poweron
     - role: setup_common
     - role: setup_snowflake
+    - role: info_common
+    - role: info_snowflake
     - role: snapshot
 
 - name: Snapshot Tor
@@ -20,4 +23,6 @@
     - role: poweron
     - role: setup_common
     - role: setup_tor
+    - role: info_common
+    - role: info_tor
     - role: snapshot
