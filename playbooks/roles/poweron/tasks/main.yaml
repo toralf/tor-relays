@@ -29,7 +29,7 @@
           fi
 
           if hcloud --quiet server poweron {{ inventory_hostname }}; then
-            sleep 15
+            sleep 10
             i=20
             while (( i-- )); do
               ping -q -c 2 {{ inventory_hostname }} && exit 0
