@@ -1,4 +1,7 @@
 ---
+- name: Flush handlers before snapshotting
+  ansible.builtin.meta: flush_handlers
+
 - name: Create snapshot
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
