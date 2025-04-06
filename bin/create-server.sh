@@ -109,7 +109,7 @@ xargs -n 1 <<<$* |
       while read -r id description; do
         if [[ ${name} =~ ${description} ]]; then
           image=${id}
-          # shapshots are sorted from newest to oldest
+          # shapshots were already sorted from youngest to oldest
           break
         fi
       done <<<${snapshots}
@@ -120,9 +120,9 @@ xargs -n 1 <<<$* |
       exit 5
     fi
 
-    echo "server create --image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    echo "--image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet
+  xargs -r -P ${jobs} -L 1 hcloud --quiet server create
 
 $(dirname $0)/update-dns.sh
 
