@@ -26,29 +26,29 @@
     path: "/etc/systemd/system/{{ item }}"
     mode: "0755"
   with_items:
-    - "apt-daily.timer.d/"
-    - "apt-daily-upgrade.timer.d/"
+    - apt-daily.timer.d/
+    - apt-daily-upgrade.timer.d/
 
 # 2x per day at :02
 - name: Configure apt timer
   ansible.builtin.template:
-    src: timer.j2
+    src: apt_timer.j2
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
   notify: "Reload Systemd"
 
 # 2x per day at :10
 - name: Configure apt upgrade timer
   ansible.builtin.template:
-    src: upgrade.j2
+    src: apt_upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
   notify: "Reload Systemd"
 
-# 2x per day one hour after :13
+# 2x per day one hour later at :13
 - name: Ensure reaper cron job is present
   ansible.builtin.cron:
     name: "Reap a hanging apt process"
-    hour: "{{ 1 + timer_hour | int }},{{ (13 + timer_hour | int) % 24 }}"
-    minute: "13"
+    hour: "{{ [1 + timer_hour | int, (13 + timer_hour | int) % 24] | sort | join(',') }}"
+    minute: 13
     job: >-
       pkill -f "apt-get -qq -y update"
 
