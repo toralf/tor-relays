@@ -104,20 +104,15 @@ xargs -n 1 <<<$* |
       ;;
     esac
 
-    # HCLOUD_DEFAULT_IMAGE takes effect for the "HCLOUD_IMAGE=snapshot" case if "name" does not match a "description"
-    image=${HCLOUD_DEFAULT_IMAGE:-$image_default}
-    if [[ ${HCLOUD_IMAGE-} == "snapshot" ]]; then
-      if [[ -n ${snapshots} ]]; then
-        # shapshots are sorted from newest to oldest
-        while read -r id description; do
-          if [[ ${name} =~ ${description} ]]; then
-            image=${id}
-            break
-          fi
-        done <<<${snapshots}
-      fi
-    elif [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
+    image=${HCLOUD_IMAGE:-$image_default}
+    if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
+      while read -r id description; do
+        if [[ ${name} =~ ${description} ]]; then
+          image=${id}
+          # shapshots are sorted from newest to oldest
+          break
+        fi
+      done <<<${snapshots}
     fi
 
     if [[ -z ${image} ]]; then
@@ -131,7 +126,7 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
-# wait at least half a minute to let (the first created) system come up
+# ssh needs a half minute to be up
 diff=$((EPOCHSECONDS - now))
 if [[ ${diff} -lt 30 ]]; then
   wait=$((30 - diff))
