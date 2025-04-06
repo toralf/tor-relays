@@ -9,7 +9,7 @@ set -u # no -ef here
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-hash -r hcloud
+hash -r hcloud jq
 
 [[ $# -ne 0 ]]
 project=$(hcloud context active)
@@ -17,10 +17,6 @@ echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
-
-# default OS: recent Debian
-image_list=$(hcloud image list --type system --output noheader --output columns=name)
-image_default=$(grep '^debian' <<<${image_list} | sort -ur --version-sort | head -n 1)
 
 xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
 
@@ -35,7 +31,17 @@ done < <(xargs -n 1 <<<$*)
 now=${EPOCHSECONDS}
 
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P ${jobs} -n 1 hcloud --quiet server rebuild --image ${HCLOUD_IMAGE:-$image_default} <<<$*
+xargs -n 1 <<<$* |
+  while read -r name; do
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      echo ${HCLOUD_IMAGE} ${name}
+    else
+      if image=$(hcloud server describe ${name} --output json | jq -r '.image.id'); then
+        echo ${image} ${name}
+      fi
+    fi
+  done  |
+  xargs -r -P ${jobs} -L 1 hcloud --quiet server rebuild --image
 
 # wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))
