@@ -57,7 +57,8 @@ function addRules() {
 set -euf
 
 ipt="ip6tables"
-# test that it works with nf_tables too
+
+# jump out if this fails
 $ipt -nv -L INPUT 1>/dev/null
 
 trap clearAll INT QUIT TERM EXIT
