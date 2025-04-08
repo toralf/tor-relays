@@ -40,7 +40,7 @@ xargs -n 1 <<<$* |
         echo ${image} ${name}
       fi
     fi
-  done  |
+  done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet server rebuild --image
 
 # wait half a minute before ssh into the instance
