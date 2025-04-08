@@ -33,7 +33,7 @@
     - name: Init or update Linux repo
       retries: 3
       ansible.builtin.git:
-        repo: "{{ kernel_git_repo_url | ternary(kernel_git_repo_url, 'https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
+        repo: "{{ kernel_git_repo_url }}"
         dest: /root/linux
         version: "{{ kernel_git_version }}"
         force: true
