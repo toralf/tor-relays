@@ -8,7 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 hash -r hcloud
 
-[[ $# -ne 0 ]]
+[[ $# -ne 0 ]] || exit 1
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
@@ -18,6 +18,7 @@ jobs=$((3 * $(nproc)))
 # wellknown entries are not cleaned
 echo -e " deleting local system data, DNS and ssl ..."
 while read -r name; do
+  [[ -n ${name} ]] || continue
   sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   rm -f $(dirname $0)/../.ansible_facts/${name}
