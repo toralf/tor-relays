@@ -107,6 +107,20 @@
     dest: /etc/systemd/system/tor.service
   notify: "Restart Tor"
 
+# Tor refuses to start, if IPv6 ORPort is not up
+- name: Ensure that Networkd wait online systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/systemd-networkd-wait-online.service.d/
+    state: directory
+    mode: "0755"
+
+- name: Add Networkd wait online systemd override
+  ansible.builtin.template:
+    src: networkd-wait-online.override.conf.j2
+    dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+  notify:
+    - "Reload Systemd"
+
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
