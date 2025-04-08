@@ -1,42 +1,10 @@
 ---
+- name: Validate
+  ansible.builtin.import_tasks: validate.yaml
+  tags:
+    - validate
+
 - name: Poweron
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.import_tasks: poweron.yaml
   tags:
     - poweron
-  block:
-    - name: Check if it is up
-      changed_when: _is_up.rc != 0
-      failed_when: false # avoid ansible output spam
-      ansible.builtin.shell:
-        cmd: |-
-          ping -q -c 1 {{ inventory_hostname }} ||
-          ping -q -c 2 {{ inventory_hostname }} ||
-          ping -q -c 4 {{ inventory_hostname }}
-        executable: /bin/bash
-      register: _is_up
-
-    - name: Power on it
-      when: _is_up.rc != 0
-      changed_when: true
-      failed_when: _powered_on.rc != 0
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          if hcloud --quiet server shutdown {{ inventory_hostname }} && hcloud --quiet server poweroff {{ inventory_hostname }}; then
-            sleep 3
-          fi
-
-          if hcloud --quiet server poweron {{ inventory_hostname }}; then
-            sleep 10
-            i=20
-            while (( i-- )); do
-              ping -q -c 2 {{ inventory_hostname }} && exit 0
-            done
-            exit 2
-          else
-            exit 1
-          fi
-        executable: /bin/bash
-      register: _powered_on
