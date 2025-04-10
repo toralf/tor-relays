@@ -6,7 +6,7 @@ set -u # no -ef here
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-hash -r hcloud
+hash -r hcloud rc-service
 
 [[ $# -ne 0 ]] || exit 1
 project=$(hcloud context active)
