@@ -18,13 +18,11 @@
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
         - ipv6
-        - never
 
     - name: Kernel config
       ansible.builtin.import_tasks: kernel-config.yaml
       tags:
         - kernel-config
-        - never
 
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
