@@ -1,28 +1,29 @@
 ---
 - name: Snapshot common
+  vars:
+    is_a_snapshot_image: true
   hosts: "!snowflake:!tor"
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_common
     - role: snapshot
 
 - name: Snapshot Snowflake
+  vars:
+    is_a_snapshot_image: true
   hosts: snowflake
   roles:
     - role: poweron
     - role: setup_common
     - role: setup_snowflake
-    - role: info_common
-    - role: info_snowflake
     - role: snapshot
 
 - name: Snapshot Tor
+  vars:
+    is_a_snapshot_image: true
   hosts: tor
   roles:
     - role: poweron
     - role: setup_common
     - role: setup_tor
-    - role: info_common
-    - role: info_tor
     - role: snapshot
