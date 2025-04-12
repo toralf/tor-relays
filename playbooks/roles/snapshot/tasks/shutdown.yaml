@@ -1,0 +1,10 @@
+---
+- name: Shutdown the system
+  community.general.shutdown:
+  register: _halted
+
+- name: Wait till halt
+  changed_when: true
+  when: _halted.changed
+  ansible.builtin.command:
+    cmd: sleep 15

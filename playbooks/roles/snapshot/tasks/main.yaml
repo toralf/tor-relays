@@ -1,26 +1,19 @@
 ---
+- name: Validate
+  ansible.builtin.import_tasks: validate.yaml
+  tags:
+    - validate
+
 - name: Flush handlers before snapshotting
   ansible.builtin.meta: flush_handlers
 
-- name: Create snapshot
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  changed_when: true
-  vars:
-    _description: "{{ snapshot_description | default(inventory_hostname | regex_replace('^hi', '')) }}"
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+- name: Shutdown
+  when: (inventory_hostname not in groups.hcloud) or (inventory_hostname in groups.hcloud_server_status_running | default([]))
+  ansible.builtin.import_tasks: shutdown.yaml
+  tags:
+    - shutdown
 
-      if hcloud --quiet server shutdown {{ inventory_hostname }}; then
-        sleep 10
-      fi
-
-      if hcloud --quiet server poweroff {{ inventory_hostname }}; then
-        sleep 5
-      fi
-
-      hcloud --quiet server create-image --type snapshot --description="{{ _description }}" {{ inventory_hostname }}
-    executable: /bin/bash
+- name: Snapshot
+  ansible.builtin.import_tasks: snapshot.yaml
   tags:
     - snapshot

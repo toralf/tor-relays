@@ -41,7 +41,7 @@ xargs -n 1 <<<$* |
       fi
     fi
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet server rebuild --image
+  xargs -r -P ${jobs} -L 1 hcloud --quiet server --poll-interval 5s rebuild --image
 
 # wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))

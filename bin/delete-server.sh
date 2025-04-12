@@ -19,15 +19,19 @@ jobs=$((3 * $(nproc)))
 echo -e " deleting local system data, DNS and ssl ..."
 while read -r name; do
   [[ -n ${name} ]] || continue
-  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
-  sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
+  # Ansible facts
   rm -f $(dirname $0)/../.ansible_facts/${name}
+  # local data in ~/tmp
+  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
   rm -f $(dirname $0)/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
+  # /tmp should be a tmpfs
+  sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
+  # DNS
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P ${jobs} -n 1 hcloud --quiet server delete <<<$*
+xargs -r -P ${jobs} -n 1 hcloud --quiet server --poll-interval 5s delete <<<$*
 
 echo -e " reloading DNS resolver ..." >&2
 sudo rc-service unbound reload

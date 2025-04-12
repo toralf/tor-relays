@@ -122,7 +122,7 @@ xargs -n 1 <<<$* |
 
     echo "--image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet server create
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 5s server create
 
 $(dirname $0)/update-dns.sh
 

@@ -3,10 +3,9 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   block:
-    - name: Check for being up
+    - name: Check if it is up
       changed_when: _is_up.rc != 0
       failed_when: false # avoid ansible output spam
-      when: (inventory_hostname not in groups.hcloud) or (inventory_hostname not in groups.hcloud_server_status_running | default([]))
       ansible.builtin.shell:
         cmd: |-
           ping -q -c 1 {{ inventory_hostname }} ||
@@ -23,17 +22,17 @@
         cmd: |-
           set -euf
 
-          hcloud --quiet server shutdown {{ inventory_hostname }}
-          sleep 4
-          hcloud --quiet server poweroff {{ inventory_hostname }}
-          sleep 1
-          hcloud --quiet server poweron {{ inventory_hostname }}
+          hcloud --quiet --poll-interval 5s server poweron {{ inventory_hostname }}
           sleep 10
 
-          i=25
-          while (( i-- )); do
-            ping -q -c 2 {{ inventory_hostname }} && exit 0
+          i=15
+          while ((i--)); do
+            if ping -q -c 2 {{ inventory_hostname }}; then
+              sleep 15
+              exit 0
+            fi
           done
+
           exit 2
         executable: /bin/bash
       register: _powered_on

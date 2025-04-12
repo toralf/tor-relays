@@ -6,17 +6,10 @@
     gather_subset:
       - "default_ipv6"
 
-- name: Validate IPv6 address
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ansible_facts.default_ipv6.address is defined"
-      - "ansible_facts.default_ipv6.address is not match('fe80::')"
-      - "ansible_facts.default_ipv6.address is not search('::1$')"
-
 - name: File IPv6 address
   delegate_to: localhost
   throttle: 1
+  when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
     path: "{{ tmp_dir }}/all_ipv6"

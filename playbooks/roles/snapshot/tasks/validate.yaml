@@ -1,0 +1,6 @@
+---
+- name: Validate Ansible group membership
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "groups.hcloud is defined"
