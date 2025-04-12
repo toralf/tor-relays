@@ -4,6 +4,8 @@
   register: _halted
 
 - name: Wait till halt
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
   when: _halted.changed
   ansible.builtin.command:

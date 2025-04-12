@@ -67,30 +67,15 @@ xargs -n 1 <<<$* |
     if [[ -n ${HCLOUD_TYPES-} ]]; then
       htype=$(xargs -n 1 <<<${HCLOUD_TYPES} | shuf -n 1)
     else
-      # fallback: smallest type
-      htype=$(xargs -n 1 <<<"cax11 cpx11 cx22" | shuf -n 1)
-
-      if [[ ${name} =~ ^hi ]]; then
-        # for snapshot images at elast 3 vCPU
-        case ${name} in
-        *-amd-*) htype="cpx21" ;;
-        *-arm-*) htype="cax21" ;;
-        *-intel-*) htype="cx32" ;;
-        esac
-
-      else
-        # default: smallest type
-        case ${name} in
-        *-amd-*) htype="cpx11" ;;
-        *-arm-*) htype="cax11" ;;
-        *-intel-*) htype="cx22" ;;
-        esac
-      fi
-    fi
-
-    if [[ -z ${htype} ]]; then
-      echo " error: no htype for ${name}" >&2
-      exit 3
+      case ${name} in
+      *-amd-*) htype="cpx11" ;;
+      *-arm-*) htype="cax11" ;;
+      *-intel-*) htype="cx22" ;;
+      *)
+        echo " error: no htype for ${name}" >&2
+        exit 3
+        ;;
+      esac
     fi
 
     # e.g. US have only AMD
@@ -104,10 +89,12 @@ xargs -n 1 <<<$* |
       ;;
     esac
 
+    poll="15"
     image=${HCLOUD_IMAGE:-$image_default}
     if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
       while read -r id description; do
         if [[ ${name} =~ ${description} ]]; then
+          poll=$((1 + jobs / 2))
           image=${id}
           # shapshots were already sorted from youngest to oldest
           break
@@ -120,9 +107,9 @@ xargs -n 1 <<<$* |
       exit 5
     fi
 
-    echo "--image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    echo "--quiet --poll-interval ${poll}s server create --image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 5s server create
+  xargs -r -P ${jobs} -L 1 hcloud
 
 $(dirname $0)/update-dns.sh
 

@@ -34,14 +34,14 @@ echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
     if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      echo ${HCLOUD_IMAGE} ${name}
+      echo "${HCLOUD_IMAGE} ${name}"
     else
       if image=$(hcloud server describe ${name} --output json | jq -r '.image.id'); then
-        echo ${image} ${name}
+        echo "${image} ${name}"
       fi
     fi
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet server --poll-interval 5s rebuild --image
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s rebuild server --image
 
 # wait half a minute before ssh into the instance
 diff=$((EPOCHSECONDS - now))

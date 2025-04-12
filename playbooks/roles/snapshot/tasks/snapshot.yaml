@@ -6,4 +6,4 @@
   vars:
     _description: "{{ snapshot_description | default(inventory_hostname | regex_replace('^hi', '')) }}"
   ansible.builtin.command:
-    cmd: hcloud --quiet --poll-interval 5s server create-image --type snapshot --description="{{ _description }}" {{ inventory_hostname }}
+    cmd: hcloud --quiet --poll-interval 15s server create-image --type snapshot --description="{{ _description }}" {{ inventory_hostname }}
