@@ -32,7 +32,7 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*)
 
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P ${jobs} -n 1 hcloud --quiet --poll-interval 10s server delete <<<$*
+xargs -r -P ${jobs} hcloud --quiet --poll-interval 10s server delete <<<$*
 
 echo -e " reloading DNS resolver ..." >&2
 sudo rc-service unbound reload
