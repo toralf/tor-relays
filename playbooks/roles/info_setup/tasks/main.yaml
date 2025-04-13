@@ -1,0 +1,17 @@
+---
+- name: Main
+  module_defaults:
+    ansible.builtin.lineinfile:
+      create: true
+  block:
+    - name: IPv6
+      when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
+      ansible.builtin.import_tasks: ipv6.yaml
+      tags:
+        - ipv6
+
+    - name: Metrics
+      when: metrics_port is defined
+      ansible.builtin.import_tasks: metrics.yaml
+      tags:
+        - metrics

@@ -6,7 +6,6 @@
     ansible.builtin.lineinfile:
       line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
       regex: '^- targets: \["{{ inventory_hostname }}:'
-      create: true
   block:
     - name: Node Metrics
       when: node_metrics | default(false)

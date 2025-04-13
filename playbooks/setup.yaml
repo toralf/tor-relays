@@ -3,18 +3,18 @@
   hosts: "!snowflake:!tor"
   roles:
     - role: setup_common
-    - role: info_metrics
+    - role: info_setup
 
 - name: Setup Snowflake
   hosts: snowflake
   roles:
     - role: setup_common
+    - role: info_setup
     - role: setup_snowflake
-    - role: info_metrics
 
 - name: Setup Tor
   hosts: tor
   roles:
     - role: setup_common
+    - role: info_setup
     - role: setup_tor
-    - role: info_metrics

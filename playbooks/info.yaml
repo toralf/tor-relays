@@ -2,19 +2,19 @@
 - name: Info Misc
   hosts: "!snowflake:!tor"
   roles:
+    - role: info_setup
     - role: info_common
-    - role: info_metrics
 
 - name: Info Snowflake
   hosts: snowflake
   roles:
+    - role: info_setup
     - role: info_common
-    - role: info_metrics
     - role: info_snowflake
 
 - name: Info Tor
   hosts: tor
   roles:
+    - role: info_setup
     - role: info_common
-    - role: info_metrics
     - role: info_tor
