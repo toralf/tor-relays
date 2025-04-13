@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   create-server.sh $(seq -w 0 9 | xargs -r -n 1 printf "foo%i ")
+#   create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
 #   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
@@ -63,20 +63,13 @@ echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
-    # the silicon
-    if [[ -n ${HCLOUD_TYPES-} ]]; then
-      htype=$(xargs -n 1 <<<${HCLOUD_TYPES} | shuf -n 1)
-    else
-      case ${name} in
-      *-amd-*) htype="cpx11" ;;
-      *-arm-*) htype="cax11" ;;
-      *-intel-*) htype="cx22" ;;
-      *)
-        echo " error: no htype for ${name}" >&2
-        exit 3
-        ;;
-      esac
-    fi
+    # arch
+    htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1)
+    case ${name} in
+    *-amd-*) htype="cpx11" ;;
+    *-arm-*) htype="cax11" ;;
+    *-intel-*) htype="cx22" ;;
+    esac
 
     # e.g. US have only AMD
     case ${htype} in
