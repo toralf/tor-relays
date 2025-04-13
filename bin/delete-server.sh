@@ -5,6 +5,7 @@
 set -u # no -ef here
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
+source $(dirname $0)/lib.sh
 
 hash -r hcloud rc-service
 
@@ -12,29 +13,19 @@ hash -r hcloud rc-service
 project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
-jobs=$((3 * $(nproc)))
-[[ ${jobs} -gt 48 ]] && jobs=48
+jobs=$(nproc)
 
-# wellknown entries are not cleaned
-echo -e " deleting local system data, DNS and ssl ..."
+cleanLocalData $*
+
+echo " delete from DNS config"
 while read -r name; do
-  [[ -n ${name} ]] || continue
-  # Ansible facts
-  rm -f $(dirname $0)/../.ansible_facts/${name}
-  # local data in ~/tmp
-  sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/^${name}:[0-9]*$/d" -e "/\"${name}:[0-9]*\"/d" ~/tmp/*_* 2>/dev/null
-  rm -f ~/tmp/*/${name} ~/tmp/*/${name}.*
-  rm -f $(dirname $0)/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
-  # /tmp should be a tmpfs
-  sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
-  # DNS
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
 
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P ${jobs} hcloud --quiet --poll-interval 10s server delete <<<$*
+xargs -r -P ${jobs} -n $((1 + $# / jobs)) hcloud --quiet --poll-interval 10s server delete <<<$*
 
-echo -e " reloading DNS resolver ..." >&2
+echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
 
-xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
+$(dirname $0)/distrust-host-ssh-key.sh $*

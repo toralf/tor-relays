@@ -20,7 +20,7 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-# both US and Singapore are more expensive and have less traffic incl.
+# US and Singapore are more expensive and do have less traffic incl.
 data_centers=$(
   hcloud datacenter list --output json |
     jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
@@ -37,25 +37,21 @@ cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) |
 used_locations=$(echo ${cax_locations} ${cpx_locations} ${cx_locations} | xargs -n 1 | sort -u)
 
 # default OS: recent Debian
-image_list=$(hcloud image list --type system --output noheader --output columns=name | sort -ur --version-sort)
-image_default=$(grep '^debian' <<<${image_list} | head -n 1)
+image_default=$(hcloud image list --type system --output json | jq -r '.[].name' | grep '^debian' | sort -urV | head -n 1)
 
-# image snapshots (if any)
+# image snapshots
 snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
 
-# currently only 1 key is used
-ssh_keys=$(hcloud ssh-key list --output json)
-ssh_key=$(jq -r '.[].name' <<<${ssh_keys} | head -n 1)
+# works if only 1 key is there
+ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
 
 if [[ -z ${used_locations} || -z ${ssh_key} ]]; then
   echo " API query failed" >&2
   exit 1
 fi
 
-now=${EPOCHSECONDS}
-
 if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
-  echo " ^^ invalid hostname" >&2
+  echo " ^^ invalid hostname/s" >&2
   exit 2
 fi
 
@@ -106,20 +102,8 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
-# ssh needs a half minute to be up
-diff=$((EPOCHSECONDS - now))
-if [[ ${diff} -lt 30 ]]; then
-  wait=$((30 - diff))
-  echo -en "\n waiting ${wait} sec ..."
-  sleep ${wait}
-fi
-
 # clean up any left over SSH key
-xargs -r $(dirname $0)/distrust-host-ssh-key.sh <<<$*
+$(dirname $0)/distrust-host-ssh-key.sh $*
 
-# establish SSH trust relationship
-while ! xargs -r $(dirname $0)/trust-host-ssh-key.sh <<<$*; do
-  echo -e " waiting 5 sec ..."
-  sleep 5
-  echo
-done
+# build SSH trust relationship
+$(dirname $0)/trust-host-ssh-key.sh $*

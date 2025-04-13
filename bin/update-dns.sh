@@ -26,7 +26,7 @@ fi
 
 echo -e " updating DNS ..."
 
-# do not change a config file in parallel
+# do not run in parallel
 while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
@@ -49,9 +49,9 @@ hcloud server list --output noheader --output columns=name,ipv4 |
   sudo tee -a ${hconf}.new >/dev/null
 
 if ! sudo diff -q ${hconf} ${hconf}.new 1>/dev/null; then
-  echo " reloading DNS resolver" >&2
+  echo " reloading DNS resolver"
   sudo cp ${hconf}.new ${hconf}
   sudo rc-service unbound reload
 else
-  echo " no changes in ${hconf}" >&2
+  echo " no changes in ${hconf}"
 fi
