@@ -1,5 +1,5 @@
 ---
-- name: Install or update base software
+- name: Install or update firewall software
   ansible.builtin.apt:
     name:
       - conntrack
@@ -41,7 +41,7 @@
         - v6
       register: _fw_scripts
 
-    - name: Save iptables state
+    - name: Save iptables state before setup
       community.general.iptables_state:
         ip_version: "ip{{ item }}"
         state: saved
@@ -62,7 +62,7 @@
             - v4
             - v6
 
-        - name: Save iptables state of setup
+        - name: Save iptables state after setup
           community.general.iptables_state:
             ip_version: "ip{{ item }}"
             state: saved

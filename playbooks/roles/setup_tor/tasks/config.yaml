@@ -14,11 +14,13 @@
 
 - name: Install the secret_family_key file
   when: secret_family_key
+  vars:
+    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
     src: "{{ secret_family_key }}"
     dest: /var/lib/tor/keys/
     mode: "0600"
-    owner: tor
-    group: tor
+    owner: "{{ _user }}"
+    group: "{{ _user }}"
   notify:
     - "Restart Tor"

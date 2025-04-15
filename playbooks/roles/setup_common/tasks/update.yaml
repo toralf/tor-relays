@@ -1,50 +1,12 @@
 ---
-- name: Ensure Debian repos for Hetzner VPS are HTTPs
-  when: ansible_facts.system_vendor == 'Hetzner'
-  block:
-    - name: Remove HTTP repos
-      retries: 3
-      ansible.builtin.apt_repository:
-        repo: "deb http://{{ item }}"
-        state: absent
-      with_items:
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
-        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security main contrib non-free"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
-        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security main contrib non-free-firmware"
-
-    - name: Add HTTPs repos
-      ansible.builtin.apt_repository:
-        repo: "deb https://{{ item }} main contrib non-free-firmware"
-        state: present
-      with_items:
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports"
-        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates"
-        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
-        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
-        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
-
 - name: Upgrade dist
   ansible.builtin.apt:
     update_cache: true
     upgrade: dist
 
-- name: Install or update base software
+- name: Install or update common software
   ansible.builtin.apt:
     name:
-      - cron
-      - gpg
-      - gpg-agent
-      - htop
-      - logrotate
-      - minicoredumper
       - needrestart
       - psmisc
       - python3-psutil
@@ -56,13 +18,6 @@
     name: "{{ additional_software }}"
 
 # openipmi might be a left over from earlier IONOS install images
-- name: Disable openipmi service
-  failed_when: false
-  ansible.builtin.systemd_service:
-    name: openipmi
-    enabled: false
-    state: stopped
-
 - name: De-install openipmi
   ansible.builtin.apt:
     state: absent

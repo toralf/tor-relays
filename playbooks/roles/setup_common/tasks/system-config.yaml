@@ -1,0 +1,94 @@
+---
+- name: Install or update config software
+  ansible.builtin.apt:
+    name:
+      - cron
+      - htop
+      - logrotate
+      - minicoredumper
+
+- name: Set PATH in crontab
+  ansible.builtin.cron:
+    name: PATH
+    value: /usr/sbin:/usr/bin:/sbin/:/bin
+    env: true
+
+- name: Set SHELL in crontab
+  ansible.builtin.cron:
+    name: SHELL
+    value: /bin/bash
+    env: true
+
+- name: Sysctl config
+  ansible.builtin.copy:
+    src: 20tor-system.conf
+    dest: /etc/sysctl.d/
+  register: _sysctl_state
+
+- name: "Ensure sysctl is up to date"
+  when: _sysctl_state.changed
+  changed_when: true
+  ansible.builtin.command: sysctl --system
+
+- name: Tweak readline
+  ansible.builtin.lineinfile:
+    line: "set enable-bracketed-paste off"
+    path: /root/.inputrc
+
+- name: Htop config
+  ansible.builtin.copy:
+    src: htoprc
+    dest: /root/.config/htop/
+
+- name: Editor config
+  ansible.builtin.copy:
+    src: .selected_editor
+    dest: /root/
+
+- name: Set certain common sysctl values
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/21common.conf
+    sysctl_set: true
+  loop:
+    - { name: kernel.sysrq, value: 0 }
+    - { name: net.ipv4.tcp_fin_timeout, value: 10 }
+    - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
+
+- name: Ensure kernel crash dumps are made using minicoredumper
+  ansible.builtin.cron:
+    name: "core debug files"
+    special_time: reboot
+    job: >-
+      echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
+      echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
+
+- name: Ensure that logrotate systemd override directory does exist
+  ansible.builtin.file:
+    path: /etc/systemd/system/logrotate.timer.d/
+    state: directory
+    mode: "0755"
+  notify:
+    - "Reload Systemd"
+
+- name: Add logrotate systemd override config
+  ansible.builtin.template:
+    src: logrotate.override.conf.j2
+    dest: /etc/systemd/system/logrotate.timer.d/override.conf
+  notify:
+    - "Reload Systemd"
+
+# e.g. Tor refuses to start, if IPv6 ORPort is not up
+- name: Ensure that Networkd wait online systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/systemd-networkd-wait-online.service.d/
+    state: directory
+    mode: "0755"
+
+- name: Add Networkd wait online systemd override
+  ansible.builtin.template:
+    src: networkd-wait-online.override.conf.j2
+    dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
+  notify:
+    - "Reload Systemd"

@@ -58,17 +58,6 @@
       tags:
         - custom-command
 
-    - name: Update
-      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-      ansible.builtin.import_tasks: update.yaml
-      tags:
-        - update
-
-    - name: Config
-      ansible.builtin.import_tasks: config.yaml
-      tags:
-        - config
-
     - name: IPv6
       when: not is_a_snapshot_image
       tags:
@@ -92,6 +81,17 @@
       ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+
+    - name: Update
+      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      ansible.builtin.import_tasks: update.yaml
+      tags:
+        - update
+
+    - name: Config
+      ansible.builtin.import_tasks: system-config.yaml
+      tags:
+        - system-config
 
     - name: Distribution kernel
       tags:
@@ -119,7 +119,7 @@
       tags:
         - nginx
 
-    - name: Metrics
+    - name: Prometheus Node Exporter
       when: node_metrics
       ansible.builtin.import_tasks: metrics.yaml
       tags:

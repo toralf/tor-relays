@@ -17,9 +17,7 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "item is ansible.utils.ipv4"
-      - "metrics_port"
-  loop: "{{ prometheus_server | split(',') }}"
+      - "prometheus_server is ansible.utils.ipv4"
 
 - name: Validate RAM for kernel src
   when: kernel_git_version

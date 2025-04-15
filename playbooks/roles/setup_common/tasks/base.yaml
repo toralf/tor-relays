@@ -32,51 +32,34 @@
   notify:
     - "Reload SSH"
 
-- name: Sysctl config
-  ansible.builtin.copy:
-    src: 20tor-system.conf
-    dest: /etc/sysctl.d/
-  register: _sysctl_state
+- name: Ensure Debian repos for Hetzner VPS are HTTPs
+  when: ansible_facts.system_vendor == 'Hetzner'
+  block:
+    - name: Remove HTTP repos
+      retries: 3
+      ansible.builtin.apt_repository:
+        repo: "deb http://{{ item }}"
+        state: absent
+      with_items:
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security main contrib non-free"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security main contrib non-free-firmware"
 
-- name: "Ensure sysctl is up to date"
-  when: _sysctl_state.changed
-  changed_when: true
-  ansible.builtin.command: sysctl --system
-
-- name: Tweak readline
-  ansible.builtin.lineinfile:
-    line: "set enable-bracketed-paste off"
-    path: /root/.inputrc
-
-- name: Htop config
-  ansible.builtin.copy:
-    src: htoprc
-    dest: /root/.config/htop/
-
-- name: Editor config
-  ansible.builtin.copy:
-    src: .selected_editor
-    dest: /root/
-
-- name: Set certain common sysctl values
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/21common.conf
-    sysctl_set: true
-  loop:
-    - { name: kernel.sysrq, value: 0 }
-    - { name: net.ipv4.tcp_fin_timeout, value: 10 }
-    - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
-
-- name: Set PATH in crontab
-  ansible.builtin.cron:
-    name: PATH
-    value: /usr/sbin:/usr/bin:/sbin/:/bin
-    env: true
-
-- name: Set SHELL in crontab
-  ansible.builtin.cron:
-    name: SHELL
-    value: /bin/bash
-    env: true
+    - name: Add HTTPs repos
+      ansible.builtin.apt_repository:
+        repo: "deb https://{{ item }} main contrib non-free-firmware"
+        state: present
+      with_items:
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates"
+        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
+        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
