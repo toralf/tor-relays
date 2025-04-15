@@ -13,6 +13,7 @@ kernel_git_patches: []
 fire_and_forget: false
 
 metrics_port: ""
+nginx_metrics: false
 node_metrics: false
 prometheus_server: ""
 

@@ -1,12 +1,22 @@
 # {{ ansible_managed }}
 
+{% if nginx_metrics %}
 server {
-{% if metrics_port %}
-{% if prometheus_server %}
-  listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
-{% else %}
-  listen 127.0.0.1:{{ metrics_port }} ssl http2;
+  listen 127.0.0.1:8080;
+
+  location /metrics {
+    stub_status on;
+  }
+}
 {% endif %}
+
+server {
+listen {{ prometheus_server | ternary (ansible_facts.default_ipv4.address, 127.0.0.1) }}:{{ metrics_port }} ssl http2;
+{% if nginx_metrics %}
+
+  location = /metrics-nginx {
+    proxy_pass http://127.0.0.1:8080/metrics;
+  }
 {% endif %}
 {% if node_metrics %}
 
