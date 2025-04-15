@@ -56,6 +56,7 @@ if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
 fi
 
 echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
+
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
@@ -68,35 +69,35 @@ xargs -n 1 <<<$* |
     esac
 
     # e.g. US have only AMD
-    case ${htype} in
-    cax*) loc=$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-    cpx*) loc=$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-    cx*) loc=$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
-    *)
-      echo " error: no location for ${name}" >&2
-      exit 4
-      ;;
-    esac
+    if [[ -n ${HCLOUD_LOCATION-} ]]; then
+      loc=" --location ${HCLOUD_LOCATION}"
+    else
+      case ${htype} in
+      #cax*) loc=" --location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+      cpx*) loc=" --location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+      #cx*) loc=" --location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+      *) loc="" ;;
+      esac
+    fi
 
     poll="15"
     image=${HCLOUD_IMAGE:-$image_default}
     if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
+      # shapshots are sorted from youngest to oldest
       while read -r id description; do
         if [[ ${name} =~ ${description} ]]; then
           poll=$((1 + jobs / 2))
           image=${id}
-          # shapshots were already sorted from youngest to oldest
           break
         fi
       done <<<${snapshots}
     fi
-
     if [[ -z ${image} ]]; then
       echo " error: no image for ${name}" >&2
       exit 5
     fi
 
-    echo "--quiet --poll-interval ${poll}s server create --image ${image} --ssh-key ${ssh_key} --name ${name} --location ${loc} --type ${htype}"
+    echo "--quiet --poll-interval ${poll}s server create --image ${image} --ssh-key ${ssh_key} --name ${name} ${loc} --type ${htype}"
   done |
   xargs -r -P ${jobs} -L 1 hcloud
 
