@@ -1,4 +1,10 @@
 ---
+- name: Install or update base software
+  ansible.builtin.apt:
+    name:
+      - conntrack
+      - iptables
+
 - name: Check if a dedicate DDoS solution is in place
   changed_when: false
   ansible.builtin.stat:

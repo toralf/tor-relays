@@ -39,12 +39,10 @@
 - name: Install or update base software
   ansible.builtin.apt:
     name:
-      - conntrack
       - cron
       - gpg
       - gpg-agent
       - htop
-      - iptables
       - logrotate
       - minicoredumper
       - needrestart
