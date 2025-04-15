@@ -19,19 +19,21 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-# default OS: recent Debian
-image_default=$(hcloud image list --type system --output json | jq -r '.[].name' | grep '^debian' | sort -urV | head -n 1)
-
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
+
+set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
     if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      echo ${HCLOUD_IMAGE} ${name}
+      image=${HCLOUD_IMAGE}
     else
-      if read -r image < <(hcloud server describe ${name} --output json | jq -r '.image.id'); then
-        echo ${image:-$image_default} ${name}
+      image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
+      if [[ -z ${image} ]]; then
+        echo " cannot get image id of ${name}" >&2
+        exit 1
       fi
     fi
+    echo ${image} ${name}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild --image
 
