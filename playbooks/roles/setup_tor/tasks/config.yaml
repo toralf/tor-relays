@@ -4,21 +4,11 @@
     src: torrc.j2
     dest: /etc/tor/torrc
     backup: true
-
-- name: Verify torrc
-  changed_when: false
-  ansible.builtin.command:
-    cmd: tor --verify-config
   notify:
     - "Restart DDoS"
     - "Reload Tor"
 
-- name: Add Tor logrotate config
-  ansible.builtin.template:
-    src: logrotate.tor.j2
-    dest: /etc/logrotate.d/tor
-
-- name: Install the secret_family_key file
+- name: Install family key
   when: secret_family_key
   vars:
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
@@ -30,3 +20,13 @@
     group: "{{ _user }}"
   notify:
     - "Restart Tor"
+
+- name: Verify torrc
+  changed_when: false
+  ansible.builtin.command:
+    cmd: tor --verify-config
+
+- name: Configure Tor logrotate
+  ansible.builtin.template:
+    src: logrotate.tor.j2
+    dest: /etc/logrotate.d/tor
