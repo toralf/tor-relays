@@ -1,5 +1,5 @@
 ---
-- name: Install Prometheus node exporter
+- name: Install/Update Prometheus node exporter
   ansible.builtin.apt:
     name:
       - prometheus-node-exporter
@@ -29,4 +29,3 @@
 - name: Enable Prometheus node exporter at boot
   ansible.builtin.systemd_service:
     name: prometheus-node-exporter
-  notify: "Restart Prometheus node exporter"

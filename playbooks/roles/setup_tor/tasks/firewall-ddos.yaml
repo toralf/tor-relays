@@ -1,5 +1,5 @@
 ---
-- name: Install or update software for DDoS solution
+- name: Install/Update software for DDoS solution
   ansible.builtin.apt:
     name:
       - ipset

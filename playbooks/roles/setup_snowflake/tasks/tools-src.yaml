@@ -1,10 +1,10 @@
 ---
-- name: Install or update toolchain for Snowflake build
+- name: Install/Update toolchain for Snowflake build
   ansible.builtin.apt:
     name:
       - git
 
-- name: Install or update Go for Snowflake build
+- name: Install/Update Go for Snowflake build
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:

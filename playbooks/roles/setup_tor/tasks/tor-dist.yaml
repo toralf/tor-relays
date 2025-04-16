@@ -2,7 +2,7 @@
 - name: Enable Tor Debian repository
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   block:
-    - name: Install or update GnuPG
+    - name: Install/Update GnuPG
       ansible.builtin.apt:
         name:
           - gpg
@@ -26,7 +26,7 @@
         repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
         state: present
 
-    - name: Install or update Tor + PT
+    - name: Install/Update Tor + PT
       ansible.builtin.apt:
         default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
         name:

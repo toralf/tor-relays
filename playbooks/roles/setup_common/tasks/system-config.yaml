@@ -1,5 +1,5 @@
 ---
-- name: Install or update config software
+- name: Install/Update config software
   ansible.builtin.apt:
     name:
       - cron

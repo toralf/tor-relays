@@ -1,5 +1,5 @@
 ---
-- name: Install or update nginx
+- name: Install/Update nginx
   ansible.builtin.apt:
     name:
       - nginx

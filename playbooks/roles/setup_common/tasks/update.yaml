@@ -4,7 +4,7 @@
     update_cache: true
     upgrade: dist
 
-- name: Install or update common software
+- name: Install/Update common software
   ansible.builtin.apt:
     name:
       - needrestart
@@ -12,7 +12,7 @@
       - python3-psutil
       - rsync
 
-- name: Install or update additional software
+- name: Install/Update additional software
   when: additional_software
   ansible.builtin.apt:
     name: "{{ additional_software }}"

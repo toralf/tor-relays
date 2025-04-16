@@ -88,7 +88,7 @@
       tags:
         - update
 
-    - name: Config
+    - name: System config
       ansible.builtin.import_tasks: system-config.yaml
       tags:
         - system-config
@@ -96,6 +96,7 @@
     - name: Distribution kernel
       tags:
         - kernel
+        - kernel-dist
       block:
         - name: Ensure desired distribution kernel is installed
           ansible.builtin.import_tasks: kernel-dist.yaml
@@ -121,9 +122,9 @@
 
     - name: Prometheus Node Exporter
       when: node_metrics
-      ansible.builtin.import_tasks: metrics.yaml
+      ansible.builtin.import_tasks: node-exporter.yaml
       tags:
-        - metrics
+        - node-exporter
 
     - name: Handle kernel build job
       tags:

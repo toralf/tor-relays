@@ -1,5 +1,5 @@
 ---
-- name: Install or update Snowflake
+- name: Install/Update Snowflake
   ansible.builtin.apt:
     name:
       - snowflake-proxy

@@ -1,5 +1,5 @@
 ---
-- name: Install or update firewall software
+- name: Install/Update firewall software
   ansible.builtin.apt:
     name:
       - conntrack
@@ -14,7 +14,7 @@
 - name: Firewall
   when: not _ddos_solution.stat.exists
   block:
-    - name: Install or update firewall software
+    - name: Install/Update firewall software
       ansible.builtin.apt:
         name:
           - iptables-persistent

@@ -8,7 +8,7 @@
     name: tor
     group: tor
 
-- name: Install or update seccomp lib (non-bridge only)
+- name: Install/Update seccomp lib (non-bridge only)
   when: not bridge_distribution
   ansible.builtin.apt:
     name:

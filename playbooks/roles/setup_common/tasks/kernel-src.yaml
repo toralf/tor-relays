@@ -14,7 +14,7 @@
   vars:
     _age: "{{ (ansible_facts.date_time.epoch | float) - (_make_log.stat.atime | default(0)) }}"
   block:
-    - name: Install or update toolchain
+    - name: Install/Update toolchain
       ansible.builtin.apt:
         name:
           - bc
