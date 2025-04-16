@@ -3,6 +3,12 @@
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
+    backup: true
+
+- name: Verify torrc
+  changed_when: false
+  ansible.builtin.command:
+    cmd: tor --verify-config
   notify:
     - "Restart DDoS"
     - "Reload Tor"
