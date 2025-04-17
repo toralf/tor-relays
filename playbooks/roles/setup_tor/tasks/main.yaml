@@ -73,16 +73,16 @@
           tags:
             - lyrebird
 
-    - name: Metrics DDoS
+    - name: DDoS metrics
       when: ddos_metrics
-      ansible.builtin.import_tasks: metrics-ddos.yaml
+      ansible.builtin.import_tasks: ddos-metrics.yaml
       tags:
-        - metrics-ddos
+        - ddos-metrics
 
-    - name: Metrics Misc
-      ansible.builtin.import_tasks: metrics-misc.yaml
+    - name: Torutils helpers
+      ansible.builtin.import_tasks: torutils.yaml
       tags:
-        - metrics-misc
+        - torutils
         - never
 
     - name: Config
