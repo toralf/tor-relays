@@ -70,12 +70,12 @@ xargs -n 1 <<<$* |
 
     # e.g. US have only AMD
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
-      loc=" --location ${HCLOUD_LOCATION}"
+      loc="--location ${HCLOUD_LOCATION}"
     else
       case ${htype} in
-      #cax*) loc=" --location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-      cpx*) loc=" --location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-      #cx*) loc=" --location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+      #cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+      #cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
       *) loc="" ;;
       esac
     fi
@@ -97,13 +97,13 @@ xargs -n 1 <<<$* |
       exit 5
     fi
 
-    echo "--quiet --poll-interval ${poll}s server create --image ${image} --ssh-key ${ssh_key} --name ${name} ${loc} --type ${htype}"
+    echo --quiet --poll-interval ${poll}s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
   done |
   xargs -r -P ${jobs} -L 1 hcloud
 
 $(dirname $0)/update-dns.sh
 
-# clean up any left over SSH key
+# clean up any old SSH key
 $(dirname $0)/distrust-host-ssh-key.sh $*
 
 # build SSH trust relationship
