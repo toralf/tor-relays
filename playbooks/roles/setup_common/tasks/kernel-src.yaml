@@ -152,7 +152,7 @@
         creates: /swapfile
         executable: /bin/bash
 
-    - name: Create kernel build script
+    - name: Copy kernel build script
       ansible.builtin.copy:
         src: build-kernel.sh
         dest: /root/
@@ -165,9 +165,9 @@
       when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
       changed_when: true
       vars:
-        __j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"
+        _j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"
       ansible.builtin.shell:
         cmd: |-
-          {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ __j ~ ' reboot_immediately &', '/root/build-kernel.sh ' ~ __j) }}
+          {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
         executable: /bin/bash
       register: _kernel_build

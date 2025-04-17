@@ -28,7 +28,7 @@ ln -snf $PWD /usr/src/linux
 
 rm /root/make.log
 
-if [[ ${2-} == "reboot_immediately" ]]; then
+if [[ ${2-} == "reboot" ]]; then
   while pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
     sleep 5
   done
