@@ -59,7 +59,6 @@
         - custom-command
 
     - name: IPv6
-      when: not is_a_snapshot_image
       tags:
         - ipv6
       block:
@@ -149,3 +148,6 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
+
+    - name: Finalize common setup
+      ansible.builtin.meta: flush_handlers
