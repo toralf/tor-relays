@@ -1,6 +1,7 @@
 ---
 - name: Shutdown the system
   community.general.shutdown:
+    delay: 10
   register: _halted
 
 - name: Wait till halt
