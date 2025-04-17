@@ -38,9 +38,9 @@ server {
 }
 {% endif %}
 
-{% if metrics_port %}
+{% if metrics_port and prometheus_server %}
 server {
-  listen {{ prometheus_server | ternary (ansible_facts.default_ipv4.address, 127.0.0.1) }}:{{ metrics_port }} ssl http2;
+  listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
