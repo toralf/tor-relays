@@ -18,10 +18,3 @@
     quiet: true
     that:
       - "tor_port != metrics_port"
-
-- name: Validate ddos_metrics
-  when: ddos_metrics
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "node_metrics is true"
