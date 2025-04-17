@@ -115,7 +115,6 @@
         - kernel-src
 
     - name: Nginx
-      when: nginx_listener_default or metrics_port
       ansible.builtin.import_tasks: nginx.yaml
       tags:
         - nginx

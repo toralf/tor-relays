@@ -23,12 +23,10 @@ bridge_distribution: none
 
 # use a dedicated DDoS solution
 firewall_use_ddos: false
+ddos_metrics: false
 
 # metrics could expose potential sensitive information
 tor_metrics: false
-
-# it is CPU consuming
-ddos_metrics: false
 
 # DDoS environment variables
 ddos_allow_prometheus: ""

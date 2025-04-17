@@ -4,15 +4,16 @@
   ansible.builtin.get_url:
     url: https://github.com/toralf/torutils/raw/main/metrics.sh
     dest: /root/metrics.sh
-  register: _ddos_metrics_download
+  register: _download
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
     name: "DDoS metrics"
     special_time: reboot
     job: >-
-      nice /root/metrics.sh 15
+      nice /root/metrics.sh 15 /var/www/html/
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
+  register: _cronjob
 
 - name: Getting process IDs of any running DDoS metrics script
   community.general.pids:
@@ -21,7 +22,7 @@
 
 - name: Ensure no outdated DDoS metrics script is running
   changed_when: _ddos_metrics_killed.changed
-  when: _ddos_metrics_download.changed or not ddos_metrics
+  when: _download.changed or not ddos_metrics or _cronjob.changed
   ansible.builtin.shell:
     cmd: |-
       kill -0 "{{ item }}" && kill -9 "{{ item }}"
@@ -35,8 +36,8 @@
 
 - name: Ensure DDoS metrics script is running
   changed_when: _ddos_metrics_started.changed
-  when: _ddos_metrics_pids_running.pids | length == 0
+  when: ddos_metrics and _ddos_metrics_pids_running.pids | length == 0
   ansible.builtin.shell:
     cmd: |-
-      nice /root/metrics.sh 15 &
+      nice /root/metrics.sh 15 /var/www/html/ &
   register: _ddos_metrics_started
