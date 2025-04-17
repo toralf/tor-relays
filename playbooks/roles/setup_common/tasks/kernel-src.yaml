@@ -95,8 +95,8 @@
           CONFIG_IP_NF_FILTER=m
           CONFIG_IP_NF_IPTABLES=m
           CONFIG_IP_NF_NAT=m
-          {{ firewall_use_ddos | ternary('CONFIG_IP_SET=m', '') }}
-          {{ firewall_use_ddos | ternary('CONFIG_IP_SET_HASH_IP=m', '') }}
+          CONFIG_IP_SET=m
+          CONFIG_IP_SET_HASH_IP=m'
           CONFIG_IP6_NF_FILTER=m
           CONFIG_IP6_NF_IPTABLES=m
           CONFIG_IP6_NF_NAT=m
