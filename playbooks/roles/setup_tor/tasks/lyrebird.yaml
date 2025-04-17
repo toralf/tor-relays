@@ -47,7 +47,7 @@
     dest: /usr/bin/
     mode: a+x
     remote_src: true
-  notify: "Restart Tor"
+  notify: Restart Tor
   register: _lyrebird_installed
 
 - name: Allow low port for Lyrebird

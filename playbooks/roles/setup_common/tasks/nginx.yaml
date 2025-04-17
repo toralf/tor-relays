@@ -3,7 +3,7 @@
   ansible.builtin.apt:
     name:
       - nginx
-  notify: "Restart nginx"
+  notify: Restart nginx
 
 - name: HTTPs for nginx
   when: metrics_port
@@ -42,7 +42,7 @@
         src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
         dest: /etc/nginx/conf.d/
         mode: "0600"
-      notify: "Reload nginx"
+      notify: Reload nginx
 
     - name: Compile nginx certificate
       ansible.builtin.copy:
@@ -51,16 +51,16 @@
           {{ lookup("file", "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt") }}
 
         dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
-      notify: "Reload nginx"
+      notify: Reload nginx
 
 - name: Remove nginx default listener
   ansible.builtin.file:
     path: /etc/nginx/sites-enabled/default
     state: absent
-  notify: "Reload nginx"
+  notify: Reload nginx
 
 - name: Confgure nginx
   ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/conf.d/tor-relays.conf
-  notify: "Reload nginx"
+  notify: Reload nginx

@@ -1,38 +1,38 @@
 ---
 - name: Reload Systemd
-  listen: "Reload Systemd"
+  listen: Reload Systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
 
 - name: Reload SSH
-  listen: "Reload SSH"
+  listen: Reload SSH
   ansible.builtin.systemd_service:
     name: ssh
     state: reloaded
 
 - name: Restart nginx
-  listen: "Restart nginx"
+  listen: Restart nginx
   ansible.builtin.systemd_service:
     name: nginx
     state: restarted
     no_block: true
 
 - name: Reload nginx
-  listen: "Reload nginx"
+  listen: Reload nginx
   ansible.builtin.systemd_service:
     name: nginx
     state: reloaded
     no_block: true
 
 - name: Restart Prometheus node exporter
-  listen: "Restart Prometheus node exporter"
+  listen: Restart Prometheus node exporter
   ansible.builtin.systemd_service:
     name: prometheus-node-exporter
     state: restarted
     no_block: true
 
 - name: Reboot system
-  listen: "Reboot system"
+  listen: Reboot system
   vars:
     __additional_timeout_tor: "{{ tor_port is defined | ternary(45, 0) }}"
   ansible.builtin.reboot:

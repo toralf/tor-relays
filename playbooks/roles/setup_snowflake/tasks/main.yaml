@@ -56,7 +56,7 @@
     - name: Enable Snowflake
       ansible.builtin.systemd_service:
         name: snowflake-proxy
-      notify: "Restart Snowflake"
+      notify: Restart Snowflake
       tags:
         - snowflake
 
@@ -64,7 +64,7 @@
       changed_when: true
       ansible.builtin.systemd_service:
         name: snowflake-proxy
-      notify: "Restart Snowflake"
+      notify: Restart Snowflake
       tags:
         - never
         - force-restart

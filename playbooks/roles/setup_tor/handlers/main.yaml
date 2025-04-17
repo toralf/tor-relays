@@ -1,30 +1,32 @@
 ---
 - name: Restart DDoS
   changed_when: true
-  listen: "Restart DDoS"
-  when: firewall_use_ddos
+  listen: Restart DDoS
   ansible.builtin.shell:
     cmd: |-
+      set -euf
+
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
 
       {{ ddos_allow_prometheus }} {{ ddos_add_bridge_v4 }} /root/ipv4-rules.sh start
       {{ ddos_add_bridge_v6 }} /root/ipv6-rules.sh start
+    executable: /bin/bash
 
 - name: Reload Systemd
-  listen: "Reload Systemd"
+  listen: Reload Systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
 
 - name: Reload Tor
-  listen: "Reload Tor"
+  listen: Reload Tor
   ansible.builtin.systemd_service:
     name: tor
     state: reloaded
     no_block: true
 
 - name: Restart Tor
-  listen: "Restart Tor"
+  listen: Restart Tor
   ansible.builtin.systemd_service:
     name: tor
     state: restarted

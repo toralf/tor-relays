@@ -5,8 +5,8 @@
     dest: /etc/tor/torrc
     backup: true
   notify:
-    - "Restart DDoS"
-    - "Reload Tor"
+    - Restart DDoS
+    - Reload Tor
 
 - name: Install family key
   when: secret_family_key
@@ -18,8 +18,7 @@
     mode: "0600"
     owner: "{{ _user }}"
     group: "{{ _user }}"
-  notify:
-    - "Restart Tor"
+  notify: Restart Tor
 
 - name: Verify torrc
   changed_when: false

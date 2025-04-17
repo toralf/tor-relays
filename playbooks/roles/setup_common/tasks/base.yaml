@@ -14,8 +14,7 @@
   ansible.builtin.copy:
     src: 00sshd.conf
     dest: /etc/ssh/sshd_config.d/
-  notify:
-    - "Reload SSH"
+  notify: Reload SSH
 
 - name: Check count of authorized_keys
   changed_when: false
@@ -29,8 +28,7 @@
   ansible.builtin.file:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     state: absent
-  notify:
-    - "Reload SSH"
+  notify: Reload SSH
 
 - name: Ensure Debian repos for Hetzner VPS are HTTPs
   when: ansible_facts.system_vendor == 'Hetzner'

@@ -13,7 +13,7 @@
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh
-  notify: "Restart DDoS"
+  notify: Restart DDoS
 
 # it might be stopped manually
 - name: Check if DDoS is up
@@ -22,15 +22,13 @@
   ansible.builtin.shell:
     cmd: |-
       set -euf
+      set -o pipefail
 
-      ./ipv4-rules.sh | grep -q "DDoS IPv4"
-      ./ipv6-rules.sh | grep -q "DDoS IPv6"
+      /root/ipv4-rules.sh | grep -q "DDoS IPv4"
+      /root/ipv6-rules.sh | grep -q "DDoS IPv6"
     executable: /bin/bash
   register: _ddos_up
-  notify: "Restart DDoS"
-
-- name: Ensure that DDoS is working
-  ansible.builtin.meta: flush_handlers
+  notify: Restart DDoS
 
 - name: Create DDoS cron job for reboot
   ansible.builtin.cron:
@@ -39,23 +37,19 @@
     job: >-
       {{ ddos_allow_prometheus }} {{ ddos_add_bridge_v4 }} /root/ipv4-rules.sh start;
       {{ ddos_add_bridge_v6 }} /root/ipv6-rules.sh start
-  notify: "Restart DDoS"
+  notify: Restart DDoS
 
-- name: Create DDoS cron job to save data (ipsets)
+- name: Create DDoS cron job to regularly save ipsets
   ansible.builtin.cron:
-    name: "save ipset"
+    name: save ipset
     special_time: hourly
-    job: >-
-      /root/ipv4-rules.sh save;
-      /root/ipv6-rules.sh save
+    job: /root/ipv4-rules.sh save; /root/ipv6-rules.sh save
 
-- name: Create DDoS cron job to update (Tor authority ip addresses)
+- name: Create DDoS cron job to update Tor authority ip addresses
   ansible.builtin.cron:
-    name: "Tor authority ip addresses update"
+    name: Tor authority ip addresses update
     special_time: daily
-    job: >-
-      /root/ipv4-rules.sh update;
-      /root/ipv6-rules.sh update
+    job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
 - name: Remove base firewall script
   ansible.builtin.file:

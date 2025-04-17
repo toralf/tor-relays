@@ -103,7 +103,7 @@
         - name: Check if reboot is needed (after dist kernel)
           ansible.builtin.import_tasks: reboot.yaml
 
-    - name: Ensure service restarts and/or needed reboot is made
+    - name: Ensure desired distribution kernel is running
       ansible.builtin.meta: flush_handlers
 
     - name: Self-compiled kernel
@@ -137,7 +137,7 @@
           until: _job_result.finished
           retries: 120
           delay: 30
-          notify: "Reboot system"
+          notify: Reboot system
 
         - name: Cleanup kernel build async job
           ansible.builtin.async_status:

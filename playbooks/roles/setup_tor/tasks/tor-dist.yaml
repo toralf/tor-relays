@@ -15,25 +15,25 @@
 
     - name: Configure repository "torproject"
       ansible.builtin.apt_repository:
-        filename: "torproject"
+        filename: torproject
         repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
         state: present
 
     - name: Configure repository "torproject" for tor_debian_target "{{ tor_debian_target }}"
       when: tor_debian_target
       ansible.builtin.apt_repository:
-        filename: "torproject"
+        filename: torproject
         repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
         state: present
 
-    - name: Install/Update Tor + PT
+    - name: Install/Update Tor and PT
       ansible.builtin.apt:
         default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
         name:
           - tor
           - tor-geoipdb
           - obfs4proxy
-      notify: "Restart Tor"
+      notify: Restart Tor
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Configure apt hook to set capabilities for low port
@@ -55,8 +55,7 @@
   ansible.builtin.template:
     src: tor.override.conf.j2
     dest: /etc/systemd/system/tor@default.service.d/override.conf
-  notify:
-    - "Reload Systemd"
+  notify: Reload Systemd
 
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
@@ -64,4 +63,4 @@
     value: "0" # Debian  bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: "Restart Tor"
+  notify: Restart Tor
