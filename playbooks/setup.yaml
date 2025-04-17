@@ -4,6 +4,7 @@
   roles:
     - role: setup_common
     - role: info_setup
+    - role: setup_autoupdate
 
 - name: Setup Snowflake
   hosts: snowflake
@@ -11,6 +12,7 @@
     - role: setup_common
     - role: info_setup
     - role: setup_snowflake
+    - role: setup_autoupdate
 
 - name: Setup Tor
   hosts: tor
@@ -18,3 +20,4 @@
     - role: setup_common
     - role: info_setup
     - role: setup_tor
+    - role: setup_autoupdate

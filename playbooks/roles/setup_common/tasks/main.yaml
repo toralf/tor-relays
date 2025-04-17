@@ -145,12 +145,6 @@
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
 
-    - name: Configure auto update
-      when: not is_a_snapshot_image and ansible_facts.distribution in ('Debian', 'Ubuntu')
-      ansible.builtin.import_tasks: auto-update.yaml
-      tags:
-        - auto-update
-
     - name: Explicit check if reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
       tags:
