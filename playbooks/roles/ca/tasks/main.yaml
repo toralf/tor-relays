@@ -9,7 +9,7 @@
     - ca
     - never
   block:
-    - name: Create local directories for Root CA and client certificates
+    - name: Create local directories both for Root CA and for client certificates
       delegate_to: localhost
       ansible.builtin.file:
         state: directory

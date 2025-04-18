@@ -2,6 +2,7 @@
 - name: Main
   module_defaults:
     ansible.builtin.apt:
+      allow_change_held_packages: true
       autoclean: true
       autoremove: true
       cache_valid_time: 600
