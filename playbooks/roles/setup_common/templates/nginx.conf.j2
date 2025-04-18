@@ -1,5 +1,4 @@
 # {{ ansible_managed }}
-
 {% if nginx_listener_default %}
 
 server {
@@ -37,8 +36,8 @@ server {
   index torutils.prom;
 }
 {% endif %}
-
 {% if metrics_port and prometheus_server %}
+
 server {
   listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
 {% if nginx_metrics %}
@@ -79,7 +78,5 @@ server {
   ssl_conf_command Options KTLS;
 
   add_header Strict-Transport-Security "max-age=63072000" always;
-  access_log off;
-  error_log off;
 }
 {% endif %}
