@@ -5,6 +5,12 @@
       - nginx
   notify: Restart nginx
 
+- name: Remove nginx default listener
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: Reload nginx
+
 - name: HTTPs for nginx
   when: metrics_port
   block:
@@ -52,12 +58,6 @@
 
         dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
       notify: Reload nginx
-
-- name: Remove nginx default listener
-  ansible.builtin.file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
-  notify: Reload nginx
 
 - name: Confgure nginx
   ansible.builtin.template:
