@@ -11,7 +11,11 @@
   failed_when: _reboot_needed.rc == 2
   ansible.builtin.shell:
     cmd: |-
+      set -euf
+      set -o pipefail
+
       needrestart -r l -b |
         grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'
+    executable: /bin/bash
   register: _reboot_needed
   notify: Reboot system

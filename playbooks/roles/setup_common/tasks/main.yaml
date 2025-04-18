@@ -82,12 +82,6 @@
       tags:
         - firewall
 
-    - name: Update
-      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-      ansible.builtin.import_tasks: update.yaml
-      tags:
-        - update
-
     - name: System config
       ansible.builtin.import_tasks: system-config.yaml
       tags:
@@ -103,6 +97,12 @@
 
         - name: Check if reboot is needed (after dist kernel)
           ansible.builtin.import_tasks: reboot.yaml
+
+    - name: Upgrade
+      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      ansible.builtin.import_tasks: upgrade.yaml
+      tags:
+        - upgrade
 
     - name: Ensure desired distribution kernel is running
       ansible.builtin.meta: flush_handlers

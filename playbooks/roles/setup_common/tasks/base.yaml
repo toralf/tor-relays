@@ -61,3 +61,27 @@
         - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
         - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
         - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
+
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: true
+
+# openipmi might be a left over from earlier IONOS install images
+- name: De-install openipmi
+  ansible.builtin.apt:
+    state: absent
+    name:
+      - freeipmi-common
+
+- name: Install/Update common software
+  ansible.builtin.apt:
+    name:
+      - needrestart
+      - psmisc
+      - python3-psutil
+      - rsync
+
+- name: Install/Update additional software
+  when: additional_software
+  ansible.builtin.apt:
+    name: "{{ additional_software }}"
