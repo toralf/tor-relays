@@ -135,7 +135,7 @@
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result
           until: _job_result.finished
-          retries: 120
+          retries: 150
           delay: 30
           notify: Reboot system
 
