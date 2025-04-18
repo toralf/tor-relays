@@ -12,8 +12,6 @@
         name:
           - "linux-image{{ _cloud }}{{ _arch }}"
       notify: Reboot system
-      tags:
-        - meow
 
     - name: Remove non-cloud Debian kernel
       when: kernel_debian_cloud
