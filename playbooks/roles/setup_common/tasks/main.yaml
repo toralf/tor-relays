@@ -87,25 +87,17 @@
       tags:
         - system-config
 
-    - name: Distribution kernel
-      tags:
-        - kernel
-        - kernel-dist
-      block:
-        - name: Ensure desired distribution kernel is installed
-          ansible.builtin.import_tasks: kernel-dist.yaml
-
-        - name: Check if reboot is needed (after dist kernel)
-          ansible.builtin.import_tasks: reboot.yaml
-
     - name: Upgrade
       when: ansible_facts.distribution in ('Debian', 'Ubuntu')
       ansible.builtin.import_tasks: upgrade.yaml
       tags:
         - upgrade
 
-    - name: Ensure desired distribution kernel is running
-      ansible.builtin.meta: flush_handlers
+    - name: Distribution kernel
+      ansible.builtin.import_tasks: kernel-dist.yaml
+      tags:
+        - kernel
+        - kernel-dist
 
     - name: Self-compiled kernel
       when: kernel_git_version
@@ -125,7 +117,7 @@
       tags:
         - node-exporter
 
-    - name: Handle kernel build job
+    - name: Catch async kernel build job
       tags:
         - kernel
       when: _kernel_build.changed
@@ -150,5 +142,5 @@
       tags:
         - reboot
 
-    - name: Finalize common setup
+    - name: Finalize common setup step
       ansible.builtin.meta: flush_handlers

@@ -1,0 +1,8 @@
+---
+- name: Apt upgrade
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+
+- name: Ensure upgraded services are running
+  ansible.builtin.meta: flush_handlers

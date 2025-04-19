@@ -28,6 +28,7 @@ ln -snf $PWD /usr/src/linux
 
 rm /root/make.log
 
+# no ssh connection == no ansible task is running
 if [[ ${2-} == "reboot" ]]; then
   while pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
     sleep 5

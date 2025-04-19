@@ -13,11 +13,17 @@
           - "linux-image{{ _cloud }}{{ _arch }}"
       notify: Reboot system
 
+    - name: Reboot for a new kernel
+      ansible.builtin.meta: flush_handlers
+
     - name: Remove default Debian kernel
-      when: kernel_debian_backports or kernel_debian_cloud
+      when: kernel_debian_cloud
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}"
         name:
           - "linux-image{{ _arch }}"
         state: absent
       notify: Reboot system
+
+    - name: Reboot after removal of old kernel
+      ansible.builtin.meta: flush_handlers
