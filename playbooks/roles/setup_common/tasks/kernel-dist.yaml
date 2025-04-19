@@ -17,13 +17,18 @@
       ansible.builtin.meta: flush_handlers
 
     - name: Remove default Debian kernel
-      when: kernel_debian_cloud
+      when: kernel_debian_backports and kernel_debian_cloud
       ansible.builtin.apt:
-        default_release: "{{ ansible_facts.distribution_release }}"
         name:
           - "linux-image{{ _arch }}"
         state: absent
       notify: Reboot system
 
-    - name: Reboot after removal of old kernel
+    - name: Reboot after removal of default kernel
+      ansible.builtin.meta: flush_handlers
+
+    - name: Upgrade (dist kernel)
+      ansible.builtin.import_tasks: upgrade.yaml
+
+    - name: Reboot after upgrade (dist kernel)
       ansible.builtin.meta: flush_handlers

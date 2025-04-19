@@ -48,16 +48,16 @@
       group: root
       mode: "0644"
   block:
-    - name: Base
-      ansible.builtin.import_tasks: base.yaml
-      tags:
-        - base
-
     - name: Run a custom command
       when: custom_command
       ansible.builtin.import_tasks: custom-command.yaml
       tags:
         - custom-command
+
+    - name: Base
+      ansible.builtin.import_tasks: base.yaml
+      tags:
+        - base
 
     - name: IPv6
       tags:
@@ -88,7 +88,6 @@
         - system-config
 
     - name: Upgrade
-      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
       ansible.builtin.import_tasks: upgrade.yaml
       tags:
         - upgrade
@@ -97,7 +96,6 @@
       ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
         - kernel
-        - kernel-dist
 
     - name: Self-compiled kernel
       when: kernel_git_version
