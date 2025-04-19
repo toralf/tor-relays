@@ -3,6 +3,7 @@
   module_defaults:
     ansible.builtin.lineinfile:
       create: true
+      mode: "0644"
   block:
     - name: IPv6
       when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
