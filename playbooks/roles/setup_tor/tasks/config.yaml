@@ -10,20 +10,19 @@
 
 - name: Install family key
   when: secret_family_key
-  vars:
-    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
     src: "{{ secret_family_key }}"
     dest: /var/lib/tor/keys/
     mode: "0600"
-    owner: "{{ _user }}"
-    group: "{{ _user }}"
+    owner: "{{ tor_user }}"
+    group: "{{ tor_user }}"
   notify: Restart Tor
 
 - name: Verify torrc
   changed_when: false
   ansible.builtin.command:
-    cmd: tor --verify-config
+    cmd: |-
+      su {{ tor_user }} -c "tor --verify-config"
 
 - name: Configure Tor logrotate
   ansible.builtin.template:
