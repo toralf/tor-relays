@@ -54,6 +54,7 @@
       ansible.builtin.import_tasks: tor-dist.yaml
       tags:
         - tor
+        - tor-dist
 
     - name: Build from source
       when: tor_build_from_source and ansible_facts.distribution in ('Debian', 'Ubuntu')
@@ -67,6 +68,7 @@
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
             - tor
+            - tor-src
 
         - name: Lyrebird
           when: bridge_distribution

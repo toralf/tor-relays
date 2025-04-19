@@ -11,28 +11,25 @@
     - name: Get Torproject apt key
       ansible.builtin.apt_key:
         url: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
-        state: present
 
     - name: Configure repository "torproject"
       ansible.builtin.apt_repository:
         filename: torproject
         repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
-        state: present
 
     - name: Configure repository "torproject" for tor_debian_target "{{ tor_debian_target }}"
       when: tor_debian_target
       ansible.builtin.apt_repository:
         filename: torproject
         repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target }} main"
-        state: present
 
     - name: Install/Update Tor and PT
       ansible.builtin.apt:
         default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
         name:
+          - obfs4proxy
           - tor
           - tor-geoipdb
-          - obfs4proxy
       notify: Restart Tor
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
