@@ -1,7 +1,8 @@
 ---
-- name: Download DDoS IpSets
+- name: Download DDoS ipset files
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
+  failed_when: false # might not be there immediately after bridge creation
   ansible.posix.synchronize:
     mode: pull
     src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"

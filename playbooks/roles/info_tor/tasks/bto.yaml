@@ -3,12 +3,13 @@
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
     return_content: true
+    status_code: [200, 404]
   register: _result
 
 - name: File b.t.o.
   delegate_to: localhost
   throttle: 1
-  when: _result.content is defined
+  when: _result.status == 200
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('match', '\\* ') }}"
     path: "{{ tmp_dir }}/tor_bto"

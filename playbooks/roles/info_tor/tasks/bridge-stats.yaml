@@ -1,6 +1,7 @@
 ---
 - name: Get bridge stats
   changed_when: false
+  failed_when: _result.rc == 1 # for a new bridge it takes a while before the file appears
   ansible.builtin.command:
     cmd: |-
       grep "bridge-ips" /var/lib/tor/stats/bridge-stats
@@ -9,6 +10,7 @@
 - name: File bridge stats
   delegate_to: localhost
   throttle: 1
+  when: _result.rc == 0
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_bridge_stats"
