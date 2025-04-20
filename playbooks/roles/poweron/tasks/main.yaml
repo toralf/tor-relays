@@ -5,7 +5,6 @@
     - validate
 
 - name: Poweron
-  when: (inventory_hostname not in groups.hcloud) or (inventory_hostname not in groups.hcloud_server_status_running | default([]))
   ansible.builtin.import_tasks: poweron.yaml
   tags:
     - poweron

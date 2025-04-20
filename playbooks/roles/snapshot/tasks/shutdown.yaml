@@ -1,10 +1,10 @@
 ---
 - name: Shutdown the system
   community.general.shutdown:
-    delay: 10
+    delay: 10 # for ansible handlers
   register: _halted
 
-- name: Wait till halt
+- name: Wait after shutdown
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true

@@ -4,7 +4,6 @@
   tags:
     - validate
 
-# is a system is already "off" then no firing handler is expected
 - name: Flush handlers before shutdown
   ansible.builtin.meta: flush_handlers
 

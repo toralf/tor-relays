@@ -4,6 +4,7 @@
   throttle: "{{ concurrent_local_jobs }}"
   block:
     - name: Check if it is up
+      when: inventory_hostname not in groups.hcloud
       changed_when: _is_up.rc != 0
       failed_when: false # avoid ansible output spam
       ansible.builtin.shell:
@@ -15,14 +16,14 @@
       register: _is_up
 
     - name: Power on the system
-      when: _is_up.rc | default(0) != 0
+      when: _is_up.rc | default(0) != 0 or inventory_hostname in groups.hcloud_server_status_off | default([])
       changed_when: true
       failed_when: _powered_on.rc != 0
       ansible.builtin.shell:
         cmd: |-
           set -euf
 
-          hcloud --quiet --poll-interval 5s server poweron {{ inventory_hostname }}
+          hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
           sleep 10
 
           i=15
