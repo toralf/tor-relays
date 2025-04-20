@@ -3,13 +3,14 @@
 # set -x
 
 # e.g.:
-#   create-server.sh foo-{{0..7},{a..f}}
+#   HCLOUD_USE_SNAPSHOT=y ./bin/create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
 #   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
+source $(dirname $0)/lib.sh
 
 hash -r hcloud jq
 
@@ -42,7 +43,7 @@ image_default=$(hcloud image list --type system --output json | jq -r '.[].name'
 # image snapshots
 snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
 
-# works if only 1 key is there
+# take the first one
 ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
 
 if [[ -z ${used_locations} || -z ${ssh_key} ]]; then
@@ -80,26 +81,14 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    poll="15"
     image=${HCLOUD_IMAGE:-$image_default}
     if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
-      # shapshots are sorted from youngest to oldest
-      while read -r id description; do
-        if [[ ${name} =~ ${description} ]]; then
-          poll=$((1 + jobs / 2))
-          image=${id}
-          break
-        fi
-      done <<<${snapshots}
-    fi
-    if [[ -z ${image} ]]; then
-      echo " error: no image for ${name}" >&2
-      exit 5
+      setImageToLatestSnapshotId
     fi
 
-    echo --quiet --poll-interval ${poll}s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+    echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
   done |
-  xargs -r -P ${jobs} -L 1 hcloud
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 15s server create
 
 $(dirname $0)/update-dns.sh
 
