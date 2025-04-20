@@ -2,6 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
+# e.g.:
+#   ./bin/delete-server.sh foo bar
+
 set -u # no -ef here
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
