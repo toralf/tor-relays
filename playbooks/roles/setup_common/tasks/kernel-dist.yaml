@@ -11,24 +11,17 @@
         default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
         name:
           - "linux-image{{ _cloud }}{{ _arch }}"
+      register: _kernel_dist
       notify: Reboot system
 
-    - name: Reboot for a new kernel
-      ansible.builtin.meta: flush_handlers
+    - name: Handle new kernel
+      when: _kernel_dist.changed
+      block:
+        - name: Reboot for a new kernel
+          ansible.builtin.meta: flush_handlers
 
-    - name: Remove default Debian kernel
-      when: kernel_debian_backports and kernel_debian_cloud
-      ansible.builtin.apt:
-        name:
-          - "linux-image{{ _arch }}"
-        state: absent
-      notify: Reboot system
+        - name: Upgrade (dist kernel)
+          ansible.builtin.import_tasks: upgrade.yaml
 
-    - name: Reboot after removal of default kernel
-      ansible.builtin.meta: flush_handlers
-
-    - name: Upgrade (dist kernel)
-      ansible.builtin.import_tasks: upgrade.yaml
-
-    - name: Reboot after upgrade (dist kernel)
-      ansible.builtin.meta: flush_handlers
+        - name: Reboot after upgrade (dist kernel)
+          ansible.builtin.meta: flush_handlers
