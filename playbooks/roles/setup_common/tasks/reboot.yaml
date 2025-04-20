@@ -1,13 +1,12 @@
 ---
-- name: Look for reboot_required file
+- name: Check existance of reboot_required file
   changed_when: _reboot_required.stat.exists
   ansible.builtin.stat:
     path: /var/run/reboot-required
   register: _reboot_required
   notify: Reboot system
 
-- name: Check if a reboot is needed by either a kernel update
-  when: not _reboot_required.changed
+- name: Check if a reboot is needed by a kernel update
   changed_when: _kernel_reboot_needed.rc == 0
   failed_when: _kernel_reboot_needed.rc == 2
   ansible.builtin.shell:
@@ -21,7 +20,6 @@
   notify: Reboot system
 
 - name: Check if a reboot is needed by a deferred service
-  when: not _reboot_required.changed and not _kernel_reboot_needed.changed
   changed_when: _service_reboot_needed.rc == 0
   failed_when: _service_reboot_needed.rc == 2
   ansible.builtin.shell:
