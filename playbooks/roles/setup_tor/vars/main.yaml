@@ -9,5 +9,5 @@ ddos_add_bridge_v4: >-
 ddos_add_bridge_v6: >-
   {{ (firewall_use_ddos and bridge_distribution) | ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
 
-# linux user 
+# linux user
 tor_user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"

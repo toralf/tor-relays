@@ -22,12 +22,12 @@ function cleanLocalData() {
 }
 
 function setImageToLatestSnapshotId() {
+  # shellcheck disable=SC2154
   while read -r id description; do
     if [[ ${name} =~ ${description} ]]; then
       # shellcheck disable=SC2034
       image=${id}
       break
     fi
-    # shellcheck disable=SC2154
   done <<<${snapshots}
 }
