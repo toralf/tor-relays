@@ -14,14 +14,14 @@
       register: _kernel_dist
       notify: Reboot system
 
-    - name: Handle new kernel
+    - name: Handle new Debian kernel
       when: _kernel_dist.changed
       block:
-        - name: Reboot for a new kernel
+        - name: Reboot into new Debian kernel
           ansible.builtin.meta: flush_handlers
 
-        - name: Upgrade (dist kernel)
+        - name: Upgrade for new Debian kernel
           ansible.builtin.import_tasks: upgrade.yaml
 
-        - name: Reboot after upgrade (dist kernel)
+        - name: Reboot after upgrade for new Debian kernel
           ansible.builtin.meta: flush_handlers
