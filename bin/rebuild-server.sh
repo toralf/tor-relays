@@ -3,9 +3,9 @@
 # set -x
 
 # e.g.:
-#   ./rebuild-server.sh foo bar
+#   HCLOUD_USE_SNAPSHOT=y ./bin/rebuild-server.sh foo bar
 
-set -u # no -ef here
+set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 source $(dirname $0)/lib.sh
@@ -19,23 +19,24 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
+# image snapshots
+snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
 
+echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
-    else
-      image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
-      if [[ -z ${image} ]]; then
-        echo " cannot get image id of ${name}" >&2
-        exit 1
-      fi
+    image=${HCLOUD_IMAGE-}
+    if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
+      setImageToLatestSnapshotId
     fi
-    echo ${image} ${name}
+    if [[ -z ${image} ]]; then
+      image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
+    fi
+
+    echo --image ${image} ${name}
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild --image
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild
 
 cleanLocalData $*
 

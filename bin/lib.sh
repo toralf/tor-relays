@@ -7,6 +7,7 @@ function cleanLocalData() {
 
   echo -e " deleting local system data, DNS and ssl ..."
   while read -r name; do
+    set +e
     [[ -n ${name} ]] || continue
     # Ansible facts
     rm -f $d/../.ansible_facts/${name}
@@ -18,4 +19,15 @@ function cleanLocalData() {
     # private Tor bridge data
     sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
   done < <(xargs -n 1 <<<$*)
+}
+
+function setImageToLatestSnapshotId() {
+  while read -r id description; do
+    if [[ ${name} =~ ${description} ]]; then
+      # shellcheck disable=SC2034
+      image=${id}
+      break
+    fi
+    # shellcheck disable=SC2154
+  done <<<${snapshots}
 }
