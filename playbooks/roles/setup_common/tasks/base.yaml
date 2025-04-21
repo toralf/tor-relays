@@ -31,7 +31,7 @@
   notify: Reload SSH
 
 - name: Ensure Debian repos for Hetzner VPS are HTTPs
-  when: ansible_facts.system_vendor == 'Hetzner'
+  when: ansible_facts.system_vendor == 'Hetzner' and ansible_facts.distribution in ('Debian')
   block:
     - name: Remove HTTP repos
       retries: 3

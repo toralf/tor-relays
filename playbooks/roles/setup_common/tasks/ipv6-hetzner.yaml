@@ -15,7 +15,7 @@
     _ipv6_new: "{{ __ipv6_prefix }}:{{ '%x' % (__a | int) }}:{{ '%x' % (__b | int) }}:{{ '%x' % (__c | int) }}:{{ '%x' % (__d | int) }}"
   block:
     - name: Change IPv6 for Debian
-      when: ansible_facts.distribution == 'Debian'
+      when: ansible_facts.distribution in ('Debian')
       block:
         - name: Set IPv6 address for Debian
           ansible.builtin.lineinfile:
@@ -31,7 +31,7 @@
             state: restarted
 
     - name: Change IPv6 for Debian
-      when: ansible_facts.distribution == 'Ubuntu'
+      when: ansible_facts.distribution in ('Ubuntu')
       block:
         - name: Set IPv6 address for Ubuntu
           ansible.builtin.lineinfile:

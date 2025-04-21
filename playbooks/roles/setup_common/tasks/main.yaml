@@ -139,6 +139,3 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
-
-    - name: Finalize common setup step
-      ansible.builtin.meta: flush_handlers

@@ -31,3 +31,6 @@
     executable: /bin/bash
   register: _service_reboot_needed
   notify: Reboot system
+
+- name: Flush handlers (reboot probably)
+  ansible.builtin.meta: flush_handlers

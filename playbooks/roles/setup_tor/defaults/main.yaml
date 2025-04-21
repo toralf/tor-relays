@@ -9,7 +9,7 @@ lyrebird_git_version: HEAD
 lyrebird_patches: []
 lyrebird_prune_git_repo: false
 
-tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is the stable package
+tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is stable
 
 # 2 lists for additional torrc values
 torrc_config_group: []
@@ -18,12 +18,11 @@ torrc_config_hosts: []
 # the ORPort
 tor_port: ""
 
-# safe default: Tor private bridge
+# safe default: Tor private bridge, empty string for a Tor server
 bridge_distribution: none
 
+# CPU consuming
 ddos_metrics: false
-
-# metrics could expose potential sensitive information
 tor_metrics: false
 
 # DDoS environment variables
@@ -34,5 +33,5 @@ add_remote_services_v6: ""
 configured_relays_v4: ""
 configured_relays_v6: ""
 
-# full file name to the secrets of a FamilyId config value
+# file containing the private FamilyId key
 secret_family_key: ""
