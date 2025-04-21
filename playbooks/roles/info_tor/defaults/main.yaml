@@ -3,8 +3,6 @@ log_lines: 10
 
 bridge_distribution: ""
 
-ddos_metrics: false
-
 # defined here to allow --check
 _fingerprint: ""
 _fingerprint_ed25519: ""
