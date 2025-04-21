@@ -1,6 +1,7 @@
 ---
-# set_fact works in tasks but in handlers thoses values are not known
+# hint: set_fact works for tasks but handlers do not know those values
 
+# open additional ports
 additional_ports_v4: >-
   {{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}
 
@@ -8,11 +9,12 @@ additional_ports_v6: >-
   {{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}
 
 add_local_services_v4: >-
-  {{ (additional_ports_v4 and prometheus_server) | ternary('ADD_LOCAL_SERVICES="' + additional_ports_v4 | join(' ') + '"', '') }}
+  {{ (additional_ports_v4) | ternary('ADD_LOCAL_SERVICES="' + additional_ports_v4 | join(' ') + '"', '') }}
 
 add_local_services_v6: >-
-  {{ (additional_ports_v6 and prometheus_server) | ternary('ADD_LOCAL_SERVICES6="' + additional_ports_v6 | join(' ') + '"', '') }}
+  {{ (additional_ports_v6) | ternary('ADD_LOCAL_SERVICES6="' + additional_ports_v6 | join(' ') + '"', '') }}
 
+# remote Prometheus server
 add_remote_services_v4: >-
   {{ (metrics_port and prometheus_server) | ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
 
