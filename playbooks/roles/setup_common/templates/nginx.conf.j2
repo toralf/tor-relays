@@ -20,7 +20,6 @@ server {
 
 server {
   listen 127.0.0.1:8080;
-  listen [::1]:8080;
 
   location /metrics {
     stub_status on;
@@ -31,18 +30,17 @@ server {
 
 server {
   listen 127.0.0.1:3305;
-  listen [::1]:3305;
 
   root /var/www/html;
 
   index torutils.prom;
 }
 {% endif %}
-{% if metrics_port and (prometheus_server or prometheus_server6)%}
+{% if metrics_port %}
 
-{% if prometheus_server %}
 server {
   listen {{ ansible_facts.default_ipv4.address }}:{{ metrics_port }} ssl http2;
+  listen [{{ ansible_facts.default_ipv6.address }}]:{{ metrics_port }} ssl http2;
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
@@ -72,51 +70,6 @@ server {
   location = /metrics-snowflake {
     proxy_pass http://127.0.0.1:9999/internal/metrics;
   }
-{% endif %}
-
-  ssl_protocols TLSv1.3;
-  ssl_ciphers HIGH:!aNULL:!MD5;
-  ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
-  ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
-  ssl_conf_command Options KTLS;
-
-  add_header Strict-Transport-Security "max-age=63072000" always;
-}
-{% endif %}
-
-{% if prometheus_server6 %}
-server {
-  listen [{{ ansible_facts.default_ipv6.address }}]:{{ metrics_port }} ssl http2;
-{% if nginx_metrics %}
-
-  location = /metrics-nginx {
-    proxy_pass http://[::1]:8080/metrics;
-  }
-{% endif %}
-{% if node_metrics %}
-
-  location = /metrics-node {
-    proxy_pass http://[::1]:9100/metrics;
-  }
-{% endif %}
-{% if tor_metrics is defined and tor_metrics %}
-
-  location = /metrics-tor {
-    proxy_pass http://[::1]:9052/metrics;
-  }
-{% endif %}
-{% if ddos_metrics is defined and ddos_metrics %}
-
-  location = /metrics-ddos {
-    proxy_pass http://[::1]:3305/;
-  }
-{% endif %}
-{% if snowflake_metrics is defined and snowflake_metrics %}
-
-  location = /metrics-snowflake {
-    proxy_pass http://[::1]:9999/internal/metrics;
-  }
-{% endif %}
 {% endif %}
 
   ssl_protocols TLSv1.3;
