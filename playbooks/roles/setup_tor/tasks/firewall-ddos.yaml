@@ -35,8 +35,8 @@
     name: "start firewall"
     special_time: reboot
     job: >-
-      {{ ddos_allow_prometheus }} {{ ddos_add_bridge_v4 }} /root/ipv4-rules.sh start;
-      {{ ddos_add_bridge_v6 }} /root/ipv6-rules.sh start
+      {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start;
+      {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
   notify: Restart DDoS
 
 - name: Create DDoS cron job to regularly save ipsets

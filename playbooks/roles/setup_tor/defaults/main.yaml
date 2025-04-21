@@ -27,9 +27,12 @@ ddos_metrics: false
 tor_metrics: false
 
 # DDoS environment variables
-ddos_allow_prometheus: ""
-ddos_add_bridge_v4: ""
-ddos_add_bridge_v6: ""
+add_local_services_v4: ""
+add_local_services_v6: ""
+add_remote_services_v4: ""
+add_remote_services_v6: ""
+configured_relays_v4: ""
+configured_relays_v6: ""
 
 # full file name to the secrets of a FamilyId config value
 secret_family_key: ""

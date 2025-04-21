@@ -1,12 +1,29 @@
 ---
 # set_fact works in tasks but in handlers thoses values are not known
-ddos_allow_prometheus: >-
+
+# yamllint disable-line rule:line-length
+additional_ports_v4: >-
+  {{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}
+
+additional_ports_v6: >-
+  {{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}
+
+add_local_services_v4: >-
+  {{ (additional_ports_v4 and prometheus_server) | ternary('ADD_LOCAL_SERVICES="' + additional_ports_v4 | join(' ') + '"', '') }}
+
+add_local_services_v6: >-
+  {{ (additional_ports_v6 and prometheus_server) | ternary('ADD_LOCAL_SERVICES6="' + additional_ports_v6 | join(' ') + '"', '') }}
+
+add_remote_services_v4: >-
   {{ (metrics_port and prometheus_server) | ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
 
-ddos_add_bridge_v4: >-
+add_remote_services_v6: >-
+  {{ (metrics_port and prometheus_server6) | ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
+
+configured_relays_v4: >-
   {{ bridge_distribution | ternary('CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"', '') }}
 
-ddos_add_bridge_v6: >-
+configured_relays_v6: >-
   {{ bridge_distribution | ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
 
 # linux user
