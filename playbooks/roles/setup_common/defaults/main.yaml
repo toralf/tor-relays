@@ -17,9 +17,6 @@ nginx_metrics: false
 node_metrics: false
 prometheus_server: ""
 
-# use a dedicated DDoS solution (usually only at servers)
-firewall_use_ddos: false
-
 # any valid 1-liner
 custom_command: ""
 

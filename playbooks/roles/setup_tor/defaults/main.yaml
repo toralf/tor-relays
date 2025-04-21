@@ -21,8 +21,6 @@ tor_port: ""
 # safe default: Tor private bridge
 bridge_distribution: none
 
-# use a dedicated DDoS solution
-firewall_use_ddos: false
 ddos_metrics: false
 
 # metrics could expose potential sensitive information

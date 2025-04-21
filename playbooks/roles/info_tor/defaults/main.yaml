@@ -5,8 +5,6 @@ bridge_distribution: ""
 
 ddos_metrics: false
 
-firewall_use_ddos: false
-
 # defined here to allow --check
 _fingerprint: ""
 _fingerprint_ed25519: ""
