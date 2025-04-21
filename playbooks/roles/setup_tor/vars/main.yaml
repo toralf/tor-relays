@@ -1,7 +1,6 @@
 ---
 # set_fact works in tasks but in handlers thoses values are not known
 
-# yamllint disable-line rule:line-length
 additional_ports_v4: >-
   {{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}
 

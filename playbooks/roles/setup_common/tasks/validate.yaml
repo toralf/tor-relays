@@ -19,6 +19,13 @@
     that:
       - "prometheus_server is ansible.utils.ipv4"
 
+- name: Validate prometheus_server IPv6
+  when: prometheus_server6
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "prometheus_server6 is ansible.utils.ipv6"
+
 - name: Validate RAM for kernel src
   when: kernel_git_version
   ansible.builtin.assert:

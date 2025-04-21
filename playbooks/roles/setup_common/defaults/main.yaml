@@ -16,6 +16,7 @@ metrics_port: ""
 nginx_metrics: false
 node_metrics: false
 prometheus_server: ""
+prometheus_server6: ""
 
 # any valid 1-liner
 custom_command: ""
