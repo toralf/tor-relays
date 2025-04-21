@@ -20,9 +20,11 @@
 
 - name: Verify torrc
   changed_when: false
+  vars:
+    _user: "{{ tor_build_from_source | ternary('tor', 'root') }}"
   ansible.builtin.command:
     cmd: |-
-      su {{ tor_user }} -c "tor --verify-config"
+      su {{ _user }} -c "tor --verify-config"
 
 - name: Configure Tor logrotate
   ansible.builtin.template:
