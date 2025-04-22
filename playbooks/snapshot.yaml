@@ -1,6 +1,6 @@
 ---
 - name: Snapshot common
-  hosts: "!snowflake:!tor"
+  hosts: "snapshot"
   roles:
     - role: poweron
     - role: setup_common
