@@ -32,3 +32,14 @@
     quiet: true
     that:
       - "ansible_facts.memtotal_mb > 1024"
+
+- name: Check Boolean values
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "kernel_debian_backports == kernel_debian_backports | bool"
+      - "kernel_debian_cloud == kernel_debian_cloud | bool"
+      - "fire_and_forget == fire_and_forget | bool"
+      - "nginx_metrics == nginx_metrics | bool"
+      - "node_metrics == node_metrics | bool"
+      - "nginx_listener_default == nginx_listener_default | bool"

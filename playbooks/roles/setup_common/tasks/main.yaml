@@ -96,6 +96,7 @@
       ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
         - kernel
+        - kernel-dist
 
     - name: Self-compiled kernel
       when: kernel_git_version
@@ -118,16 +119,17 @@
     - name: Catch async kernel build job
       tags:
         - kernel
+        - kernel-src
       when: _kernel_build.changed
       block:
         - name: Wait till kernel build finished
-          when: not fire_and_forget
+          when: not fire_and_forget_bool
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result
           until: _job_result.finished
-          retries: 150
-          delay: 30
+          retries: 75
+          delay: 60
           notify: Reboot system
 
         - name: Cleanup kernel build async job
