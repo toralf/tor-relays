@@ -1,6 +1,6 @@
 ---
 - name: CA
-  hosts: all
+  hosts: localhost
   run_once: true
   roles:
     - role: ca
