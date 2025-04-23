@@ -2,6 +2,7 @@
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
+    - always
     - validate
 
 - name: Flush handlers before shutdown
