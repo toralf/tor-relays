@@ -168,6 +168,6 @@
         _j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"
       ansible.builtin.shell:
         cmd: |-
-          {{ fire_and_forget | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
+          {{ fire_and_forget | bool | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
         executable: /bin/bash
       register: _kernel_build

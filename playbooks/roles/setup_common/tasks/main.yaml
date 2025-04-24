@@ -124,7 +124,7 @@
       when: _kernel_build.changed
       block:
         - name: Wait till kernel build finished
-          when: not fire_and_forget_bool
+          when: not fire_and_forget | bool
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result
