@@ -5,11 +5,3 @@
     that:
       - "ansible_facts.default_ipv6.address is defined"
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
-
-- name: Check Boolean values
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "snowflake_build_from_source in ('true', 'false') or snowflake_build_from_source in (true, false)"
-      - "snowflake_prune_git_repo in ('true', 'false') or snowflake_prune_git_repo in (true, false)"
-      - "snowflake_metrics in ('true', 'false') or snowflake_metrics in (true, false)"

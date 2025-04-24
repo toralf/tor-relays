@@ -18,13 +18,3 @@
     quiet: true
     that:
       - "tor_port != metrics_port"
-
-- name: Check Boolean values
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "tor_build_from_source in ('true', 'false') or tor_build_from_source in (true, false)"
-      - "tor_prune_git_repo in ('true', 'false') or tor_prune_git_repo in (true, false)"
-      - "lyrebird_prune_git_repo in ('true', 'false') or lyrebird_prune_git_repo in (true, false)"
-      - "ddos_metrics in ('true', 'false') or ddos_metrics in (true, false)"
-      - "tor_metrics in ('true', 'false') or tor_metrics in (true, false)"
