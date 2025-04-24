@@ -37,9 +37,9 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "kernel_debian_backports == kernel_debian_backports | bool"
-      - "kernel_debian_cloud == kernel_debian_cloud | bool"
-      - "fire_and_forget == fire_and_forget | bool"
-      - "nginx_metrics == nginx_metrics | bool"
-      - "node_metrics == node_metrics | bool"
-      - "nginx_listener_default == nginx_listener_default | bool"
+      - "kernel_debian_backports in ('true', 'false') or kernel_debian_backports in (true, false)"
+      - "kernel_debian_cloud in ('true', 'false') or kernel_debian_cloud in (true, false)"
+      - "fire_and_forget in ('true', 'false') or fire_and_forget in (true, false)"
+      - "nginx_metrics in ('true', 'false') or nginx_metrics in (true, false)"
+      - "node_metrics in ('true', 'false') or node_metrics in (true, false)"
+      - "nginx_listener_default in ('true', 'false') or nginx_listener_default in (true, false)"

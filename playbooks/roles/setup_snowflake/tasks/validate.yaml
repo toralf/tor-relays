@@ -10,6 +10,6 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "snowflake_build_from_source == snowflake_build_from_source | bool"
-      - "snowflake_prune_git_repo == snowflake_prune_git_repo | bool"
-      - "snowflake_metrics == snowflake_metrics | bool"
+      - "snowflake_build_from_source in ('true', 'false') or snowflake_build_from_source in (true, false)"
+      - "snowflake_prune_git_repo in ('true', 'false') or snowflake_prune_git_repo in (true, false)"
+      - "snowflake_metrics in ('true', 'false') or snowflake_metrics in (true, false)"
