@@ -1,6 +1,6 @@
 ---
 - name: Snapshot common
-  hosts: "snapshot"
+  hosts: snapshot
   roles:
     - role: poweron
     - role: setup_common
