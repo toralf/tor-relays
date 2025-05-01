@@ -55,6 +55,7 @@
     - { name: kernel.sysrq, value: 0 }
     - { name: net.ipv4.tcp_fin_timeout, value: 10 }
     - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
+    - { name: net.ipv6.ip_nonlocal_bind, value: 1 }
 
 - name: Ensure kernel crash dumps are made using minicoredumper
   ansible.builtin.cron:
