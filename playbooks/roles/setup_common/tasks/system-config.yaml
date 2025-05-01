@@ -77,7 +77,7 @@
     dest: /etc/systemd/system/logrotate.timer.d/override.conf
   notify: Reload Systemd
 
-# e.g. Tor refuses to start, if IPv6 ORPort is not up
+# both nginx and Tor refuses to start, if IPv6 is not up
 - name: Ensure that Networkd wait online systemd override dir exists
   ansible.builtin.file:
     path: /etc/systemd/system/systemd-networkd-wait-online.service.d/
