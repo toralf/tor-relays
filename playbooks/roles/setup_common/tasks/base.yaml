@@ -84,3 +84,9 @@
   when: additional_software
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Allow phased updates in Ubuntu
+  when: ansible_facts.distribution in ('Ubuntu')
+  ansible.builtin.copy:
+    src: 20phased-updates
+    dest: /etc/apt/apt.conf.d/
