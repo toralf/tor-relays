@@ -13,11 +13,12 @@ jobs=$(nproc)
 echo -e "\n trusting $(wc -w <<<$*) ssh host key/s ..."
 
 while ! xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" &>/dev/null < <(
-  while read -r i; do
-    if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
-      echo $i
-    fi
-  done <$(xargs -n 1 <<<$*)
+  xargs -n 1 <<<$* |
+    while read -r i; do
+      if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
+        echo $i
+      fi
+    done
 ); do
   echo -en " NOT yet done ..."
   sleep 5
