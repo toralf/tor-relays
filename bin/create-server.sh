@@ -69,15 +69,15 @@ xargs -n 1 <<<$* |
     *-intel-*) htype="cx22" ;;
     esac
 
-    # e.g. US have only AMD
+    # e.g. US has only AMD
+    loc=""
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
       loc="--location ${HCLOUD_LOCATION}"
     else
       case ${htype} in
       #cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+      #cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
       #cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
-      *) loc="" ;;
       esac
     fi
 
