@@ -30,6 +30,22 @@
           - libssl-dev
           - lz4
 
+    - name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
+      when: ansible_facts.memtotal_mb < 2048
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          fallocate -l 2G /swapfile
+          chmod 600 /swapfile
+          mkswap /swapfile
+          if ! grep -q "^/swapfile " /etc/fstab; then
+            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+          fi
+          swapon /swapfile
+        creates: /swapfile
+        executable: /bin/bash
+
     - name: Init or update Linux repo
       retries: 3
       ansible.builtin.git:
@@ -74,6 +90,7 @@
           yes '' | make localmodconfig >/dev/null
 
           cat <<EOF >>.config
+          # Debian / generic
 
           CONFIG_LOCALVERSION=""
           CONFIG_LOCALVERSION_AUTO=y
@@ -118,16 +135,29 @@
           CONFIG_NFT_LIMIT=m
           CONFIG_NFT_NAT=m
 
+          # Ubuntu
+
+          CONFIG_SYSTEM_REVOCATION_KEYS=""
+
+          CONFIG_BPF=n
+          CONFIG_BPF_SYSCALL=n
+          CONFIG_BPF_JIT=n
+          CONFIG_BPF_JIT_ALWAYS_ON=n
+          CONFIG_BPF_JIT_DEFAULT_ON=n
+          CONFIG_PAHOLE_HAS_BTF_TAG=n
+          CONFIG_DEBUG_INFO_BTF=n
+          CONFIG_DEBUG_INFO_BTF_MODULES=n
+
           EOF
 
           yes '' | make oldconfig >/dev/null
 
-          # if current running kernel does not contain the commit-id, then something changed
+          # if current running kernel does not contain the commit-id of HEAD, then set this ansible task to "changed"
           if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
             exit 123
           fi
 
-          # if files do differ, then something changed
+          # if files do differ, then it has changed
           after=$(md5sum .config)
           if [[ ! $before == $after ]]; then
             exit 123
@@ -135,22 +165,6 @@
         chdir: /root/linux
         executable: /bin/bash
       register: _kernel_configured
-
-    - name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
-      when: ansible_facts.memtotal_mb < 2048
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          fallocate -l 2G /swapfile
-          chmod 600 /swapfile
-          mkswap /swapfile
-          if ! grep -q "^/swapfile " /etc/fstab; then
-            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
-          fi
-          swapon /swapfile
-        creates: /swapfile
-        executable: /bin/bash
 
     - name: Copy kernel build script
       ansible.builtin.copy:
