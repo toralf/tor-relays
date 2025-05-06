@@ -21,40 +21,41 @@ echo -e "\n using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-# US and Singapore are more expensive and do have less traffic incl.
-data_centers=$(
-  hcloud datacenter list --output json |
-    jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
-)
-
-server_types=$(hcloud server-type list --output json)
-cax_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
-cpx_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
-cx_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
-
-cax_locations=$(jq -r 'select(.server_types.available | contains(['${cax_id}'])) | .location.name' <<<${data_centers})
-cpx_locations=$(jq -r 'select(.server_types.available | contains(['${cpx_id}'])) | .location.name' <<<${data_centers})
-cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
-used_locations=$(echo ${cax_locations} ${cpx_locations} ${cx_locations} | xargs -n 1 | sort -u)
-
-# default OS: recent Debian
-image_default=$(hcloud image list --type system --output json | jq -r '.[].name' | grep '^debian' | sort -urV | head -n 1)
-
-# image snapshots
-snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
-
-# take the first one
-ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
-
-if [[ -z ${used_locations} || -z ${ssh_key} ]]; then
-  echo " API query failed" >&2
-  exit 1
-fi
-
 if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
   echo " ^^ invalid hostname/s" >&2
   exit 2
 fi
+
+if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
+  # US and Singapore are more expensive and do have less traffic incl.
+  data_centers=$(
+    hcloud datacenter list --output json |
+      jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
+  )
+
+  # US has only AMD
+  server_types=$(hcloud server-type list --output json)
+  cax_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
+  cpx_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
+  cx_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
+
+  cax_locations=$(jq -r 'select(.server_types.available | contains(['${cax_id}'])) | .location.name' <<<${data_centers})
+  cpx_locations=$(jq -r 'select(.server_types.available | contains(['${cpx_id}'])) | .location.name' <<<${data_centers})
+  cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
+fi
+
+if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" ]]; then
+  # image snapshots
+  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
+fi
+
+# default OS: recent Debian
+if [[ -z ${HCLOUD_IMAGE-} ]]; then
+  image_default=$(hcloud image list --type system --output json | jq -r '.[].name' | grep '^debian' | sort -urV | head -n 1)
+fi
+
+# take the first one
+ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
 
 echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 
@@ -69,15 +70,14 @@ xargs -n 1 <<<$* |
     *-intel-*) htype="cx22" ;;
     esac
 
-    # e.g. US has only AMD
     loc=""
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
       loc="--location ${HCLOUD_LOCATION}"
-    else
+    elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
       case ${htype} in
-      #cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-      #cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-      #cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+      cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+      cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
       esac
     fi
 
@@ -92,7 +92,7 @@ xargs -n 1 <<<$* |
 
 $(dirname $0)/update-dns.sh
 
-# clean up any old SSH key
+# do no longer trust old SSH keys
 $(dirname $0)/distrust-host-ssh-key.sh $*
 
 # build SSH trust relationship
