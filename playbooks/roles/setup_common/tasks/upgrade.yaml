@@ -3,7 +3,7 @@
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   ansible.builtin.apt:
     update_cache: true
-    upgrade: dist
+    upgrade: full
 
 - name: Check if reboot is needed after upgrade
   ansible.builtin.import_tasks: reboot.yaml
