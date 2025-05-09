@@ -19,7 +19,7 @@ project=$(hcloud context active)
 echo -e "\n using Hetzner project ${project:?}"
 
 hconf=/etc/unbound/hetzner-${project}.conf
-if ! sudo grep -q ${hconf} /etc/unbound/unbound.conf; then
+if ! sudo grep -q -e "^include: \"${hconf}\"" /etc/unbound/unbound.conf; then
   echo "unbound is not configured to use ${hconf}" >&2
   exit 1
 fi
@@ -31,6 +31,8 @@ while [[ -e ${hconf}.new ]]; do
   echo -n '.'
   sleep 1
 done
+
+set -o pipefail
 
 echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
 trap Exit INT QUIT TERM EXIT
