@@ -1,12 +1,16 @@
 ---
-- name: Get last 30 connections (sorted from newest to oldest)
+- name: Sum connections over last hour
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake-proxy --since "1 hour ago" -g ', there were .* connections' -q -r |
-        tail -n 30 |
+      conns=$(
+        journalctl -u snowflake-proxy --since "1 hour ago" -g ', there were .* connections' -q -r |
         awk '{ print $14 }' |
-        xargs
+        xargs |
+        tr ' ' '+'
+      )
+      echo $(( conns ))
+    executable: /bin/bash
   register: _result
 
 - name: File connections
