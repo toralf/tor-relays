@@ -11,3 +11,8 @@
   ansible.builtin.import_tasks: snapshot.yaml
   tags:
     - snapshot
+
+- name: House Keeping
+  ansible.builtin.import_tasks: house-keeping.yaml
+  tags:
+    - house-keeping

@@ -1,0 +1,14 @@
+---
+- name: Remove outdated snapshots
+  when: inventory_hostname == ansible_play_hosts_all[-1]
+  changed_when: _found.rc == 0
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      hcloud --quiet --poll-interval 10s image list --type snapshot --output noheader --output columns=id,description |
+        sort -r |
+        awk 'x[$2]++ { print $1 }' |
+        xargs -r hcloud --quiet --poll-interval 10s image delete |
+        grep .
+    executable: /bin/bash
+  register: _found
