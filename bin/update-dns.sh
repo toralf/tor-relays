@@ -42,7 +42,10 @@ hcloud server list --output noheader --output columns=name,ipv4 |
   while read -r name ipv4; do
     printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
     printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
-    ipv6=$(grep "^${name} " ~/tmp/all_ipv6 2>/dev/null | awk '{ print $2 }')
+    ipv6=$(
+      set +o pipefail
+      grep "^${name} " ~/tmp/all_ipv6 2>/dev/null | awk '{ print $2 }'
+    )
     if [[ -n ${ipv6} ]]; then
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6}
       printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6} "" ${name}
