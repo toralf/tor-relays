@@ -15,7 +15,6 @@
 - name: Proxy version
   changed_when: false
   when: bridge_distribution
-  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       if cd /root/lyrebird; then

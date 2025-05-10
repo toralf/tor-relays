@@ -1,8 +1,8 @@
 ---
-- name: Gather current unix time of remote system
+- name: Gather facts - date + time
   ansible.builtin.setup:
     gather_subset:
-      - "date_time"
+      - date_time
 
 - name: Stats of make.log
   ansible.builtin.stat:

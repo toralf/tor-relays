@@ -1,16 +1,4 @@
 ---
-# Hint: facts cache is not updated if --tags or --limit is used, so use "--tags facts" if needed
-facts_subset:
-  - "!all"
-  - "!min"
-  - all_ipv4_addresses
-  - all_ipv6_addresses
-  - architecture
-  - default_ipv4
-  - default_ipv6
-  - distribution
-  - hardware
-
 # where to store certificate materials
 ca_dir: "{{ playbook_dir }}/../secrets/ca"
 

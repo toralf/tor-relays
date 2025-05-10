@@ -1,15 +1,15 @@
 ---
 # group by description and keep the latest id
 - name: Remove superseeded snapshots
+  delegate_to: localhost
   when: inventory_hostname == ansible_play_hosts_all[-1]
-  changed_when: _found.rc == 0
-  failed_when: _found.stderr
+  changed_when: _result.stdout
+  failed_when: _result.stderr or _result.rc != 0
   ansible.builtin.shell:
     cmd: |-
       hcloud --quiet --poll-interval 10s image list --type snapshot --output noheader --output columns=id,description |
         sort -r |
         awk 'x[$2]++ { print $1 }' |
-        xargs -r hcloud --quiet --poll-interval 10s image delete |
-        grep -q .
+        xargs -r hcloud --poll-interval 10s image delete
     executable: /bin/bash
-  register: _found
+  register: _result

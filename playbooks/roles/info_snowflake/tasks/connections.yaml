@@ -1,6 +1,12 @@
 ---
+- name: Gather facts - hardware
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+
 - name: Sum connections
   changed_when: false
+  failed_when: _result.stderr
   ansible.builtin.shell:
     cmd: |-
       conns=$(
@@ -9,7 +15,17 @@
         xargs |
         tr ' ' '+'
       )
-      echo $(( conns ))
+      sum=$(( conns ))
+
+      if [[ $sum -gt 0 ]]; then
+        echo $sum
+      else
+        if [[ {{ ansible_facts.uptime_seconds }} -lt 3600 ]]; then
+          echo "n/a"
+        else
+          echo "0"
+        fi
+      fi
     executable: /bin/bash
   register: _result
 

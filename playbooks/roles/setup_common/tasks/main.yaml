@@ -1,14 +1,23 @@
 ---
-- name: Gather facts
+# Hint: facts cache is not updated if --tags or --limit is used, so use "--tags facts" if needed
+- name: Gather facts - subset
   ansible.builtin.setup:
-    gather_subset: "{{ facts_subset }}"
+    gather_subset:
+      - "!all"
+      - "!min"
+      - all_ipv4_addresses
+      - all_ipv6_addresses
+      - architecture
+      - default_ipv4
+      - default_ipv6
+      - distribution
+      - hardware
   tags:
     - facts
 
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
-    - always
     - validate
 
 - name: Main

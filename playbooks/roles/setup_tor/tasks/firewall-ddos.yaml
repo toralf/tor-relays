@@ -18,7 +18,6 @@
 # it might be stopped manually
 - name: Check if DDoS is up
   changed_when: _ddos_up.rc != 0
-  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       set -euf

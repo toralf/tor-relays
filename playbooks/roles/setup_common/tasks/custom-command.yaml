@@ -1,24 +1,23 @@
 ---
-- name: Run a custom command
-  changed_when: false
-  failed_when: false
-  ansible.builtin.shell:
-    cmd: "{{ custom_command }}"
-    executable: /bin/bash
-  register: _custom_command_result
+- name: Custom command
+  block:
+    - name: Run a custom command
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: "{{ custom_command }}"
+        executable: /bin/bash
+      register: _custom_command_result
 
-- name: Results stdout of custom command
-  when: _custom_command_result.stdout_lines
-  ansible.builtin.debug:
-    var: _custom_command_result.stdout_lines
+    - name: Stdout of custom command
+      when: _custom_command_result.stdout
+      ansible.builtin.debug:
+        var: _custom_command_result.stdout
+  rescue:
+    - name: Rc of custom command
+      ansible.builtin.debug:
+        var: _custom_command_result.rc
 
-- name: Results stderr of custom command
-  when: _custom_command_result.stderr_lines
-  ansible.builtin.debug:
-    var: _custom_command_result.stderr_lines
-
-- name: Results rc of custom command
-  when: _custom_command_result.rc != 0
-  failed_when: _custom_command_result.rc != 0
-  ansible.builtin.debug:
-    var: _custom_command_result.rc
+    - name: Stderr of custom command
+      when: _custom_command_result.stderr
+      ansible.builtin.debug:
+        var: _custom_command_result.stderr
