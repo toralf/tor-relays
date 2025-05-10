@@ -17,7 +17,7 @@
         filename: torproject
         repo: "deb https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
 
-    - name: Configure repository "torproject" for tor_debian_target "{{ tor_debian_target }}"
+    - name: Configure repository "torproject" for tor_debian_target
       when: tor_debian_target
       ansible.builtin.apt_repository:
         filename: torproject

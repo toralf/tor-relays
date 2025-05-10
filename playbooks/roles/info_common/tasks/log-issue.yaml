@@ -1,14 +1,14 @@
 ---
-- name: Get any issues since {{ log_system_since }}
+- name: Get any issues since from system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system_since }}" -q |
+      journalctl --since "{{ log_system }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' |
           while read -r issue; do
             echo "=="
-            journalctl --since "{{ log_system_since }}" -q |
+            journalctl --since "{{ log_system }}" --quiet |
               grep -A 1000 -F "$issue" |
               while grep " kernel: "; do
                 : stop after the first non-matching line
@@ -17,7 +17,7 @@
           done
   register: _result
 
-- name: Findings since {{ log_system_since }}
+- name: File findings of system log
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   when: _result.stdout

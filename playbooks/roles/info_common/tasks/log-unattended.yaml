@@ -1,5 +1,5 @@
 ---
-- name: Get last {{ log_lines }} lines from {{ log_unattended }}
+- name: Get last lines from unattended log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -7,7 +7,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Findings of log-unattended {{ log_lines }} last lines
+- name: Findings of unattended log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

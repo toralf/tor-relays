@@ -1,5 +1,5 @@
 ---
-- name: Get last {{ log_lines }} lines of {{ log_notice }}
+- name: Check notice log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -19,7 +19,7 @@
     executable: /bin/bash
   register: _result
 
-- name: Results of log-notice {{ log_lines }} last lines
+- name: Results of notice log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

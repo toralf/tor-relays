@@ -1,4 +1,6 @@
 ---
 log_lines: 10
 
-log_proxy_since: 1 day ago
+log_proxy: 1 day ago
+
+log_connections: 1  hour ago

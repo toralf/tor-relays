@@ -7,7 +7,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Results of log-error {{ log_lines }} last lines
+- name: Results of error log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

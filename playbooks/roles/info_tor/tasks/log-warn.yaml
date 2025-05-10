@@ -1,5 +1,5 @@
 ---
-- name: Get last {{ log_lines }} lines of {{ log_warn }}
+- name: Check warn log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -12,7 +12,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Results of log-warn {{ log_lines }} last lines
+- name: Results of warn log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines

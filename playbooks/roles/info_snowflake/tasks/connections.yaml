@@ -1,10 +1,10 @@
 ---
-- name: Sum connections over last hour
+- name: Sum connections
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       conns=$(
-        journalctl -u snowflake-proxy --since "1 hour ago" -g ', there were .* connections' -q -r |
+        journalctl -u snowflake-proxy --since "{{ log_connections }}" -g ', there were .* connections' --quiet --reverse |
         awk '{ print $14 }' |
         xargs |
         tr ' ' '+'

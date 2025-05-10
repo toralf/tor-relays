@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake-proxy -g "NAT" -q |
+      journalctl -u snowflake-proxy -g "NAT" --quiet |
         tail -n 1 |
         grep -o "NAT type:.*" |
         cut -f 3- -d ' '

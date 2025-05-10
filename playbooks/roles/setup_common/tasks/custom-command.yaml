@@ -7,17 +7,17 @@
     executable: /bin/bash
   register: _custom_command_result
 
-- name: Results stdout of {{ custom_command }}
+- name: Results stdout of custom command
   when: _custom_command_result.stdout_lines
   ansible.builtin.debug:
     var: _custom_command_result.stdout_lines
 
-- name: Results stderr of {{ custom_command }}
+- name: Results stderr of custom command
   when: _custom_command_result.stderr_lines
   ansible.builtin.debug:
     var: _custom_command_result.stderr_lines
 
-- name: Results rc of {{ custom_command }}
+- name: Results rc of custom command
   when: _custom_command_result.rc != 0
   failed_when: _custom_command_result.rc != 0
   ansible.builtin.debug:

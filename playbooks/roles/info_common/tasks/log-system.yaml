@@ -1,9 +1,9 @@
 ---
-- name: Get overview of oddities in system log since {{ log_system_since }}
+- name: Get oddities from system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system_since }}" -q |
+      journalctl --since "{{ log_system }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
@@ -11,7 +11,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Findings of oddities in log-system since {{ log_system_since }}
+- name: Findings of oddities in system log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines
