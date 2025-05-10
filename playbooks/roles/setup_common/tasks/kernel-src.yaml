@@ -87,6 +87,10 @@
           set -euf
 
           [[ -s .config ]] && before=$(md5sum .config) || before="0"
+
+          # force module loading
+          conntrack -C
+
           yes '' | make localmodconfig >/dev/null
 
           cat <<EOF >>.config
@@ -127,6 +131,7 @@
           CONFIG_NETFILTER_XT_NAT=m
           CONFIG_NETFILTER_XT_SET=m
           CONFIG_NF_CONNTRACK=m
+          CONFIG_NF_CT_NETLINK=m
           CONFIG_NF_NAT=m
           CONFIG_NF_TABLES=m
           CONFIG_NF_TABLES_INET=y
