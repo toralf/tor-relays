@@ -2,21 +2,21 @@
 # https://arminreiter.com/2022/01/create-your-own-certificate-authority-ca-using-openssl/
 # https://gist.github.com/klo2k/6506d161e9a096f74e4122f98665ce70
 
+- name: Create local directories both for Root CA and for client certificates
+  ansible.builtin.file:
+    state: directory
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/{{ item }}/"
+    mode: "0755"
+  with_items:
+    - crts
+    - csrs
+    - keys
+
 - name: Generate Root CA
   tags:
     - ca
     - never
   block:
-    - name: Create local directories both for Root CA and for client certificates
-      ansible.builtin.file:
-        state: directory
-        path: "{{ ca_dir }}/{{ ca_name }}/clients/{{ item }}/"
-        mode: "0755"
-      with_items:
-        - crts
-        - csrs
-        - keys
-
     - name: Generate Root CA private key
       community.crypto.openssl_privatekey:
         path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
