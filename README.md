@@ -1,6 +1,8 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# A stack to deploy Tor relays or Snowflake
+# Main Goal
+
+Maintain Tor, Snowflake and Nginx instances using latest self-compiled/configured app/kernel versions.
 
 ## Quick start
 
