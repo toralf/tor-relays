@@ -1,8 +1,6 @@
 ---
 # group by description and keep the latest id
 - name: Remove superseeded snapshots
-  delegate_to: localhost
-  when: inventory_hostname == ansible_play_hosts_all[-1]
   changed_when: _result.stdout
   failed_when: _result.stderr or _result.rc != 0
   ansible.builtin.shell:

@@ -1,8 +1,13 @@
 ---
-- name: Snapshot common
+- name: Snapshot
   hosts: snapshot
   roles:
     - role: poweron
     - role: setup_common
     - role: info_setup
     - role: snapshot
+
+- name: Snapshot cleanup
+  hosts: localhost
+  roles:
+    - role: snapshot_cleanup

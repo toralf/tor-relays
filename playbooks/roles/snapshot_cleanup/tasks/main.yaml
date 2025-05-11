@@ -1,0 +1,5 @@
+---
+- name: Housekeeping
+  ansible.builtin.import_tasks: housekeeping.yaml
+  tags:
+    - housekeeping
