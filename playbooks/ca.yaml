@@ -1,6 +1,5 @@
 ---
 - name: CA
   hosts: localhost
-  run_once: true
   roles:
     - role: ca

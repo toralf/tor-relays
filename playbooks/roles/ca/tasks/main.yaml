@@ -3,14 +3,11 @@
 # https://gist.github.com/klo2k/6506d161e9a096f74e4122f98665ce70
 
 - name: Generate Root CA
-  delegate_to: localhost
-  run_once: true
   tags:
     - ca
     - never
   block:
     - name: Create local directories both for Root CA and for client certificates
-      delegate_to: localhost
       ansible.builtin.file:
         state: directory
         path: "{{ ca_dir }}/{{ ca_name }}/clients/{{ item }}/"
