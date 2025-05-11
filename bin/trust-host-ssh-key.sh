@@ -20,7 +20,7 @@ while ! xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -
       fi
     done
 ); do
-  echo -en " NOT yet done ..."
+  echo -en " waiting ..."
   sleep 5
   echo
 done
