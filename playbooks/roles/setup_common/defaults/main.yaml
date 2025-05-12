@@ -21,5 +21,6 @@ prometheus_server6: ""
 # any valid 1-liner
 custom_command: ""
 
-# whether nginx should have a default listener
+# nginx
 nginx_listener_default: false
+nginx_hidden_directory: ""

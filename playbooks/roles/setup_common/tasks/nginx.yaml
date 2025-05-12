@@ -65,7 +65,14 @@
         dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
       notify: Reload nginx
 
-- name: Confgure nginx
+- name: Create hidden directory
+  when: nginx_hidden_directory
+  ansible.builtin.file:
+    path: /var/www/html/{{ nginx_hidden_directory }}
+    state: directory
+    mode: "0755"
+
+- name: Configure nginx
   ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/conf.d/tor-relays.conf
