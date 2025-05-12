@@ -6,10 +6,8 @@ server {
   listen [{{ ansible_facts.default_ipv6.address }}]:80 default_server;
 
   root /var/www/html;
-
   index index.html index.htm index.nginx-debian.html;
-
-  server_name _;
+  server_name _80;
 
   location / {
     try_files $uri $uri/ =404;
@@ -25,18 +23,17 @@ server {
   ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
   ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
   ssl_conf_command Options KTLS;
-
   add_header Strict-Transport-Security "max-age=63072000" always;
 
-  index index.html index.htm index.nginx-debian.html;
-
   root /var/www/html;
+  index index.html index.htm index.nginx-debian.html;
+  server_name _443;
 
   location / {
     try_files $uri $uri/ =404;
   }
-
 {% if nginx_hidden_directory %}
+
   location /{{ nginx_hidden_directory }}/ {
     autoindex on;
     autoindex_exact_size off;
@@ -77,7 +74,6 @@ server {
   ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
   ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
   ssl_conf_command Options KTLS;
-
   add_header Strict-Transport-Security "max-age=63072000" always;
 {% if nginx_metrics %}
 
