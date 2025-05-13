@@ -32,21 +32,36 @@ server {
   location / {
     try_files $uri $uri/ =404;
   }
-{% if nginx_hidden_directory %}
+{% if nginx_site_directory %}
 
-  location /{{ nginx_hidden_directory }}/ {
+  location /{{ nginx_site_directory }}/ {
+    proxy_pass http://127.0.0.1:1234/;
+  }
+{% endif %}
+}
+{% endif %}
+{% if nginx_site_directory %}
+
+server {
+  listen 127.0.0.1:1234;
+
+  root /var/www/{{ nginx_site_directory }};
+  server_name _1234;
+
+  location / {
     autoindex on;
     autoindex_exact_size off;
     autoindex_format html;
     autoindex_localtime on;
   }
-{% endif %}
 }
 {% endif %}
 {% if nginx_metrics %}
 
 server {
   listen 127.0.0.1:8080;
+
+  server_name _8080;
 
   location /metrics {
     stub_status on;
@@ -59,6 +74,7 @@ server {
   listen 127.0.0.1:3305;
 
   root /var/www/html;
+  server_name _3305;
 
   index torutils.prom;
 }
@@ -75,6 +91,8 @@ server {
   ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
   ssl_conf_command Options KTLS;
   add_header Strict-Transport-Security "max-age=63072000" always;
+
+  server_name _{{ metrics_port }};
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
