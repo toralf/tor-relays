@@ -5,9 +5,9 @@ server {
   listen {{ ansible_facts.default_ipv4.address }}:80 default_server;
   listen [{{ ansible_facts.default_ipv6.address }}]:80 default_server;
 
+  server_name _80;
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
-  server_name _80;
 
   location / {
     try_files $uri $uri/ =404;
@@ -25,9 +25,9 @@ server {
   ssl_conf_command Options KTLS;
   add_header Strict-Transport-Security "max-age=63072000" always;
 
+  server_name _443;
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
-  server_name _443;
 
   location / {
     try_files $uri $uri/ =404;
@@ -45,8 +45,8 @@ server {
 server {
   listen 127.0.0.1:1234;
 
-  root /var/www/{{ nginx_site_directory }};
   server_name _1234;
+  root /var/www/{{ nginx_site_directory }};
 
   location / {
     autoindex on;
@@ -62,10 +62,9 @@ server {
   listen 127.0.0.1:8080;
 
   server_name _8080;
+  root /var/www/html;
 
-  location /metrics {
-    stub_status on;
-  }
+  stub_status on;
 }
 {% endif %}
 {% if ddos_metrics is defined and ddos_metrics %}
@@ -73,9 +72,8 @@ server {
 server {
   listen 127.0.0.1:3305;
 
-  root /var/www/html;
   server_name _3305;
-
+  root /var/www/html;
   index torutils.prom;
 }
 {% endif %}
@@ -93,10 +91,12 @@ server {
   add_header Strict-Transport-Security "max-age=63072000" always;
 
   server_name _{{ metrics_port }};
+  root /var/www/html;
+  index index.html index.htm index.nginx-debian.html;
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
-    proxy_pass http://127.0.0.1:8080/metrics;
+    proxy_pass http://127.0.0.1:8080/;
   }
 {% endif %}
 {% if node_metrics %}
