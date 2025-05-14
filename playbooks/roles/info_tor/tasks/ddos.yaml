@@ -7,6 +7,8 @@
     mode: pull
     src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"
     dest: "{{ tmp_dir }}/{{ item }}/{{ inventory_hostname }}"
+    use_ssh_args: true
+    verify_host: true
   with_items:
     - ddos
     - ddos6

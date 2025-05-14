@@ -12,3 +12,5 @@
     mode: pull
     src: "{{ _config_fname.stdout }}"
     dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.config"
+    use_ssh_args: true
+    verify_host: true

@@ -7,7 +7,7 @@
     sysctl_set: true
   notify: Restart Snowflake
 
-- name: Sync Geoip DB
+- name: Upload Geoip DB
   throttle: "{{ concurrent_local_jobs }}"
   when: tor_geoip_path
   ansible.posix.synchronize:
@@ -15,4 +15,6 @@
     dest: /usr/share/tor/
     owner: false
     group: false
+    use_ssh_args: true
+    verify_host: true
   notify: Restart Snowflake
