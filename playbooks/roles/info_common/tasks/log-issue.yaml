@@ -8,11 +8,10 @@
         grep -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' |
           while read -r issue; do
-            echo "=="
             journalctl --since "{{ log_system }}" --quiet |
               grep -A 1000 -F "$issue" |
               while grep " kernel: "; do
-                : stop after the first non-matching line
+                : run  till the first non-matching line
               done
             echo
           done
@@ -22,6 +21,9 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   when: _result.stdout
-  ansible.builtin.copy:
-    content: "{{ _result.stdout ~ '\n' }}"
-    dest: "{{ tmp_dir }}/issue/{{ inventory_hostname }}.log"
+  ansible.builtin.blockinfile:
+    block: "{{ _result.stdout }}"
+    path: "{{ tmp_dir }}/issue/{{ inventory_hostname }}.log"
+    marker: "# {mark} {{ _result.stdout_lines[0] }}"
+    append_newline: true
+    create: true
