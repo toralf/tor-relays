@@ -1,11 +1,12 @@
 ---
-- name: Get any issues since from system log
+- name: Get issues with full trace from system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
-        grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' |
+        grep -F \
+          -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' |
           while read -r issue; do
             echo "=="
             journalctl --since "{{ log_system }}" --quiet |

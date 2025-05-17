@@ -1,5 +1,5 @@
 ---
-- name: Get oddities from system log
+- name: Get certain issues from system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -11,7 +11,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Findings of oddities in system log
+- name: Findings in system log
   when: _result.stdout_lines
   ansible.builtin.debug:
     var: _result.stdout_lines
