@@ -6,7 +6,8 @@
       journalctl --since "{{ log_system }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
-          -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' |
+          -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
+          -e ': segfault at ' |
           while read -r issue; do
             journalctl --since "{{ log_system }}" --quiet |
               grep -A 1000 -F "$issue" |
