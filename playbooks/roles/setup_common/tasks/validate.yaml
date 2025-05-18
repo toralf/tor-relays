@@ -32,3 +32,12 @@
     quiet: true
     that:
       - "ansible_facts.memtotal_mb > 1024"
+
+- name: Validate Nginx site directory
+  when: nginx_site_directory
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "nginx_site_directory is not search('/')"
+      - "nginx_site_directory not in ('html')"
+      - "nginx_site_directory | length > 15"
