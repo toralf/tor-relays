@@ -37,8 +37,9 @@ xargs -n 1 <<<$* |
     echo --image ${image} ${name}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild
+set +o pipefail
 
-cleanLocalData $*
+cleanLocalDataEntries $*
 
 # clean up any left over SSH key
 $(dirname $0)/distrust-host-ssh-key.sh $*

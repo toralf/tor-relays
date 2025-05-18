@@ -49,6 +49,7 @@ hcloud server list --output noheader --output columns=name,ipv4 |
     fi
   done |
   sudo tee -a ${hconf}.new >/dev/null
+set +o pipefail
 
 if ! sudo diff -q ${hconf} ${hconf}.new 1>/dev/null; then
   sudo cp ${hconf}.new ${hconf}

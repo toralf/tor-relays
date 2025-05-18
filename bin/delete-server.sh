@@ -18,7 +18,8 @@ echo -e "\n using Hetzner project ${project:?}"
 
 jobs=$(nproc)
 
-cleanLocalData $*
+cleanLocalDataEntries $*
+cleanLocalDataFiles $*
 
 echo " delete from DNS config"
 while read -r name; do
