@@ -19,10 +19,15 @@
       tags:
         - log-proxy
 
-    - name: Uptime
-      ansible.builtin.import_tasks: uptime.yaml
+    - name: Process runtime
+      ansible.builtin.import_tasks: process-runtime.yaml
       tags:
-        - uptime
+        - process-runtime
+
+    - name: Systemd time
+      ansible.builtin.import_tasks: systemd-time.yaml
+      tags:
+        - systemd-time
 
     - name: Version of Snowflake
       ansible.builtin.import_tasks: version.yaml

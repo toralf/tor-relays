@@ -1,0 +1,20 @@
+---
+- name: Get process runtime
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      ps -eo etime,cmd --no-headers |
+        grep /usr/bin/tor |
+        grep -v grep |
+        awk '{ print $1 }'|
+        grep . ||
+        echo "-"
+  register: _process
+
+- name: File process runtime
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }} etime {{ _process.stdout }}"
+    path: "{{ tmp_dir }}/tor_process_runtime"
+    regex: "^{{ inventory_hostname }} "
