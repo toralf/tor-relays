@@ -1,17 +1,14 @@
 ---
 - name: Uptime
   changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      uptime -ps |
-        grep . ||
-      echo "- -"
+  ansible.builtin.command:
+    cmd: uptime -ps
   register: _result
 
 - name: File uptime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} Uptime {{ _result.stdout | default('- -') }}"
     path: "{{ tmp_dir }}/all_uptime"
     regex: "^{{ inventory_hostname }} "

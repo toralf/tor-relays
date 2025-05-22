@@ -23,7 +23,6 @@ jobs=$((3 * $(nproc)))
 snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
 
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
     image=${HCLOUD_IMAGE-}
@@ -37,7 +36,6 @@ xargs -n 1 <<<$* |
     echo --image ${image} ${name}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild
-set +o pipefail
 
 cleanLocalDataEntries $*
 

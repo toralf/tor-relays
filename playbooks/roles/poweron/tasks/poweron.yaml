@@ -12,7 +12,6 @@
           ping -q -c 1 {{ inventory_hostname }} ||
           ping -q -c 2 {{ inventory_hostname }} ||
           ping -q -c 4 {{ inventory_hostname }}
-        executable: /bin/bash
       register: _is_up
 
     - name: Power on the system
@@ -27,7 +26,7 @@
           sleep 10
 
           i=15
-          while ((i--)); do
+          while (( i-- )); do
             if ping -q -c 1 {{ inventory_hostname }}; then
               sleep 15
               exit 0

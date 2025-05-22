@@ -42,7 +42,8 @@
   throttle: "{{ torproject_connections }}"
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: curl -s {{ item }} | patch -p 1
+    cmd: >-
+      curl -s {{ item }} -o /root/tor.patch && patch -p 1 </root/tor.patch
     chdir: /root/tor
   loop_control:
     label: "{{ item }}"
@@ -70,7 +71,6 @@
           1>>make.log
       make clean 1>>make.log
       make -j {{ ansible_facts.processor_vcpus }} 1>>make.log
-    executable: /bin/bash
     chdir: /root/tor
 
 - name: Create directories

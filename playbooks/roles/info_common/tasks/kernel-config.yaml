@@ -2,7 +2,8 @@
 - name: Get Linux kernel config file name
   changed_when: false
   ansible.builtin.shell:
-    cmd: ls /boot/config-$(uname -r)
+    cmd: >-
+      ls /boot/config-$(uname -r)
   register: _config_fname
 
 - name: Download Linux kernel config

@@ -3,6 +3,7 @@
   module_defaults:
     ansible.builtin.lineinfile:
       create: true
+      firstmatch: true
       mode: "0644"
   block:
     - name: IPv6

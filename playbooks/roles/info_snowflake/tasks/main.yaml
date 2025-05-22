@@ -3,6 +3,7 @@
   module_defaults:
     ansible.builtin.lineinfile:
       create: true
+      firstmatch: true
   block:
     - name: Connections
       ansible.builtin.import_tasks: connections.yaml

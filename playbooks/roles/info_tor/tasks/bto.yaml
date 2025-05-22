@@ -9,7 +9,6 @@
 - name: File b.t.o.
   delegate_to: localhost
   throttle: 1
-  when: _result.status is defined and _result.status == 200
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('match', '\\* ') }}"
     path: "{{ tmp_dir }}/tor_bto"

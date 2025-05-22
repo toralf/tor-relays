@@ -32,8 +32,6 @@ while [[ -e ${hconf}.new ]]; do
   sleep 1
 done
 
-set -o pipefail
-
 echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
 trap Exit INT QUIT TERM EXIT
 
@@ -49,7 +47,6 @@ hcloud server list --output noheader --output columns=name,ipv4 |
     fi
   done |
   sudo tee -a ${hconf}.new >/dev/null
-set +o pipefail
 
 if ! sudo diff -q ${hconf} ${hconf}.new 1>/dev/null; then
   sudo cp ${hconf}.new ${hconf}

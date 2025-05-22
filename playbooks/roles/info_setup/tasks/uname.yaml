@@ -1,7 +1,8 @@
 ---
 - name: Uname
   changed_when: false
-  ansible.builtin.command: uname -rm
+  ansible.builtin.command:
+    cmd: uname -rm
   register: _result
 
 - name: File uname

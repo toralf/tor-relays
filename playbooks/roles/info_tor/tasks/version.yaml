@@ -22,16 +22,15 @@
       else
         obfs4proxy --version || lyrebird --version
       fi
-    executable: /bin/bash
   register: _proxy_version
 
 - name: File version
   delegate_to: localhost
   throttle: 1
   vars:
-    __package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
-    __version: "{{ _tor.stdout | default('-') }} {{ _proxy_version.stdout | default('-') }}"
+    _package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
+    _version: "{{ _tor.stdout | default('-') }} {{ _proxy_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} tor {{ __version }} {{ __package }}"
+    line: "{{ inventory_hostname }} tor {{ _version }} {{ _package }}"
     path: "{{ tmp_dir }}/tor_version"
     regex: "^{{ inventory_hostname }} "

@@ -8,7 +8,7 @@
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
-    name: "DDoS metrics"
+    name: DDoS metrics
     special_time: reboot
     job: >-
       nice /root/metrics.sh 15 /var/www/html/
@@ -37,7 +37,7 @@
 - name: Ensure DDoS metrics script is running
   changed_when: _ddos_metrics_started.changed
   when: ddos_metrics and _ddos_metrics_pids_running.pids | length == 0
-  ansible.builtin.shell:
-    cmd: |-
+  ansible.builtin.command:
+    cmd: >-
       nice /root/metrics.sh 15 /var/www/html/ &
   register: _ddos_metrics_started

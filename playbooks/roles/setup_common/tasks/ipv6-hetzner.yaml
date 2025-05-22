@@ -7,12 +7,12 @@
 
 - name: Change IPv6 to non-default
   vars:
-    __ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
-    __a: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'A' + __ipv6_prefix) }}"
-    __b: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + __ipv6_prefix) }}"
-    __c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + __ipv6_prefix) }}"
-    __d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + __ipv6_prefix) }}"
-    _ipv6_new: "{{ __ipv6_prefix }}:{{ '%x' % (__a | int) }}:{{ '%x' % (__b | int) }}:{{ '%x' % (__c | int) }}:{{ '%x' % (__d | int) }}"
+    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+    _a: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
+    _b: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix) }}"
+    _c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
+    _d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
+    _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   block:
     - name: Change IPv6 for Debian
       when: ansible_facts.distribution in ('Debian')
@@ -37,7 +37,7 @@
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
-            regex: '      - "{{ __ipv6_prefix }}:'
+            regex: '      - "{{ _ipv6_prefix }}:'
             mode: "0600"
           register: _ipv6_address
 
@@ -48,24 +48,18 @@
           ansible.builtin.shell:
             cmd: |-
               set -e
+
               sudo netplan generate
               sudo netplan apply
-            executable: /bin/bash
           register: _netplan
 
 - name: Check that IPv6 is up
-  changed_when: _ip6_up.rc == 42
-  failed_when: _ip6_up.rc != 0 and _ip6_up.rc != 42
+  changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      rc=0
-
       while ip -6 a | grep -q ' tentative'; do
-        rc=42
         sleep 1
       done
-
-      exit $rc
   register: _ip6_up
 
 - name: Gather facts - IPv6

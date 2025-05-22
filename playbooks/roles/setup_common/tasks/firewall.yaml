@@ -1,5 +1,5 @@
 ---
-- name: Install/Update firewall software
+- name: Install/Update base iptables
   ansible.builtin.apt:
     name:
       - conntrack
@@ -14,7 +14,7 @@
 - name: Firewall
   when: not _ddos_solution.stat.exists
   block:
-    - name: Install/Update firewall software
+    - name: Install/Update additional iptables
       ansible.builtin.apt:
         name:
           - iptables-persistent
@@ -57,7 +57,8 @@
         - name: Start firewall
           changed_when: true
           ansible.builtin.command:
-            cmd: "/root/firewall-ip{{ item }}.sh start"
+            cmd: >-
+              /root/firewall-ip{{ item }}.sh start
           with_items:
             - v4
             - v6

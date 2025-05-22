@@ -2,7 +2,7 @@
 - name: Debian kernel
   when: ansible_facts.distribution in ('Debian')
   vars:
-    _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('-amd64', '-arm64') }}"
+    _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
     _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
   block:
     - name: Install desired Debian kernel flavour
@@ -10,7 +10,7 @@
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}{{ kernel_debian_backports | ternary('-backports', '') }}"
         name:
-          - "linux-image{{ _cloud }}{{ _arch }}"
+          - "linux-image{{ _cloud }}-{{ _arch }}"
       register: _kernel_dist
       notify: Reboot system
 

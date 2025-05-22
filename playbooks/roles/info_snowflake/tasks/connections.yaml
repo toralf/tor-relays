@@ -9,13 +9,13 @@
   failed_when: _result.stderr
   ansible.builtin.shell:
     cmd: |-
-      conns=$(
+      lines=$(
         journalctl -u snowflake-proxy --since "{{ log_connections }}" -g ', there were .* connections' --quiet --reverse |
         awk '{ print $14 }' |
         xargs |
         tr ' ' '+'
       )
-      sum=$(( conns ))
+      sum=$(( lines ))
 
       if [[ $sum -gt 0 ]]; then
         echo $sum

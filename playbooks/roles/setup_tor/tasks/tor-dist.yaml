@@ -36,10 +36,10 @@
 - name: Configure apt hook to set capabilities for low port
   when: tor_port | int < 1024
   vars:
-    __exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+    _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
   ansible.builtin.lineinfile:
     line: >-
-      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ __exe }}"; };'
+      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
     path: /etc/apt/apt.conf.d/99-tor-lowport
 
 - name: Ensure that Tor systemd override dir exists

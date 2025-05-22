@@ -9,5 +9,4 @@
         sort -r |
         awk 'x[$2]++ { print $1 }' |
         xargs -r hcloud --poll-interval 10s image delete
-    executable: /bin/bash
   register: _result

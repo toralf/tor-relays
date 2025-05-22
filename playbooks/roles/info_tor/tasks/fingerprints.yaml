@@ -2,22 +2,24 @@
 - name: Get fingerprint
   changed_when: false
   ansible.builtin.command:
-    cmd: cut -f 2 -d ' ' /var/lib/tor/fingerprint
+    cmd: >-
+      cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: _result
 
 - name: Set fact _fingerprint
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout
   ansible.builtin.set_fact:
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
 - name: Get ED25519 fingerprint
   changed_when: false
   ansible.builtin.command:
-    cmd: cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
+    cmd: >-
+      cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
   register: _result
 
 - name: Set fact _fingerprint_ed25519
-  when: _result.stdout_lines | length > 0
+  when: _result.stdout
   ansible.builtin.set_fact:
     _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
@@ -27,10 +29,11 @@
     - name: Get hashed fingerprint of a bridge
       changed_when: false
       ansible.builtin.command:
-        cmd: cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
+        cmd: >-
+          cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
       register: _result
 
     - name: Set fact _fingerprint_hashed
-      when: _result.stdout_lines | length > 0
+      when: _result.stdout
       ansible.builtin.set_fact:
         _fingerprint_hashed: "{{ _result.stdout_lines[0] }}"

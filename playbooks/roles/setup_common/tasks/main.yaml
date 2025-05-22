@@ -43,6 +43,7 @@
       mode: "0644"
     ansible.builtin.lineinfile:
       create: true
+      firstmatch: true
       owner: root
       group: root
       mode: "0644"

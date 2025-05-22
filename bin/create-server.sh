@@ -59,7 +59,6 @@ ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
 
 echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 
-set -o pipefail
 xargs -n 1 <<<$* |
   while read -r name; do
     # arch
@@ -89,7 +88,6 @@ xargs -n 1 <<<$* |
     echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 15s server create
-set +o pipefail
 
 $(dirname $0)/update-dns.sh
 

@@ -2,11 +2,9 @@
 - name: Get certificate
   when: bridge_distribution
   changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt |
-        grep . ||
-      echo "-"
+  ansible.builtin.command:
+    cmd: >-
+      grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: _cert
 
 - name: File bridgeline
@@ -14,6 +12,7 @@
   throttle: 1
   vars:
     _torport: "{{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }}"
+  when: _cert.stdout_lines
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ _torport }} {{ _fingerprint }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
     path: /tmp/tor_bridgeline

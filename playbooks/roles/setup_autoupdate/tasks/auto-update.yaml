@@ -46,7 +46,7 @@
 # 2x per day one hour later at :13
 - name: Ensure reaper cron job is present
   ansible.builtin.cron:
-    name: "Reap a hanging apt process"
+    name: Reap a hanging apt process
     hour: "{{ [1 + timer_hour | int, (13 + timer_hour | int) % 24] | sort | join(',') }}"
     minute: 13
     job: >-
@@ -55,7 +55,7 @@
 # 2x per day between :30 and :39
 - name: Ensure reboot-required cron job is present
   ansible.builtin.cron:
-    name: "Reboot if it is required"
+    name: Reboot if it is required
     hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
     minute: "{{ 30 + 10 | random(seed=seed_host) }}"
     job: >-
@@ -66,7 +66,7 @@
 # 2x per day between :40 and :49
 - name: Ensure needrestart cron job is present
   ansible.builtin.cron:
-    name: "Reboot if needrestart adviced it"
+    name: Reboot if needrestart adviced it
     hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
     minute: "{{ 40 + 10 | random(seed=seed_host) }}"
     job: >-

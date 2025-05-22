@@ -27,7 +27,8 @@
   retries: 3
   changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: curl -s {{ item }} | patch -p 1
+    cmd: >-
+      curl -s {{ item }} -o /root/lyrebird.patch && patch -p 1 </root/lyrebird.patch
     chdir: /root/lyrebird
   loop_control:
     label: "{{ item }}"

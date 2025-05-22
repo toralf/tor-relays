@@ -25,14 +25,15 @@
     dest: /etc/sysctl.d/
   register: _sysctl_state
 
-- name: "Ensure sysctl is up to date"
+- name: Ensure sysctl is up to date
   when: _sysctl_state.changed
   changed_when: true
-  ansible.builtin.command: sysctl --system
+  ansible.builtin.command:
+    cmd: sysctl --system
 
 - name: Tweak readline
   ansible.builtin.lineinfile:
-    line: "set enable-bracketed-paste off"
+    line: set enable-bracketed-paste off
     path: /root/.inputrc
 
 - name: Htop config
@@ -59,7 +60,7 @@
 
 - name: Ensure kernel crash dumps are made using minicoredumper
   ansible.builtin.cron:
-    name: "core debug files"
+    name: core debug files
     special_time: reboot
     job: >-
       echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;

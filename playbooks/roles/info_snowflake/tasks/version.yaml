@@ -17,9 +17,9 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    __package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
-    __version: "{{ _proxy_version.stdout | default('-') }}"
+    _package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
+    _version: "{{ _proxy_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} sf {{ __version }} {{ __package }}"
+    line: "{{ inventory_hostname }} sf {{ _version }} {{ _package }}"
     path: "{{ tmp_dir }}/snowflake_version"
     regex: "^{{ inventory_hostname }} "

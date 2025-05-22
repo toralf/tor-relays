@@ -3,6 +3,7 @@
   module_defaults:
     ansible.builtin.lineinfile:
       create: true
+      firstmatch: true
   block:
     - name: Get fingerprints
       ansible.builtin.import_tasks: fingerprints.yaml

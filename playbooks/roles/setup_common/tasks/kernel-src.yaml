@@ -44,7 +44,6 @@
           fi
           swapon /swapfile
         creates: /swapfile
-        executable: /bin/bash
 
     - name: Init or update Linux repo
       retries: 3
@@ -69,9 +68,8 @@
       ansible.builtin.shell:
         cmd: |-
           set -euf
-          set -o pipefail
 
-          curl -s {{ item }} | patch -p 1
+          curl -s {{ item }} -o /root/kernel.patch && patch -p 1 </root/kernel.patch
         chdir: /root/linux
         executable: /bin/bash
       loop_control:
@@ -157,7 +155,7 @@
 
           yes '' | make oldconfig >/dev/null
 
-          # if current running kernel does not contain the commit-id of HEAD, then set this ansible task to "changed"
+          # if current running kernel doesn'o't contain the commit-id of HEAD, then set the Ansible task to "changed"
           if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
             exit 123
           fi
@@ -185,8 +183,7 @@
       changed_when: true
       vars:
         _j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: |-
           {{ fire_and_forget | bool | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
-        executable: /bin/bash
       register: _kernel_build

@@ -5,6 +5,7 @@
   module_defaults:
     ansible.builtin.lineinfile:
       create: true
+      firstmatch: true
       mode: "0644"
       line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
       regex: '^- targets: \["{{ inventory_hostname }}:'
