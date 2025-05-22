@@ -1,3 +1,4 @@
 ---
 # apt timer schedules and related cron job
-timer_hour: "{{ 12 | random(seed=seed_host) }}"
+timer_hour1: "{{ 12 | random(seed=seed_host) }}"
+timer_hour2: "{{ 12 + timer_hour1 | int }}"

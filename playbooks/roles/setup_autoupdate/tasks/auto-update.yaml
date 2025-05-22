@@ -47,7 +47,7 @@
 - name: Ensure reaper cron job is present
   ansible.builtin.cron:
     name: Reap a hanging apt process
-    hour: "{{ [1 + timer_hour | int, (13 + timer_hour | int) % 24] | sort | join(',') }}"
+    hour: "{{ [1 + timer_hour1 | int, (1 + timer_hour2 | int) % 24] | sort | join(',') }}"
     minute: 13
     job: >-
       pkill -f "apt-get -qq -y update"
@@ -56,7 +56,7 @@
 - name: Ensure reboot-required cron job is present
   ansible.builtin.cron:
     name: Reboot if it is required
-    hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
+    hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 30 + 10 | random(seed=seed_host) }}"
     job: >-
       if grep 'System restart required' /var/run/reboot-required 2>/dev/null; then
@@ -67,7 +67,7 @@
 - name: Ensure needrestart cron job is present
   ansible.builtin.cron:
     name: Reboot if needrestart adviced it
-    hour: "{{ timer_hour }},{{ 12 + timer_hour | int }}"
+    hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 40 + 10 | random(seed=seed_host) }}"
     job: >-
       if needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'; then
