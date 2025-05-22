@@ -1,0 +1,61 @@
+---
+- name: Ensure Debian repos for Hetzner VPS are HTTPs
+  when: ansible_facts.system_vendor == 'Hetzner'
+  block:
+    - name: Remove HTTP repos
+      retries: 3
+      ansible.builtin.apt_repository:
+        repo: "deb http://{{ item }}"
+        state: absent
+      with_items:
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security main contrib non-free"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }} main contrib non-free-firmware"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports main"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates main contrib non-free-firmware"
+        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security main contrib non-free-firmware"
+
+    - name: Add HTTPs repos
+      ansible.builtin.apt_repository:
+        repo: "deb https://{{ item }} main contrib non-free-firmware"
+      with_items:
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-backports"
+        - "mirror.hetzner.com/debian/packages {{ ansible_facts.distribution_release }}-updates"
+        - "mirror.hetzner.com/debian/security {{ ansible_facts.distribution_release }}-security"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-backports"
+        - "deb.debian.org/debian {{ ansible_facts.distribution_release }}-updates"
+        - "security.debian.org/debian-security {{ ansible_facts.distribution_release }}-security"
+
+- name: Apt update
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: De-install openipmi at IONOS
+  when: ansible_facts.system_vendor == 'QEMU'
+  ansible.builtin.apt:
+    name:
+      - freeipmi-common
+    state: absent
+
+- name: Install/Update common software
+  ansible.builtin.apt:
+    name:
+      - needrestart
+      - psmisc
+      - python3-psutil
+      - rsync
+
+- name: Install/Update additional software
+  when: additional_software
+  ansible.builtin.apt:
+    name: "{{ additional_software }}"
+
+- name: Allow phased updates in Ubuntu
+  when: ansible_facts.distribution in ('Ubuntu')
+  ansible.builtin.copy:
+    src: 20phased-updates
+    dest: /etc/apt/apt.conf.d/
