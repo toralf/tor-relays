@@ -37,7 +37,7 @@
 - name: Ensure DDoS metrics script is running
   changed_when: _ddos_metrics_started.changed
   when: ddos_metrics and _ddos_metrics_pids_running.pids | length == 0
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: >-
       nice /root/metrics.sh 15 /var/www/html/ &
   register: _ddos_metrics_started
