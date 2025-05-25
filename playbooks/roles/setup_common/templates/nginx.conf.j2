@@ -82,6 +82,9 @@ server {
   server_name _3305;
   root /var/www/html;
   index torutils.prom;
+
+  proxy_no_cache 1;
+  proxy_cache_bypass 1;
 }
 {% endif %}
 {% if metrics_port %}
