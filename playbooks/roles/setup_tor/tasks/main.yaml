@@ -38,10 +38,10 @@
       group: root
       mode: "0644"
   block:
-    - name: DDoS firewall for Tor
-      ansible.builtin.import_tasks: firewall-ddos.yaml
+    - name: DDoS firewall
+      ansible.builtin.import_tasks: ddos-firewall.yaml
       tags:
-        - firewall-ddos
+        - ddos-firewall
 
     - name: Distribution
       when: not tor_build_from_source
