@@ -89,7 +89,7 @@ snowflake:
     prometheus_server: "1.2.3.4
 ```
 
-A *Prometheus node exporter* is deployed by: `node_metrics: true`.
+A _Prometheus node exporter_ is deployed by: `node_metrics: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 A static prometheus config contains something like:
@@ -111,7 +111,7 @@ A static prometheus config contains something like:
 ...
 ```
 
-The _targets_ line for the Prometheus config is stored in _~/tmp/*\_metrics.yaml_.
+The _targets_ line for the Prometheus config is stored in _~/tmp/\*\_metrics.yaml_.
 
 ### Misc
 
