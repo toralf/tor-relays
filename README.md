@@ -1,9 +1,5 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# Main Goal
-
-Maintain Tor, Snowflake and Nginx instances using latest self-compiled/configured app/kernel versions.
-
 ## Quick start
 
 To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
