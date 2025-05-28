@@ -60,23 +60,9 @@ The Ansible role expects a `seed_address` value to change the ipv6 address at a 
 For Tor servers the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
 For Tor bridges and Snowflake a lightweight version of that is used..
 
-The _MyFamily_ value for Tor server is derived from the output of:
-
-```bash
-./site-info.yaml --tags wellknown --limit my_bridge
-```
-
-in the next run of the setup script:
-
-```bash
-./site.yaml --tags config --limit my_bridge
-```
-
-(look [here](./playbooks/roles/setup_tor/vars/main.yaml.) for details).
-
 ### Additional software
 
-To deploy additional software, define (i.e. for a _Quassel_ server) it like:
+To deploy additional software, define (i.e. for a _Quassel_ server) something like this:
 
 ```yaml
 hosts:
@@ -137,13 +123,7 @@ My static prometheus config contains something like:
 ...
 ```
 
-The _targets_ line for the static Prometheus targets file is created by:
-
-```bash
-./site-info.yaml --tags metrics --limit my_bridge
-
-grep my_bridge ~/tmp/all_metrics_port
-```
+The _targets_ line for the Prometheus config is stored in `~/tmp/*_metrics.yaml`.
 
 ### Misc
 
