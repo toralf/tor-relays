@@ -11,18 +11,16 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
    cd ./tor-relays
    ```
 
-1. create:
-
-   - seeds
-   - local dirs _~/tmp_ and _./secrets_
-   - and a self-signed Root CA
+1. run
 
    ```bash
    bash ./bin/base.sh
    ansible-playbook playbooks/ca.yaml -e @secrets/local.yaml --tags ca
    ```
 
-1. add your bridge to the inventory group _tor_:
+   to create seeds, local dirs _~/tmp_ and _./secrets_ and a self-signed Root CA
+
+1. add your bridge to the Ansible group _tor_:
 
    ```yaml
    ---
@@ -45,20 +43,19 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
    grep "my_bridge" ~/tmp/*
    ```
 
-1. enjoy it:
+1. enjoy it
 
 ## Details
 
 The deployment is made by _Ansible_.
-See the section [Metrics](#metrics) below how to scrape runtime metrics.
-The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system to a relyable randomized one
-(at IONOS a proposed one is displayed, but not set).
-For Tor servers the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
-For Tor bridges and Snowflake a lightweight version of that is used..
+The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system
+to a reliable randomized one (at IONOS a proposed one is displayed, but not set).
+For Tor relays the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
+For Snowflake and NGinx instances is a lightweight firewall ruleset deployed.
 
 ### Additional software
 
-To deploy additional software, define (i.e. for a _Quassel_ server) something like this:
+To deploy additional software, configure it (i.e. for a _Quassel_ server) like:
 
 ```yaml
 hosts:
@@ -77,17 +74,12 @@ Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from 
 
 ### Metrics
 
-If a Prometheus server is configured (`prometheus_server`) then inbound traffic from its ip to the
-local metrics port is allowed by a firewall rule
-([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
-An Nginx is used to encrypt the metrics data transfer on transit
-([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
-using the certificate of a self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-This Root CA key has to be put into the Prometheus config to enable the TLS traffic
-([example](https://github.com/toralf/torutils/tree/main/dashboards)).
-Configure a `metrics_port` to expose several kind of metrics at
-https://_address_:_metrics_port_/metrics-_node|snowflake|tor_
-(i.e. the metrics port is pseudo-randomly choosen using _seed_metrics_):
+If a Prometheus server is configured (`prometheus_server`) then the inbound traffic from its ip to the
+local metrics port is allowed by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+The metrics port is pseudo-randomly choosen using _seed_metrics_.
+An Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
+using the certificate of the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
+The Root CA key has to be put into the Prometheus config to enable the TLS traffic.
 
 ```yaml
 snowflake:
@@ -97,10 +89,10 @@ snowflake:
     prometheus_server: "1.2.3.4
 ```
 
-In addition the _Prometheus node exporter_ is deployed by: `node_metrics: true`.
+A *Prometheus node exporter* is deployed by: `node_metrics: true`.
 For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
-My static prometheus config contains something like:
+A static prometheus config contains something like:
 
 ```yaml
 - job_name: "Tor-Snowflake-hx"
@@ -119,7 +111,7 @@ My static prometheus config contains something like:
 ...
 ```
 
-The _targets_ line for the Prometheus config is stored in `~/tmp/*_metrics.yaml`.
+The _targets_ line for the Prometheus config is stored in _~/tmp/*\_metrics.yaml_.
 
 ### Misc
 
