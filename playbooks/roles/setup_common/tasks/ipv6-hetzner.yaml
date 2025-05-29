@@ -1,11 +1,12 @@
 ---
 - name: Ensure IPv6 address has valid prefix
-  failed_when: ansible_facts.default_ipv6.address is match('fe80::')
+  when: ansible_facts.default_ipv6.address is match('fe80::')
+  failed_when: true
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6
-    verbosity: 1
 
 - name: Change IPv6 to non-default
+  when: ansible_facts.default_ipv6.address != _ipv6_new
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _a: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'A' + _ipv6_prefix) }}"
@@ -17,58 +18,51 @@
     - name: Change IPv6 for Debian
       when: ansible_facts.distribution in ('Debian')
       block:
-        - name: Set IPv6 address for Debian
+        - name: Set IPv6 address
           ansible.builtin.lineinfile:
             line: "    address {{ _ipv6_new }}/64"
             path: /etc/network/interfaces.d/50-cloud-init
-            regex: "^    address 2a01:"
-          register: _ipv6_address
+            regex: "^    address "
 
-        - name: Act on network changes for Debian
-          when: _ipv6_address.changed
+        - name: Activate new IPv6 address
           ansible.builtin.systemd_service:
             name: networking
             state: restarted
 
-    - name: Change IPv6 for Debian
+    - name: Change IPv6 for Ubuntu
       when: ansible_facts.distribution in ('Ubuntu')
       block:
-        - name: Set IPv6 address for Ubuntu
+        - name: Set IPv6 address
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
             regex: '      - "{{ _ipv6_prefix }}:'
             mode: "0600"
-          register: _ipv6_address
 
-        - name: Act on network changes for Ubuntu
-          when: _ipv6_address.changed
+        - name: Activate new IPv6 address
           changed_when: true
-          failed_when: _netplan.rc != 0
           ansible.builtin.shell:
             cmd: |-
               set -e
 
-              sudo netplan generate
-              sudo netplan apply
-          register: _netplan
+              netplan generate
+              netplan apply
 
-- name: Check that IPv6 is up
-  changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      while ip -6 a | grep -q ' tentative'; do
-        sleep 1
-      done
-  register: _ip6_up
+    - name: Check that IPv6 is up
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          while ip -6 a | grep -q ' tentative'; do
+            sleep 1
+          done
 
-- name: Gather facts - IPv6
-  ansible.builtin.setup:
-    gather_subset:
-      - default_ipv6
+    - name: Gather facts - IPv6
+      ansible.builtin.setup:
+        gather_subset:
+          - default_ipv6
 
 - name: Ensure IPv6 address is non-default
-  failed_when: ansible_facts.default_ipv6.address is search('::1$')
+  when: ansible_facts.default_ipv6.address is search('::1$')
+  failed_when: true
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6
-    verbosity: 1
