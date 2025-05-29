@@ -122,8 +122,10 @@
     path: /usr/bin/tor
     capability: cap_net_bind_service+ep
 
-- name: Create cron job to restart tor if systemd refused to do it
+- name: Cron job to restart service if needed
+  vars:
+    _service: tor
   ansible.builtin.cron:
-    name: restart tor if systemd refused to do it
+    name: restart {{ _service }} if systemd refused to do it
     job: >-
-      systemctl is-failed tor && systemctl start tor
+      systemctl is-failed {{ _service }} && systemctl start {{ _service }}
