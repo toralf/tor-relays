@@ -115,6 +115,7 @@
     sysctl_set: true
   notify: Restart Tor
 
+# for bridges the PT needs the capability
 - name: Allow low port
   changed_when: false
   when: tor_port | int < 1024 and not bridge_distribution
