@@ -1,6 +1,7 @@
 ---
 # Hint: facts cache is not updated if --tags or --limit is used, so use "--tags facts" if needed
 - name: Gather facts - subset
+  retries: 1
   ansible.builtin.setup:
     gather_subset:
       - "!all"
