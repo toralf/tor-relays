@@ -33,11 +33,14 @@
     that:
       - "ansible_facts.memtotal_mb > 1024"
 
-- name: Validate Nginx site directory
-  when: nginx_site_directory
+- name: Validate Nginx site directories
+  when: nginx_site_directories | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
-      - "nginx_site_directory is not search('/')"
-      - "nginx_site_directory not in ('html')"
-      - "nginx_site_directory | length > 15"
+      - "nginx_site_directories | selectattr('path', 'eq', '') | length == 0"
+      - "nginx_site_directories | selectattr('path', 'contains', '/') | length == 0"
+      - "nginx_site_directories | selectattr('path', 'eq', 'html') | length == 0"
+      - "nginx_site_directories | selectattr('port', 'lt', 1) | length == 0"
+      - "nginx_site_directories | selectattr('port', 'gt', 65535) | length == 0"
+      - "nginx_site_directories | selectattr('path') | unique | length == nginx_site_directories | selectattr('port') | length"

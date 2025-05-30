@@ -23,4 +23,4 @@ custom_command: ""
 
 # nginx
 nginx_listener_default: false
-nginx_site_directory: ""
+nginx_site_directories: []
