@@ -1,9 +1,29 @@
 ---
-- name: Apt upgrade
+- name: Upgrade system
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-  ansible.builtin.apt:
-    update_cache: true
-    upgrade: full
+  block:
+    - name: Apt upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: full
+      register: _result
+  rescue:
+    - name: Wait for apt
+      changed_when: false
+      when: _result.stderr is search('Could not get lock /var/lib/dpkg/lock-frontend')
+      ansible.builtin.shell:
+        cmd: |-
+          set -e
+
+          i=600
+          while ((i--)) && pgrep -af apt 1>/dev/null; do
+            sleep 1
+          done
+
+          if pgrep -af apt; then
+            exit 1
+          fi
+        executable: /bin/bash
 
 - name: Check if reboot is needed after upgrade
   ansible.builtin.import_tasks: reboot.yaml
