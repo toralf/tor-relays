@@ -43,4 +43,5 @@
       - "nginx_site_directories | selectattr('path', 'eq', 'html') | length == 0"
       - "nginx_site_directories | selectattr('port', 'lt', 1) | length == 0"
       - "nginx_site_directories | selectattr('port', 'gt', 65535) | length == 0"
-      - "nginx_site_directories | selectattr('path') | unique | length == nginx_site_directories | selectattr('port') | length"
+      - "nginx_site_directories | selectattr('path') | length > 0"
+      - "nginx_site_directories | selectattr('path') | unique | length == nginx_site_directories | selectattr('port') | unique | length"
