@@ -18,7 +18,7 @@
           done
   register: _result
 
-- name: File findings of system log
+- name: File issues
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   when: _result.stdout
