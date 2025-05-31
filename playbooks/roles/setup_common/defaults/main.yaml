@@ -23,4 +23,5 @@ custom_command: ""
 
 # nginx
 nginx_listener_default: false
+# "path" and "port" are expected per item
 nginx_site_directories: []
