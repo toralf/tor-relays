@@ -11,7 +11,7 @@
           while read -r issue; do
             journalctl --since "{{ log_system }}" --quiet |
               grep -A 1000 -F "$issue" |
-              while grep " kernel: "; do
+              while grep -F -e "$issue" -e " kernel: "; do
                 : run  till the first non-matching line
               done
             echo
