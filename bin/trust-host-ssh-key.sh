@@ -8,7 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-jobs=$(nproc)
+jobs=$((($(nproc) + 1) / 2))
 
 echo -e "\n trusting $(wc -w <<<$*) ssh host key/s ..."
 
@@ -25,4 +25,4 @@ while ! xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -
   echo
 done
 
-echo -e " OK"
+echo -e " Done."
