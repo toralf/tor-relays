@@ -1,5 +1,5 @@
 ---
-- name: File metrics
+- name: File targets
   delegate_to: localhost
   throttle: 1
   module_defaults:
@@ -10,30 +10,30 @@
       line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
       regex: '^- targets: \["{{ inventory_hostname }}:'
   block:
-    - name: Node metrics
+    - name: Node targets
       when: node_metrics | default(false)
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/node_metrics.yaml"
+        path: "{{ tmp_dir }}/node-targets.yaml"
 
-    - name: Snowflake metrics
+    - name: Snowflake targets
       when: snowflake_metrics is defined and snowflake_metrics
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/snowflake_metrics.yaml"
+        path: "{{ tmp_dir }}/snowflake-targets.yaml"
 
-    - name: Tor metrics
+    - name: Tor targets
       when: tor_metrics is defined and tor_metrics
       block:
-        - name: Tor bridge metrics
+        - name: Tor bridge targets
           when: bridge_distribution
           ansible.builtin.lineinfile:
-            path: "{{ tmp_dir }}/tor_bridge.yaml"
+            path: "{{ tmp_dir }}/tor_bridge-targets.yaml"
 
-        - name: Tor server metrics
+        - name: Tor server targets
           when: not bridge_distribution
           ansible.builtin.lineinfile:
-            path: "{{ tmp_dir }}/tor_server.yaml"
+            path: "{{ tmp_dir }}/tor_server-targets.yaml"
 
-    - name: DDoS metrics
+    - name: DDoS targets
       when: ddos_metrics is defined and ddos_metrics
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/ddos_metrics.yaml"
+        path: "{{ tmp_dir }}/tor_ddos-targets.yaml"

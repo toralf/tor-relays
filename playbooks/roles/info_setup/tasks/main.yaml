@@ -12,11 +12,11 @@
       tags:
         - ipv6
 
-    - name: Metrics
+    - name: Create target files
       when: metrics_port is defined
-      ansible.builtin.import_tasks: metrics.yaml
+      ansible.builtin.import_tasks: targets.yaml
       tags:
-        - metrics
+        - targets
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml
