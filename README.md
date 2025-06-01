@@ -111,11 +111,11 @@ A static prometheus config contains something like:
 ...
 ```
 
-The _targets_ line for the Prometheus config is stored in _~/tmp/\*\_metrics.yaml_.
+The _targets_ lines for the Prometheus config ate stored in _~/tmp/\*\-targets.yaml_.
 
 ### Misc
 
-To create at Hetzner a new VPS with the hostname _my_bridge_ in the project _my_project_, do:
+To create a new VPS with the hostname _my_bridge_ under the project _my_project_, do:
 
 ```bash
 hcloud context use my_project
