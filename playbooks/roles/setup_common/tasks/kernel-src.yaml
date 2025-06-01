@@ -177,7 +177,7 @@
       register: _kernel_build_script
 
     - name: Build Linux
-      async: 4500
+      async: "{{ (75 * 60) | int }}"
       poll: 0
       when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
       changed_when: true
