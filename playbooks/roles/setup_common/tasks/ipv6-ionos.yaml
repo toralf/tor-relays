@@ -1,6 +1,5 @@
 ---
 - name: Check for a pseudo-random choosen ipv6 address
-  failed_when: _ipv6_new != ansible_facts.default_ipv6.address
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _a: "{{ (ansible_facts.default_ipv6.address | split(':'))[4] | default('0') }}"
@@ -8,6 +7,8 @@
     _c: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix) }}"
     _d: "{{ range(0, 65535) | random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix) }}"
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
+  when: _ipv6_new != ansible_facts.default_ipv6.address
+  failed_when: true
   ansible.builtin.debug:
     msg:
       - "expected: {{ _ipv6_new }}"
@@ -15,7 +16,8 @@
       - "ssh {{ inventory_hostname }} 'service systemd-networkd restart; sleep 3; ip a'"
 
 - name: Ensure Ipv6 address is non-default
-  failed_when: ansible_facts.default_ipv6.address is search('::1$')
+  when: ansible_facts.default_ipv6.address is search('::1$')
+  failed_when: true
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6
     verbosity: 1
