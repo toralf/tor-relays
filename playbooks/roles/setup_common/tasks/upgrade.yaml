@@ -8,9 +8,15 @@
         upgrade: full
       register: _result
   rescue:
-    - name: Wait for apt
-      changed_when: false
-      when: _result.stderr is search('Could not get lock /var/lib/dpkg/lock-frontend')
+    - name: Apt issue
+      when: not _result.stdout_lines is search('Could not get lock /var/lib/dpkg/lock-frontend')
+      failed_when: true
+      ansible.builtin.debug:
+        var: _result
+
+    - name: Wait to get dpkg lock
+      changed_when: true
+      when: _result.stdout_lines is search('Could not get lock /var/lib/dpkg/lock-frontend')
       ansible.builtin.shell:
         cmd: |-
           set -e
