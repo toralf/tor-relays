@@ -80,9 +80,15 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    image=${HCLOUD_IMAGE:-$image_default}
-    if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
-      setImageToLatestSnapshotId
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      image=${HCLOUD_IMAGE}
+    else
+      if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
+        setImageToLatestSnapshotId
+      fi
+      if [[ -z ${image} ]]; then
+        image=${image_default}
+      fi
     fi
 
     echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}

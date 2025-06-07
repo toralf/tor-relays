@@ -25,12 +25,15 @@ snapshots=$(hcloud image list --type snapshot --output noheader --output columns
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
-    image=${HCLOUD_IMAGE-}
-    if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
-      setImageToLatestSnapshotId
-    fi
-    if [[ -z ${image} ]]; then
-      image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      image=${HCLOUD_IMAGE}
+    else
+      if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
+        setImageToLatestSnapshotId
+      fi
+      if [[ -z ${image} ]]; then
+        image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
+      fi
     fi
 
     echo --image ${image} ${name}
