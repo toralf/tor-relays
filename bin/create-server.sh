@@ -86,7 +86,7 @@ xargs -n 1 <<<$* |
       if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
         setImageToLatestSnapshotId
       fi
-      if [[ -z ${image} ]]; then
+      if [[ -z ${image-} ]]; then
         image=${image_default}
       fi
     fi

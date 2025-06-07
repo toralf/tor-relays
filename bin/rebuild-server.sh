@@ -31,7 +31,7 @@ xargs -n 1 <<<$* |
       if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
         setImageToLatestSnapshotId
       fi
-      if [[ -z ${image} ]]; then
+      if [[ -z ${image-} ]]; then
         image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
       fi
     fi
