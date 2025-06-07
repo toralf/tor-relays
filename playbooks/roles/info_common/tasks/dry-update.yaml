@@ -3,9 +3,9 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      unattended-upgrade -d --dry-run |
-        grep -e 'pkgs that look like they should be upgraded: .' |
-        head
+      unattended-upgrade --debug --dry-run |
+        awk '/pkgs that look like they should be upgraded:/,/Fetched /' |
+        sed -e '1d' -e '$d'
   register: _result
 
 - name: Output of unattended-upgrade dry run
