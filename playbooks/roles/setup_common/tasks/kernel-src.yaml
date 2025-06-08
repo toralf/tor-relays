@@ -67,8 +67,6 @@
           curl -s {{ item }} -o /root/kernel.patch && patch -p 1 </root/kernel.patch
         chdir: /root/linux
         executable: /bin/bash
-      loop_control:
-        label: "{{ item }}"
       loop: "{{ kernel_git_patches }}"
       register: _kernel_patched
 

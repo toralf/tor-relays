@@ -45,8 +45,6 @@
     cmd: >-
       curl -s {{ item }} -o /root/tor.patch && patch -p 1 </root/tor.patch
     chdir: /root/tor
-  loop_control:
-    label: "{{ item }}"
   loop: "{{ tor_patches }}"
   register: _tor_patched
 

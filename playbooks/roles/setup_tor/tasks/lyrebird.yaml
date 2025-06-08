@@ -30,8 +30,6 @@
     cmd: >-
       curl -s {{ item }} -o /root/lyrebird.patch && patch -p 1 </root/lyrebird.patch
     chdir: /root/lyrebird
-  loop_control:
-    label: "{{ item }}"
   loop: "{{ lyrebird_patches }}"
   register: _lyrebird_patched
 
