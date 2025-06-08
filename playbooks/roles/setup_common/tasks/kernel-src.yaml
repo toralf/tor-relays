@@ -1,18 +1,13 @@
 ---
-- name: Gather facts - date + time
-  ansible.builtin.setup:
-    gather_subset:
-      - date_time
-
 - name: Stats of make.log
   ansible.builtin.stat:
     path: /root/make.log
   register: _make_log
 
 - name: Self-compiled kernel
-  when: _age | int > 60
+  when: not _make_log.stat.exists or _age | int > 60
   vars:
-    _age: "{{ (ansible_facts.date_time.epoch | float) - (_make_log.stat.atime | default(0)) }}"
+    _age: "{{ now(utc=true, fmt='%s') | float - _make_log.stat.atime }}"
   block:
     - name: Install/Update toolchain
       ansible.builtin.apt:
