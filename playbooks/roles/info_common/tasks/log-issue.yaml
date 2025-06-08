@@ -1,30 +1,16 @@
 ---
-- name: Get issues with full trace from system log
+- name: Get issue from system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system }}" --quiet |
-        grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
-        grep -F \
-          -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
-          -e ': segfault at ' |
-          while read -r issue; do
-            journalctl --since "{{ log_system }}" --quiet |
-              grep -A 1000 -F "$issue" |
-              while grep -F -e "$issue" -e " kernel: "; do
-                : run  till the first non-matching line
-              done
-            echo
-          done
+        grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' -e ': segfault at ' |
+        grep -v -F 'Speculative Return Stack Overflow: WARNING:'
   register: _result
 
-- name: File issues
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+- name: Work on result
   when: _result.stdout
-  ansible.builtin.blockinfile:
-    block: "{{ _result.stdout }}"
-    path: "{{ tmp_dir }}/issue/{{ inventory_hostname }}.log"
-    marker: "# {mark} {{ _result.stdout_lines[0] }}"
-    append_newline: true
-    create: true
+  vars:
+    _marker: "{{ (item | split(' '))[5:] | join(' ') }}"
+  ansible.builtin.include_tasks: _log_issue.yaml
+  loop: "{{ _result.stdout_lines }}"

@@ -1,0 +1,34 @@
+---
+- name: Issue
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ _marker }}"
+    path: "{{ tmp_dir }}/all_issue.log"
+    regex: "^{{ _marker }}"
+  register: _issue
+
+- name: Get issue details
+  when: _issue.changed
+  block:
+    - name: Get issue details
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          journalctl --since "{{ log_system }}" --quiet |
+            grep -A 1000 -F "{{ item }}" |
+            while grep -F -e "{{ item }}" -e " kernel: "; do
+              : run  till the first non-matching line
+            done
+      register: _details
+
+    - name: File issue details
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.blockinfile:
+        block: "{{ _details.stdout }}"
+        path: "{{ tmp_dir }}/all_issue-details.log"
+        marker: "# {mark} {{ _marker }}"
+
+    - name: Fetch appropriate kernel config
+      ansible.builtin.include_tasks: kernel-config.yaml

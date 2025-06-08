@@ -43,4 +43,4 @@ EOF
 fi
 
 # Root CA and certificates are stored under ./secrets
-mkdir -p ${HOME}/tmp/{ddos,ddos6,kconfig,issue}
+mkdir -p ${HOME}/tmp/{ddos,ddos6,kconfig}
