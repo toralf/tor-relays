@@ -1,11 +1,11 @@
 ---
-- name: Ping the system
-  ansible.builtin.ping:
-  register: _ping
+- name: Ping
   ignore_errors: true
   ignore_unreachable: true
+  ansible.builtin.ping:
+  register: _ping
 
-- name: Power on the system
+- name: Power on
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
@@ -15,9 +15,8 @@
       set -euf
 
       hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
-      sleep 10
 
-      i=15
+      i=30
       while (( i-- )); do
         if ping -q -c 1 {{ inventory_hostname }}; then
           sleep 15
@@ -27,3 +26,8 @@
 
       exit 2
     executable: /bin/bash
+  register: _poweron
+
+- name: Verify power on
+  when: _poweron.changed
+  ansible.builtin.ping:

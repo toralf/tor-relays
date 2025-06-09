@@ -10,4 +10,4 @@
   changed_when: true
   when: _halted.changed
   ansible.builtin.command:
-    cmd: sleep 15
+    cmd: sleep 10
