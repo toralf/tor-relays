@@ -18,3 +18,10 @@
     quiet: true
     that:
       - "tor_port != metrics_port"
+
+- name: Validate nickname
+  when: nickname
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "nickname | length >= 1 and nickname | length <= 19"
