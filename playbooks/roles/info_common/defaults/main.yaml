@@ -3,3 +3,5 @@ log_lines: 20
 
 log_unattended: /var/log/unattended-upgrades/unattended-upgrades-dpkg.log
 log_system: 1 day ago
+
+log_error_nginx: /var/log/nginx/error.log

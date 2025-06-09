@@ -35,6 +35,11 @@
       tags:
         - log-issue
 
+    - name: Log nginx error
+      ansible.builtin.import_tasks: log-error-nginx.yaml
+      tags:
+        - log-error-nginx
+
     - name: Log system
       ansible.builtin.import_tasks: log-system.yaml
       tags:

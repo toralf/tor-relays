@@ -85,6 +85,8 @@ server {
   root /var/www/html;
   index torutils.prom;
 
+  access_log off;
+
   proxy_no_cache 1;
   proxy_cache_bypass 1;
 
@@ -93,6 +95,10 @@ server {
   add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
   add_header Pragma "no-cache";
   expires 0;
+
+  location / {
+    try_files $uri =404;
+  }
 }
 {% endif %}
 {% if metrics_port %}
