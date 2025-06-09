@@ -68,7 +68,7 @@
       notify: Reload nginx
 
 - name: Create site directories
-  when: nginx_site_directories | length > 0
+  when: nginx_site_directories
   ansible.builtin.file:
     path: /var/www/{{ item.path }}
     state: directory

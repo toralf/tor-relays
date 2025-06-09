@@ -22,6 +22,6 @@ prometheus_server6: ""
 custom_command: ""
 
 # nginx
-nginx_listener_default: false
+nginx_public_site: false
 # "path" and "port" are expected per item
 nginx_site_directories: []

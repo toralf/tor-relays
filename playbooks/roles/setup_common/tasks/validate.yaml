@@ -19,6 +19,13 @@
     that:
       - "prometheus_server is ansible.utils.ipv4"
 
+- name: Validate additional_ports
+  when: additional_ports
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "additional_ports | unique | length == additional_ports | length"
+
 - name: Validate prometheus_server IPv6
   when: prometheus_server6
   ansible.builtin.assert:
@@ -34,7 +41,7 @@
       - "ansible_facts.memtotal_mb > 1024"
 
 - name: Validate Nginx site directories
-  when: nginx_site_directories | length > 0
+  when: nginx_site_directories
   ansible.builtin.assert:
     quiet: true
     that:
