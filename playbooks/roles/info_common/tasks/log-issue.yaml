@@ -1,6 +1,7 @@
 ---
 - name: Get issue from system log
   changed_when: false
+  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ log_system }}" --quiet |
