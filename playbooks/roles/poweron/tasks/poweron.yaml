@@ -10,7 +10,6 @@
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
   when: _ping.unreachable is defined or _ping.ping is not defined
-  failed_when: _powered_on.rc != 0
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -28,4 +27,3 @@
 
       exit 2
     executable: /bin/bash
-  register: _powered_on
