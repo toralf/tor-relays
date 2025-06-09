@@ -1,0 +1,14 @@
+---
+- name: Check nginx error log of
+  changed_when: false
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      tail -n {{ log_lines }} /var/log/nginx/error.log 2>/dev/null |
+        grep -v -F 'using inherited sockets from "5;6;"' |
+  register: _result
+
+- name: Results of nginx error log
+  when: _result.stdout_lines
+  ansible.builtin.debug:
+    var: _result.stdout_lines
