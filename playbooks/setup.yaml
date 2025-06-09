@@ -1,23 +1,21 @@
 ---
 - name: Setup Misc
-  hosts: "!snowflake:!tor"
+  hosts: all
   roles:
     - role: setup_common
     - role: info_setup
-    - role: setup_autoupdate
 
 - name: Setup Snowflake
   hosts: snowflake
   roles:
-    - role: setup_common
-    - role: info_setup
     - role: setup_snowflake
-    - role: setup_autoupdate
 
 - name: Setup Tor
   hosts: tor
   roles:
-    - role: setup_common
-    - role: info_setup
     - role: setup_tor
+
+- name: Setup autoupdate
+  hosts: all
+  roles:
     - role: setup_autoupdate
