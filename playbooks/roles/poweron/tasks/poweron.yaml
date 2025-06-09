@@ -1,38 +1,31 @@
 ---
-- name: Poweron
+- name: Ping the system
+  ansible.builtin.ping:
+  register: _ping
+  ignore_errors: true
+  ignore_unreachable: true
+
+- name: Power on the system
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  block:
-    - name: Check if system is up
-      when: not is_in_status_off
-      changed_when: _is_up.rc != 0
-      failed_when: false # avoid ansible output spam
-      ansible.builtin.shell:
-        cmd: |-
-          ping -q -c 1 {{ inventory_hostname }} ||
-          ping -q -c 2 {{ inventory_hostname }} ||
-          ping -q -c 4 {{ inventory_hostname }}
-      register: _is_up
+  changed_when: true
+  when: _ping.unreachable is defined or _ping.ping is not defined
+  failed_when: _powered_on.rc != 0
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
 
-    - name: Power on the system
-      when: _is_up.changed or is_in_status_off
-      changed_when: true
-      failed_when: _powered_on.rc != 0
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
+      hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+      sleep 10
 
-          hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
-          sleep 10
+      i=15
+      while (( i-- )); do
+        if ping -q -c 1 {{ inventory_hostname }}; then
+          sleep 15
+          exit 0
+        fi
+      done
 
-          i=15
-          while (( i-- )); do
-            if ping -q -c 1 {{ inventory_hostname }}; then
-              sleep 15
-              exit 0
-            fi
-          done
-
-          exit 2
-        executable: /bin/bash
-      register: _powered_on
+      exit 2
+    executable: /bin/bash
+  register: _powered_on

@@ -1,2 +1,0 @@
----
-is_in_status_off: "{{ (inventory_hostname in groups.hcloud_status_off | default([])) | bool }}"
