@@ -35,3 +35,5 @@ configured_relays_v6: ""
 
 # file containing the private FamilyId key
 secret_family_key: ""
+
+nickname: ""
