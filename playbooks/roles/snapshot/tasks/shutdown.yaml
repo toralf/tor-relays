@@ -1,7 +1,7 @@
 ---
 - name: Shutdown the system
   community.general.shutdown:
-    delay: 10 # for ansible handlers
+    delay: 10 # for any handler triggered systemd activity
   register: _halted
 
 - name: Wait after shutdown
