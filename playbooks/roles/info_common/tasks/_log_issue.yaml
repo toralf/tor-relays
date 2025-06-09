@@ -26,7 +26,7 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.blockinfile:
-        block: "{{ '    <--- filed at ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + ' --->\n' + _details.stdout }}"
+        block: "{{ '    <--- scraped at ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + ' --->\n' + _details.stdout }}"
         path: "{{ tmp_dir }}/all_issue-details.log"
         marker: "# {mark} {{ _marker }}"
 
