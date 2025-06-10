@@ -3,8 +3,7 @@
   when: bridge_distribution
   changed_when: false
   ansible.builtin.command:
-    cmd: >-
-      grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
+    cmd: grep -Eo 'cert=\S+' /var/lib/tor/pt_state/obfs4_bridgeline.txt
   register: _cert
 
 - name: File bridgeline
