@@ -79,19 +79,23 @@
 
           [[ -s .config ]] && before=$(md5sum .config) || before="0"
 
-          # force module loading
+          # force loading of needed modules (if not yet loaded) for the firewall/DDoS solution
           conntrack -C
 
           yes '' | make localmodconfig >/dev/null
 
           cat <<EOF >>.config
 
-          # generic
+          # inspired by https://kspp.github.io/Recommended_Settings#gcc-plugins
 
           CONFIG_GCC_PLUGINS=y
           CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y
-          CONFIG_GCC_PLUGIN_STACKLEAK=y
           CONFIG_GCC_PLUGIN_RANDSTRUCT=y
+          CONFIG_GCC_PLUGIN_STRUCTLEAK=y
+          CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
+          CONFIG_GCC_PLUGIN_STACKLEAK=y
+
+          # generic
 
           CONFIG_LOCALVERSION=""
           CONFIG_LOCALVERSION_AUTO=y
