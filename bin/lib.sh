@@ -4,7 +4,8 @@
 # hint: ./.wellknown entries will not cleaned here
 
 function cleanLocalDataEntries() {
-  local d=$(dirname $0)
+  local d
+  d=$(dirname $0)
 
   echo -e " deleting local entries and facts ..."
   set +e
@@ -21,7 +22,8 @@ function cleanLocalDataEntries() {
 }
 
 function cleanLocalDataFiles() {
-  local d=$(dirname $0)
+  local d
+  d=$(dirname $0)
 
   echo -e " deleting local data files ..."
   set +e
