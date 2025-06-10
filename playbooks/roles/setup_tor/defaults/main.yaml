@@ -37,3 +37,5 @@ configured_relays_v6: ""
 secret_family_key: ""
 
 nickname: ""
+
+additional_ports: []
