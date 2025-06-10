@@ -1,0 +1,17 @@
+---
+- name: Get nginx log
+  changed_when: false
+  failed_when: false
+  ansible.builtin.command:
+    cmd: tail -n {{ log_lines }} /var/log/nginx/{{ nginx_loglevel }}.log
+  register: _result
+
+- name: Results of nginx log
+  when: _result.stdout
+  ansible.builtin.debug:
+    var: _result.stdout_lines
+
+- name: Results of nginx log stderr
+  when: _result.stderr
+  ansible.builtin.debug:
+    var: _result.stderr_lines
