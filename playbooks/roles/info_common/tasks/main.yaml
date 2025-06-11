@@ -30,6 +30,11 @@
       tags:
         - log-unattended
 
+    - name: Artefact
+      ansible.builtin.import_tasks: artefact.yaml
+      tags:
+        - artefact
+
     - name: Log Issues
       ansible.builtin.import_tasks: log-issue.yaml
       tags:

@@ -3,5 +3,10 @@ log_lines: 20
 
 log_system: 1 day ago
 
-# or: access
 nginx_loglevel: error
+
+artefact_path: ""
+artefact_pattern: []
+artefact_size: -1g
+artefact_tmpdir: "{{ tmp_dir }}"
+artefact_script: ""

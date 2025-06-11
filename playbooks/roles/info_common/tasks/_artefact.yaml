@@ -1,0 +1,56 @@
+---
+- name: Check for being known
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ item.checksum }}"
+    path: "{{ artefact_tmpdir }}/artefact.log"
+  register: _artefact
+
+- name: Work on new
+  when: _artefact.changed
+  vars:
+    _dest: "{{ artefact_tmpdir }}/{{ item.checksum }}"
+  block:
+    - name: Fetch
+      throttle: 1
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ _dest }}"
+        flat: true
+
+    - name: Work on
+      delegate_to: localhost
+      throttle: 1
+      when: artefact_script
+      changed_when: true
+      ansible.builtin.shell:
+        cmd: "{{ artefact_script }} {{ _dest }}"
+        executable: /bin/bash
+      register: _script
+
+    - name: Work stdout
+      when: _script.stdout
+      ansible.builtin.debug:
+        var: _script.stdout_lines
+
+    - name: Work stderr
+      when: _script.stderr
+      ansible.builtin.debug:
+        var: _script.stderr_lines
+
+  rescue:
+    - name: Revert state
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ item.checksum }}"
+        path: "{{ artefact_tmpdir }}/artefact.log"
+        state: absent
+  always:
+    - name: Housekeep
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.file:
+        path: "{{ _dest }}"
+        state: absent
