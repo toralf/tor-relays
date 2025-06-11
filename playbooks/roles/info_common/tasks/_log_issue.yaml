@@ -5,7 +5,7 @@
   ansible.builtin.lineinfile:
     line: "{{ _marker }}"
     path: "{{ tmp_dir }}/all_issue.log"
-    regex: "^{{ _marker }}"
+    regex: "^{{ _marker }}$"
   register: _issue
 
 - name: Get issue details
