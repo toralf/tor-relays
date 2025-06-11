@@ -3,25 +3,28 @@
 
 - name: Wellknown for bridges
   when: bridge_distribution
-  delegate_to: localhost
   block:
     - name: Ensure hostname is in wellknown file
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
         line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
     - name: Ensure fingerprint is in wellknown file
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_hashed }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
 - name: Wellknown for server
-  delegate_to: localhost
-  throttle: 1
   when: not bridge_distribution
   block:
     - name: Ensure hostname is in wellknown files
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
         line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/{{ item }}"
@@ -30,12 +33,16 @@
         - "ed25519-master-pubkey.txt"
 
     - name: Ensure RSA fingerprint is in wellknown file
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint }}"
         path: "{{ tmp_dir }}/rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
     - name: Ensure ED25519 fingerprint is in wellknown file
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_ed25519 }}"
         path: "{{ tmp_dir }}/ed25519-master-pubkey.txt"
