@@ -95,10 +95,6 @@ server {
   add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
   add_header Pragma "no-cache";
   expires 0;
-
-  location / {
-    try_files $uri =404;
-  }
 }
 {% endif %}
 {% if metrics_port %}
