@@ -111,6 +111,7 @@
         - upgrade
 
     - name: Distribution kernel
+      when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
         - kernel

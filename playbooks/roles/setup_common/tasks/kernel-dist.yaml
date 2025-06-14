@@ -1,6 +1,5 @@
 ---
 - name: Debian kernel
-  when: ansible_facts.distribution in ('Debian')
   vars:
     _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
     _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
