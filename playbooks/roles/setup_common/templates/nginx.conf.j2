@@ -37,7 +37,7 @@ server {
 {% if nginx_site_directories %}
 {% for site in nginx_site_directories %}
 
-  location /{{ site.path }}/ {
+  location /{{ site.secret | default(site.dir) }}/ {
     proxy_pass http://127.0.0.1:{{ site.port }}/;
   }
 {% endfor %}
@@ -51,7 +51,7 @@ server {
   listen 127.0.0.1:{{ site.port }};
 
   server_name _{{ site.port }};
-  root /var/www/{{ site.path }};
+  root /var/www/{{ site.dir }};
 
   access_log off;
   error_log /dev/null crit;

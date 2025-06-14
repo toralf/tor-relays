@@ -45,10 +45,10 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "nginx_site_directories | selectattr('path', 'eq', '') | length == 0"
-      - "nginx_site_directories | selectattr('path', 'contains', '/') | length == 0"
-      - "nginx_site_directories | selectattr('path', 'eq', 'html') | length == 0"
+      - "nginx_site_directories | selectattr('dir', 'eq', '') | length == 0"
+      - "nginx_site_directories | selectattr('dir', 'contains', '/') | length == 0"
+      - "nginx_site_directories | selectattr('dir', 'eq', 'html') | length == 0"
       - "nginx_site_directories | selectattr('port', 'lt', 1) | length == 0"
       - "nginx_site_directories | selectattr('port', 'gt', 65535) | length == 0"
-      - "nginx_site_directories | selectattr('path') | length > 0"
-      - "nginx_site_directories | selectattr('path') | unique | length == nginx_site_directories | selectattr('port') | unique | length"
+      - "nginx_site_directories | selectattr('dir') | length > 0"
+      - "nginx_site_directories | selectattr('dir') | unique | length == nginx_site_directories | selectattr('port') | unique | length"

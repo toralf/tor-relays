@@ -70,7 +70,7 @@
 - name: Create site directories
   when: nginx_site_directories
   ansible.builtin.file:
-    path: /var/www/{{ item.path }}
+    path: /var/www/{{ item.dir }}
     state: directory
     mode: "0755"
   loop: "{{ nginx_site_directories }}"
