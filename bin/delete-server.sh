@@ -21,7 +21,7 @@ jobs=$(nproc)
 cleanLocalDataEntries $*
 cleanLocalDataFiles $*
 
-echo " delete from DNS config"
+echo " delete from DNS config ..."
 while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
 done < <(xargs -n 1 <<<$*)
