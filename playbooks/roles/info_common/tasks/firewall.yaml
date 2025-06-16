@@ -20,6 +20,7 @@
 
 - name: Get ct counter
   changed_when: false
+  failed_when: false
   ansible.builtin.command:
     cmd: conntrack -C
   register: _result
@@ -31,3 +32,4 @@
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_firewall_ct_counter"
     regex: "^{{ inventory_hostname }} "
+    state: "{{ _result.stderr | bool | ternary('absent', 'present') }}"
