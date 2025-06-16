@@ -114,14 +114,12 @@
       when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: kernel-dist.yaml
       tags:
-        - kernel
         - kernel-dist
 
     - name: Self-compiled kernel
       when: kernel_git_version
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
-        - kernel
         - kernel-src
 
     - name: Nginx
@@ -137,7 +135,6 @@
 
     - name: Catch async kernel build job
       tags:
-        - kernel
         - kernel-src
       when: _kernel_build.changed
       block:

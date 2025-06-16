@@ -1,15 +1,17 @@
 ---
 tor_build_from_source: true
 
-tor_git_version: HEAD
+tor_git_version: main
 tor_patches: []
 tor_prune_git_repo: false
 
-lyrebird_git_version: HEAD
+lyrebird_git_version: main
 lyrebird_patches: []
 lyrebird_prune_git_repo: false
 
 tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is stable
+
+stem_git_version: master
 
 # 2 lists for additional torrc values
 torrc_config_group: []

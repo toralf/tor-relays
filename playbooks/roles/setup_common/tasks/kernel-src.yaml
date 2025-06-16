@@ -45,7 +45,7 @@
       ansible.builtin.git:
         repo: "{{ kernel_git_repo_url }}"
         dest: /root/linux
-        version: "{{ kernel_git_version }}"
+        version: "{{ kernel_git_version | default('HEAD') }}"
         force: true
         depth: 1
         single_branch: true

@@ -68,7 +68,7 @@ hosts:
 
 ### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
 
-As default _HEAD_ (of the Git branch _main_) is taken.
+As default _HEAD_ (of the default Git branch) is taken.
 A branch can be defined by the variable _<...>\_git_version_.
 Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from (appleid on top of the branch).
 

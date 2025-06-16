@@ -26,7 +26,7 @@
   ansible.builtin.git:
     repo: https://gitlab.torproject.org/tpo/core/tor.git
     dest: /root/tor
-    version: "{{ tor_git_version }}"
+    version: "{{ tor_git_version | default('HEAD') }}"
     force: true
     depth: 1
     single_branch: true
