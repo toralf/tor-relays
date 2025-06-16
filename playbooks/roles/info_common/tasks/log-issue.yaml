@@ -9,11 +9,6 @@
         grep -v -F 'Speculative Return Stack Overflow: WARNING:'
   register: _result
 
-- name: Show issue
-  when: _result.stdout
-  ansible.builtin.debug:
-    var: _result.stdout_lines
-
 - name: Work on result
   when: _result.stdout
   vars:

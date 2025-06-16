@@ -34,7 +34,7 @@
       - "prometheus_server6 is ansible.utils.ipv6"
 
 - name: Validate RAM for kernel build from source
-  when: kernel_git_version
+  when: kernel_build_from_source
   ansible.builtin.assert:
     quiet: true
     that:

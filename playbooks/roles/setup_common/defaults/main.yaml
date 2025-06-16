@@ -5,8 +5,9 @@ additional_software: []
 kernel_debian_backports: true
 kernel_debian_cloud: true
 
+kernel_build_from_source: false
 kernel_git_repo_url: "https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git"
-kernel_git_version: master # e.g. "v6.7.3"
+kernel_git_version: "master" # e.g. "v6.7.3"
 kernel_git_patches: []
 
 # kernel build
