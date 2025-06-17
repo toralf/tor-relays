@@ -7,7 +7,24 @@
     sysctl_set: true
   notify: Restart Snowflake
 
-- name: Upload Geoip DB
+- name: Remove GeoIP Data
+  when: not tor_geoip_path
+  block:
+    - name: Remove GeoIP files
+      ansible.builtin.file:
+        state: absent
+        path: "/usr/share/tor/{{ item }}"
+      with_items:
+        - geoip
+        - geoip6
+      notify: Restart Snowflake
+
+    - name: Remove GeoIP directory
+      ansible.builtin.file:
+        state: absent
+        path: /usr/share/tor/
+
+- name: Upload GeoIP Data
   throttle: "{{ concurrent_local_jobs }}"
   when: tor_geoip_path
   ansible.posix.synchronize:
