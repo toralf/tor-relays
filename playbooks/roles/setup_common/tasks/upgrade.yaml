@@ -22,13 +22,13 @@
           set -e
 
           i=600
-          while ((i--)) && pgrep -af apt 1>/dev/null; do
+          while ((--i)); do
+            if ! pgrep -af apt 1>/dev/null; then
+              exit 0
+            fi
             sleep 1
           done
-
-          if pgrep -af apt; then
-            exit 1
-          fi
+          exit 1
         executable: /bin/bash
 
 - name: Check if reboot is needed after upgrade
