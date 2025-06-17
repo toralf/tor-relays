@@ -8,7 +8,7 @@
         sed -e '1d' -e '$d'
   register: _result
 
-- name: Output of unattended-upgrade dry run
-  when: _result.stdout_lines
+- name: Output of unattended-upgrade dry-run
+  when: _result.stdout
   ansible.builtin.debug:
     var: _result.stdout_lines

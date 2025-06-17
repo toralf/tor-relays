@@ -8,6 +8,6 @@
   register: _result
 
 - name: Findings of unattended log
-  when: _result.stdout_lines
+  when: _result.stdout
   ansible.builtin.debug:
     var: _result.stdout_lines

@@ -31,6 +31,7 @@
         - log-unattended
 
     - name: Artefact
+      when: artefact_paths
       ansible.builtin.import_tasks: artefact.yaml
       tags:
         - artefact
