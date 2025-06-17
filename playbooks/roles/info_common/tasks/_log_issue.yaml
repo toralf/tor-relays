@@ -4,7 +4,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _marker }}"
-    path: "{{ tmp_dir }}/all_issue.log"
+    path: "{{ tmp_dir }}/{{ log_issue_fname_prefix }}_issue.log"
     regex: "^{{ _marker }}$"
   register: _issue
 
@@ -27,7 +27,7 @@
       throttle: 1
       ansible.builtin.blockinfile:
         block: "{{ '    <--- scraped at ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + ' --->\n' + _details.stdout }}"
-        path: "{{ tmp_dir }}/all_issue-details.log"
+        path: "{{ tmp_dir }}/{{ log_issue_fname_prefix }}_issue-details.log"
         marker: "# {mark} {{ _marker }}"
 
     - name: Fetch appropriate kernel config

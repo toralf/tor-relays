@@ -3,6 +3,8 @@ log_lines: 20
 
 log_system: 1 day ago
 
+log_issue_fname_prefix: all
+
 nginx_loglevel: error
 
 artefact_path: ""
