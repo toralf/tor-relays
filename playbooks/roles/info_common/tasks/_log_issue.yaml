@@ -4,7 +4,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _marker }}"
-    path: "{{ tmp_dir }}/{{ log_issue_fname_prefix }}_issue.log"
+    path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue.log"
     regex: "^{{ _marker }}$"
   register: _issue
 
@@ -18,7 +18,7 @@
           journalctl --since "{{ log_system_since }}" --quiet |
             grep -A 1000 -F "{{ item }}" |
             while grep -F -e "{{ item }}" -e " kernel: "; do
-              : run  till the first non-matching line
+              : run till the first non-matching line
             done
       register: _details
 
@@ -27,7 +27,7 @@
       throttle: 1
       ansible.builtin.blockinfile:
         block: "{{ '    <--- scraped at ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + ' --->\n' + _details.stdout }}"
-        path: "{{ tmp_dir }}/{{ log_issue_fname_prefix }}_issue-details.log"
+        path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue-details.log"
         marker: "# {mark} {{ _marker }}"
 
     - name: Fetch appropriate kernel config

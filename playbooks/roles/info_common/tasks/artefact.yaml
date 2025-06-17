@@ -1,19 +1,28 @@
 ---
 - name: Look for artefact
-  when: artefact_path
   ansible.builtin.find:
     follow: true
     get_checksum: true
     hidden: true
-    paths: "{{ artefact_path }}"
-    patterns: "{{ artefact_pattern }}"
+    paths: "{{ artefact_paths }}"
+    patterns: "{{ artefact_patterns }}"
     recurse: true
     size: "{{ artefact_size }}"
   register: _found
 
 - name: Work on found artefact
   when: _found.files is defined
-  ansible.builtin.include_tasks: _artefact.yaml
-  loop_control:
-    label: "{{ item.path }}    {{ item.size }}"
-  loop: "{{ _found.files }}"
+  block:
+    - name: Create tmp dir for artefact
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.file:
+        state: directory
+        path: "{{ artefact_tmpdir }}"
+        mode: "0755"
+
+    - name: Loop over artefact/s
+      ansible.builtin.include_tasks: _artefact.yaml
+      loop_control:
+        label: "{{ item.path }}    {{ item.size }}"
+      loop: "{{ _found.files }}"

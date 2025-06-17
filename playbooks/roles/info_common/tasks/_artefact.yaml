@@ -1,56 +1,58 @@
 ---
-- name: Check for being known
+- name: Check for being known artefact
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ item.checksum }}"
-    path: "{{ artefact_tmpdir }}/artefact.log"
-  register: _artefact
+    path: "{{ artefact_tmpdir }}/Artefact.log"
+  register: _known
 
-- name: Work on new
-  when: _artefact.changed
+- name: Work on new artefact
+  when: _known.changed
   vars:
-    _dest: "{{ artefact_tmpdir }}/{{ item.checksum }}"
+    _local_fname: "{{ artefact_tmpdir }}/{{ item.checksum }}"
   block:
     - name: Fetch
       throttle: 1
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ _dest }}"
+        dest: "{{ _local_fname }}"
         flat: true
 
-    - name: Work on
-      delegate_to: localhost
-      throttle: 1
+    - name: External script for artefact
       when: artefact_script
-      changed_when: true
-      ansible.builtin.shell:
-        cmd: "{{ artefact_script }} {{ _dest }}"
-        executable: /bin/bash
-      register: _script
+      block:
+        - name: Run script for artefact
+          delegate_to: localhost
+          throttle: 1
+          changed_when: _script.stdout or _script.stderr
+          ansible.builtin.shell:
+            cmd: "{{ artefact_script }} {{ _local_fname }}"
+            executable: /bin/bash
+          register: _script
 
-    - name: Work stdout
-      when: _script.stdout
-      ansible.builtin.debug:
-        var: _script.stdout_lines
+        - name: Script stdout for artefact
+          when: _script.stdout
+          ansible.builtin.debug:
+            var: _script.stdout_lines
 
-    - name: Work stderr
-      when: _script.stderr
-      ansible.builtin.debug:
-        var: _script.stderr_lines
+        - name: Script stderr for artefact
+          when: _script.stderr
+          ansible.builtin.debug:
+            var: _script.stderr_lines
 
   rescue:
-    - name: Revert state
+    - name: Un-commit state of artefact
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
-        path: "{{ artefact_tmpdir }}/artefact.log"
+        path: "{{ artefact_tmpdir }}/Artefact.log"
         state: absent
   always:
-    - name: Housekeep
+    - name: Housekeeping of artefact
       delegate_to: localhost
       throttle: 1
       ansible.builtin.file:
-        path: "{{ _dest }}"
+        path: "{{ _local_fname }}"
         state: absent

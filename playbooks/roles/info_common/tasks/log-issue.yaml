@@ -1,6 +1,6 @@
 ---
 - name: Get issue from system log
-  changed_when: false
+  changed_when: _result.stdout
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -9,7 +9,7 @@
         grep -v -F 'Speculative Return Stack Overflow: WARNING:'
   register: _result
 
-- name: Work on result
+- name: Results of issue
   when: _result.stdout
   vars:
     _marker: "{{ (item | split(' '))[5:] | join(' ') }}"
