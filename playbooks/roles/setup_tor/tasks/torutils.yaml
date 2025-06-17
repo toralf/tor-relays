@@ -5,7 +5,7 @@
   ansible.builtin.git:
     repo: https://github.com/torproject/stem.git
     dest: /root/stem
-    version: "{{ stem_git_version | default('HEAD') }}"
+    version: "{{ stem_git_version }}"
     force: true
     depth: 1
     single_branch: true
