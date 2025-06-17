@@ -4,7 +4,7 @@
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system }}" --quiet |
+      journalctl --since "{{ log_system_since }}" --quiet |
         grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' -e ': segfault at ' |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:'
   register: _result

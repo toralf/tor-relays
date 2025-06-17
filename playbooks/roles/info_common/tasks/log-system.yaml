@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system }}" --quiet |
+      journalctl --since "{{ log_system_since }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \

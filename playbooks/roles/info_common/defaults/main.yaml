@@ -1,7 +1,7 @@
 ---
 log_lines: 20
 
-log_system: 1 day ago
+log_system_since: 1 day ago
 
 log_issue_fname_prefix: all
 
