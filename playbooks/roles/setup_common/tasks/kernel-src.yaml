@@ -52,10 +52,11 @@
       register: _kernel_repo
 
     - name: Clean Linux repo
-      changed_when: false
+      changed_when: _cleaned.stdout
       ansible.builtin.command:
         cmd: git clean -f
         chdir: /root/linux
+      register: _cleaned
 
     - name: Apply patches for Linux
       retries: 3
@@ -64,9 +65,9 @@
         cmd: |-
           set -euf
 
-          curl -s {{ item }} -o /root/kernel.patch && patch -p 1 </root/kernel.patch
+          curl -s {{ item }} -o /root/kernel.patch
+          patch -p 1 </root/kernel.patch
         chdir: /root/linux
-        executable: /bin/bash
       loop: "{{ kernel_git_patches }}"
       register: _kernel_patched
 
@@ -79,22 +80,12 @@
 
           [[ -s .config ]] && before=$(md5sum .config) || before="0"
 
-          # force loading of needed modules (if not yet loaded) for the firewall/DDoS solution
+          # force loading of needed modules (if not yet loaded), e.g. for the firewall/DDoS solution
           conntrack -C
 
           yes '' | make localmodconfig >/dev/null
 
           cat <<EOF >>.config
-
-          # inspired by https://kspp.github.io/Recommended_Settings#gcc-plugins
-
-          CONFIG_GCC_PLUGINS=y
-          CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y
-          CONFIG_GCC_PLUGIN_RANDSTRUCT=y
-          CONFIG_GCC_PLUGIN_STRUCTLEAK=y
-          CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
-          CONFIG_GCC_PLUGIN_STACKLEAK=y
-
           # generic
 
           CONFIG_LOCALVERSION=""
@@ -105,6 +96,24 @@
           PROC_MEM_NO_FORCE=y
 
           CONFIG_BPF=n
+          CONFIG_DRM=n
+          CONFIG_FB=n
+          CONFIG_HID=n
+          CONFIG_HID_SUPPORT=n
+          CONFIG_USB=n
+          CONFIG_USB_HID=n
+          CONFIG_VIRTIO=n
+
+          # inspired by https://kspp.github.io/Recommended_Settings#gcc-plugins
+
+          CONFIG_GCC_PLUGINS=y
+          CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y
+          CONFIG_GCC_PLUGIN_RANDSTRUCT=y
+          CONFIG_GCC_PLUGIN_STRUCTLEAK=y
+          CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
+          CONFIG_GCC_PLUGIN_STACKLEAK=y
+
+          # DDoS firewall
 
           CONFIG_NETFILTER_EGRESS=n
           CONFIG_NETFILTER_INGRESS=n
@@ -145,7 +154,6 @@
 
           CONFIG_SYSTEM_REVOCATION_KEYS=""
 
-          CONFIG_BPF=n
           CONFIG_BPF_SYSCALL=n
           CONFIG_BPF_JIT=n
           CONFIG_BPF_JIT_ALWAYS_ON=n
@@ -158,21 +166,23 @@
 
           yes '' | make oldconfig >/dev/null
 
-          # if current running kernel doesn'o't contain the commit-id of HEAD, then set the Ansible task to "changed"
+          # if the current running kernel doesn't contain the commit-id of HEAD, then set the Ansible task to "changed"
           if ! uname -r | grep -q "$(git rev-parse --verify HEAD | cut -c -12)"; then
             exit 123
           fi
 
-          # if files do differ, then it has changed
+          # if files do differ, then mark Ansible task as being changed
           after=$(md5sum .config)
           if [[ ! $before == $after ]]; then
             exit 123
           fi
+
+          exit 0
         chdir: /root/linux
         executable: /bin/bash
       register: _kernel_configured
 
-    - name: Copy kernel build script
+    - name: Upload kernel build script
       ansible.builtin.copy:
         src: build-kernel.sh
         dest: /root/
@@ -186,7 +196,7 @@
       changed_when: true
       vars:
         _j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"
-      ansible.builtin.command:
+      ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: |-
           {{ fire_and_forget | bool | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
       register: _kernel_build
