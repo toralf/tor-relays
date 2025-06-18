@@ -19,6 +19,18 @@
         dest: "{{ _local_fname }}"
         flat: true
 
+    - name: Inspect artefact mime type
+      delegate_to: localhost
+      throttle: 1
+      changed_when: false
+      ansible.builtin.command:
+        cmd: "file {{ _local_fname }}"
+      register: _mimetype
+
+    - name: Print out artefact file mime type
+      ansible.builtin.debug:
+        var: _mimetype.stdout_lines
+
     - name: External script for artefact
       when: artefact_script
       block:
@@ -26,11 +38,11 @@
           delegate_to: localhost
           throttle: 1
           changed_when: _script.stdout or _script.stderr
-          ansible.builtin.shell:
+          ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: "{{ artefact_script }} {{ _local_fname }}"
-            executable: /bin/bash
           register: _script
 
+      always:
         - name: Script stdout for artefact
           when: _script.stdout
           ansible.builtin.debug:
@@ -42,17 +54,19 @@
             var: _script.stderr_lines
 
   rescue:
-    - name: Un-commit state of artefact
+    - name: Reset known state of artefact
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
         path: "{{ artefact_tmpdir }}/Artefact.log"
         state: absent
+
   always:
-    - name: Housekeeping of artefact
+    - name: Cleanup artefact
       delegate_to: localhost
       throttle: 1
+      when: artefact_cleanup
       ansible.builtin.file:
         path: "{{ _local_fname }}"
         state: absent
