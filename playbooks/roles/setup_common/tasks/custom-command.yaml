@@ -3,10 +3,9 @@
   block:
     - name: Run a custom command
       changed_when: false
-      ansible.builtin.shell:
+      ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: >-
           {{ custom_command }}
-        executable: /bin/bash
       register: _custom_command_result
 
     - name: Stdout of custom command

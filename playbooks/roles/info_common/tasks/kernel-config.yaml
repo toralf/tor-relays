@@ -1,5 +1,5 @@
 ---
-- name: Get Linux kernel config file name
+- name: Get Linux kernel config filename
   changed_when: false
   ansible.builtin.shell:
     cmd: >-

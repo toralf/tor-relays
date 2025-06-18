@@ -36,8 +36,11 @@
   retries: 3
   changed_when: _snowflake_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: >-
-      curl -s {{ item }} -o /root/snowflake.patch && patch -p 1 </root/snowflake.patch
+    cmd: |-
+      set -euf
+
+      curl -s {{ item }} -o /root/snowflake.patch
+      patch -p 1 </root/snowflake.patch
     chdir: /root/snowflake
   loop: "{{ snowflake_patches }}"
   register: _snowflake_patched

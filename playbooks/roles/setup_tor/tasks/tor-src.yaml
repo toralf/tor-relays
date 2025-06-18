@@ -42,8 +42,11 @@
   throttle: "{{ torproject_connections }}"
   changed_when: _tor_patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
-    cmd: >-
-      curl -s {{ item }} -o /root/tor.patch && patch -p 1 </root/tor.patch
+    cmd: |-
+      set -euf
+
+      curl -s {{ item }} -o /root/tor.patch
+      patch -p 1 </root/tor.patch
     chdir: /root/tor
   loop: "{{ tor_patches }}"
   register: _tor_patched
