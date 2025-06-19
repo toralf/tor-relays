@@ -13,14 +13,6 @@
 - name: Work on found artefact
   when: _found.files is defined
   block:
-    - name: Create tmp dir for artefact
-      delegate_to: localhost
-      throttle: 1
-      ansible.builtin.file:
-        state: directory
-        path: "{{ artefact_tmpdir }}"
-        mode: "0755"
-
     - name: Loop over artefact/s
       ansible.builtin.include_tasks: _artefact.yaml
       loop_control:
