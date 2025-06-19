@@ -30,8 +30,6 @@
       cache_valid_time: 600
       purge: true
       state: latest
-    ansible.builtin.apt_repository:
-      update_cache: false
     ansible.builtin.copy:
       owner: root
       group: root
