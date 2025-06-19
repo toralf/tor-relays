@@ -17,7 +17,6 @@
       ansible.builtin.fetch:
         src: "{{ item.path }}"
         dest: "{{ _local_fname }}"
-        flat: true
 
     - name: Inspect artefact mime type
       delegate_to: localhost
