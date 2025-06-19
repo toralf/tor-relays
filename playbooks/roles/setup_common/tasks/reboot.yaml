@@ -12,7 +12,7 @@
   ansible.builtin.shell:
     cmd: |-
       needrestart -r l -b |
-        grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'
+        grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'
   register: _kernel_reboot_needed
   notify: Reboot system
 
@@ -22,7 +22,7 @@
   ansible.builtin.shell:
     cmd: |-
       needrestart -r l -b |
-        grep 'NEEDRESTART-SVC:'
+        grep -q 'NEEDRESTART-SVC:'
   register: _service_reboot_needed
   notify: Reboot system
 
