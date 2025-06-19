@@ -1,13 +1,22 @@
 ---
 - name: Minicoredumper
-  changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      ls -lth /var/lib/minicoredumper/*/* 2>/dev/null |
-        head
-  register: _result
+  ansible.builtin.find:
+    follow: true
+    get_checksum: false
+    hidden: true
+    paths:
+      - /var/lib/minicoredumper/
+    patterns:
+      - "*"
+    recurse: true
+  register: _found
 
 - name: Results of Minicoredumper
-  when: _result.stdout
+  when: _found.files is defined
+  vars:
+    _info: "{{ item.path }}    {{ item.size }}"
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    msg: "{{ _info }}"
+  loop_control:
+    label: "{{ _info }}"
+  loop: "{{ _found.files }}"
