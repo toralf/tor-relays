@@ -56,11 +56,11 @@
 # 2x per day between :30 and :39
 - name: Ensure reboot-required cron job is present
   ansible.builtin.cron:
-    name: Reboot if it is required
+    name: Reboot if required
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 30 + 10 | random(seed=seed_host) }}"
     job: >-
-      if grep -q 'System restart required' /var/run/reboot-required 2>/dev/null; then
+      if grep -q 'System restart required' /var/run/reboot-required; then
       pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot;
       fi
 
