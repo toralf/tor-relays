@@ -16,16 +16,16 @@
     dest: /etc/ssh/sshd_config.d/
   notify: Reload SSH
 
-- name: Check count of authorized_keys
-  changed_when: false
-  failed_when: authorized_keys.stdout_lines | length != 1
-  ansible.builtin.command:
-    cmd: cat /root/.ssh/authorized_keys
-  register: authorized_keys
-
 - name: Remove SSHd config for cloud init at IONOS systems
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.file:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     state: absent
   notify: Reload SSH
+
+- name: Ensure count of authorized_keys
+  changed_when: false
+  failed_when: _result.stdout | int != 1
+  ansible.builtin.shell:
+    cmd: wc -l </root/.ssh/authorized_keys
+  register: _result
