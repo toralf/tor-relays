@@ -11,6 +11,7 @@
     line: "$nrconf{restart} = 'a';"
     path: /etc/needrestart/conf.d/auto-restart.conf
 
+# https://unix.stackexchange.com/questions/178626/how-to-run-unattended-upgrades-not-daily-but-every-few-hours
 - name: Configure unattended auto upgrade
   ansible.builtin.copy:
     src: "{{ item }}"
