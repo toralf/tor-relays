@@ -2,7 +2,6 @@
 - name: Minicoredumper
   ansible.builtin.find:
     follow: true
-    get_checksum: false
     hidden: true
     paths:
       - /var/lib/minicoredumper/
