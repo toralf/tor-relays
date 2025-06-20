@@ -82,7 +82,7 @@
           [[ -s .config ]] && before=$(md5sum .config) || before="0"
 
           # force loading of needed modules (if not yet loaded), e.g. for the firewall/DDoS solution
-          conntrack -C
+          conntrack -C || true
 
           yes '' | make localmodconfig >/dev/null
 
@@ -92,9 +92,9 @@
           CONFIG_LOCALVERSION=""
           CONFIG_LOCALVERSION_AUTO=y
 
-          PROC_MEM_ALWAYS_FORCE=n
-          PROC_MEM_FORCE_PTRACE=n
-          PROC_MEM_NO_FORCE=y
+          CONFIG_PROC_MEM_ALWAYS_FORCE=n
+          CONFIG_PROC_MEM_FORCE_PTRACE=n
+          CONFIG_PROC_MEM_NO_FORCE=y
 
           CONFIG_BPF=n
           CONFIG_DRM=n
@@ -182,6 +182,18 @@
         chdir: /root/linux
         executable: /bin/bash
       register: _kernel_configured
+
+    - name: Print stderr (mostly warings)
+      when: _kernel_configured.stderr
+      ansible.builtin.debug:
+        var: _kernel_configured.stderr_lines
+
+    - name: Fetch Linux kernel src config
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.fetch:
+        src: /root/linux/.config
+        dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.src.config"
+        flat: true
 
     - name: Upload kernel build script
       ansible.builtin.copy:
