@@ -7,8 +7,6 @@
     dest: /root/stem
     version: "{{ stem_git_version }}"
     force: true
-    depth: 1
-    single_branch: true
 
 - name: Download info.py
   retries: 3
