@@ -1,5 +1,5 @@
 ---
-- name: Download Linux kernel config
+- name: Fetch Linux kernel config
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"

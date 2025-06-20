@@ -1,5 +1,5 @@
 ---
-- name: Download DDoS ipset files
+- name: Fetch DDoS ipset files
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   failed_when: false # might not be there immediately after bridge creation

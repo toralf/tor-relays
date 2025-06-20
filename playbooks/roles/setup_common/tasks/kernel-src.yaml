@@ -25,7 +25,7 @@
           - libssl-dev
           - lz4
 
-    - name: Create swap file for small VPS to give GCC (at least virtually) 2 GiB RAM
+    - name: Create swap file due to too small RAM
       when: ansible_facts.memtotal_mb < 2048
       ansible.builtin.shell:
         cmd: |-
