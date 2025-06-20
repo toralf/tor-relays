@@ -41,6 +41,7 @@
         creates: /swapfile
 
     - name: Init or update Linux repo
+      throttle: "{{ github_connections }}"
       retries: 3
       ansible.builtin.git:
         repo: "{{ kernel_git_repo_url }}"
