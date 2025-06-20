@@ -16,7 +16,7 @@ hash -r hcloud rc-service
 
 [[ $# -eq 0 ]]
 project=$(hcloud context active)
-echo -e "\n using Hetzner project ${project:?}"
+echo -e "\n >>> using Hetzner project ${project:?}"
 
 hconf=/etc/unbound/hetzner-${project}.conf
 if ! sudo grep -q -e "^include: \"${hconf}\"" /etc/unbound/unbound.conf; then
