@@ -4,32 +4,7 @@
   block:
     - name: Apt upgrade
       ansible.builtin.apt:
-        update_cache: true
         upgrade: full
-      register: _result
-  rescue:
-    - name: Apt issue
-      when: not _result.stdout_lines is search('Could not get lock /var/lib/dpkg/lock-frontend')
-      failed_when: true
-      ansible.builtin.debug:
-        var: _result
 
-    - name: Wait to get dpkg lock
-      changed_when: true
-      when: _result.stdout_lines is search('Could not get lock /var/lib/dpkg/lock-frontend')
-      ansible.builtin.shell:
-        cmd: |-
-          set -e
-
-          i=600
-          while ((--i)); do
-            if ! pgrep -af apt 1>/dev/null; then
-              exit 0
-            fi
-            sleep 1
-          done
-          exit 1
-        executable: /bin/bash
-
-- name: Check if reboot is needed after upgrade
-  ansible.builtin.import_tasks: reboot.yaml
+    - name: Check if reboot is needed after upgrade
+      ansible.builtin.import_tasks: reboot.yaml

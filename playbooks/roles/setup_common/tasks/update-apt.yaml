@@ -1,8 +1,4 @@
 ---
-- name: Update cache
-  ansible.builtin.apt:
-    update_cache: true
-
 - name: De-install freeipmi at IONOS
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.apt:
