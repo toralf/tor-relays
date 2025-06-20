@@ -1,33 +1,38 @@
 ---
-- name: Ping
+- name: SSH Ping
   ignore_errors: true
   ignore_unreachable: true
   ansible.builtin.ping:
-  register: _ping
+  register: _result
 
-- name: Power on
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  changed_when: true
-  when: _ping.unreachable is defined or _ping.ping is not defined
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+- name: System is off
+  when: _result.unreachable is defined or _result.ping is not defined
+  block:
+    - name: Poweron
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      changed_when: true
+      ansible.builtin.command:
+        cmd: timeout 1m hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-      hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+    - name: Network ping
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      changed_when: _poweron.rc == 0
+      ansible.builtin.shell:
+        cmd: |-
+          i=20
+          while (( i-- )); do
+            if ping -q -c 1 {{ inventory_hostname }}; then
+              sleep 15
+              exit 0
+            fi
+            sleep 1
+          done
+          exit 2
+        executable: /bin/bash
+      register: _poweron
 
-      i=30
-      while (( i-- )); do
-        if ping -q -c 1 {{ inventory_hostname }}; then
-          sleep 15
-          exit 0
-        fi
-      done
-
-      exit 2
-    executable: /bin/bash
-  register: _poweron
-
-- name: Verify power on
-  when: _poweron.changed
-  ansible.builtin.ping:
+    - name: Verify via SSH ping
+      when: _poweron.changed
+      ansible.builtin.ping:
