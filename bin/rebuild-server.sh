@@ -19,21 +19,18 @@ echo -e "\n >>> using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-# image snapshots
-snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
+if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
+  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
+fi
 
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
-    else
-      if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
-        setImageToLatestSnapshotId
-      fi
-      if [[ -z ${image-} ]]; then
-        image=$(hcloud server describe ${name} --output json | jq -r '.image.id')
-      fi
+    if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
+      setImageToLatestSnapshotId
+    fi
+    if [[ -z ${image-} ]]; then
+      image=${HCLOUD_FALLBACK_IMAGE:-$(hcloud server describe ${name} --output json | jq -r '.image.id')}
     fi
 
     echo --image ${image} ${name}

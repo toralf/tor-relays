@@ -44,14 +44,8 @@ if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
   cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
 fi
 
-if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" ]]; then
-  # image snapshots
+if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
   snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
-fi
-
-# default OS: recent Debian
-if [[ -z ${HCLOUD_IMAGE-} ]]; then
-  image_default=$(hcloud image list --type system --output json | jq -r '.[].name' | grep '^debian' | sort -urV | head -n 1)
 fi
 
 # take the first one
@@ -80,15 +74,11 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
-    else
-      if [[ ${HCLOUD_USE_SNAPSHOT-} == "y" && -n ${snapshots} ]]; then
-        setImageToLatestSnapshotId
-      fi
-      if [[ -z ${image-} ]]; then
-        image=${image_default}
-      fi
+    if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
+      setImageToLatestSnapshotId
+    fi
+    if [[ -z ${image-} ]]; then
+      image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
     fi
 
     echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
