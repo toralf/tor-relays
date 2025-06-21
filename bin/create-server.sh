@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   HCLOUD_USE_SNAPSHOT=y ./bin/create-server.sh foo-{{0..7},{a..f}}
+#   LOOKUP_SNAPSHOT=y ./bin/create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
 #   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
@@ -44,8 +44,8 @@ if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
   cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
 fi
 
-if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
-  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
+if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
+  setSnapshots
 fi
 
 # take the first one
@@ -74,7 +74,7 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
+    if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
       setImageToLatestSnapshotId
     fi
     if [[ -z ${image-} ]]; then

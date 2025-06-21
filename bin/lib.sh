@@ -36,13 +36,27 @@ function cleanLocalDataFiles() {
   set -e
 }
 
+# prefer:
+#   - match of "u-intel-stablerc" at "u-intel-stablerc" over "u-intel-stable"
+#   - younger snapshot (== higher id)
+
+function setSnapshots() {
+  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
+}
+
 function setImageToLatestSnapshotId() {
-  # shellcheck disable=SC2154
-  while read -r id description; do
+  while read -r description id; do
+    if [[ ${name} == hi${description} ]]; then
+      image=${id}
+      return
+    fi
+  done <<<${snapshots}
+
+  while read -r description id; do
     if [[ ${name} =~ ${description} ]]; then
       # shellcheck disable=SC2034
       image=${id}
-      break
+      return
     fi
   done <<<${snapshots}
 }

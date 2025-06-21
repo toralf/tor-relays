@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   HCLOUD_USE_SNAPSHOT=y ./bin/rebuild-server.sh foo bar
+#   LOOKUP_SNAPSHOT=y ./bin/rebuild-server.sh foo bar
 
 set -euf
 export LANG=C.utf8
@@ -19,14 +19,14 @@ echo -e "\n >>> using Hetzner project ${project:?}"
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
-  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=id,description | sort -nr)
+if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
+  setSnapshots
 fi
 
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ ${HCLOUD_USE_SNAPSHOT-} != "n" ]]; then
+    if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
       setImageToLatestSnapshotId
     fi
     if [[ -z ${image-} ]]; then
