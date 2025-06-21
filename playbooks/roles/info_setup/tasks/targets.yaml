@@ -1,39 +1,52 @@
 ---
-- name: File targets
+- name: Node targets
   delegate_to: localhost
   throttle: 1
-  module_defaults:
-    ansible.builtin.lineinfile:
-      create: true
-      firstmatch: true
-      mode: "0644"
-      line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
-      regex: '^- targets: \["{{ inventory_hostname }}:'
+  when: node_metrics is defined
+  ansible.builtin.lineinfile:
+    path: "{{ tmp_dir }}/node-targets.yaml"
+    line: "{{ targets_line }}"
+    regex: "{{ targets_regex }}"
+    state: "{{ node_metrics | ternary('present', 'absent') }}"
+
+- name: Snowflake targets
+  delegate_to: localhost
+  throttle: 1
+  when: snowflake_metrics is defined
+  ansible.builtin.lineinfile:
+    path: "{{ tmp_dir }}/snowflake-targets.yaml"
+    line: "{{ targets_line }}"
+    regex: "{{ targets_regex }}"
+    state: "{{ snowflake_metrics | ternary('present', 'absent') }}"
+
+- name: Tor targets
+  when: tor_metrics is defined
   block:
-    - name: Node targets
-      when: node_metrics | default(false)
+    - name: Tor bridge targets
+      delegate_to: localhost
+      throttle: 1
+      when: bridge_distribution is defined
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/node-targets.yaml"
+        path: "{{ tmp_dir }}/tor_bridge-targets.yaml"
+        line: "{{ targets_line }}"
+        regex: "{{ targets_regex }}"
+        state: "{{ (tor_metrics and bridge_distribution) | ternary('present', 'absent') }}"
 
-    - name: Snowflake targets
-      when: snowflake_metrics is defined and snowflake_metrics
+    - name: Tor server targets
+      delegate_to: localhost
+      throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/snowflake-targets.yaml"
+        path: "{{ tmp_dir }}/tor_server-targets.yaml"
+        line: "{{ targets_line }}"
+        regex: "{{ targets_regex }}"
+        state: "{{ (tor_metrics and (not bridge_distribution is defined or not bridge_distribution)) | ternary('present', 'absent') }}"
 
-    - name: Tor targets
-      when: tor_metrics is defined and tor_metrics
-      block:
-        - name: Tor bridge targets
-          when: bridge_distribution
-          ansible.builtin.lineinfile:
-            path: "{{ tmp_dir }}/tor_bridge-targets.yaml"
-
-        - name: Tor server targets
-          when: not bridge_distribution
-          ansible.builtin.lineinfile:
-            path: "{{ tmp_dir }}/tor_server-targets.yaml"
-
-    - name: DDoS targets
-      when: ddos_metrics is defined and ddos_metrics
-      ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/tor_ddos-targets.yaml"
+- name: DDoS targets
+  delegate_to: localhost
+  throttle: 1
+  when: ddos_metrics is defined
+  ansible.builtin.lineinfile:
+    path: "{{ tmp_dir }}/tor_ddos-targets.yaml"
+    line: "{{ targets_line }}"
+    regex: "{{ targets_regex }}"
+    state: "{{ ddos_metrics | ternary('present', 'absent') }}"

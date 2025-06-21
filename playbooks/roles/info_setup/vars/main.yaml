@@ -1,0 +1,3 @@
+---
+targets_line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
+targets_regex: '^- targets: \["{{ inventory_hostname }}:'
