@@ -1,4 +1,20 @@
 ---
+- name: Install/Update toolchain
+  ansible.builtin.apt:
+    name:
+      - bc
+      - bison
+      - build-essential
+      - cpio
+      - dwarves
+      - flex
+      - git
+      - kmod
+      - libelf-dev
+      - libncurses5-dev
+      - libssl-dev
+      - lz4
+
 - name: Stats of make.log
   ansible.builtin.stat:
     path: /root/make.log
@@ -9,37 +25,6 @@
   vars:
     _age: "{{ now(utc=true, fmt='%s') | float - _make_log.stat.atime }}"
   block:
-    - name: Install/Update toolchain
-      ansible.builtin.apt:
-        name:
-          - bc
-          - bison
-          - build-essential
-          - cpio
-          - dwarves
-          - flex
-          - git
-          - kmod
-          - libelf-dev
-          - libncurses5-dev
-          - libssl-dev
-          - lz4
-
-    - name: Create swap file due to too small RAM
-      when: ansible_facts.memtotal_mb < 2048
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          fallocate -l 2G /swapfile
-          chmod 600 /swapfile
-          mkswap /swapfile
-          if ! grep -q "^/swapfile " /etc/fstab; then
-            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
-          fi
-          swapon /swapfile
-        creates: /swapfile
-
     - name: Init or update Linux repo
       throttle: "{{ github_connections }}"
       retries: 3
@@ -70,7 +55,7 @@
       loop: "{{ kernel_git_patches }}"
       register: _kernel_patched
 
-    - name: Configure Linux
+    - name: Configure Linux kernel
       changed_when: _kernel_configured.rc == 123
       failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
       ansible.builtin.shell:
@@ -181,7 +166,7 @@
         executable: /bin/bash
       register: _kernel_configured
 
-    - name: Print stderr (mostly warings)
+    - name: Print stderr (almost warnings)
       when: _kernel_configured.stderr
       ansible.builtin.debug:
         var: _kernel_configured.stderr_lines
@@ -211,5 +196,3 @@
         cmd: |-
           {{ fire_and_forget | bool | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
       register: _kernel_build
-      tags:
-        - kernel-src-build
