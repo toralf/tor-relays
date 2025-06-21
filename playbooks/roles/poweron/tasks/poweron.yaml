@@ -23,7 +23,7 @@
         cmd: |-
           i=20
           while (( i-- )); do
-            if ping -q -c 1 {{ inventory_hostname }}; then
+            if ping -q -c 1 {{ inventory_hostname }} &>/dev/null; then
               sleep 15
               exit 0
             fi
