@@ -133,6 +133,27 @@ include: "/etc/unbound/hetzner-<project>.conf"
 
 The scripts under [./bin](./bin) work only for the Hetzner Cloud API.
 
+### Bisect a Linux kernel boot issue
+
+With the inventory given in the [examples](./examples/) a git bisect of a linux kernel reboot issue is done basically by something like:
+
+```bash
+name=hn0d-intel-main-bp-cl-0
+good=v6.16-rc2
+bad=HEAD
+
+cd ~/devel/tor-relays
+./bin/create-server.sh ${name}
+
+cd ~/devel/linux
+git bisect start --no-checkout
+git bisect good ${good}
+git bisect bad ${bad}
+git bisect run ~/devel/tor-relays/bin/bisect.sh ${name}
+git bisect log
+git bisect reset
+```
+
 ## Links
 
 - https://bridges.torproject.org
