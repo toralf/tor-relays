@@ -211,3 +211,5 @@
         cmd: |-
           {{ fire_and_forget | bool | ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
       register: _kernel_build
+      tags:
+        - kernel-src-build
