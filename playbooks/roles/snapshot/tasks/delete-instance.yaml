@@ -1,0 +1,8 @@
+---
+- name: Delete cloud instance
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  changed_when: true
+  ansible.builtin.command:
+    cmd: >-
+      hcloud --quiet --poll-interval 30s server delete {{ inventory_hostname }}

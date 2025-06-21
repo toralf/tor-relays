@@ -11,3 +11,8 @@
   ansible.builtin.import_tasks: snapshot.yaml
   tags:
     - snapshot
+
+- name: Delete instance
+  ansible.builtin.import_tasks: delete-instance.yaml
+  tags:
+    - delete-instance
