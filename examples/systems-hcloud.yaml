@@ -1,0 +1,71 @@
+---
+hix:
+  hosts:
+    # gentoo:
+  children:
+    hi:
+
+hnx:
+  vars:
+    additional_ports:
+      - 80
+      - 443
+      # - 2049
+    # additional_software:
+    #   - nfs-kernel-server
+    #   - nfs-common
+    #   - rpcbind
+    nginx_metrics: true
+    nginx_public_site: true
+    nginx_site_directories:
+      - dir: site01
+        port: 1234
+        secret: sec23
+      - dir: site02
+        port: 4567
+  children:
+    hn:
+
+hsx:
+  children:
+    hs:
+
+htx:
+  vars:
+    nickname: "xxxxxxxxx{{ ((seed_address + seed_host) | md5)[0:10] }}"
+    # secret_family_key: "{{ playbook_dir }}/../secrets/keys/xxxxxxxxx.secret_family_key"
+    tor_build_from_source: false
+    torrc_config_hosts:
+      - name: MaxAdvertisedBandwidth
+        value: 16MBytes
+      # - name: FamilyId
+      #   value: ...
+      # - name: MyFamily
+      #   value: "{{ (lookup('ansible.builtin.file', playbook_dir + '/../secrets/gxxxxxxxxx-MyFamily.txt', errors='ignore') |
+      #     regex_replace('#.*\n', '') | split('\n') | sort)[0:359] | join(',') }}"
+  children:
+    ht:
+
+h_common:
+  vars:
+    _branches:
+      main: master
+      stable: linux-rolling-stable
+      lts: linux-rolling-lts
+      stablerc: linux-6.15.y
+      ltsrc: linux-6.12.y
+    _repo_url:
+      stablerc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+      ltsrc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+    # hostname examples:  hs0d-arm-main-bp-cl-89  or  hiu-amd-stable
+    _parts: "{{ inventory_hostname.split('-') }}"
+    kernel_git_repo_url: "{{ _repo_url[_parts[2] | default('')] | default('https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
+    kernel_git_version: "{{ _branches[_parts[2] | default('')] | default('') }}"
+    kernel_debian_backports: "{{ _parts[3] | default('') != 'nobp' }}"
+    kernel_debian_cloud: "{{ _parts[4] | default('') != 'nocl' }}"
+    kernel_build_from_source: "{{ _parts[2] | default('') in _branches | list }}"
+  children:
+    hi:
+    hn:
+    hs:
+    ht:

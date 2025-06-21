@@ -1,0 +1,103 @@
+---
+all:
+  vars:
+    ansible_ssh_private_key_file: /home/<me>/.ssh/id_...
+    ca_name: RootCA
+    ca_common_name: ROOT CA tor-relays
+    ca_country_name: DE
+
+metrics:
+  vars:
+    metrics_port: "{{ range(..., ...) | random(seed=seed_metrics + seed_host) }}"
+    prometheus_server: "1.2.3.4"
+    prometheus_server6: ::1:2:3:4
+  children:
+    misc:
+    snowflake:
+    tor:
+
+#######################################################################
+#
+#
+snapshot:
+  children:
+    hix:
+
+snowflake:
+  vars:
+    snowflake_command_args: -nat-retest-interval 1h -metrics -summary-interval 0h0m15s
+    snowflake_metrics: true
+    snowflake_patches: []
+  children:
+    snowflake_ionos:
+    snowflake_test:
+
+tor:
+  vars:
+    ddos_metrics: true
+    nickname: "xxxxxxx{{ (inventory_hostname | replace('-', ''))[0:12] }}"
+    torrc_config_group:
+      - name: ContactInfo
+        value: >-
+          email:...
+          url:...
+          proof:uri-rsa abuse:...
+          gpg:...
+          ciissversion:2
+      - name: Nickname
+        value: "{{ nickname }}"
+      #
+      # https://gitlab.torproject.org/tpo/core/tor/-/issues/40958
+      #
+      # relay
+      - name: DirReqStatistics
+        value: 0
+      - name: ExtraInfoStatistics
+        value: 0
+      - name: PaddingStatistics
+        value: 0
+      # server only
+      - name: HiddenServiceStatistics
+        value: 0
+      # server extra stats
+      # - name: CellStatistics
+      #   value: 1
+      # - name: ConnDirectionStatistics
+      #   value: 1
+      # - name: EntryStatistics
+      #   value: 1
+    tor_port: "{{ range(..., ...) | random(seed=seed_tor_port + seed_host) }}"
+    tor_metrics: true
+  children:
+    private:
+    public:
+    server:
+
+#######################################################################
+#
+# tor
+#
+private:
+  vars:
+    bridge_distribution: none
+  children:
+    private_test:
+
+public:
+  vars:
+    bridge_distribution: any
+  children:
+    public_hetzner:
+    public_ionos:
+
+# Exit:
+#   additional_software:
+#     - dns-root-data
+#     - unbound
+server:
+  vars:
+    bridge_distribution: ""
+    node_metrics: true
+  children:
+    server_ionos:
+    server_test:
