@@ -9,7 +9,7 @@
     cmd: >-
       hcloud --quiet --poll-interval 30s server create-image --type snapshot --description='{{ _description }}' {{ inventory_hostname }}
 
-- name: Delete image
+- name: Delete cloud instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
