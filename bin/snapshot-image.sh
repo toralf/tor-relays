@@ -31,6 +31,10 @@ systems_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
 systems_ubuntu=$(eval echo hiu-${arch}-${branch})
 
 cd $(dirname $0)/..
+
+# snapshots are bound to a region
+export HCLOUD_LOCATION=hel1
+
 if [[ ${setup} == "create" ]]; then
   ./bin/create-server.sh ${systems_debian}
   HCLOUD_FALLBACK_IMAGE="ubuntu-24.04" ./bin/create-server.sh ${systems_ubuntu}
