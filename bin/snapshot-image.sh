@@ -11,14 +11,14 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 # default: 3 x 6 variants
 arch="{amd,arm,intel}"
 branch="{dist,lts,ltsrc,stable,stablerc,main}" # mapped in the inventory to a git commit-ish
-parameters=""                                  # e.g. --tags
+parameter=""                                   # e.g. --tags
 setup="create"
 
 while getopts a:b:p:r opt; do
   case $opt in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
-  p) parameters="${OPTARG}" ;;
+  p) parameter="${OPTARG}" ;;
   r) setup="rebuild" ;;
   *)
     echo " unknown parameter '${opt}'" >&2
@@ -27,22 +27,16 @@ while getopts a:b:p:r opt; do
   esac
 done
 
-systems_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
-systems_ubuntu=$(eval echo hiu-${arch}-${branch})
+names_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
+names_ubuntu=$(eval echo hiu-${arch}-${branch})
+
+names=$(xargs <<<"${names_debian} ${names_ubuntu}")
 
 cd $(dirname $0)/..
 
-# snapshots are bound to a region
-export HCLOUD_LOCATION=hel1
+# snapshots are bound to region
+export HCLOUD_LOCATION="hel1"
 
-# create or rebuild
-if [[ ${setup} == "create" ]]; then
-  ./bin/create-server.sh ${systems_debian}
-  HCLOUD_FALLBACK_IMAGE="ubuntu-24.04" ./bin/create-server.sh ${systems_ubuntu}
-else
-  ./bin/rebuild-server.sh ${systems_debian} ${systems_ubuntu}
-fi
-
-# update, snapshot and delete
-systems_all=$(xargs <<<"${systems_debian} ${systems_ubuntu} localhost" | tr ' ' ',')
-./site-snapshot.yaml --limit ${systems_all} ${parameters}
+./bin/${setup}-server.sh ${names}
+./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
+./bin/delete-server.sh ${names}
