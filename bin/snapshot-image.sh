@@ -35,10 +35,14 @@ cd $(dirname $0)/..
 # snapshots are bound to a region
 export HCLOUD_LOCATION=hel1
 
+# create or rebuild
 if [[ ${setup} == "create" ]]; then
   ./bin/create-server.sh ${systems_debian}
   HCLOUD_FALLBACK_IMAGE="ubuntu-24.04" ./bin/create-server.sh ${systems_ubuntu}
 else
   ./bin/rebuild-server.sh ${systems_debian} ${systems_ubuntu}
 fi
-./site-snapshot.yaml --limit $(tr ' ' ',' <<<${systems_debian},${systems_ubuntu}),localhost ${parameters}
+
+# update, snapshot and delete
+systems_all=$(xargs <<<"${systems_debian} ${systems_ubuntu} localhost" | tr ' ' ',')
+./site-snapshot.yaml --limit ${systems_all} ${parameters}
