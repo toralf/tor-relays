@@ -77,8 +77,15 @@ xargs -n 1 <<<$* |
     if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
       setImageToLatestSnapshotId
     fi
+    # name example: hiu-amd-main
     if [[ -z ${image-} ]]; then
-      image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
+      if [[ ${name} =~ "^hid-" || ${name%%-*} =~ "d$" ]]; then
+        image="debian-12"
+      elif [[ ${name} =~ "^hiu-" || ${name%%-*} =~ "u$" ]]; then
+        image="ubuntu-24.04"
+      else
+        image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
+      fi
     fi
 
     echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
