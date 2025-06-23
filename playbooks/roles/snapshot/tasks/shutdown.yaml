@@ -1,13 +1,8 @@
 ---
 - name: Shutdown the system
   community.general.shutdown:
-    delay: 10 # for any handler triggered systemd activity
-  register: _halted
 
-- name: Wait after shutdown
+- name: Sleep after Shutdown
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  changed_when: true
-  when: _halted.changed
-  ansible.builtin.command:
-    cmd: sleep 10
+  ansible.builtin.wait_for:
+    timeout: 15
