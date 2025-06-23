@@ -13,24 +13,14 @@
       throttle: "{{ concurrent_local_jobs }}"
       changed_when: true
       ansible.builtin.command:
-        cmd: timeout --signal=15 --kill-after=1m 1m hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+        cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-    - name: Network ping
+    - name: Wait for SSH port
       delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      changed_when: true
-      ansible.builtin.shell:
-        cmd: |-
-          i=20
-          while (( i-- )); do
-            if ping -q -c 1 {{ inventory_hostname }} &>/dev/null; then
-              sleep 15
-              exit 0
-            fi
-            sleep 1
-          done
-          exit 2
-        executable: /bin/bash
+      ansible.builtin.wait_for:
+        port: 22
+        delay: 10
+        timeout: 60
 
-    - name: Verify via SSH ping
+    - name: Verify being up
       ansible.builtin.ping:
