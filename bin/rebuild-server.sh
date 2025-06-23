@@ -26,16 +26,10 @@ fi
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
-    if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-      setImageToLatestSnapshotId
-    fi
-    if [[ -z ${image-} ]]; then
-      image=${HCLOUD_FALLBACK_IMAGE:-$(hcloud server describe ${name} --output json | jq -r '.image.id')}
-    fi
-
+    setImage
     echo --image ${image} ${name}
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 30s server rebuild
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 10s server rebuild
 
 cleanLocalDataEntries $*
 

@@ -36,15 +36,36 @@ function cleanLocalDataFiles() {
   set -e
 }
 
-# prefer:
-#   - match of "u-intel-stablerc" at "u-intel-stablerc" over "u-intel-stable"
-#   - younger snapshot (== higher id)
+# prefer...
+#   ... to match "hiu-intel-stablerc" to "u-intel-stablerc" and only as a fallback to "u-intel-stable"
+#   ... younger snapshot (== higher id)
 
 function setSnapshots() {
   snapshots=$(hcloud image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
 }
 
-function setImageToLatestSnapshotId() {
+function setImage() {
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]]; then
+    setImageByHostname
+  else
+    if ! setImageBySnapshot; then
+      setImageByHostname
+    fi
+  fi
+}
+
+function setImageByHostname() {
+  # name example: hiu-amd-main
+  if [[ ${name} =~ ^hid- || ${name%%-*} =~ d$ ]]; then
+    image="debian-12"
+  elif [[ ${name} =~ ^hiu- || ${name%%-*} =~ u$ ]]; then
+    image="ubuntu-24.04"
+  else
+    image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
+  fi
+}
+
+function setImageBySnapshot() {
   while read -r description id; do
     if [[ ${name} == hi${description} ]]; then
       image=${id}
@@ -59,4 +80,6 @@ function setImageToLatestSnapshotId() {
       return
     fi
   done <<<${snapshots}
+
+  return 1
 }

@@ -74,23 +74,11 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-      setImageToLatestSnapshotId
-    fi
-    # name example: hiu-amd-main
-    if [[ -z ${image-} ]]; then
-      if [[ ${name} =~ "^hid-" || ${name%%-*} =~ "d$" ]]; then
-        image="debian-12"
-      elif [[ ${name} =~ "^hiu-" || ${name%%-*} =~ "u$" ]]; then
-        image="ubuntu-24.04"
-      else
-        image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
-      fi
-    fi
-
+    setImage
     echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 15s server create
+  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 10s server create
 
 $(dirname $0)/update-dns.sh
 
