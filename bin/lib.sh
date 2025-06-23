@@ -28,8 +28,8 @@ function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   set +e
   while read -r name; do
-    # files in ~/tmp subdirs
-    rm -f ~/tmp/*/${name} ~/tmp/*/${name}.*
+    # certain files in ~/tmp subdirs
+    rm -f ~/tmp/{ddos,ddos6}/${name} ~/tmp/{ddos,ddos6}/${name}.*
     # client certs
     rm -f $d/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)
