@@ -1,12 +1,6 @@
 ---
 - name: Main
   module_defaults:
-    ansible.builtin.blockinfile:
-      append_newline: true
-      create: true
-      mode: "0644"
-    ansible.builtin.fetch:
-      flat: true
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
@@ -22,26 +16,10 @@
       tags:
         - firewall
 
-    - name: Kernel config
-      ansible.builtin.import_tasks: kernel-config.yaml
-      tags:
-        - kernel-config
-
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
       tags:
         - log-unattended
-
-    - name: Artefact
-      when: artefact_paths
-      ansible.builtin.import_tasks: artefact.yaml
-      tags:
-        - artefact
-
-    - name: Log Issues
-      ansible.builtin.import_tasks: log-issue.yaml
-      tags:
-        - log-issue
 
     - name: Log nginx error
       ansible.builtin.import_tasks: log-nginx.yaml

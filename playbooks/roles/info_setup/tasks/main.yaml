@@ -1,22 +1,44 @@
 ---
 - name: Main
   module_defaults:
+    ansible.builtin.blockinfile:
+      append_newline: true
+      create: true
+      mode: "0644"
+    ansible.builtin.fetch:
+      flat: true
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
       mode: "0644"
   block:
-    - name: IPv6
-      when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
-      ansible.builtin.import_tasks: ipv6.yaml
+    - name: Artefact
+      when: artefact_paths
+      ansible.builtin.import_tasks: artefact.yaml
       tags:
-        - ipv6
+        - artefact
 
     - name: Create target files
       when: metrics_port is defined
       ansible.builtin.import_tasks: targets.yaml
       tags:
         - targets
+
+    - name: IPv6
+      when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
+      ansible.builtin.import_tasks: ipv6.yaml
+      tags:
+        - ipv6
+
+    - name: Kernel config
+      ansible.builtin.import_tasks: kernel-config.yaml
+      tags:
+        - kernel-config
+
+    - name: Issues
+      ansible.builtin.import_tasks: issue.yaml
+      tags:
+        - issue
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml

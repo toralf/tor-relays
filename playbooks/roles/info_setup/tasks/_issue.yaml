@@ -15,7 +15,7 @@
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          journalctl --since "{{ log_system_since }}" --quiet |
+          journalctl --since "{{ issue_since }}" --quiet |
             grep -A 1000 -F "{{ item }}" |
             while grep -F -e "{{ item }}" -e " kernel: "; do
               : run till the first non-matching line

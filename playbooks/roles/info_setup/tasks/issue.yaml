@@ -4,7 +4,7 @@
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system_since }}" --quiet |
+      journalctl --since "{{ issue_since }}" --quiet |
         grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' -e ': segfault at ' |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:'
   register: _result
@@ -13,5 +13,5 @@
   when: _result.stdout
   vars:
     _marker: "{{ (item | split(' '))[5:] | join(' ') }}"
-  ansible.builtin.include_tasks: _log_issue.yaml
+  ansible.builtin.include_tasks: _issue.yaml
   loop: "{{ _result.stdout_lines }}"
