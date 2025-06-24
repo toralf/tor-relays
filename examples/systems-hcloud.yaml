@@ -1,7 +1,7 @@
 ---
 hix:
   hosts:
-    # gentoo:
+    # foo:
   children:
     hi:
 
@@ -48,22 +48,25 @@ htx:
 
 h_common:
   vars:
-    _branches:
-      main: master
-      stable: linux-rolling-stable
-      lts: linux-rolling-lts
-      stablerc: linux-6.15.y
-      ltsrc: linux-6.12.y
-    _repo_url:
+    _repo_urls:
+      main: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
       stablerc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
       ltsrc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+      stable: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+      lts: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
+    _versions:
+      main: master
+      stablerc: queue/6.15
+      ltsrc: queue/6.12
+      stable: linux-rolling-stable
+      lts: linux-rolling-lts
     # hostname examples:  hs0d-arm-main-bp-cl-89  or  hiu-amd-stable
     _parts: "{{ inventory_hostname.split('-') }}"
-    kernel_git_repo_url: "{{ _repo_url[_parts[2] | default('')] | default('https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git') }}"
-    kernel_git_version: "{{ _branches[_parts[2] | default('')] | default('') }}"
+    kernel_git_repo_url: "{{ _repo_urls[_parts[2] | default('')] | default('') }}"
+    kernel_git_version: "{{ _versions[_parts[2] | default('')] | default('') }}"
     kernel_debian_backports: "{{ _parts[3] | default('') != 'nobp' }}"
     kernel_debian_cloud: "{{ _parts[4] | default('') != 'nocl' }}"
-    kernel_build_from_source: "{{ _parts[2] | default('') in _branches | list }}"
+    kernel_build_from_source: "{{ _parts[2] | default('') in _versions | list }}"
   children:
     hi:
     hn:
