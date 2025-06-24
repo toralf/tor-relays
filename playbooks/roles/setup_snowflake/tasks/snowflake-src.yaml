@@ -8,40 +8,15 @@
     name: snowflake
     group: snowflake
 
-- name: Prune Snowflake Git repo
-  when: snowflake_prune_git_repo
-  ansible.builtin.file:
-    state: absent
-    path: /root/snowflake
-
-- name: Init or update Snowflake Git repo
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  ansible.builtin.git:
-    repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
-    dest: /root/snowflake
-    version: "{{ snowflake_git_version }}"
-    force: true
-
-- name: Clean
-  changed_when: false
-  ansible.builtin.command:
-    cmd: git clean -f
-    chdir: /root/snowflake
-
-- name: Apply patches
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  changed_when: _snowflake_patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      curl -s {{ item }} -o /root/snowflake.patch
-      patch -p 1 </root/snowflake.patch
-    chdir: /root/snowflake
-  loop: "{{ snowflake_patches }}"
-  register: _snowflake_patched
+- name: Work on "{{ _repo_dir }}"
+  vars:
+    _git_connections: 20
+    _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+    _git_version: "{{ snowflake_git_version }}"
+    _git_patches: "{{ snowflake_git_patches }}"
+    _remove_git_repo: "{{ snowflake_remove_git_repo }}"
+    _repo_dir: /root/snowflake
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build
   throttle: "{{ torproject_connections }}"

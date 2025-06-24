@@ -25,35 +25,15 @@
   vars:
     _age: "{{ now(utc=true, fmt='%s') | float - _make_log.stat.atime }}"
   block:
-    - name: Init or update Linux repo
-      throttle: "{{ github_connections }}"
-      retries: 3
-      ansible.builtin.git:
-        repo: "{{ kernel_git_repo_url }}"
-        dest: /root/linux
-        version: "{{ kernel_git_version }}"
-        force: true
-      register: _kernel_repo
-
-    - name: Clean Linux repo
-      changed_when: _cleaned.stdout
-      ansible.builtin.command:
-        cmd: git clean -f
-        chdir: /root/linux
-      register: _cleaned
-
-    - name: Apply patches for Linux
-      retries: 3
-      changed_when: _kernel_patched.stdout_lines is search('patching file ')
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          curl -s {{ item }} -o /root/kernel.patch
-          patch -p 1 </root/kernel.patch
-        chdir: /root/linux
-      loop: "{{ kernel_git_patches }}"
-      register: _kernel_patched
+    - name: Work on "{{ _repo_dir }}"
+      vars:
+        _git_connections: 40
+        _git_repo_url: "{{ kernel_git_repo_url }}"
+        _git_version: "{{ kernel_git_version }}"
+        _git_patches: "{{ kernel_git_patches }}"
+        _remove_git_repo: "{{ kernel_remove_git_repo }}"
+        _repo_dir: /root/linux
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
     - name: Configure Linux kernel
       changed_when: _kernel_configured.rc == 123
@@ -62,7 +42,7 @@
         cmd: |-
           set -euf
 
-          [[ -s .config ]] && before=$(md5sum .config) || before="0"
+          [[ -f .config ]] && before=$(md5sum .config) || before="0"
 
           # force loading of needed modules (if not yet loaded), e.g. for the firewall/DDoS solution
           conntrack -C || true
@@ -188,7 +168,7 @@
     - name: Build Linux
       async: "{{ (75 * 60) | int }}"
       poll: 0
-      when: _kernel_repo.changed or _kernel_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
+      when: _git_repo.changed or _git_repo_patched.changed or _kernel_configured.changed or _kernel_build_script.changed
       changed_when: true
       vars:
         _j: "{{ (ansible_facts.memtotal_mb < 1536) | ternary(1, ansible_facts.processor_vcpus) }}"

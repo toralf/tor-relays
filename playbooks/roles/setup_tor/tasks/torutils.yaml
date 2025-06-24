@@ -1,14 +1,16 @@
 ---
-- name: Init or update Tor Stem repo
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  ansible.builtin.git:
-    repo: https://github.com/torproject/stem.git
-    dest: /root/stem
-    version: "{{ stem_git_version }}"
-    force: true
+- name: Work on "{{ _repo_dir }}"
+  vars:
+    _git_connections: 20
+    _git_repo_url: https://github.com/torproject/stem.git
+    _git_version: "{{ stem_git_version }}"
+    _git_patches: []
+    _remove_git_repo: false
+    _repo_dir: /root/stem
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Download info.py
+  throttle: 40
   retries: 3
   ansible.builtin.get_url:
     url: https://github.com/toralf/torutils/raw/main/info.py

@@ -1,38 +1,13 @@
 ---
-- name: Prune Lyrebird Git repo
-  when: lyrebird_prune_git_repo
-  ansible.builtin.file:
-    state: absent
-    path: /root/lyrebird
-
-- name: Init or update Lyrebird Git repo
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  ansible.builtin.git:
-    repo: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
-    dest: /root/lyrebird
-    version: "{{ lyrebird_git_version }}"
-    force: true
-
-- name: Clean Lyrebird repo
-  changed_when: false
-  ansible.builtin.command:
-    cmd: git clean -f
-    chdir: /root/lyrebird
-
-- name: Apply patches for Lyrebird
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  changed_when: _lyrebird_patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      curl -s {{ item }} -o /root/lyrebird.patch
-      patch -p 1 </root/lyrebird.patch
-    chdir: /root/lyrebird
-  loop: "{{ lyrebird_patches }}"
-  register: _lyrebird_patched
+- name: Work on "{{ _repo_dir }}"
+  vars:
+    _git_connections: 20
+    _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
+    _git_version: "{{ lyrebird_git_version }}"
+    _git_patches: "{{ lyrebird_git_patches }}"
+    _remove_git_repo: "{{ lyrebird_remove_git_repo }}"
+    _repo_dir: /root/lyrebird
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build Lyrebird
   throttle: "{{ torproject_connections }}"

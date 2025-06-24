@@ -1,0 +1,39 @@
+---
+- name: Prune Snowflake Git repo
+  when: _remove_git_repo
+  ansible.builtin.file:
+    state: absent
+    path: "{{ _repo_dir }}"
+
+- name: Init or update "{{ _repo_dir }}"
+  throttle: "{{ _git_connections }}"
+  retries: 3
+  ansible.builtin.git:
+    repo: "{{ _git_repo_url }}"
+    dest: "{{ _repo_dir }}"
+    version: "{{ _git_version }}"
+    force: true
+  register: _git_repo
+
+- name: Remove untracked files from "{{ _repo_dir }}"
+  changed_when: _clean.stdout
+  ansible.builtin.command:
+    cmd: git clean --force
+    chdir: "{{ _repo_dir }}"
+  register: _clean
+
+- name: Apply patches for "{{ _repo_dir }}"
+  throttle: "{{ _git_connections }}"
+  retries: 3
+  changed_when: _git_repo_patched.stdout_lines is search('patching file ')
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      rm -f tmp.patch
+      curl -s {{ item }} -o tmp.patch
+      patch -p 1 <tmp.patch
+      rm tmp.patch
+    chdir: "{{ _repo_dir }}"
+  loop: "{{ _git_patches }}"
+  register: _git_repo_patched

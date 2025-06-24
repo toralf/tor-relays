@@ -34,9 +34,6 @@ all:
   vars:
     # throttle local processes
     concurrent_local_jobs: $(nproc)
-    # throttle Git connections
-    torproject_connections: 20
-    github_connections: 40
     # seed for various system-specific pseudo-randomized settings
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
 EOF

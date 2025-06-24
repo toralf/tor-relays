@@ -14,43 +14,18 @@
     name:
       - libseccomp-dev
 
-- name: Prune Tor Git repo
-  when: tor_prune_git_repo
-  ansible.builtin.file:
-    state: absent
-    path: /root/tor
-
-- name: Init or update Tor Git repo
-  throttle: "{{ torproject_connections }}"
-  retries: 3
-  ansible.builtin.git:
-    repo: https://gitlab.torproject.org/tpo/core/tor.git
-    dest: /root/tor
-    version: "{{ tor_git_version }}"
-    force: true
-  register: _tor_repo
-
-- name: Clean
-  changed_when: false
-  ansible.builtin.command:
-    cmd: git clean -f
-    chdir: /root/tor
-
-- name: Apply patches
-  throttle: "{{ torproject_connections }}"
-  changed_when: _tor_patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      curl -s {{ item }} -o /root/tor.patch
-      patch -p 1 </root/tor.patch
-    chdir: /root/tor
-  loop: "{{ tor_patches }}"
-  register: _tor_patched
+- name: Work on "{{ _repo_dir }}"
+  vars:
+    _git_connections: 20
+    _git_repo_url: https://gitlab.torproject.org/tpo/core/tor.git
+    _git_version: "{{ tor_git_version }}"
+    _git_patches: "{{ tor_git_patches }}"
+    _remove_git_repo: "{{ tor_remove_git_repo }}"
+    _repo_dir: /root/tor
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build
-  when: _tor_repo.changed or _tor_patched.changed
+  when: _git_repo.changed or _git_repo_patched.changed
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
