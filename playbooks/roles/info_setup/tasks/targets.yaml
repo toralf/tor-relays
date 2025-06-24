@@ -25,12 +25,11 @@
     - name: Tor bridge targets
       delegate_to: localhost
       throttle: 1
-      when: bridge_distribution is defined
       ansible.builtin.lineinfile:
         path: "{{ tmp_dir }}/tor_bridge-targets.yaml"
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
-        state: "{{ (tor_metrics and bridge_distribution) | ternary('present', 'absent') }}"
+        state: "{{ (tor_metrics and (bridge_distribution is defined and bridge_distribution)) | ternary('present', 'absent') }}"
 
     - name: Tor server targets
       delegate_to: localhost
