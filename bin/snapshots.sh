@@ -39,4 +39,4 @@ export HCLOUD_LOCATION="hel1"
 
 ./bin/${setup}-server.sh ${names}
 ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
-./bin/delete-server.sh ${names}
+./bin/delete-server.sh ${names} 2>/dev/null # ignore "Server not found:"
