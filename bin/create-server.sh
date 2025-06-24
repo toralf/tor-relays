@@ -75,10 +75,11 @@ xargs -n 1 <<<$* |
     fi
 
     setImage
-    echo --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+    [[ ${image} =~ ^[0-9]+$ ]] && poll_intervall="12s" || poll_intervall="36s"
+    echo --poll-interval ${poll_intervall} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 
   done |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet --poll-interval 10s server create
+  xargs -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
 

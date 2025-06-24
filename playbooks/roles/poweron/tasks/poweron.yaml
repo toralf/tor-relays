@@ -13,7 +13,7 @@
       throttle: "{{ concurrent_local_jobs }}"
       changed_when: true
       ansible.builtin.command:
-        cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+        cmd: hcloud --quiet --poll-interval 12s server poweron {{ inventory_hostname }}
 
     - name: Wait for SSH port
       delegate_to: localhost

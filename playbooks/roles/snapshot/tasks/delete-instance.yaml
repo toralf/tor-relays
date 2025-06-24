@@ -5,4 +5,4 @@
   changed_when: true
   ansible.builtin.command:
     cmd: >-
-      hcloud --quiet --poll-interval 10s server delete {{ inventory_hostname }}
+      hcloud --quiet --poll-interval 12s server delete {{ inventory_hostname }}
