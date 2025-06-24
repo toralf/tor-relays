@@ -5,8 +5,8 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
-        grep -F -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' -e ': segfault at ' |
-        grep -v -F 'Speculative Return Stack Overflow: WARNING:'
+        grep -F -A 1 -e ' kernel: -----------[ cut here ]------------' |
+        grep -F -v -e ' kernel: -----------[ cut here ]------------'
   register: _result
 
 - name: Results of issue

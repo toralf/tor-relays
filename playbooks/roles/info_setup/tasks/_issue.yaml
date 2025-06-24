@@ -16,19 +16,22 @@
       ansible.builtin.shell:
         cmd: |-
           journalctl --since "{{ issue_since }}" --quiet |
-            grep -A 1000 -F "{{ item }}" |
-            while grep -F -e "{{ item }}" -e " kernel: "; do
-              : run till the first non-matching line
-            done
+            awk '/{{ item }}/,/ kernel: ---[ end trace /' |
+            sed '$d'
       register: _details
 
     - name: File issue details
       delegate_to: localhost
       throttle: 1
       ansible.builtin.blockinfile:
-        block: "{{ '    <--- scraped at ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + ' --->\n' + _details.stdout }}"
+        block:
+          "{{ '# ' + inventory_hostname + '   ' + ansible_facts.lsb.description
+          + '   ' + now(utc=true, fmt='%Y-%m-%d %H:%M:%S') + '\n#\n' + _details.stdout
+          }}"
         path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue-details.log"
         marker: "# {mark} {{ _marker }}"
+        marker_begin: "ISSUE BEGIN"
+        marker_end: "ISSUE END"
 
     - name: Fetch appropriate kernel config
       ansible.builtin.include_tasks: kernel-config.yaml
