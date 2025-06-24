@@ -11,13 +11,15 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 # default: 3 x 6 variants
 arch="{amd,arm,intel}"
 branch="{dist,lts,ltsrc,stable,stablerc,main}" # mapped in the inventory to a git commit-ish
+names=""                                       # exclusive to "arch" and "branch"
 parameter=""                                   # e.g. --tags
 setup="create"
 
-while getopts a:b:p:r opt; do
+while getopts a:b:n:p:r opt; do
   case $opt in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
+  n) names="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
   r) setup="rebuild" ;;
   *)
@@ -27,15 +29,18 @@ while getopts a:b:p:r opt; do
   esac
 done
 
-names_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
-names_ubuntu=$(eval echo hiu-${arch}-${branch})
+if [[ -z ${names} ]]; then
+  names_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
+  names_ubuntu=$(eval echo hiu-${arch}-${branch})
 
-names=$(xargs <<<"${names_debian} ${names_ubuntu}")
+  names=$(xargs <<<"${names_debian} ${names_ubuntu}")
+fi
 
 cd $(dirname $0)/..
 
 # snapshots are bound to region
 export HCLOUD_LOCATION="hel1"
+export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 ./bin/${setup}-server.sh ${names}
 ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
