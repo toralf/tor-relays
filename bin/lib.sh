@@ -52,6 +52,8 @@ function setImage() {
       setImageByHostname
     fi
   fi
+
+  [[ -n ${image} ]]
 }
 
 function setImageByHostname() {
@@ -66,18 +68,26 @@ function setImageByHostname() {
 }
 
 function setImageBySnapshot() {
+  if [[ -z ${snapshots} ]]; then
+    return 1
+  fi
+
   while read -r description id; do
-    if [[ ${name} == hi${description} ]]; then
-      image=${id}
-      return
+    if [[ -n ${description} ]]; then
+      if [[ ${name} == hi${description} ]]; then
+        image=${id}
+        return
+      fi
     fi
   done <<<${snapshots}
 
   while read -r description id; do
-    if [[ ${name} =~ ${description} ]]; then
-      # shellcheck disable=SC2034
-      image=${id}
-      return
+    if [[ -n ${description} ]]; then
+      if [[ ${name} =~ ${description} ]]; then
+        # shellcheck disable=SC2034
+        image=${id}
+        return
+      fi
     fi
   done <<<${snapshots}
 
