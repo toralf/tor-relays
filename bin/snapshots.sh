@@ -8,20 +8,21 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-# default: 3 x 6 variants
-arch="{amd,arm,intel}"
-branch="{dist,lts,ltsrc,stable,stablerc,main}" # mapped in the inventory to a git commit-ish
-names=""                                       # exclusive to "arch" and "branch"
-parameter=""                                   # e.g. --tags
-setup="create"
+project=$(hcloud context active)
+echo -e "\n >>> using Hetzner project ${project:?}"
 
-while getopts a:b:n:p:r opt; do
-  case $opt in
+arch="{amd,arm,intel}"
+branch="{lts,ltsrc,stable,stablerc,main}" # mapped in inventory to a git commit-ish
+names=""                                  # option exclusive to "arch" and "branch"
+parameter=""                              # e.g. "--tags ..."
+
+while getopts a:b:en:p: opt; do
+  case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
+  e) names=$(hcloud image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi%s ") ;;
   n) names="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
-  r) setup="rebuild" ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
@@ -42,6 +43,6 @@ cd $(dirname $0)/..
 export HCLOUD_LOCATION="hel1"
 export ANSIBLE_DISPLAY_OK_HOSTS=false
 
-./bin/${setup}-server.sh ${names}
+./bin/create-server.sh ${names}
 ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
 ./bin/delete-server.sh ${names} 2>/dev/null # ignore "Server not found:"
