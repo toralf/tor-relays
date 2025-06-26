@@ -10,7 +10,8 @@
   ansible.builtin.shell:
     cmd: |-
       lines=$(
-        journalctl -u snowflake-proxy --since "{{ log_connections_seconds_ago }} second ago" -g ', there were .* connections' --quiet --reverse |
+        journalctl -u snowflake-proxy --since "{{ log_connections_seconds_ago }} second ago" \
+          -g ', there were .* connections' --quiet --reverse |
         awk '{ print $14 }' |
         xargs |
         tr ' ' '+'

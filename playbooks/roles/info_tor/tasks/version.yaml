@@ -10,7 +10,7 @@
         grep -m 1 '^Tor version' |
         cut -f 3,4 -d ' ' |
         tr ' ' '_'
-  register: _tor
+  register: _tor_version
 
 - name: Proxy version
   changed_when: false
@@ -28,9 +28,11 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    _package: "{{ ansible_facts.packages['tor'][0].version | default('-') }} {{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
-    _version: "{{ _tor.stdout | default('-') }} {{ _proxy_version.stdout | default('-') }}"
+    _pkg_tor: "{{ ansible_facts.packages['tor'][0].version | default('-') }}"
+    _pkg_pt: "{{ ansible_facts.packages['obfs4proxy'][0].version | default('-') }}"
+    _tor: "{{ _tor_version.stdout | default('-') }}"
+    _pt: "{{ _proxy_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} tor {{ _version }} {{ _package }}"
+    line: "{{ inventory_hostname }} tor {{ _tor }} {{ _pt }} {{ _pkg_tor }} {{ _pkg_pt }}"
     path: "{{ tmp_dir }}/tor_version"
     regex: "^{{ inventory_hostname }} "

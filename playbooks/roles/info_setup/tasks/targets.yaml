@@ -29,7 +29,9 @@
         path: "{{ tmp_dir }}/tor_bridge-targets.yaml"
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
-        state: "{{ (tor_metrics and (bridge_distribution is defined and bridge_distribution)) | ternary('present', 'absent') }}"
+        state:
+          "{{ (tor_metrics and (bridge_distribution is defined and bridge_distribution)) |
+          ternary('present', 'absent') }}"
 
     - name: Tor server targets
       delegate_to: localhost
@@ -38,7 +40,9 @@
         path: "{{ tmp_dir }}/tor_server-targets.yaml"
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
-        state: "{{ (tor_metrics and (not bridge_distribution is defined or not bridge_distribution)) | ternary('present', 'absent') }}"
+        state:
+          "{{ (tor_metrics and (not bridge_distribution is defined or not bridge_distribution)) |
+          ternary('present', 'absent') }}"
 
 - name: DDoS targets
   delegate_to: localhost

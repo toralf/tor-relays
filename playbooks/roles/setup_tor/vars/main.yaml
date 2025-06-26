@@ -16,16 +16,20 @@ add_local_services_v6: >-
 
 # remote Prometheus server
 add_remote_services_v4: >-
-  {{ (metrics_port and prometheus_server) | ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
+  {{ (metrics_port and prometheus_server) |
+    ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
 
 add_remote_services_v6: >-
-  {{ (metrics_port and prometheus_server6) | ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
+  {{ (metrics_port and prometheus_server6) |
+    ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
 
 configured_relays_v4: >-
-  {{ bridge_distribution | ternary('CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"', '') }}
+  {{ bridge_distribution |
+    ternary('CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"', '') }}
 
 configured_relays_v6: >-
-  {{ bridge_distribution | ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
+  {{ bridge_distribution |
+    ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
 
 # linux user
 tor_user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"

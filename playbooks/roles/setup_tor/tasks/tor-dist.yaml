@@ -15,7 +15,8 @@
     - name: Configure repository "torproject"
       ansible.builtin.apt_repository:
         filename: torproject
-        repo: "deb https://deb.torproject.org/torproject.org {{ tor_debian_target | default(ansible_facts.distribution_release) }} main"
+        repo: "deb https://deb.torproject.org/torproject.org
+          {{ tor_debian_target | default(ansible_facts.distribution_release) }} main"
 
     - name: Install/Update Tor and PT
       ansible.builtin.apt:

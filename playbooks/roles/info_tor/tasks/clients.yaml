@@ -3,7 +3,8 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      zgrep -h -F ' unique clients.' {{ log_notice }}.4.gz {{ log_notice }}.3.gz {{ log_notice }}.2.gz {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
+      zgrep -h -F ' unique clients.' {{ log_notice }}.4.gz {{ log_notice }}.3.gz {{ log_notice }}.2.gz \
+        {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
         tail -n 12 |
         cut -f 2- -d ',' |
         grep -Po ' \d+ ' |
