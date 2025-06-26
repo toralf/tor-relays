@@ -1,0 +1,13 @@
+---
+- name: Get dmesg
+  changed_when: false
+  ansible.builtin.command:
+    cmd: dmesg
+  register: _result
+
+- name: File dmesg
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.copy:
+    dest: "{{ tmp_dir }}/dmesg/{{ inventory_hostname }}.dmesg"
+    content: "{{ _result.stdout }}"

@@ -5,6 +5,8 @@
       append_newline: true
       create: true
       mode: "0644"
+    ansible.builtin.copy:
+      mode: "0644"
     ansible.builtin.fetch:
       flat: true
     ansible.builtin.lineinfile:
@@ -18,11 +20,16 @@
       tags:
         - artefact
 
-    - name: Create target files
+    - name: Create Prometheus config files
       when: metrics_port is defined
       ansible.builtin.import_tasks: targets.yaml
       tags:
         - targets
+
+    - name: Dmesg
+      ansible.builtin.import_tasks: dmesg.yaml
+      tags:
+        - dmesg
 
     - name: IPv6
       when: ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::')
