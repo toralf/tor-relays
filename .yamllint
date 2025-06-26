@@ -14,7 +14,7 @@ rules:
     min-spaces-from-content: 1
   comments-indentation: false
   line-length:
-    max: 160
+    max: 130
   octal-values:
     forbid-explicit-octal: true
     forbid-implicit-octal: true
