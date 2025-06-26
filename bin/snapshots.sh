@@ -44,5 +44,5 @@ export HCLOUD_LOCATION="hel1"
 export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 ./bin/create-server.sh ${names}
-./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
+./site-snapshot.yaml --limit \'$(xargs <<<"${names} localhost" | tr ' ' ',')\' ${parameter}
 ./bin/delete-server.sh ${names} 2>/dev/null # ignore "Server not found:"

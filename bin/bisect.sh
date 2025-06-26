@@ -24,4 +24,4 @@ bisect_id=$(cat ~/devel/linux/.git/BISECT_HEAD) || exit 254
 ./site.yaml --limit ${name} --skip-tags kernel-src,auto-update || exit 253
 
 # bisect test
-./site.yaml --limit ${name} -e kernel_git_version=${bisect_id} --tags kernel-src --skip-tags auto-update
+./site.yaml --limit \'${name}\' -e kernel_git_version=${bisect_id} --tags kernel-src --skip-tags auto-update
