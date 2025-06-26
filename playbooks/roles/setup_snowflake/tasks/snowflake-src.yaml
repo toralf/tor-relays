@@ -10,7 +10,6 @@
 
 - name: Work on "{{ _repo_dir }}"
   vars:
-    _git_connections: 20
     _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     _git_version: "{{ snowflake_git_version }}"
     _git_patches: "{{ snowflake_git_patches }}"

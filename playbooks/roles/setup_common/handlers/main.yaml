@@ -39,3 +39,9 @@
     connect_timeout: 2
     reboot_timeout: "{{ 60 + _additional_timeout_tor | int }}"
     post_reboot_delay: 10
+
+- name: Gather new kernel version after reboot
+  listen: Reboot system
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware

@@ -1,31 +1,62 @@
 ---
-- name: Prune Snowflake Git repo
-  when: _remove_git_repo
-  ansible.builtin.file:
-    state: absent
-    path: "{{ _repo_dir }}"
+- name: Check "{{ _repo_dir }}"
+  block:
+    - name: Check repo "{{ _repo_dir }}"
+      ansible.builtin.git:
+        repo: "{{ _git_repo_url }}"
+        dest: "{{ _repo_dir }}"
+        clone: false
+        update: false
+      register: __repocheck
+  rescue:
+    - name: Wipe b0rken "{{ _repo_dir }}"
+      ansible.builtin.file:
+        state: absent
+        path: "{{ _repo_dir }}"
 
-- name: Init or update "{{ _repo_dir }}"
-  throttle: "{{ _git_connections }}"
-  retries: 3
-  ansible.builtin.git:
-    repo: "{{ _git_repo_url }}"
-    dest: "{{ _repo_dir }}"
-    version: "{{ _git_version }}"
-    force: true
-  register: _git_repo
+- name: Throttle Git
+  throttle: 24
+  block:
+    - name: Clone with small RAM "{{ _repo_dir }}"
+      throttle: 12
+      when: ansible_facts.memtotal_mb < 4096 and __repocheck.before == "0000000000000000000000000000000000000000"
+      block:
+        - name: Shallow clone "{{ _repo_dir }}"
+          ansible.builtin.git:
+            repo: "{{ _git_repo_url }}"
+            dest: "{{ _repo_dir }}"
+            version: "{{ _git_version }}"
+            force: true
+            depth: 1
+            single_branch: true
+          register: __shallow
 
-- name: Remove untracked files from "{{ _repo_dir }}"
-  changed_when: _clean.stdout
+        - name: Update single branch "{{ _repo_dir }}"
+          ansible.builtin.git:
+            repo: "{{ _git_repo_url }}"
+            dest: "{{ _repo_dir }}"
+            version: "{{ _git_version }}"
+            force: true
+            single_branch: true
+          register: __branch
+
+    - name: Clone or update "{{ _repo_dir }}"
+      ansible.builtin.git:
+        repo: "{{ _git_repo_url }}"
+        dest: "{{ _repo_dir }}"
+        version: "{{ _git_version }}"
+        force: true
+      register: __updated
+
+- name: Remove untracked files "{{ _repo_dir }}"
+  changed_when: __cleaned.stdout
   ansible.builtin.command:
     cmd: git clean --force
     chdir: "{{ _repo_dir }}"
-  register: _clean
+  register: __cleaned
 
-- name: Apply patches for "{{ _repo_dir }}"
-  throttle: "{{ _git_connections }}"
-  retries: 3
-  changed_when: _git_repo_patched.stdout_lines is search('patching file ')
+- name: Apply patches "{{ _repo_dir }}"
+  changed_when: __patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -36,4 +67,19 @@
       rm tmp.patch
     chdir: "{{ _repo_dir }}"
   loop: "{{ _git_patches }}"
-  register: _git_repo_patched
+  register: __patched
+
+- name: Get update status "{{ _repo_dir }}"
+  ansible.builtin.set_fact:
+    _git_repo_changed: "{{ __repocheck.changed or
+      __shallow is defined and __shallow.changed or
+      __branch is defined and __branch.changed or
+      __updated.changed or __patched.changed }}"
+
+- name: Get current HEAD commit id "{{ _repo_dir }}"
+  ansible.builtin.git:
+    repo: "{{ _git_repo_url }}"
+    dest: "{{ _repo_dir }}"
+    clone: false
+    update: false
+  register: _git_head

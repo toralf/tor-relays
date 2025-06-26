@@ -11,8 +11,6 @@ lyrebird_remove_git_repo: false
 
 tor_debian_target: "" # e.g. tor-nightly-main-bookworm, default is stable
 
-stem_git_version: master
-
 # 2 lists for additional torrc values
 torrc_config_group: []
 torrc_config_hosts: []

@@ -16,7 +16,6 @@
 
 - name: Work on "{{ _repo_dir }}"
   vars:
-    _git_connections: 20
     _git_repo_url: https://gitlab.torproject.org/tpo/core/tor.git
     _git_version: "{{ tor_git_version }}"
     _git_patches: "{{ tor_git_patches }}"
@@ -25,7 +24,7 @@
   ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build
-  when: _git_repo.changed or _git_repo_patched.changed
+  when: _git_repo_changed or tor_git_patches
   changed_when: true
   ansible.builtin.shell:
     cmd: |-

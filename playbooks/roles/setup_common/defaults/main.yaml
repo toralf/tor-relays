@@ -9,7 +9,6 @@ kernel_build_from_source: false
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []
-kernel_remove_git_repo: false
 
 # kernel build
 fire_and_forget: false
