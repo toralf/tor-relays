@@ -1,7 +1,7 @@
 ---
 snowflake_build_from_source: true
 snowflake_git_version: main
-snowflake_patches: []
+snowflake_git_patches: []
 snowflake_remove_git_repo: false
 
 # e.g. "-verbose" or "-nat-retest-interval 1h -metrics -summary-interval 0h0m15s"

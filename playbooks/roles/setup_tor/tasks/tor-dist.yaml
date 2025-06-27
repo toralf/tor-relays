@@ -5,6 +5,7 @@
     - name: Install/Update GnuPG
       ansible.builtin.apt:
         name:
+          - apt-transport-https
           - gpg
           - gpg-agent
 
@@ -14,13 +15,14 @@
 
     - name: Configure repository "torproject"
       ansible.builtin.apt_repository:
-        filename: torproject
-        repo: "deb https://deb.torproject.org/torproject.org
-          {{ tor_debian_target | default(ansible_facts.distribution_release) }} main"
+        filename: tor
+        repo: "{{ item }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
+      loop:
+        - deb
+        - deb-src
 
     - name: Install/Update Tor and PT
       ansible.builtin.apt:
-        default_release: "{{ tor_debian_target | default(ansible_facts.distribution_release) }}"
         name:
           - obfs4proxy
           - tor
