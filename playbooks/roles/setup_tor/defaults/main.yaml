@@ -6,7 +6,7 @@ tor_git_patches: []
 tor_remove_git_repo: false
 
 lyrebird_git_version: main
-lyrebird_patches: []
+lyrebird_git_patches: []
 lyrebird_remove_git_repo: false
 
 # 2 lists for additional torrc values

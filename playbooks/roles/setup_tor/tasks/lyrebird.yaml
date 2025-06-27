@@ -9,7 +9,7 @@
   ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build Lyrebird
-  throttle: "{{ torproject_connections }}"
+  throttle: 16
   changed_when: false
   ansible.builtin.command:
     cmd: make build
