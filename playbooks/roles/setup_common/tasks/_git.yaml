@@ -1,13 +1,13 @@
 ---
-- name: Check "{{ _repo_dir }}"
+- name: Check for a new clone "{{ _repo_dir }}"
   block:
-    - name: Check repo "{{ _repo_dir }}"
+    - name: Check for a new clone "{{ _repo_dir }}"
       ansible.builtin.git:
         repo: "{{ _git_repo_url }}"
         dest: "{{ _repo_dir }}"
         clone: false
         update: false
-      register: __repocheck
+      register: __new_clone
   rescue:
     - name: Wipe b0rken "{{ _repo_dir }}"
       ansible.builtin.file:
@@ -15,11 +15,11 @@
         path: "{{ _repo_dir }}"
 
 - name: Throttle Git
-  throttle: 24
+  throttle: 16
   block:
-    - name: Clone with small RAM "{{ _repo_dir }}"
-      throttle: 12
-      when: ansible_facts.memtotal_mb < 4096 and __repocheck.before == "0000000000000000000000000000000000000000"
+    - name: New clone "{{ _repo_dir }}"
+      throttle: 6
+      when: __new_clone.before == "null"
       block:
         - name: Shallow clone "{{ _repo_dir }}"
           ansible.builtin.git:
@@ -31,7 +31,7 @@
             single_branch: true
           register: __shallow
 
-        - name: Update single branch "{{ _repo_dir }}"
+        - name: Single branch "{{ _repo_dir }}"
           ansible.builtin.git:
             repo: "{{ _git_repo_url }}"
             dest: "{{ _repo_dir }}"
@@ -40,13 +40,28 @@
             single_branch: true
           register: __branch
 
-    - name: Clone or update "{{ _repo_dir }}"
+    - name: Update "{{ _repo_dir }}"
       ansible.builtin.git:
         repo: "{{ _git_repo_url }}"
         dest: "{{ _repo_dir }}"
         version: "{{ _git_version }}"
         force: true
+        clone: false
       register: __updated
+
+    - name: Apply patches "{{ _repo_dir }}"
+      changed_when: __patched.stdout_lines is search('patching file ')
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          rm -f tmp.patch
+          curl -s {{ item }} -o tmp.patch
+          patch -p 1 <tmp.patch
+          rm tmp.patch
+        chdir: "{{ _repo_dir }}"
+      loop: "{{ _git_patches }}"
+      register: __patched
 
 - name: Remove untracked files "{{ _repo_dir }}"
   changed_when: __cleaned.stdout
@@ -55,26 +70,13 @@
     chdir: "{{ _repo_dir }}"
   register: __cleaned
 
-- name: Apply patches "{{ _repo_dir }}"
-  changed_when: __patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      rm -f tmp.patch
-      curl -s {{ item }} -o tmp.patch
-      patch -p 1 <tmp.patch
-      rm tmp.patch
-    chdir: "{{ _repo_dir }}"
-  loop: "{{ _git_patches }}"
-  register: __patched
-
 - name: Get update status "{{ _repo_dir }}"
   ansible.builtin.set_fact:
-    _git_repo_changed: "{{ __repocheck.changed or
+    _git_repo_changed: "{{
       __shallow is defined and __shallow.changed or
       __branch is defined and __branch.changed or
-      __updated.changed or __patched.changed }}"
+      __updated.changed or
+      __patched.changed }}"
 
 - name: Get current HEAD commit id "{{ _repo_dir }}"
   ansible.builtin.git:
