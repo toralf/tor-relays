@@ -2,6 +2,19 @@
 - name: Upgrade system
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   block:
+    - name: Check for outdated dpkg lock file
+      ansible.builtin.stat:
+        path: /var/lib/dpkg/lock-frontend
+      register: _lockfile
+
+    - name: Remove outdated dpkg lockfile
+      when: _lockfile.stat.exists and _age | int > 3600
+      vars:
+        _age: "{{ now(utc=true, fmt='%s') | float - _lockfile.stat.atime }}"
+      ansible.builtin.file:
+        path: /var/lib/dpkg/lock-frontend
+        state: absent
+
     - name: Apt upgrade
       ansible.builtin.apt:
         upgrade: full
