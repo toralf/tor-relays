@@ -5,11 +5,14 @@
 # create/update snaphot images
 
 function generate_names() {
-  case $* in
-  d) eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl ;;
-  u) eval echo hiu-${arch}-${branch} ;;
-  *) exit 1 ;;
-  esac
+  xargs -n 1 <<<$* |
+    while read -r os; do
+      case ${os} in
+      d) eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      u) eval echo hiu-${arch}-${branch} ;;
+      *) exit 1 ;;
+      esac
+    done
 }
 
 set -euf
@@ -53,6 +56,6 @@ cd $(dirname $0)/..
 ./bin/create-server.sh ${names}
 cmd=""
 if ! ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}; then
-  cmd='echo run this:        '
+  cmd='echo ^^ fix and run:        '
 fi
 ${cmd} ./bin/delete-server.sh ${names} 2>/dev/null
