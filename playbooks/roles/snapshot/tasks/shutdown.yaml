@@ -2,7 +2,7 @@
 - name: Shutdown the system
   community.general.shutdown:
 
-- name: Sleep after Shutdown
+- name: Additional wait after Shutdown
   delegate_to: localhost
   ansible.builtin.wait_for:
     timeout: 15
