@@ -12,9 +12,9 @@ project=$(hcloud context active)
 echo -e "\n >>> using Hetzner project ${project:?}"
 
 arch="{amd,arm,intel}"
-branch="{lts,ltsrc,stable,stablerc,main}" # mapped in inventory to a git commit-ish
-names=""                                  # option exclusive to "arch" and "branch"
-parameter=""                              # e.g. "--tags ..."
+branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
+names=""                                    # option exclusive to "arch" and "branch"
+parameter=""                                # e.g. "--tags ..."
 
 while getopts a:b:en:p: opt; do
   case ${opt} in
@@ -44,5 +44,8 @@ export HCLOUD_LOCATION="hel1"
 export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 ./bin/create-server.sh ${names}
-./site-snapshot.yaml --limit \'$(xargs <<<"${names} localhost" | tr ' ' ',')\' ${parameter}
-./bin/delete-server.sh ${names} 2>/dev/null # ignore "Server not found:"
+cmd=""
+if ! ./site-snapshot.yaml --limit \'$(xargs <<<"${names} localhost" | tr ' ' ',')\' ${parameter}; then
+  cmd='echo run this:      '
+fi
+${cmd} ./bin/delete-server.sh ${names} 2>/dev/null
