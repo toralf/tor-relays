@@ -4,9 +4,21 @@
 
 # create/update snaphot images
 
+function generate_names() {
+  case $* in
+  d) eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl ;;
+  u) eval echo hiu-${arch}-${branch} ;;
+  *) exit 1 ;;
+  esac
+}
+
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
+
+# snapshots are bound to region
+export HCLOUD_LOCATION="hel1"
+export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 project=$(hcloud context active)
 echo -e "\n >>> using Hetzner project ${project:?}"
@@ -14,15 +26,17 @@ echo -e "\n >>> using Hetzner project ${project:?}"
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
 names=""                                    # option exclusive to "arch" and "branch"
+os="d u"                                    # operating system, (d)ebian, (u)buntu
 parameter=""                                # e.g. "--tags ..."
 
-while getopts a:b:en:p: opt; do
+while getopts a:b:n:o:p:r opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
-  e) names=$(hcloud image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi%s ") ;;
   n) names="${OPTARG}" ;;
+  o) os="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
+  r) names=$(hcloud image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi%s ") ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
@@ -31,21 +45,14 @@ while getopts a:b:en:p: opt; do
 done
 
 if [[ -z ${names} ]]; then
-  names_debian=$(eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl)
-  names_ubuntu=$(eval echo hiu-${arch}-${branch})
-
-  names=$(xargs <<<"${names_debian} ${names_ubuntu}")
+  names=$(xargs <<<"$(generate_names ${os})")
 fi
 
 cd $(dirname $0)/..
 
-# snapshots are bound to region
-export HCLOUD_LOCATION="hel1"
-export ANSIBLE_DISPLAY_OK_HOSTS=false
-
 ./bin/create-server.sh ${names}
 cmd=""
-if ! ./site-snapshot.yaml --limit \'$(xargs <<<"${names} localhost" | tr ' ' ',')\' ${parameter}; then
-  cmd='echo run this:      '
+if ! ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}; then
+  cmd='echo run this:        '
 fi
 ${cmd} ./bin/delete-server.sh ${names} 2>/dev/null
