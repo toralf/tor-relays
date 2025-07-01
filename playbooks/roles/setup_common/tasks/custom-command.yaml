@@ -6,18 +6,18 @@
       ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: >-
           {{ custom_command }}
-      register: _custom_command_result
+      register: _result
 
     - name: Stdout of custom command
-      when: _custom_command_result.stdout
+      when: _result.stdout
       ansible.builtin.debug:
-        var: _custom_command_result.stdout
+        var: _result.stdout
   rescue:
     - name: Rc of custom command
       ansible.builtin.debug:
-        var: _custom_command_result.rc
+        var: _result.rc
 
     - name: Stderr of custom command
-      when: _custom_command_result.stderr
+      when: _result.stderr
       ansible.builtin.debug:
-        var: _custom_command_result.stderr
+        var: _result.stderr
