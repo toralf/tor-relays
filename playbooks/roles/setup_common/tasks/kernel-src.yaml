@@ -8,7 +8,6 @@
       - cpio
       - dwarves
       - flex
-      - git
       - kmod
       - libelf-dev
       - libncurses5-dev

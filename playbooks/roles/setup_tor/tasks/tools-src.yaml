@@ -5,7 +5,6 @@
     name:
       - automake
       - build-essential
-      - git
       - libevent-dev
       - libssl-dev
       - logrotate
