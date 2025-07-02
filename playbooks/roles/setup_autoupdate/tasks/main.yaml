@@ -30,7 +30,7 @@
       mode: "0644"
   block:
     - name: Configure auto update
-      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: auto-update.yaml
       tags:
         - auto-update
