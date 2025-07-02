@@ -1,7 +1,7 @@
 ---
 # update starts at hh:02, # upgrade starts between hh:10 and hh:30, possible reboot between hh:35 and hh:58
 
-- name: Install/Update base software for auto-update
+- name: Install/Update unattended software
   ansible.builtin.apt:
     name:
       - unattended-upgrades

@@ -30,6 +30,14 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
+- name: De-activate unattended-upgrades
+  when: ansible_facts.distribution in ('Ubuntu')
+  ansible.builtin.systemd_service:
+    name: unattended-upgrades
+    state: stopped
+    enabled: false
+    no_block: true
+
 - name: Check for outdated dpkg lock file
   ansible.builtin.stat:
     path: /var/lib/dpkg/lock-frontend

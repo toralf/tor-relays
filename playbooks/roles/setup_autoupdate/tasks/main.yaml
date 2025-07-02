@@ -29,8 +29,14 @@
       group: root
       mode: "0644"
   block:
-    - name: Configure auto update
+    - name: Configure auto update for Debian
       when: ansible_facts.distribution in ('Debian')
-      ansible.builtin.import_tasks: auto-update.yaml
+      ansible.builtin.import_tasks: autoupdate-debian.yaml
       tags:
-        - auto-update
+        - autoupdate
+
+    - name: Configure auto update for Ubuntu
+      when: ansible_facts.distribution in ('Ubuntu')
+      ansible.builtin.import_tasks: autoupdate-ubuntu.yaml
+      tags:
+        - autoupdate
