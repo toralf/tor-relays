@@ -5,7 +5,6 @@ artefact_patterns:
   - "*"
 artefact_script: ""
 artefact_size: "200k"
-artefact_tmpdir: "{{ tmp_dir }}/artefact"
 artefact_cleanup: false
 
 issue_fname_prefix: common

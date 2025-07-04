@@ -4,13 +4,13 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ item.checksum }}"
-    path: "{{ artefact_tmpdir }}/Artefact.log"
+    path: "{{ tmp_dir }}/Artefact.log"
   register: _known
 
 - name: Work on new artefact
   when: _known.changed
   vars:
-    _local_fname: "{{ artefact_tmpdir }}/{{ item.checksum }}"
+    _local_fname: "{{ tmptmp_dirdir }}/{{ item.checksum }}"
   block:
     - name: Fetch
       throttle: 1
@@ -58,7 +58,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
-        path: "{{ artefact_tmpdir }}/Artefact.log"
+        path: "{{ tmp_dir }}/Artefact.log"
         state: absent
 
   always:
