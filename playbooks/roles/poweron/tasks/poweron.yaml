@@ -6,7 +6,7 @@
   register: _result
 
 - name: System is off
-  when: _result.unreachable is defined or _result.ping is not defined
+  when: _result.unreachable is defined or _result.ping is not defined or _result.ping != "pong"
   block:
     - name: Poweron
       delegate_to: localhost
@@ -15,12 +15,8 @@
       ansible.builtin.command:
         cmd: hcloud --quiet --poll-interval 12s server poweron {{ inventory_hostname }}
 
-    - name: Wait for SSH port
-      delegate_to: localhost
-      ansible.builtin.wait_for:
-        port: 22
-        delay: 10
-        timeout: 60
-
     - name: Verify being up
+      retries: 3
+      delay: 5
+      ignore_unreachable: true
       ansible.builtin.ping:
