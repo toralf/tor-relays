@@ -136,7 +136,7 @@
         executable: /bin/bash
       register: _kernel_configured
 
-    - name: Print stderr (almost warnings)
+    - name: Print stderr of Linux configure step
       when: _kernel_configured.stderr
       ansible.builtin.debug:
         msg: "{{ _kernel_configured.stderr_lines | reject('search', ':warning: override: reassigning to symbol') }}"
