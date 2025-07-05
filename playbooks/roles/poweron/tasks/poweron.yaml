@@ -16,7 +16,7 @@
         cmd: hcloud --quiet --poll-interval 12s server poweron {{ inventory_hostname }}
 
     - name: Verify being up
-      retries: 3
+      retries: 6
       delay: 5
       ignore_unreachable: true
       ansible.builtin.ping:
