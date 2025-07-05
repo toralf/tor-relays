@@ -14,9 +14,10 @@
         var: _result.stdout
   rescue:
     - name: Rc of custom command
+      failed_when: true
       ansible.builtin.debug:
         var: _result.rc
-
+  always:
     - name: Stderr of custom command
       when: _result.stderr
       ansible.builtin.debug:

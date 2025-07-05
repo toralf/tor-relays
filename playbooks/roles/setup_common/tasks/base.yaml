@@ -38,13 +38,13 @@
     enabled: false
     no_block: true
 
-- name: Check for outdated dpkg lock file
+- name: Check for stale dpkg lockfile
   ansible.builtin.stat:
     path: /var/lib/dpkg/lock-frontend
   register: _lockfile
 
-- name: Remove outdated dpkg lockfile
-  when: _lockfile.stat.exists and _age | int > 3600
+- name: Remove stale dpkg lockfile
+  when: _lockfile.stat.exists and _lockfile.stat.size > 0 and _age | int > 3600
   vars:
     _age: "{{ now(utc=true, fmt='%s') | float - _lockfile.stat.atime }}"
   ansible.builtin.file:
