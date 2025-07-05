@@ -36,17 +36,3 @@
     name: unattended-upgrades
     state: stopped
     enabled: false
-    no_block: true
-
-- name: Check for stale dpkg lockfile
-  ansible.builtin.stat:
-    path: /var/lib/dpkg/lock-frontend
-  register: _lockfile
-
-- name: Remove stale dpkg lockfile
-  when: _lockfile.stat.exists and _lockfile.stat.size > 0 and _age | int > 3600
-  vars:
-    _age: "{{ now(utc=true, fmt='%s') | float - _lockfile.stat.atime }}"
-  ansible.builtin.file:
-    path: /var/lib/dpkg/lock-frontend
-    state: absent
