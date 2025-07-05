@@ -139,7 +139,7 @@
     - name: Print stderr (almost warnings)
       when: _kernel_configured.stderr
       ansible.builtin.debug:
-        var: _kernel_configured.stderr_lines
+        msg: "{{ _kernel_configured.stderr_lines | reject('search', ':warning: override: reassigning to symbol') }}"
 
     - name: Fetch Linux kernel src config
       throttle: "{{ concurrent_local_jobs }}"
