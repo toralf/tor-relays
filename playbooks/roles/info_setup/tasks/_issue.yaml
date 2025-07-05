@@ -16,8 +16,7 @@
       ansible.builtin.shell:
         cmd: |-
           journalctl --since "{{ issue_since }}" --quiet |
-            awk '/{{ item }}/,/ kernel: ---[ end trace /' |
-            sed '$d'
+            awk '/{{ item }}/,/ kernel: ---[ end trace /'
       register: _details
 
     - name: File issue details
@@ -33,5 +32,8 @@
         marker_begin: "ISSUE BEGIN"
         marker_end: "ISSUE END"
 
-    - name: Fetch appropriate kernel config
+    - name: Include dmesg
+      ansible.builtin.include_tasks: dmesg.yaml
+
+    - name: Include kernel-config
       ansible.builtin.include_tasks: kernel-config.yaml

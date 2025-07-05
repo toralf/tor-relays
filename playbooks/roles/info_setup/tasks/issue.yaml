@@ -6,7 +6,7 @@
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
         grep -F -B 1 -e ' kernel: -----------[ cut here ]------------' |
-        grep -F -v -e ' kernel: -----------[ cut here ]------------'
+        head -n 1
   register: _result
 
 - name: Results of issue
