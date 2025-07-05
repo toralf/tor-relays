@@ -5,7 +5,7 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
-        grep -F -A 1 -e ' kernel: -----------[ cut here ]------------' |
+        grep -F -B 1 -e ' kernel: -----------[ cut here ]------------' |
         grep -F -v -e ' kernel: -----------[ cut here ]------------'
   register: _result
 
