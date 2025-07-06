@@ -49,18 +49,18 @@ htx:
 h_common:
   vars:
     _repo_urls:
-      main: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+      master: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
       stablerc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
       ltsrc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
       stable: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
       lts: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     _versions:
-      main: master
+      master: master
       stablerc: queue/6.15
       ltsrc: queue/6.12
       stable: linux-rolling-stable
       lts: linux-rolling-lts
-    # hostname examples:  hs0d-arm-main-bp-cl-89  or  hiu-amd-stable
+    # hostname examples:  hs0d-arm-master-bp-cl-89  or  hiu-amd-stable
     _parts: "{{ inventory_hostname.split('-') }}"
     kernel_git_repo_url: "{{ _repo_urls[_parts[2] | default('')] | default('') }}"
     kernel_git_version: "{{ _versions[_parts[2] | default('')] | default('') }}"

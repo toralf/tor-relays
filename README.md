@@ -29,7 +29,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
        my_bridge:
    ```
 
-   ([example](./examples/inventory.yaml) for a static Ansible inventory).
+   Take a look into([examples](./examples/) for an Ansible inventory using the Hetzner cloud.
 
 1. deploy it
 
