@@ -52,7 +52,7 @@ The deployment is made by _Ansible_.
 The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system
 to a reliable randomized one (at IONOS a proposed one is displayed, but not set).
 For Tor relays the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
-For Snowflake and NGinx instances is a lightweight firewall ruleset deployed.
+For Snowflake and NGinx instances a lightweight version of that ruleset is deployed.
 
 ### Additional software
 
@@ -69,18 +69,17 @@ hosts:
 
 ### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
 
-As default _HEAD_ (of the default Git branch) is taken.
-A branch can be defined by the variable _<...>\_git_version_.
-Furthermore _<...>\_patches_ is a list of URIs to fetch additional patches from (appleid on top of the branch).
+The default branch is defined by the variable _<...>\_git_version_.
+The variable _<...>\_patches_ might contain list of URIs to apply additional patches on the fly.
 
 ### Metrics
 
 If a Prometheus server is configured (`prometheus_server`) then the inbound traffic from its ip to the
-local metrics port is allowed by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+local metrics port is passed by a firewall allow rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
 The metrics port is pseudo-randomly choosen using _seed_metrics_.
-An Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
+Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
 using the certificate of the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-The Root CA key has to be put into the Prometheus config to enable the TLS traffic.
+The Root CA key has to be put into the Prometheus config to enable scraping metrics via TLS.
 
 ```yaml
 snowflake:
@@ -90,8 +89,8 @@ snowflake:
     prometheus_server: "1.2.3.4
 ```
 
-A _Prometheus node exporter_ is deployed by: `node_metrics: true`.
-For more Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
+A _Prometheus node exporter_ is deployed if `node_metrics: true` is set.
+For Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
 A static prometheus config contains something like:
 
@@ -112,11 +111,11 @@ A static prometheus config contains something like:
 ...
 ```
 
-The _targets_ lines for the Prometheus config ate stored in _~/tmp/\*\-targets.yaml_.
+The _targets_ lines for the Prometheus config are put into _~/tmp/\*\-targets.yaml_.
 
 ### Misc
 
-To create a new VPS with the hostname _my_bridge_ under the project _my_project_, do:
+To create at Hetzner cloud a new VPS with the hostname _my_bridge_ under the project _my_project_, do:
 
 ```bash
 hcloud context use my_project
@@ -132,11 +131,11 @@ include: "/etc/unbound/hetzner-<project>.conf"
 
 (_hcloud_ uses the term _"context"_ for a project)
 
-The scripts under [./bin](./bin) work only for the Hetzner Cloud API.
+The scripts under [./bin](./bin) work for the Hetzner Cloud API.
 
 ### Bisect a Linux kernel boot issue
 
-With the inventory given in the [examples](./examples/) a git bisect of a linux kernel reboot issue is done basically by something like:
+With the inventory given in the [examples](./examples/) a _git bisect_ to identify e.g. a linux kernel issue is done basically by something like:
 
 ```bash
 name=hn0d-intel-main-bp-cl-0
