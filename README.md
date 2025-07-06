@@ -29,7 +29,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
        my_bridge:
    ```
 
-   Take a look into([examples](./examples/) for an Ansible inventory using the Hetzner cloud.
+   Take a look into [examples](./examples/) for an Ansible inventory using the Hetzner cloud.
 
 1. deploy it
 
@@ -41,6 +41,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
 
    ```bash
    grep "my_bridge" ~/tmp/*
+   ls ~/tmp/**/my_bridge*
    ```
 
 1. enjoy it
