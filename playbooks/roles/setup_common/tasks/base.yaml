@@ -23,16 +23,9 @@
     state: absent
   notify: Reload SSH
 
-- name: Ensure count of authorized_keys
+- name: Ensure exactly 1 entry in authorized_keys
   changed_when: false
   failed_when: _result.stdout | int != 1
   ansible.builtin.shell:
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
-
-- name: De-activate unattended-upgrades
-  when: ansible_facts.distribution in ('Ubuntu')
-  ansible.builtin.systemd_service:
-    name: unattended-upgrades
-    state: stopped
-    enabled: false

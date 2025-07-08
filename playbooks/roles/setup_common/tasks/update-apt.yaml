@@ -1,4 +1,24 @@
 ---
+- name: De-activate unattended-upgrades
+  ansible.builtin.systemd_service:
+    name: unattended-upgrades
+    state: stopped
+    enabled: false
+
+- name: Getting process IDs of package manager/s
+  failed_when: _processes.pids
+  community.general.pids:
+    pattern: apt.*|dpkg.*
+  register: _processes
+
+- name: Remove stale dpkg lockfiles
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/lib/dpkg/lock
+    - /var/lib/dpkg/lock-frontend
+
 - name: De-install freeipmi at IONOS
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.apt:
