@@ -93,16 +93,18 @@
   notify:
     - Reload Systemd
 
-- name: Deactivate service apport
+- name: No apport
   when: ansible_facts.distribution in ('Ubuntu')
-  ansible.builtin.systemd_service:
-    name: apport
-    enabled: false
-    state: stopped
-    no_block: true
+  block:
+    - name: Disable apport service
+      ansible.builtin.systemd_service:
+        name: apport
+        enabled: false
+        state: stopped
+        no_block: true
 
-- name: Disable apport autostart
-  ansible.builtin.lineinfile:
-    line: "enabled=0"
-    path: /etc/default/apport
-    regex: "^enabled="
+    - name: Disable apport autostart
+      ansible.builtin.lineinfile:
+        line: "enabled=0"
+        path: /etc/default/apport
+        regex: "^enabled="
