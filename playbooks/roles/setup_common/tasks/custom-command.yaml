@@ -7,17 +7,17 @@
         cmd: >-
           {{ custom_command }}
       register: _result
-
-    - name: Stdout of custom command
-      when: _result.stdout
-      ansible.builtin.debug:
-        var: _result.stdout
   rescue:
     - name: Rc of custom command
       failed_when: true
       ansible.builtin.debug:
         var: _result.rc
   always:
+    - name: Stdout of custom command
+      when: _result.stdout
+      ansible.builtin.debug:
+        var: _result.stdout
+
     - name: Stderr of custom command
       when: _result.stderr
       ansible.builtin.debug:
