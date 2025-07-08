@@ -56,8 +56,8 @@ h_common:
       lts: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
     _versions:
       master: master
-      stablerc: queue/6.15
-      ltsrc: queue/6.12
+      stablerc: linux-6.15.y
+      ltsrc: linux-6.12.y
       stable: linux-rolling-stable
       lts: linux-rolling-lts
     # hostname examples:  hs0d-arm-master-bp-cl-89  or  hiu-amd-stable
