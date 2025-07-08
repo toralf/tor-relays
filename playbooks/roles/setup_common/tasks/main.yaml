@@ -1,7 +1,6 @@
 ---
-# Hint: facts cache is not updated if --tags or --limit is used
+# Hint: facts cache is not updated if "--tags" or "--limit" is used
 - name: Gather facts - subset
-  retries: 1
   ansible.builtin.setup:
     gather_subset:
       - "!all"

@@ -1,5 +1,5 @@
 ---
-- name: Gather facts - hardware
+- name: Gather facts - uptime
   ansible.builtin.setup:
     gather_subset:
       - hardware
