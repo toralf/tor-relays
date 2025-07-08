@@ -170,6 +170,11 @@
           swapon /swapfile
         creates: /swapfile
 
+    - name: Gather facts - kernel version
+      ansible.builtin.setup:
+        gather_subset:
+          - hardware
+
     - name: Build Linux
       async: "{{ (75 * 60) | int }}"
       poll: 0
