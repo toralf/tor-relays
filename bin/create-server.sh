@@ -75,7 +75,7 @@ xargs -n 1 <<<$* |
     fi
 
     setImage
-    [[ ${image} =~ ^[0-9]+$ ]] && poll_intervall="12s" || poll_intervall="36s"
+    [[ ${image} =~ ^[0-9]+$ ]] && poll_intervall="30s" || poll_intervall="10s"
     echo --poll-interval ${poll_intervall} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 
   done |
