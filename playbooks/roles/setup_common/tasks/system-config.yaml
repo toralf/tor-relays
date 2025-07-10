@@ -108,3 +108,24 @@
         line: "enabled=0"
         path: /etc/default/apport
         regex: "^enabled="
+
+- name: Do not run Git cleanup in background
+  when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git config --global --add gc.autoDetach false
+
+- name: Create swap file for small RAM
+  when: ansible_facts.memtotal_mb < 2048
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      if ! grep -q "^/swapfile " /etc/fstab; then
+        echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+      fi
+      swapon /swapfile
+    creates: /swapfile

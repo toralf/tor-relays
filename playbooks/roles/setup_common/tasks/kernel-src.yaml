@@ -1,19 +1,4 @@
 ---
-- name: Install/Update toolchain
-  ansible.builtin.apt:
-    name:
-      - bc
-      - bison
-      - build-essential
-      - cpio
-      - dwarves
-      - flex
-      - kmod
-      - libelf-dev
-      - libncurses5-dev
-      - libssl-dev
-      - lz4
-
 - name: Check for kernel build process
   community.general.pids:
     name: build-kernel.sh
@@ -22,6 +7,21 @@
 - name: Self-compiled kernel
   when: not _build_is_running.pids
   block:
+    - name: Install/Update toolchain
+      ansible.builtin.apt:
+        name:
+          - bc
+          - bison
+          - build-essential
+          - cpio
+          - dwarves
+          - flex
+          - kmod
+          - libelf-dev
+          - libncurses5-dev
+          - libssl-dev
+          - lz4
+
     - name: Work on "{{ _repo_dir }}"
       vars:
         _git_repo_url: "{{ kernel_git_repo_url }}"
@@ -154,21 +154,6 @@
         dest: /root/
         mode: "0744"
       register: _kernel_build_script
-
-    - name: Create swap file for small RAM
-      when: ansible_facts.memtotal_mb < 2048
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          fallocate -l 2G /swapfile
-          chmod 600 /swapfile
-          mkswap /swapfile
-          if ! grep -q "^/swapfile " /etc/fstab; then
-            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
-          fi
-          swapon /swapfile
-        creates: /swapfile
 
     - name: Gather facts - kernel version
       ansible.builtin.setup:
