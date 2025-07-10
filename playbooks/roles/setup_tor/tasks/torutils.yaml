@@ -9,8 +9,7 @@
   ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Download info.py
-  throttle: 40
-  retries: 3
+  throttle: 20
   ansible.builtin.get_url:
     url: https://github.com/toralf/torutils/raw/main/info.py
     dest: /root/info.py

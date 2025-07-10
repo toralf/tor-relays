@@ -19,10 +19,12 @@ node_metrics: false
 prometheus_server: ""
 prometheus_server6: ""
 
-# any valid 1-liner
+# e.g.:  -e custom_command="'cd linux; git branch'" --tags custom-command -v
 custom_command: ""
 
 # nginx
 nginx_public_site: false
 # "path" and "port" are expected per item
 nginx_site_directories: []
+
+git_clone_from_scratch: false
