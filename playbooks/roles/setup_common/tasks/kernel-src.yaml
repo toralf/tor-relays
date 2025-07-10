@@ -160,6 +160,14 @@
         gather_subset:
           - hardware
 
+    - name: Get commit id "{{ _repo_dir }}"
+      ansible.builtin.git:
+        repo: "{{ _git_repo_url }}"
+        dest: "{{ _repo_dir }}"
+        clone: false
+        update: false
+      register: _git_head
+
     - name: Build Linux
       async: "{{ (75 * 60) | int }}"
       poll: 0

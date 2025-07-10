@@ -62,14 +62,6 @@
   loop: "{{ _git_patches }}"
   register: __patched
 
-- name: Get current HEAD commit id "{{ _repo_dir }}"
-  ansible.builtin.git:
-    repo: "{{ _git_repo_url }}"
-    dest: "{{ _repo_dir }}"
-    clone: false
-    update: false
-  register: _git_head # used by the caller
-
 - name: Set update status "{{ _repo_dir }}"
   ansible.builtin.set_fact:
     _git_repo_changed: "{{
