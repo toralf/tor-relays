@@ -8,7 +8,7 @@
   notify: Restart Snowflake
 
 - name: Remove GeoIP Data
-  when: not tor_geoip_path
+  when: not use_tor_geoip_data
   block:
     - name: Remove GeoIP files
       ansible.builtin.file:
@@ -25,15 +25,14 @@
         path: /usr/share/tor/
 
 - name: Upload GeoIP Data
-  throttle: "{{ concurrent_local_jobs }}"
-  when: tor_geoip_path
-  ansible.posix.synchronize:
-    src: "{{ tor_geoip_path }}"
+  when: use_tor_geoip_data
+  throttle: 20
+  ansible.builtin.get_url:
+    url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
     dest: /usr/share/tor/
-    owner: false
-    group: false
-    use_ssh_args: true
-    verify_host: true
+  with_items:
+    - geoip
+    - geoip6
   notify: Restart Snowflake
 
 - name: Install systemd unit
