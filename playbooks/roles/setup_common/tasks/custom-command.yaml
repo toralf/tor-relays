@@ -16,9 +16,9 @@
     - name: Stdout of custom command
       when: _result.stdout
       ansible.builtin.debug:
-        var: _result.stdout
+        var: _result.stdout_lines
 
     - name: Stderr of custom command
       when: _result.stderr
       ansible.builtin.debug:
-        var: _result.stderr
+        var: _result.stderr_lines
