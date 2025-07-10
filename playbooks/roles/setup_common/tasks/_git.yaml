@@ -1,68 +1,66 @@
 ---
-- name: Check "{{ _repo_dir }}"
+- name: Remove "{{ _repo_dir }}"
+  when: git_clone_from_scratch | bool
+  ansible.builtin.file:
+    path: "{{ _repo_dir }}"
+    state: absent
+
+- name: Check for "{{ _repo_dir }}"
   ansible.builtin.git:
     repo: "{{ _git_repo_url }}"
     dest: "{{ _repo_dir }}"
     clone: false
     update: false
-  register: __new
+  register: __repo
 
-- name: Git clone/update"{{ _repo_dir }}"
-  throttle: 20
+- name: Git
+  throttle: 8
+  module_defaults:
+    ansible.builtin.git:
+      repo: "{{ _git_repo_url }}"
+      dest: "{{ _repo_dir }}"
+      version: "{{ _git_version }}"
   block:
-    - name: New clone "{{ _repo_dir }}"
-      throttle: 8
-      when: __new.before == None
+    - name: Git clone "{{ _repo_dir }}"
+      when: __repo.before == None
+      throttle: 2
       block:
-        - name: Shallow clone "{{ _repo_dir }}"
+        - name: Git clone new "{{ _repo_dir }}"
           ansible.builtin.git:
-            repo: "{{ _git_repo_url }}"
-            dest: "{{ _repo_dir }}"
-            version: "{{ _git_version }}"
-            force: true
-            depth: 1
-            single_branch: true
-          register: __shallow_clone
+            depth: 2
 
-        - name: Single branch "{{ _repo_dir }}"
+        - name: Git clone update "{{ _repo_dir }}"
           ansible.builtin.git:
-            repo: "{{ _git_repo_url }}"
-            dest: "{{ _repo_dir }}"
-            version: "{{ _git_version }}"
             force: true
-            single_branch: true
-          register: __single_branch
 
-    - name: Update "{{ _repo_dir }}"
+    - name: Git update "{{ _repo_dir }}"
+      when: __repo.before != None
       ansible.builtin.git:
-        repo: "{{ _git_repo_url }}"
-        dest: "{{ _repo_dir }}"
-        version: "{{ _git_version }}"
         force: true
-        clone: false
       register: __updated
 
-    - name: Remove untracked files "{{ _repo_dir }}"
-      changed_when: __cleaned.stdout
-      ansible.builtin.command:
-        cmd: git clean --force
-        chdir: "{{ _repo_dir }}"
-      register: __cleaned
+- name: Remove untracked files "{{ _repo_dir }}"
+  changed_when: __cleaned.stdout
+  ansible.builtin.command:
+    cmd: git clean --force
+    chdir: "{{ _repo_dir }}"
+  register: __cleaned
 
-    - name: Apply patches "{{ _repo_dir }}"
-      when: _git_patches
-      changed_when: __patched.stdout_lines is search('patching file ')
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
+- name: Apply patches "{{ _repo_dir }}"
+  when: _git_patches
+  changed_when: __patched.stdout_lines is search('patching file ')
+  throttle: 8
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
 
-          rm -f tmp.patch
-          curl -s {{ item }} -o tmp.patch
-          patch -p 1 <tmp.patch
-          rm tmp.patch
-        chdir: "{{ _repo_dir }}"
-      loop: "{{ _git_patches }}"
-      register: __patched
+      rm -f tmp.patch
+      curl -s {{ item }} -o tmp.patch
+      patch -p 1 <tmp.patch
+      rm tmp.patch
+    chdir: "{{ _repo_dir }}"
+  loop: "{{ _git_patches }}"
+  register: __patched
 
 - name: Get current HEAD commit id "{{ _repo_dir }}"
   ansible.builtin.git:
@@ -70,13 +68,11 @@
     dest: "{{ _repo_dir }}"
     clone: false
     update: false
-  register: _git_head
+  register: _git_head # used by the caller
 
 - name: Set update status "{{ _repo_dir }}"
   ansible.builtin.set_fact:
     _git_repo_changed: "{{
-      __shallow_clone is defined and __shallow_clone.changed or
-      __single_branch is defined and __single_branch.changed or
-      __updated.changed or __cleaned.changed or __patched.changed or
+      __repo.changed or __updated.changed or __cleaned.changed or __patched.changed or
       force_rebuild is defined and force_rebuild | bool
       }}"
