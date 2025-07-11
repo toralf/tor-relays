@@ -30,7 +30,7 @@ arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
 names=""                                    # option exclusive to "arch" and "branch"
 os="d u"                                    # operating system, (d)ebian, (u)buntu
-parameter=""                                # e.g. "--tags ..."
+parameter=""                                # e.g. -p '-e git_clone_from_scratch=true'
 
 while getopts a:b:n:o:p:r opt; do
   case ${opt} in
@@ -56,6 +56,6 @@ cd $(dirname $0)/..
 ./bin/create-server.sh ${names}
 cmd=""
 if ! ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}; then
-  cmd='echo ^^ fix and run:        '
+  cmd='echo ^^ fix, then run:'
 fi
 ${cmd} ./bin/delete-server.sh ${names} 2>/dev/null
