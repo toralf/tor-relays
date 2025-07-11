@@ -12,6 +12,6 @@
 - name: Results of issue
   when: _result.stdout
   vars:
-    _marker: "{{ (item | split(' '))[5:] | join(' ') }}"
+    _issue: "{{ (item | split(' '))[5:] | join(' ') }}"
   ansible.builtin.include_tasks: _issue.yaml
   loop: "{{ _result.stdout_lines }}"
