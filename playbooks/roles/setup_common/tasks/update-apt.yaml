@@ -11,13 +11,15 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
-- name: Install/Update common software
+- name: Install/Update dep package for Ansible
   ansible.builtin.apt:
     name:
       - python3-psutil
 
 - name: Ensure no package manager is running
   failed_when: _processes.pids
+  retries: 3
+  delay: 60
   community.general.pids:
     pattern: apt.*|dpkg.*
   register: _processes
