@@ -1,5 +1,5 @@
 ---
-- name: Check for kernel build process
+- name: Check for running kernel build process
   community.general.pids:
     name: build-kernel.sh
   register: _build_is_running
@@ -30,14 +30,14 @@
         _repo_dir: /root/linux
       ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
-    - name: Configure Linux kernel
+    - name: Configure kernel
       changed_when: _kernel_configured.rc == 123
       failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
       ansible.builtin.shell:
         cmd: |-
           set -euf
 
-          [[ -f .config ]] && before=$(md5sum .config) || before="0"
+          before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
           # force loading of needed modules (if not yet loaded), e.g. for the firewall/DDoS solution
           conntrack -C || true
@@ -125,10 +125,9 @@
 
           yes '' | make oldconfig >/dev/null
 
-          # mark Ansible task as being changed, if files do differ
-          after=$(md5sum .config)
+          after=$(grep -v '^#' .config | md5sum)
           if [[ $before != $after ]]; then
-            exit 123
+            exit 123 # marks Ansible task as "changed"
           fi
 
           exit 0
@@ -136,19 +135,19 @@
         executable: /bin/bash
       register: _kernel_configured
 
-    - name: Print stderr of Linux configure step
+    - name: Print stderr of kernel configure step
       when: _kernel_configured.stderr
       ansible.builtin.debug:
         msg: "{{ _kernel_configured.stderr_lines | reject('search', ':warning: override: reassigning to symbol') }}"
 
-    - name: Fetch Linux kernel src config
+    - name: Fetch configured kernel config
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.fetch:
         src: /root/linux/.config
         dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.src.config"
         flat: true
 
-    - name: Upload kernel build script
+    - name: Copy kernel build script
       ansible.builtin.copy:
         src: build-kernel.sh
         dest: /root/
@@ -168,13 +167,13 @@
         update: false
       register: _git_head
 
-    - name: Build Linux
+    - name: Build kernel
       async: "{{ (75 * 60) | int }}"
       poll: 0
       when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _is_latest
       changed_when: true
       vars:
-        _is_latest: "{{ ansible_facts.kernel is search(_git_head.after[:12]) }}"
+        _is_latest: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
         _max: "{{ (ansible_facts.memtotal_mb < 2048) | ternary(1, (ansible_facts.memtotal_mb / 2048 + 1) | int) }}"
         _j: "{{ (_max | int < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
       ansible.builtin.shell: # noqa: command-instead-of-shell
