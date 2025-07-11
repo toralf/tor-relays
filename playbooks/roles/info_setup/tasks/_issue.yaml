@@ -1,30 +1,34 @@
 ---
-- name: Issue
+- name: Keep issue if new
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _issue }}"
     path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue.log"
     regex: "^{{ _issue }}$"
-  register: _issue
+  register: _new
 
 - name: Get issue details
-  when: _issue.changed
+  when: _new.changed
   block:
     - name: Get issue trace
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
           journalctl --since "{{ issue_since }}" --quiet |
-            awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /"
+            awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
+            head -n 999
       register: _trace
 
     - name: File issue trace
       delegate_to: localhost
       throttle: 1
       ansible.builtin.blockinfile:
+        append_newline: true
+        create: true
+        mode: "0644"
         block: |
-          # {{ inventory_hostname }}    {{ ansible_facts.lsb.description }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}
+          #    {{ inventory_hostname }}    {{ ansible_facts.lsb.description }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}
           {{ _trace.stdout }}
         path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue-trace.log"
         marker: "# {mark} {{ _issue }}"
