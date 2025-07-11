@@ -162,8 +162,8 @@
 
     - name: Get commit id "{{ _repo_dir }}"
       ansible.builtin.git:
-        repo: "{{ _git_repo_url }}"
-        dest: "{{ _repo_dir }}"
+        repo: "{{ kernel_git_repo_url }}"
+        dest: /root/linux
         clone: false
         update: false
       register: _git_head

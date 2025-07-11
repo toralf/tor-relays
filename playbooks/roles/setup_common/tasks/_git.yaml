@@ -1,11 +1,11 @@
 ---
-- name: Remove "{{ _repo_dir }}"
+- name: Git remove "{{ _repo_dir }}"
   when: git_clone_from_scratch | bool
   ansible.builtin.file:
     path: "{{ _repo_dir }}"
     state: absent
 
-- name: Check for "{{ _repo_dir }}"
+- name: Git stat "{{ _repo_dir }}"
   ansible.builtin.git:
     repo: "{{ _git_repo_url }}"
     dest: "{{ _repo_dir }}"
@@ -15,38 +15,31 @@
 
 - name: Git
   throttle: 8
-  module_defaults:
-    ansible.builtin.git:
-      repo: "{{ _git_repo_url }}"
-      dest: "{{ _repo_dir }}"
-      version: "{{ _git_version }}"
   block:
     - name: Git clone "{{ _repo_dir }}"
       when: __repo.before == None
       throttle: 2
-      block:
-        - name: Git clone new "{{ _repo_dir }}"
-          ansible.builtin.git:
-            depth: 2
-
-        - name: Git clone update "{{ _repo_dir }}"
-          ansible.builtin.git:
-            force: true
+      ansible.builtin.git:
+        repo: "{{ _git_repo_url }}"
+        dest: "{{ _repo_dir }}"
+        version: "{{ _git_version }}"
 
     - name: Git update "{{ _repo_dir }}"
       when: __repo.before != None
       ansible.builtin.git:
+        repo: "{{ _git_repo_url }}"
+        dest: "{{ _repo_dir }}"
+        version: "{{ _git_version }}"
         force: true
-      register: __updated
 
-- name: Remove untracked files "{{ _repo_dir }}"
+- name: Git remove untracked files "{{ _repo_dir }}"
   changed_when: __cleaned.stdout
   ansible.builtin.command:
     cmd: git clean --force
     chdir: "{{ _repo_dir }}"
   register: __cleaned
 
-- name: Apply patches "{{ _repo_dir }}"
+- name: Git apply patches "{{ _repo_dir }}"
   when: _git_patches
   changed_when: __patched.stdout_lines is search('patching file ')
   throttle: 8
@@ -62,9 +55,8 @@
   loop: "{{ _git_patches }}"
   register: __patched
 
-- name: Set update status "{{ _repo_dir }}"
+- name: Git set update status "{{ _repo_dir }}"
+  vars:
+    __do_rebuild: "{{ force_rebuild is defined and force_rebuild | bool }}"
   ansible.builtin.set_fact:
-    _git_repo_changed: "{{
-      __repo.changed or __updated.changed or __cleaned.changed or __patched.changed or
-      force_rebuild is defined and force_rebuild | bool
-      }}"
+    _git_repo_changed: "{{  __repo.changed or __cleaned.changed or __patched.changed or __do_rebuild }}"
