@@ -8,5 +8,5 @@
       hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
         sort -r |
         awk 'x[$2]++ { print $1 }' |
-        xargs -r hcloud --poll-interval 12s image delete
+        xargs -r hcloud --poll-interval 10s image delete
   register: _result

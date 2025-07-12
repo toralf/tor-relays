@@ -10,5 +10,5 @@ snowflake_command_args: ""
 # metrics could expose potential sensitive information
 snowflake_metrics: false
 
-# needed for country-specific metrics:
+# needed for country-specific metrics
 use_tor_geoip_data: true

@@ -75,8 +75,8 @@ xargs -n 1 <<<$* |
     fi
 
     setImage
-    [[ ${image} =~ ^[0-9]+$ ]] && poll_intervall="30s" || poll_intervall="10s"
-    echo --poll-interval ${poll_intervall} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+    [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="30s" || poll_interval="10s"
+    echo --poll-interval ${poll_interval} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
