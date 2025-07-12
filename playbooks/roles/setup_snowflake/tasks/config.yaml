@@ -7,40 +7,22 @@
     sysctl_set: true
   notify: Restart Snowflake
 
-- name: Remove GeoIP Data
-  when: not use_tor_geoip_data
-  block:
-    - name: Remove GeoIP files
-      ansible.builtin.file:
-        state: absent
-        path: "/usr/share/tor/{{ item }}"
-      with_items:
-        - geoip
-        - geoip6
-      notify: Restart Snowflake
+- name: GeoIP directory
+  ansible.builtin.file:
+    state: "{{ use_tor_geoip_data | ternary('directory', 'absent') }}"
+    path: /usr/share/tor/
+    mode: "0755"
 
-    - name: Remove GeoIP directory
-      ansible.builtin.file:
-        state: absent
-        path: /usr/share/tor/
-
-- name: GeoIP Data
+- name: Upload GeoIP data
   when: use_tor_geoip_data
-  block:
-    - name: Ensure GeoIP data dir exists
-      ansible.builtin.file:
-        path: /usr/share/tor/
-        state: directory
-
-    - name: Upload GeoIP data
-      throttle: 10
-      ansible.builtin.get_url:
-        url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
-        dest: /usr/share/tor/
-      with_items:
-        - geoip
-        - geoip6
-      notify: Restart Snowflake
+  throttle: 10
+  ansible.builtin.get_url:
+    url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
+    dest: /usr/share/tor/
+  with_items:
+    - geoip
+    - geoip6
+  notify: Restart Snowflake
 
 - name: Install systemd unit
   ansible.builtin.template:
