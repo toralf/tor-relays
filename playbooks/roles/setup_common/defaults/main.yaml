@@ -26,5 +26,3 @@ custom_command: ""
 nginx_public_site: false
 # "path" and "port" are expected per item
 nginx_site_directories: []
-
-git_clone_from_scratch: false

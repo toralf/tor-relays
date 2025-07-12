@@ -1,6 +1,6 @@
 ---
 - name: Git remove "{{ _repo_dir }}"
-  when: git_clone_from_scratch | bool
+  when: git_clone_from_scratch is defined and git_clone_from_scratch | bool
   ansible.builtin.file:
     path: "{{ _repo_dir }}"
     state: absent
