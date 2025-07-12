@@ -95,11 +95,3 @@
   community.general.capabilities:
     path: /usr/bin/tor
     capability: cap_net_bind_service+ep
-
-- name: Cron job to restart service if needed
-  vars:
-    _service: tor
-  ansible.builtin.cron:
-    name: restart {{ _service }} if systemd refused to do it
-    job: >-
-      systemctl is-failed {{ _service }} && systemctl start {{ _service }}
