@@ -18,7 +18,7 @@
   ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
 
 - name: Build
-  throttle: 16
+  throttle: 10
   changed_when: false
   ansible.builtin.command:
     cmd: go build -v

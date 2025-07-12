@@ -26,7 +26,7 @@
 
 - name: Upload GeoIP Data
   when: use_tor_geoip_data
-  throttle: 20
+  throttle: 10
   ansible.builtin.get_url:
     url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
     dest: /usr/share/tor/

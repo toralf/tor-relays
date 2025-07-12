@@ -1,5 +1,6 @@
 ---
 - name: Query b.t.o.
+  throttle: 10
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
     return_content: true
