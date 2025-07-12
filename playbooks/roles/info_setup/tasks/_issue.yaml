@@ -15,9 +15,12 @@
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
+          set -o pipefail
+
           journalctl --since "{{ issue_since }}" --quiet |
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
             head -n 999
+        executable: /bin/bash
       register: _trace
 
     - name: File issue trace
