@@ -24,16 +24,23 @@
         state: absent
         path: /usr/share/tor/
 
-- name: Upload GeoIP Data
+- name: GeoIP Data
   when: use_tor_geoip_data
-  throttle: 10
-  ansible.builtin.get_url:
-    url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
-    dest: /usr/share/tor/
-  with_items:
-    - geoip
-    - geoip6
-  notify: Restart Snowflake
+  block:
+    - name: Ensure GeoIP data dir exists
+      ansible.builtin.file:
+        path: /usr/share/tor/
+        state: directory
+
+    - name: Upload GeoIP data
+      throttle: 10
+      ansible.builtin.get_url:
+        url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
+        dest: /usr/share/tor/
+      with_items:
+        - geoip
+        - geoip6
+      notify: Restart Snowflake
 
 - name: Install systemd unit
   ansible.builtin.template:
