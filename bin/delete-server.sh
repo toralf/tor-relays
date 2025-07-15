@@ -16,8 +16,6 @@ hash -r hcloud rc-service
 project=$(hcloud context active)
 echo -e "\n >>> using Hetzner project ${project:?}"
 
-jobs=$(nproc)
-
 cleanLocalDataEntries $*
 cleanLocalDataFiles $*
 
@@ -27,7 +25,7 @@ while read -r name; do
 done < <(xargs -n 1 <<<$*)
 
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P ${jobs} -n $((1 + $# / jobs)) hcloud --quiet --poll-interval 10s server delete <<<$*
+xargs -r -P 10 -n 100 hcloud --quiet --poll-interval 10s server delete <<<$* 2>/dev/null
 
 echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
