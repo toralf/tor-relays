@@ -12,7 +12,7 @@ jobs=$((($(nproc) + 1) / 2))
 
 echo -e "\n trusting $(wc -w <<<$*) ssh host key/s ..."
 
-while ! xargs -r -P ${jobs} -I '{}' ssh -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} "uname -a" &>/dev/null < <(
+while ! xargs -r -P ${jobs} -I '{}' ssh -4 -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} ":" 1>/dev/null < <(
   xargs -n 1 <<<$* |
     while read -r i; do
       if ! grep -q -m 1 "^$i " ~/.ssh/known_hosts; then
