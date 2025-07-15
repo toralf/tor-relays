@@ -1,5 +1,5 @@
 ---
-- name: SSH Ping
+- name: SSH ping
   ignore_errors: true
   ignore_unreachable: true
   ansible.builtin.ping:
@@ -35,5 +35,5 @@
         executable: /bin/bash
       register: _network
 
-    - name: SSH Ping after poweron
+    - name: SSH ping after poweron
       ansible.builtin.ping:
