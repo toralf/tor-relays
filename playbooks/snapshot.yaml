@@ -4,7 +4,7 @@
   roles:
     - role: poweron
     - role: setup_common
-    - role: info_setup
+    - role: info_base
     - role: snapshot
 
 - name: Snapshot cleanup

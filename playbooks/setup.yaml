@@ -3,7 +3,7 @@
   hosts: all
   roles:
     - role: setup_common
-    - role: info_setup
+    - role: info_base
 
 - name: Setup Snowflake
   hosts: snowflake

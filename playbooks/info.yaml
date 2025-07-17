@@ -2,7 +2,7 @@
 - name: Info Misc
   hosts: all
   roles:
-    - role: info_setup
+    - role: info_base
     - role: info_common
 
 - name: Info Snowflake
