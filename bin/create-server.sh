@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   LOOKUP_SNAPSHOT=y ./bin/create-server.sh foo-{{0..7},{a..f}}
+#   LOOKUP_SNAPSHOT=n ./bin/create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
 #   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
