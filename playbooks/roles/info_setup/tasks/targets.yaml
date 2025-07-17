@@ -41,7 +41,7 @@
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
         state:
-          "{{ (tor_metrics and (not bridge_distribution is defined or not bridge_distribution)) |
+          "{{ (tor_metrics and (bridge_distribution is undefined or not bridge_distribution)) |
           ternary('present', 'absent') }}"
 
 - name: DDoS targets
