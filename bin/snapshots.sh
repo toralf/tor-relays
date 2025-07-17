@@ -23,8 +23,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 export HCLOUD_LOCATION="hel1"
 export ANSIBLE_DISPLAY_OK_HOSTS=false
 
-project=$(hcloud context active)
-echo -e "\n >>> using Hetzner project ${project:?}"
+setProject
 
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish

@@ -15,8 +15,7 @@ source $(dirname $0)/lib.sh
 hash -r hcloud jq
 
 [[ $# -ne 0 ]]
-project=$(hcloud context active)
-echo -e "\n >>> using Hetzner project ${project:?}"
+setProject
 
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48

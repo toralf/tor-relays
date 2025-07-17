@@ -36,6 +36,11 @@ function cleanLocalDataFiles() {
   set -e
 }
 
+function setProject() {
+  project=$(hcloud context active)
+  echo -e "\n >>> using Hetzner project ${project:?}"
+}
+
 # prefer...
 #   ... to match "hiu-intel-stablerc" to "u-intel-stablerc" and only as a fallback to "u-intel-stable"
 #   ... younger snapshot (== higher id)

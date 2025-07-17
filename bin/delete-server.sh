@@ -13,8 +13,7 @@ source $(dirname $0)/lib.sh
 hash -r hcloud rc-service
 
 [[ $# -ne 0 ]] || exit 1
-project=$(hcloud context active)
-echo -e "\n >>> using Hetzner project ${project:?}"
+setProject
 
 cleanLocalDataEntries $*
 cleanLocalDataFiles $*
