@@ -8,20 +8,24 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-# file-locking of ssh doesn't work
-jobs=1
+while :; do
+  unknowns=$(
+    xargs -n 1 <<<$* |
+      while read -r name; do
+        grep -q -m 1 "^${name} " ~/.ssh/known_hosts || echo ${name}
+      done
+  )
 
-echo -e "\n trusting $(wc -w <<<$*) ssh host key/s ..."
+  echo -en "\n $(wc -w <<<${unknowns}) ssh host/s to scan ..."
+  if [[ -z ${unknowns} ]]; then
+    break
+  fi
 
-while ! xargs -r -P ${jobs} -I '{}' ssh -4 -n -o StrictHostKeyChecking=accept-new -o ConnectTimeout=2 {} ":" 1>/dev/null < <(
-  xargs -n 1 <<<$* |
-    while read -r name; do
-      grep -q -m 1 "^${name} " ~/.ssh/known_hosts || echo ${name}
-    done
-); do
-  echo -en " waiting ..."
-  sleep 5
-  echo
+  if ssh-keyscan -4 -t ed25519 ${unknowns} >~/.ssh/known_hosts_tmp; then
+    grep -v '#' ~/.ssh/known_hosts_tmp >>~/.ssh/known_hosts
+    rm ~/.ssh/known_hosts_tmp
+    echo -e " ."
+  fi
 done
 
-echo -e " Done."
+echo -e " OK"
