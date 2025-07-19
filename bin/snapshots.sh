@@ -25,6 +25,7 @@ export HCLOUD_LOCATION="hel1"
 export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 setProject
+[[ ${project} == "test" ]]
 
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
