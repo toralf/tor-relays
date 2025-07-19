@@ -41,31 +41,22 @@ function setProject() {
   echo -e "\n >>> using Hetzner project ${project:?}"
 }
 
-# prefer...
-#   ... to match "hiu-intel-stablerc" to "u-intel-stablerc" and only as a fallback to "u-intel-stable"
-#   ... younger snapshot (== higher id)
-
 function setSnapshots() {
   snapshots=$(hcloud image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
 }
 
 function setImage() {
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]]; then
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! setImageBySnapshot; then
     setImageByHostname
-  else
-    if ! setImageBySnapshot; then
-      setImageByHostname
-    fi
   fi
-
   [[ -n ${image} ]]
 }
 
 function setImageByHostname() {
-  # name example: hiu-amd-main
-  if [[ ${name} =~ ^hid- || ${name%%-*} =~ d$ ]]; then
+  # name example: hi-u-amd-main
+  if [[ ${name} =~ "-d-" ]]; then
     image="debian-12"
-  elif [[ ${name} =~ ^hiu- || ${name%%-*} =~ u$ ]]; then
+  elif [[ ${name} =~ "-u-" ]]; then
     image="ubuntu-24.04"
   else
     image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
@@ -77,19 +68,10 @@ function setImageBySnapshot() {
     return 1
   fi
 
+  # ensure to match "hi-u-intel-stablerc" at "u-intel-stablerc" instead at "u-intel-stable"
   while read -r description id; do
     if [[ -n ${description} ]]; then
-      if [[ ${name} == hi${description} ]]; then
-        image=${id}
-        return
-      fi
-    fi
-  done <<<${snapshots}
-
-  while read -r description id; do
-    if [[ -n ${description} ]]; then
-      if [[ ${name} =~ ${description} ]]; then
-        # shellcheck disable=SC2034
+      if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
         image=${id}
         return
       fi

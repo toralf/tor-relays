@@ -8,8 +8,8 @@ function generate_names() {
   xargs -n 1 <<<$* |
     while read -r os; do
       case ${os} in
-      d) eval echo hid-${arch}-${branch}-{,no}bp-{,no}cl ;;
-      u) eval echo hiu-${arch}-${branch} ;;
+      d) eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      u) eval echo hi-${os}-${arch}-${branch} ;;
       *) exit 1 ;;
       esac
     done
@@ -40,7 +40,7 @@ while getopts a:b:n:o:p:r opt; do
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
-  r) names=$(hcloud image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi%s ") ;;
+  r) names=$(hcloud image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi-%s ") ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
