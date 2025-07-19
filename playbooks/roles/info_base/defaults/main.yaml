@@ -7,5 +7,5 @@ artefact_patterns:
 artefact_script: ""
 artefact_size: "200k"
 
-issue_fname_prefix: common
-issue_since: 1 day ago
+trace_fname_prefix: common
+trace_since: 1 day ago

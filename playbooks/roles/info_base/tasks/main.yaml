@@ -39,9 +39,9 @@
         - kernel-config
 
     - name: Issues
-      ansible.builtin.import_tasks: issue.yaml
+      ansible.builtin.import_tasks: trace.yaml
       tags:
-        - issue
+        - trace
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml

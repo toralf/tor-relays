@@ -1,29 +1,29 @@
 ---
-- name: Keep issue if new
+- name: Keep trace if new
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ _issue }}"
-    path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue.log"
-    regex: "^{{ _issue }}$"
+    line: "{{ _trace_start }}"
+    path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace.log"
+    regex: "^{{ _trace_start }}$"
   register: _new
 
-- name: Get issue details
+- name: Full trace
   when: _new.changed
   block:
-    - name: Get issue trace
+    - name: Get full trace
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
           set -o pipefail
 
-          journalctl --since "{{ issue_since }}" --quiet |
+          journalctl --since "{{ trace_since }}" --quiet |
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
             head -n 999
         executable: /bin/bash
-      register: _trace
+      register: _trace_full
 
-    - name: File issue trace
+    - name: File full trace
       delegate_to: localhost
       throttle: 1
       ansible.builtin.blockinfile:
@@ -32,11 +32,11 @@
         mode: "0644"
         block: |
           #    {{ inventory_hostname }}    {{ ansible_facts.lsb.description }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}
-          {{ _trace.stdout }}
-        path: "{{ tmp_dir }}/{{ issue_fname_prefix }}-issue-trace.log"
-        marker: "# {mark} {{ _issue }}"
-        marker_begin: "ISSUE BEGIN"
-        marker_end: "ISSUE END"
+          {{ _trace_full.stdout }}
+        path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace-full.log"
+        marker: "# {mark} {{ _trace_start }}"
+        marker_begin: "TRACE BEGIN"
+        marker_end: "TRACE END"
 
     - name: Include dmesg
       ansible.builtin.include_tasks: dmesg.yaml
