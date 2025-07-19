@@ -18,14 +18,8 @@
       )
       sum=$(( lines ))
 
-      if [[ $sum -gt 0 ]]; then
+      if [[ $sum -gt 0 ]] || [[ {{ ansible_facts.uptime_seconds }} -ge {{ log_connections_seconds_ago }} ]]; then
         echo "$sum"
-      else
-        if [[ {{ ansible_facts.uptime_seconds }} -lt {{ log_connections_seconds_ago }} ]]; then
-          echo "n/a"
-        else
-          echo "$sum"
-        fi
       fi
     executable: /bin/bash
   register: _result
@@ -33,9 +27,8 @@
 - name: File connections
   delegate_to: localhost
   throttle: 1
-  when: _result.stderr
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result.stdout | default('n/a') }}"
     path: "{{ tmp_dir }}/snowflake_connections"
     regex: "^{{ inventory_hostname }} "
     state: "{{ _result.stderr | bool | ternary('absent', 'present') }}"
