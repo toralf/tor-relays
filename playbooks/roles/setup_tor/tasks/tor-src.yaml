@@ -21,7 +21,7 @@
     _git_patches: "{{ tor_git_patches }}"
     _remove_git_repo: "{{ tor_remove_git_repo }}"
     _repo_dir: /root/tor
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/lib/_git.yaml"
 
 - name: Build
   when: _git_repo_changed or tor_git_patches

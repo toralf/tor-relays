@@ -15,7 +15,7 @@
     _git_patches: "{{ snowflake_git_patches }}"
     _remove_git_repo: "{{ snowflake_remove_git_repo }}"
     _repo_dir: /root/snowflake
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
+  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/lib/_git.yaml"
 
 - name: Build
   throttle: 10

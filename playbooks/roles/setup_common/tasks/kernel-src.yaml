@@ -28,7 +28,7 @@
         _git_version: "{{ kernel_git_version }}"
         _git_patches: "{{ kernel_git_patches }}"
         _repo_dir: /root/linux
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/setup_common/tasks/_git.yaml"
+      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/lib/_git.yaml"
 
     - name: Configure kernel
       changed_when: _kernel_configured.rc == 123
