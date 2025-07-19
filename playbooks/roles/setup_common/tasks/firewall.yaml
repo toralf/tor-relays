@@ -19,7 +19,7 @@
         name:
           - iptables-persistent
 
-    - name: Set certain sysctl values for native firewall
+    - name: Set certain sysctl values for firewall
       vars:
         _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**16) | int, (2**18) | int) }}"
       ansible.posix.sysctl:

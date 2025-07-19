@@ -140,7 +140,7 @@
       ansible.builtin.debug:
         msg: "{{ _kernel_configured.stderr_lines | reject('search', ':warning: override: reassigning to symbol') }}"
 
-    - name: Fetch configured kernel config
+    - name: Fetch kernel src config
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.fetch:
         src: /root/linux/.config
