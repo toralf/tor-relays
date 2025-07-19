@@ -2,25 +2,22 @@
 - name: Node targets
   delegate_to: localhost
   throttle: 1
-  when: node_metrics is defined
   ansible.builtin.lineinfile:
     path: "{{ tmp_dir }}/node-targets.yaml"
     line: "{{ targets_line }}"
     regex: "{{ targets_regex }}"
-    state: "{{ node_metrics | ternary('present', 'absent') }}"
+    state: "{{ (node_metrics is defined and node_metrics) | ternary('present', 'absent') }}"
 
 - name: Snowflake targets
   delegate_to: localhost
   throttle: 1
-  when: snowflake_metrics is defined
   ansible.builtin.lineinfile:
     path: "{{ tmp_dir }}/snowflake-targets.yaml"
     line: "{{ targets_line }}"
     regex: "{{ targets_regex }}"
-    state: "{{ snowflake_metrics | ternary('present', 'absent') }}"
+    state: "{{ (snowflake_metrics is defined and snowflake_metrics) | ternary('present', 'absent') }}"
 
 - name: Tor targets
-  when: tor_metrics is defined
   block:
     - name: Tor bridge targets
       delegate_to: localhost
@@ -30,7 +27,7 @@
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
         state:
-          "{{ (tor_metrics and (bridge_distribution is defined and bridge_distribution)) |
+          "{{ (tor_metrics is defined and tor_metrics and (bridge_distribution is defined and bridge_distribution)) |
           ternary('present', 'absent') }}"
 
     - name: Tor server targets
@@ -41,7 +38,7 @@
         line: "{{ targets_line }}"
         regex: "{{ targets_regex }}"
         state:
-          "{{ (tor_metrics and (bridge_distribution is undefined or not bridge_distribution)) |
+          "{{ (tor_metrics is defined and tor_metrics and (bridge_distribution is undefined or not bridge_distribution)) |
           ternary('present', 'absent') }}"
 
 - name: DDoS targets
@@ -52,4 +49,4 @@
     path: "{{ tmp_dir }}/tor_ddos-targets.yaml"
     line: "{{ targets_line }}"
     regex: "{{ targets_regex }}"
-    state: "{{ ddos_metrics | ternary('present', 'absent') }}"
+    state: "{{ (ddos_metrics is defined and ddos_metrics) | ternary('present', 'absent') }}"
