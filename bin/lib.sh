@@ -37,12 +37,12 @@ function cleanLocalDataFiles() {
 }
 
 function setProject() {
-  project=$(hcloud context active)
+  project=$(hcloud --quiet context active)
   echo -e "\n >>> using Hetzner project ${project:?}"
 }
 
 function setSnapshots() {
-  snapshots=$(hcloud image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
+  snapshots=$(hcloud --quiet image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
 }
 
 function setImage() {

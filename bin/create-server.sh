@@ -28,12 +28,12 @@ fi
 if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
   # US and Singapore are more expensive and do have less traffic incl.
   data_centers=$(
-    hcloud datacenter list --output json |
+    hcloud --quiet datacenter list --output json |
       jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
   )
 
   # US has only AMD
-  server_types=$(hcloud server-type list --output json)
+  server_types=$(hcloud --quiet server-type list --output json)
   cax_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
   cpx_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
   cx_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
@@ -48,7 +48,7 @@ if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
 fi
 
 # take the first one
-ssh_key=$(hcloud ssh-key list --output json | jq -r '.[0].name')
+ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
 
 echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 
