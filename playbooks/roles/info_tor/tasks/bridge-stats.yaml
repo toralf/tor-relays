@@ -12,4 +12,5 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_bridge_stats"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
+    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"

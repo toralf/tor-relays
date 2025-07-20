@@ -40,7 +40,6 @@
   register: __cleaned
 
 - name: Git apply patches "{{ _repo_dir }}"
-  when: _git_patches
   changed_when: __patched.stdout_lines is search('patching file ')
   throttle: 8
   ansible.builtin.shell:

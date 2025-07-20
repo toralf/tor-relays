@@ -23,7 +23,7 @@
       --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
       '
     path: /etc/default/prometheus-node-exporter
-    regex: "^ARGS="
+    regexp: "^ARGS="
   notify: Restart Prometheus node exporter
 
 - name: Enable Prometheus node exporter at boot

@@ -9,17 +9,23 @@
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
+      set -eu
+
       lines=$(
+        set -o pipefail
+
         journalctl -u snowflake-proxy --since "{{ log_connections_seconds_ago }} second ago" \
-          -g ', there were .* connections' --quiet --reverse |
+          -g ', there were .* connections' --quiet |
         awk '{ print $14 }' |
         xargs |
         tr ' ' '+'
       )
       sum=$(( lines ))
 
-      if [[ $sum -gt 0 ]] || [[ {{ ansible_facts.uptime_seconds }} -ge {{ log_connections_seconds_ago }} ]]; then
+      if [[ {{ ansible_facts.uptime_seconds }} -ge {{ log_connections_seconds_ago }} ]]; then
         echo "$sum"
+      else
+        echo ">=$sum"
       fi
     executable: /bin/bash
   register: _result
@@ -30,5 +36,5 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout | default('n/a') }}"
     path: "{{ tmp_dir }}/snowflake_connections"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
     state: "{{ _result.stderr | bool | ternary('absent', 'present') }}"

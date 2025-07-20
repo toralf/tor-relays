@@ -11,4 +11,4 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Uptime {{ _result.stdout | default('- -') }}"
     path: "{{ tmp_dir }}/all_uptime"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "

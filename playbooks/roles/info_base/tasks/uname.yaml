@@ -11,4 +11,4 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_uname"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "

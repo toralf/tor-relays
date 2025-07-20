@@ -11,15 +11,16 @@
         head -n 1 |
         cut -f 2- -d ' ' |
         tr ' ' '_'
-  register: _proxy_version
+  register: _result
 
 - name: File version
   delegate_to: localhost
   throttle: 1
   vars:
     _package: "{{ ansible_facts.packages['snowflake-proxy'][0].version | default('-') }}"
-    _version: "{{ _proxy_version.stdout | default('-') }}"
+    _version: "{{ _result.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} sf {{ _version }} {{ _package }}"
     path: "{{ tmp_dir }}/snowflake_version"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
+    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"

@@ -35,4 +35,4 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} tor {{ _tor }} {{ _pt }} {{ _pkg_tor }} {{ _pkg_pt }}"
     path: "{{ tmp_dir }}/tor_version"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "

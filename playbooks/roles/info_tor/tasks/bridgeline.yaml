@@ -11,11 +11,12 @@
   throttle: 1
   vars:
     _torport: "{{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }}"
-  when: _cert.stdout_lines
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ _torport }} {{ _fingerprint }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
+    regexp: "^Bridge obfs4 {{ _torport }} {{ _fingerprint }} "
     path: /tmp/tor_bridgeline
     mode: "0600"
+    state: "{{ _cert.stdout_lines | ternary('present', 'absent') }}"
   with_items:
     - "{{ ansible_facts.default_ipv4.address }}"
     - "[{{ ansible_facts.default_ipv6.address }}]"

@@ -27,7 +27,7 @@
           ansible.builtin.lineinfile:
             line: "    address {{ _ipv6_new }}/64"
             path: /etc/network/interfaces.d/50-cloud-init
-            regex: "^    address "
+            regexp: "^    address "
 
         - name: Activate new IPv6 address
           ansible.builtin.systemd_service:

@@ -5,4 +5,4 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
     path: "{{ tmp_dir }}/all_ipv6"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "

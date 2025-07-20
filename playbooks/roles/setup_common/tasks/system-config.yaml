@@ -107,7 +107,7 @@
       ansible.builtin.lineinfile:
         line: "enabled=0"
         path: /etc/default/apport
-        regex: "^enabled="
+        regexp: "^enabled="
 
 - name: Do not run Git cleanup in background
   when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4

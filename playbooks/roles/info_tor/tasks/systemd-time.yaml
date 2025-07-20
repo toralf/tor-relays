@@ -13,4 +13,4 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Start {{ _starttime }} Change {{ _changetime }}"
     path: "{{ tmp_dir }}/tor_systemd_time"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "

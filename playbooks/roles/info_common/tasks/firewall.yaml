@@ -16,7 +16,7 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_firewall_ct_drops"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
 
 - name: Get ct counter
   changed_when: false
@@ -31,5 +31,5 @@
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/all_firewall_ct_counter"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
     state: "{{ _result.stderr | bool | ternary('absent', 'present') }}"

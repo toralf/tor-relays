@@ -5,12 +5,13 @@
     url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
     return_content: true
     status_code: [200, 404]
-  register: _result
+  register: _uri
 
 - name: File b.t.o.
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.content | split('\n') | select('match', '\\* ') }}"
+    line: "{{ inventory_hostname }} {{ _uri.content | split('\n') | select('match', '\\* ') }}"
     path: "{{ tmp_dir }}/tor_bto"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
+    state: "{{ _uri.content | ternary('present', 'absent') }}"

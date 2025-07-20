@@ -7,12 +7,13 @@
         grep /usr/bin/snowflake-proxy |
         grep -v grep |
         awk '{ printf("%i-%02i\n", $1 / 86400, $1 % 86400 / 3600) }'
-  register: _process
+  register: _result
 
 - name: File process runtime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} etimes {{ _process.stdout | default('-') }}"
+    line: "{{ inventory_hostname }} etimes {{ _result.stdout | default('-') }}"
     path: "{{ tmp_dir }}/snowflake_process_runtime"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
+    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"

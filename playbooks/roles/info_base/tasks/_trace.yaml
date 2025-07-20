@@ -5,7 +5,7 @@
   ansible.builtin.lineinfile:
     line: "{{ _trace_start }}"
     path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace.log"
-    regex: "^{{ _trace_start }}$"
+    regexp: "^{{ _trace_start }}$"
   register: _new
 
 - name: Full trace

@@ -21,4 +21,4 @@
       {{ _bridges.transports | default(['n/a']) | join(',') }}
       running: {{ _bridges.running | default('-') }}
     path: "{{ tmp_dir }}/tor_onionoo"
-    regex: "^{{ inventory_hostname }} "
+    regexp: "^{{ inventory_hostname }} "
