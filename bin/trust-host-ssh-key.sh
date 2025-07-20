@@ -16,7 +16,7 @@ while :; do
       done
   )
 
-  echo -en " $(wc -w <<<${unknowns}) ssh host/s to scan ..."
+  echo -en "\n $(wc -w <<<${unknowns}) ssh host/s to scan ..."
   if [[ -z ${unknowns} ]]; then
     break
   fi
@@ -25,7 +25,7 @@ while :; do
     grep -v '#' ~/.ssh/known_hosts_tmp >>~/.ssh/known_hosts
     rm ~/.ssh/known_hosts_tmp
   else
-    echo " wait few sec ..."
+    echo -n " wait few sec ..."
     sleep 5
   fi
 done
