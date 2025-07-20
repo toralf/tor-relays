@@ -37,7 +37,7 @@ function cleanLocalDataFiles() {
 }
 
 function setProject() {
-  project=$(hcloud --quiet context active)
+  project=$(hcloud context active)
   echo -e "\n >>> using Hetzner project ${project:?}"
 }
 
