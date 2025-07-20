@@ -1,5 +1,5 @@
 ---
-# group by description and keep the latest id
+# group by description and keep highest id per description
 - name: Remove superseeded snapshots
   changed_when: _result.stdout
   failed_when: _result.stderr or _result.rc != 0
