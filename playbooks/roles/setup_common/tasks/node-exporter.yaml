@@ -8,9 +8,7 @@
 - name: Create Prometheus node exporter data directory
   ansible.builtin.file:
     path: /var/lib/node_exporter/
-    state: directory
-    mode: "0755"
-  notify: Restart Prometheus node exporter
+    state: absent
 
 - name: Configure Prometheus node exporter
   ansible.builtin.lineinfile:
