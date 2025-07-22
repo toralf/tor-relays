@@ -17,7 +17,7 @@
     create: false
     line: >-
       ARGS='
-      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
+      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+)($|/)"
       --collector.processes
       --collector.systemd
       --collector.tcpstat
