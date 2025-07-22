@@ -17,10 +17,11 @@
     create: false
     line: >-
       ARGS='
-      --web.listen-address=localhost:9100
-      --collector.tcpstat
-      --collector.textfile.directory=/var/lib/node_exporter/
       --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys|var/lib/docker/.+|var/lib/containers/storage/.+)($|/)"
+      --collector.processes
+      --collector.systemd
+      --collector.tcpstat
+      --web.listen-address=localhost:9100
       '
     path: /etc/default/prometheus-node-exporter
     regexp: "^ARGS="
