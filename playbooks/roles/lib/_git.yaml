@@ -14,7 +14,7 @@
   register: __repo
 
 - name: Git
-  throttle: 8
+  throttle: 16
   block:
     - name: Git clone "{{ _repo_dir }}"
       when: __repo.before == None
@@ -41,7 +41,7 @@
 
 - name: Git apply patches "{{ _repo_dir }}"
   changed_when: __patched.stdout_lines is search('patching file ')
-  throttle: 8
+  throttle: 16
   ansible.builtin.shell:
     cmd: |-
       set -euf
