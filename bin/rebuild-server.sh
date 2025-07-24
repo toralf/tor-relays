@@ -26,7 +26,7 @@ echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
     setImage
-    [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="30s" || poll_interval="10s"
+    [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="45s" || poll_interval="10s"
     echo --poll-interval ${poll_interval} server rebuild --image ${image} ${name}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet

@@ -16,7 +16,7 @@ while :; do
       done
   )
 
-  echo -en "\n $(wc -w <<<${unknowns}) ssh host/s to scan ..."
+  echo -en "\n $(wc -w <<<${unknowns}) scan/s left ..."
   if [[ -z ${unknowns} ]]; then
     break
   fi
