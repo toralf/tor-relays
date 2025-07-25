@@ -32,9 +32,5 @@ xargs -n 1 <<<$* |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 
 cleanLocalDataEntries $*
-
-# clean up any left over SSH key
 $(dirname $0)/distrust-host-ssh-key.sh $*
-
-# build SSH trust relationship
 $(dirname $0)/trust-host-ssh-key.sh $*

@@ -81,9 +81,5 @@ xargs -n 1 <<<$* |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 
 $(dirname $0)/update-dns.sh
-
-# do no longer trust old SSH keys
 $(dirname $0)/distrust-host-ssh-key.sh $*
-
-# build SSH trust relationship
 $(dirname $0)/trust-host-ssh-key.sh $*
