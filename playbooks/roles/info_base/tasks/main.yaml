@@ -21,7 +21,6 @@
         - artefact
 
     - name: Create Prometheus config files
-      when: metrics_port is defined
       ansible.builtin.import_tasks: targets.yaml
       tags:
         - targets
