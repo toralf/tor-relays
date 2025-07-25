@@ -6,13 +6,11 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-[[ $# -ne 0 ]]
-
 echo -e "\n dis-trusting $(wc -w <<<$*) ssh host key/s ..."
 
-if xargs -r -n 1 ssh-keygen -R <<<$* &>/dev/null; then
-  echo -e " OK"
-else
-  echo -e " NOT ok"
+if ! xargs -r -n 1 ssh-keygen -R <<<$* &>/dev/null; then
+  echo " NOT ok"
   exit 1
 fi
+
+echo " OK"
