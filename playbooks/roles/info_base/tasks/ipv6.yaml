@@ -2,7 +2,10 @@
 - name: File IPv6 address
   delegate_to: localhost
   throttle: 1
+  vars:
+    _state: "{{ ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
     path: "{{ tmp_dir }}/all_ipv6"
     regexp: "^{{ inventory_hostname }} "
+    state: "{{ _state | ternary('present', 'absent') }}"
