@@ -1,6 +1,4 @@
 ---
 log_lines: 20
 
-log_system_since: 1 day ago
-
 nginx_loglevel: error

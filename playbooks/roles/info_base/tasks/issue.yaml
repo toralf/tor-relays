@@ -1,9 +1,9 @@
 ---
-- name: Get certain issues from system log
+- name: Search for issues in system log
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ log_system_since }}" --quiet |
+      journalctl --since "{{ issue_since }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
@@ -12,7 +12,7 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: File findings in system log
+- name: File issue
   delegate_to: localhost
   throttle: 1
   ansible.builtin.blockinfile:
