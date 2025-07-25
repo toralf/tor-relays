@@ -15,7 +15,6 @@
       mode: "0644"
   block:
     - name: Artefact
-      when: artefact_paths
       ansible.builtin.import_tasks: artefact.yaml
       tags:
         - artefact
