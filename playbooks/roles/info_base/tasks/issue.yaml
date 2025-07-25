@@ -12,7 +12,11 @@
         tail -n {{ log_lines }}
   register: _result
 
-- name: Findings in system log
-  when: _result.stdout
-  ansible.builtin.debug:
-    var: _result.stdout_lines
+- name: File findings in system log
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.blockinfile:
+    block: "{{ _result.stdout }}"
+    path: "{{ tmp_dir }}/all_issue.log"
+    marker: "# {mark} {{ inventory_hostname }} "
+    state: "{{ _result.stdout | ternary('present', 'absent') }}"

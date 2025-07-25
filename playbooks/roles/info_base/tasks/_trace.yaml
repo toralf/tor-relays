@@ -27,9 +27,6 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.blockinfile:
-        append_newline: true
-        create: true
-        mode: "0644"
         block: |
           #    {{ inventory_hostname }}    {{ ansible_facts.lsb.description }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}
           {{ _trace_full.stdout }}

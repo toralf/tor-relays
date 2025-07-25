@@ -1,6 +1,10 @@
 ---
 - name: Main
   module_defaults:
+    ansible.builtin.blockinfile:
+      append_newline: true
+      create: true
+      mode: "0644"
     ansible.builtin.copy:
       mode: "0644"
     ansible.builtin.fetch:
@@ -32,6 +36,11 @@
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
         - ipv6
+
+    - name: Issues from system log
+      ansible.builtin.import_tasks: issue.yaml
+      tags:
+        - issue
 
     - name: Kernel config
       ansible.builtin.import_tasks: kernel-config.yaml

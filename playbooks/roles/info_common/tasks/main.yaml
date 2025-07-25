@@ -26,11 +26,6 @@
       tags:
         - log-nginx
 
-    - name: Log system
-      ansible.builtin.import_tasks: log-system.yaml
-      tags:
-        - log-system
-
     - name: Minicoredumper
       ansible.builtin.import_tasks: minicoredumper.yaml
       tags:
