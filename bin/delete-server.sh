@@ -15,6 +15,9 @@ hash -r hcloud rc-service
 [[ $# -ne 0 ]] || exit 1
 setProject
 
+jobs=$((3 * $(nproc)))
+[[ ${jobs} -gt 48 ]] && jobs=48
+
 cleanLocalDataEntries $*
 cleanLocalDataFiles $*
 
@@ -29,4 +32,9 @@ sudo rc-service unbound reload
 $(dirname $0)/distrust-host-ssh-key.sh $*
 
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -r -P 10 -n 50 hcloud --quiet --poll-interval 10s server delete <<<$* 2>/dev/null
+
+set +e
+xargs -r -P ${jobs} -n 50 hcloud --quiet --poll-interval 10s server delete <<<$* 2>/dev/null
+rc=$?
+set -e
+[[ ${rc} == 123 ]] && exit 0 || exit ${rc}
