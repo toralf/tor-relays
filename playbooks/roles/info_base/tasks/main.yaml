@@ -34,7 +34,7 @@
       tags:
         - ipv6
 
-    - name: Issues from system log
+    - name: Issue
       ansible.builtin.import_tasks: issue.yaml
       tags:
         - issue
@@ -44,7 +44,7 @@
       tags:
         - kernel-config
 
-    - name: Issues
+    - name: Kernel trace
       ansible.builtin.import_tasks: trace.yaml
       tags:
         - trace

@@ -9,7 +9,7 @@
           -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
           -e 'invoked oom-killer' -e 'status=9/KILL' -e '.service: Failed' \
           -e 'Call Trace:' -e 'Oops:' |
-        tail -n {{ log_lines }}
+        head -n 30
   register: _result
 
 - name: File issue

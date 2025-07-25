@@ -4,7 +4,7 @@
   ansible.builtin.shell:
     cmd: |-
       grep -v -e 'Reading database' -e '^$' /var/log/unattended-upgrades/unattended-upgrades-dpkg.log |
-        tail -n {{ log_lines }}
+        tail -n 20
   register: _result
 
 - name: Findings of unattended log

@@ -1,4 +1,2 @@
 ---
-log_lines: 20
-
 nginx_loglevel: error
