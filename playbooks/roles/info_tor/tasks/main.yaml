@@ -79,7 +79,7 @@
       tags:
         - systemd-time
 
-    - name: Version of Tor
+    - name: Version
       ansible.builtin.import_tasks: version.yaml
       tags:
         - version
