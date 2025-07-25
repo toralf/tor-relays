@@ -33,14 +33,14 @@ names=""                                    # option exclusive to "arch" and "br
 os="d u"                                    # operating system, (d)ebian, (u)buntu
 parameter=""                                # e.g. -p '-e git_clone_from_scratch=true'
 
-while getopts a:b:n:o:p:r opt; do
+while getopts a:b:n:o:p:s opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
-  r) names=$(hcloud --quiet image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi-%s ") ;;
+  s) names=$(hcloud --quiet image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi-%s ") ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
