@@ -54,9 +54,10 @@ fi
 
 cd $(dirname $0)/..
 
+trap 'echo "  ^^  systems:    ${names}"' INT QUIT TERM EXIT
+
 ./bin/create-server.sh ${names}
-cmd=""
-if ! ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}; then
-  cmd='echo ^^ fix, then run:'
-fi
-${cmd} ./bin/delete-server.sh ${names} 2>/dev/null
+./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
+./bin/delete-server.sh ${names} 2>/dev/null
+
+trap - INT QUIT TERM EXIT
