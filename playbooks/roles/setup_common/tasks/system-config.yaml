@@ -88,13 +88,13 @@
     path: /etc/systemd/system/logrotate.timer.d/
     state: directory
     mode: "0755"
-  notify: Reload Systemd
+  notify: Reload systemd
 
 - name: Add logrotate systemd override config
   ansible.builtin.template:
     src: logrotate.override.conf.j2
     dest: /etc/systemd/system/logrotate.timer.d/override.conf
-  notify: Reload Systemd
+  notify: Reload systemd
 
 # both nginx and Tor refuses to start, if IPv6 is not up
 - name: Ensure that Networkd wait online systemd override dir exists
@@ -108,7 +108,7 @@
     src: networkd-wait-online.override.conf.j2
     dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
   notify:
-    - Reload Systemd
+    - Reload systemd
 
 - name: No apport
   when: ansible_facts.distribution in ('Ubuntu')

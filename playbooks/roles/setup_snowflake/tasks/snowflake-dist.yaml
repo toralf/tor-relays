@@ -16,4 +16,4 @@
     src: snowflake.override.conf.j2
     dest: /etc/systemd/system/snowflake-proxy.service.d/override.conf
   notify:
-    - Reload Systemd
+    - Reload systemd

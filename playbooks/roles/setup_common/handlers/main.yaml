@@ -1,6 +1,6 @@
 ---
-- name: Reload Systemd
-  listen: Reload Systemd
+- name: Reload systemd
+  listen: Reload systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
 
@@ -11,8 +11,8 @@
     state: restarted
     no_block: true
 
-- name: Reload SSH
-  listen: Reload SSH
+- name: Reload ssh
+  listen: Reload ssh
   ansible.builtin.systemd_service:
     name: ssh
     state: reloaded

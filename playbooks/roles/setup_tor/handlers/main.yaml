@@ -12,8 +12,8 @@
       {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start
       {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
 
-- name: Reload Systemd
-  listen: Reload Systemd
+- name: Reload systemd
+  listen: Reload systemd
   ansible.builtin.systemd_service:
     daemon_reload: true
 

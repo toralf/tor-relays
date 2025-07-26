@@ -19,7 +19,7 @@
   with_items:
     - 20auto-upgrades
     - 50unattended-upgrades
-  notify: Reload Systemd
+  notify: Reload systemd
 
 - name: Create timer.d directories
   ansible.builtin.file:
@@ -35,14 +35,14 @@
   ansible.builtin.template:
     src: apt_timer.j2
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
-  notify: Reload Systemd
+  notify: Reload systemd
 
 # 2x per day at :10
 - name: Configure apt upgrade timer
   ansible.builtin.template:
     src: apt_upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
-  notify: Reload Systemd
+  notify: Reload systemd
 
 # 2x per day one hour later at :13
 - name: Ensure reaper cron job is present
