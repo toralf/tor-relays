@@ -81,7 +81,7 @@
     line: "SystemMaxUse=100M"
     path: /etc/systemd/journald.conf
     regexp: "^[#]*SystemMaxUse="
-  notify: Reload Systemd
+  notify: Restart systemd-journald
 
 - name: Ensure that logrotate systemd override directory does exist
   ansible.builtin.file:

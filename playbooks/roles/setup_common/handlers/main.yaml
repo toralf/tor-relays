@@ -4,6 +4,13 @@
   ansible.builtin.systemd_service:
     daemon_reload: true
 
+- name: Restart systemd-journald
+  listen: Restart systemd-journald
+  ansible.builtin.systemd_service:
+    name: systemd-journald
+    state: restarted
+    no_block: true
+
 - name: Reload SSH
   listen: Reload SSH
   ansible.builtin.systemd_service:
