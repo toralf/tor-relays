@@ -66,6 +66,19 @@
       echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
       echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
 
+- name: Truncate mail regularly
+  ansible.builtin.cron:
+    name: regulary truncate system mail file
+    special_time: monthly
+    job: truncate -s 0 /var/mail/mail
+
+- name: Configure journalctl max size
+  ansible.builtin.lineinfile:
+    line: "SystemMaxUse=100M"
+    path: /etc/systemd/journald.conf
+    regexp: "^[#]*SystemMaxUse="
+  notify: Reload Systemd
+
 - name: Ensure that logrotate systemd override directory does exist
   ansible.builtin.file:
     path: /etc/systemd/system/logrotate.timer.d/
