@@ -109,7 +109,7 @@
         path: /etc/default/apport
         regexp: "^enabled="
 
-- name: Create swap file for small RAM
+- name: Create swapfile for systems with small RAM
   when: ansible_facts.memtotal_mb < 2048 and (kernel_build_from_source or tor_port is defined)
   ansible.builtin.shell:
     cmd: |-
