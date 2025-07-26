@@ -13,7 +13,7 @@
     path: /usr/share/tor/
     mode: "0755"
 
-- name: Upload GeoIP data
+- name: Get GeoIP data
   when: use_tor_geoip_data
   throttle: 10
   ansible.builtin.get_url:
