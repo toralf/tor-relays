@@ -40,3 +40,9 @@
       ansible.builtin.import_tasks: autoupdate-ubuntu.yaml
       tags:
         - autoupdate
+
+    - name: Activate unattended-upgrades
+      ansible.builtin.systemd_service:
+        name: unattended-upgrades
+        state: started
+        enabled: true
