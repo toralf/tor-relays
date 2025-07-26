@@ -43,3 +43,9 @@
   when: additional_software
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Do not run Git cleanup in background
+  when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
+  changed_when: false
+  ansible.builtin.command:
+    cmd: git config --global --add gc.autoDetach false
