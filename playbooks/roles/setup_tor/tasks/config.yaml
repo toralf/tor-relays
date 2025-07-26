@@ -35,4 +35,4 @@
   ansible.builtin.cron:
     name: restart {{ _service }} if systemd refused to do it
     job: >-
-      systemctl is-failed {{ _service }} && systemctl start {{ _service }}
+      systemctl is-failed {{ _service }} 1>/dev/null && systemctl start {{ _service }}

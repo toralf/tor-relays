@@ -46,3 +46,4 @@
         name: unattended-upgrades
         state: started
         enabled: true
+        no_block: true
