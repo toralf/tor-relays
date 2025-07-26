@@ -66,11 +66,15 @@
       echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
       echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
 
-- name: Truncate mail regularly
+- name: Ensure system mailfile is not too big
   ansible.builtin.cron:
     name: regulary truncate system mail file
-    special_time: monthly
-    job: truncate -s 0 /var/mail/mail
+    special_time: daily
+    job: >-
+      while [[ $(wc -l </var/mail/mail) -gt 10000 ]] || ! head -n 1 /var/mail/mail | grep -q '^From ';
+      do
+      sed -i -e "1d" /var/mail/mail;
+      done
 
 - name: Configure journalctl max size
   ansible.builtin.lineinfile:
