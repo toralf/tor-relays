@@ -10,8 +10,10 @@
 - name: File b.t.o.
   delegate_to: localhost
   throttle: 1
+  vars:
+    _content: "{{ _uri.content | default('') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _uri.content | split('\n') | select('match', '\\* ') }}"
+    line: "{{ inventory_hostname }} {{ _content | split('\n') | select('match', '\\* ') }}"
     path: "{{ tmp_dir }}/tor_bto"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _uri.content | ternary('present', 'absent') }}"
+    state: "{{ _content | ternary('present', 'absent') }}"

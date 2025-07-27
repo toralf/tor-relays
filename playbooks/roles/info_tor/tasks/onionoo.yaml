@@ -12,6 +12,7 @@
   throttle: 1
   vars:
     _bridges: "{{ _uri.json.bridges[0] | default([]) }}"
+    _content: "{{ _uri.content | default('') }}"
   ansible.builtin.lineinfile:
     line: >-
       {{ inventory_hostname }}
@@ -21,4 +22,4 @@
       running: {{ _bridges.running | default('-') }}
     path: "{{ tmp_dir }}/tor_onionoo"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _uri.content | ternary('present', 'absent') }}"
+    state: "{{ _content | ternary('present', 'absent') }}"
