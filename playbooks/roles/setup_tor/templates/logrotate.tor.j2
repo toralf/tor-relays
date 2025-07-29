@@ -10,8 +10,8 @@
   create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
   sharedscripts
   postrotate
-    if invoke-rc.d tor status > /dev/null; then
-      invoke-rc.d tor reload > /dev/null
+    if invoke-rc.d tor status >/dev/null; then
+      invoke-rc.d tor reload >dev/null
     fi
   endscript
 }

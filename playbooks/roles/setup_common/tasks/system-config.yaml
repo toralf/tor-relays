@@ -63,8 +63,8 @@
     name: core debug files
     special_time: reboot
     job: >-
-      echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' > /proc/sys/kernel/core_pattern;
-      echo 0x7fffffff > /proc/sys/kernel/core_pipe_limit
+      echo '|/usr/sbin/minicoredumper \%P \%u \%g \%s \%t \%h \%e' >/proc/sys/kernel/core_pattern;
+      echo 0x7fffffff >/proc/sys/kernel/core_pipe_limit
 
 - name: Ensure system mailfile is not too big
   ansible.builtin.cron:

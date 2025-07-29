@@ -60,7 +60,7 @@
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 30 + 10 | random(seed=seed_host) }}"
     job: >-
-      if grep -q 'System restart required' /var/run/reboot-required; then
+      if grep -q 'System restart required' /var/run/reboot-required 2>/dev/null; then
       pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot;
       fi
 
