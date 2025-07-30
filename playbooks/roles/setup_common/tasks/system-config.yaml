@@ -7,14 +7,18 @@
       - logrotate
       - minicoredumper
 
-- name: Set crontab vars
-  ansible.builtin.cron:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    env: true
+- name: Tweak readline
+  ansible.builtin.lineinfile:
+    line: set enable-bracketed-paste off
+    path: /root/.inputrc
+
+- name: Copy configs
+  ansible.builtin.copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
   loop:
-    - { name: PATH, value: /usr/sbin:/usr/bin:/sbin/:/bin }
-    - { name: SHELL, value: /bin/bash }
+    - { src: htoprc, dest: /root/.config/htop/ }
+    - { src: .selected_editor, dest: /root/ }
 
 - name: Sysctl config
   ansible.builtin.copy:
@@ -28,22 +32,7 @@
   ansible.builtin.command:
     cmd: sysctl --system
 
-- name: Tweak readline
-  ansible.builtin.lineinfile:
-    line: set enable-bracketed-paste off
-    path: /root/.inputrc
-
-- name: Htop config
-  ansible.builtin.copy:
-    src: htoprc
-    dest: /root/.config/htop/
-
-- name: Editor config
-  ansible.builtin.copy:
-    src: .selected_editor
-    dest: /root/
-
-- name: Set certain common sysctl values
+- name: Set common sysctl values
   ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -54,6 +43,15 @@
     - { name: net.ipv4.tcp_fin_timeout, value: 10 }
     - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
     - { name: net.ipv6.ip_nonlocal_bind, value: 1 }
+
+- name: Set crontab vars
+  ansible.builtin.cron:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    env: true
+  loop:
+    - { name: PATH, value: /usr/sbin:/usr/bin:/sbin/:/bin }
+    - { name: SHELL, value: /bin/bash }
 
 - name: Ensure kernel crash dumps are made using minicoredumper
   ansible.builtin.cron:
