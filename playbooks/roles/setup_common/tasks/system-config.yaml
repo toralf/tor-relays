@@ -7,18 +7,17 @@
       - logrotate
       - minicoredumper
 
-- name: Set PATH in crontab
+- name: Set crontab vars
   ansible.builtin.cron:
-    name: PATH
-    value: /usr/sbin:/usr/bin:/sbin/:/bin
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     env: true
-
-- name: Set SHELL in crontab
-  ansible.builtin.cron:
-    name: SHELL
-    value: /bin/bash
-    env: true
-
+  loop:
+    - { name: PATH, value: /usr/sbin:/usr/bin:/sbin/:/bin }
+    - { name: SHELL, value: /bin/bash }
+  tags:
+    - meow
+    
 - name: Sysctl config
   ansible.builtin.copy:
     src: 20tor-system.conf
