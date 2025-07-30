@@ -15,9 +15,7 @@
   loop:
     - { name: PATH, value: /usr/sbin:/usr/bin:/sbin/:/bin }
     - { name: SHELL, value: /bin/bash }
-  tags:
-    - meow
-    
+
 - name: Sysctl config
   ansible.builtin.copy:
     src: 20tor-system.conf
