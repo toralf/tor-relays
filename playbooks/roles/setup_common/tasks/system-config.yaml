@@ -71,10 +71,14 @@
     name: regulary truncate system mail file
     special_time: daily
     job: >-
-      while [[ $(wc -l </var/mail/mail) -gt 10000 ]] || ! head -n 1 /var/mail/mail | grep -q '^From ';
+      n=$(wc -l </var/mail/mail);
+      if [[ $n -gt 10000 ]]; then
+      sed -i -e "1,$((n - 10000))d" /var/mail/mail;
+      while [[ -s /var/mail/mail ]] && ! head -n 1 /var/mail/mail | grep -q '^From ';
       do
       sed -i -e "1d" /var/mail/mail;
-      done
+      done;
+      fi
 
 - name: Configure journalctl max size
   ansible.builtin.lineinfile:
