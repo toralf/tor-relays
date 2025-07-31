@@ -77,7 +77,7 @@
 
 - name: Configure journalctl max size
   ansible.builtin.lineinfile:
-    line: "SystemMaxUse=100M"
+    line: SystemMaxUse=100M
     path: /etc/systemd/journald.conf
     regexp: "^[#]*SystemMaxUse="
   notify: Restart systemd-journald
@@ -111,19 +111,12 @@
 
 - name: No apport
   when: ansible_facts.distribution in ('Ubuntu')
-  block:
-    - name: Disable apport service
-      ansible.builtin.systemd_service:
-        name: apport
-        enabled: false
-        state: stopped
-        no_block: true
-
-    - name: Disable apport autostart
-      ansible.builtin.lineinfile:
-        line: "enabled=0"
-        path: /etc/default/apport
-        regexp: "^enabled="
+  ansible.builtin.apt:
+    name:
+      - apport
+      - whoopsie
+      - whoopsie-preferences
+    state: absent
 
 - name: Create swapfile for systems with small RAM
   when: ansible_facts.memtotal_mb < 2048 and (kernel_build_from_source or tor_port is defined)
