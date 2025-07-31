@@ -1,17 +1,17 @@
 # torrc
 # {{ ansible_managed }}
-
 {% if tor_build_from_source %}
+
 DataDirectory /var/lib/tor
 {% endif %}
-
 {% if bridge_distribution %}
+
 BridgeRelay 1
 BridgeDistribution {{ bridge_distribution }}
 {% if bridge_distribution == 'none' %}
+
 PublishServerDescriptor 0
 {% endif %}
-
 SandBox 0
 
 ORPort 127.0.0.1:auto
@@ -20,22 +20,23 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
+
 ExitRelay 0
 NoExec 1
-
 {% if ansible_facts.architecture != 'x86_64' %}
+
 # sandbox issues with ARM64 (e.g. aarch64)
 SandBox 0
 {% else %}
+
 SandBox 1
 {% endif %}
 
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
-
 {% endif %}
-
 {% if tor_metrics %}
+
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
 # MetricsPort [::1]:9052
