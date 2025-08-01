@@ -1,11 +1,4 @@
 ---
-- name: De-activate unattended-upgrades
-  failed_when: false # not yet installed at first run
-  ansible.builtin.systemd_service:
-    name: unattended-upgrades
-    state: stopped
-    enabled: false
-
 - name: Allow phased updates in Ubuntu
   when: ansible_facts.distribution in ('Ubuntu')
   ansible.builtin.copy:

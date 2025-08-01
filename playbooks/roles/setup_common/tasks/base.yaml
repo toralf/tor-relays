@@ -29,3 +29,10 @@
   ansible.builtin.shell:
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
+
+- name: De-activate unattended-upgrades
+  failed_when: false # might not been installed
+  ansible.builtin.systemd_service:
+    name: unattended-upgrades
+    state: stopped
+    enabled: false
