@@ -1,15 +1,21 @@
 ---
 - name: Search for issues in system log
   changed_when: false
+  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
-          -e 'BUG at' -e 'BUG:' -e 'WARNING:' -e '-----------[ cut here ]------------' \
-          -e 'invoked oom-killer' -e 'status=9/KILL' -e '.service: Failed' \
-          -e 'Call Trace:' -e 'Oops:' |
-        head -n 30
+          -e '-----------[ cut here ]------------' \
+          -e 'BUG:' \
+          -e 'BUG at' \
+          -e 'Call Trace:' \
+          -e 'invoked oom-killer' \
+          -e 'Oops:' \
+          -e 'status=9/KILL' \
+          -e '.service: Failed' \
+          -e 'WARNING:'
   register: _result
 
 - name: File issue
