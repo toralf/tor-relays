@@ -30,14 +30,14 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: De-activate unattended-upgrades
+- name: De-activate unattended-upgrades service
   failed_when: false # might not been installed
   ansible.builtin.systemd_service:
     name: unattended-upgrades
     state: stopped
     enabled: false
 
-- name: Un-configure unattended auto upgrade
+- name: Remove unattended auto upgrade config
   ansible.builtin.file:
     path: /etc/apt/apt.conf.d/20auto-upgrades
     state: absent
