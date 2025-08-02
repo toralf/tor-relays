@@ -29,21 +29,14 @@
       group: root
       mode: "0644"
   block:
-    - name: Configure auto update for Debian
+    - name: Configure unattended update for Debian
       when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: autoupdate-debian.yaml
       tags:
         - autoupdate
 
-    - name: Configure auto update for Ubuntu
-      when: ansible_facts.distribution in ('Ubuntu')
-      ansible.builtin.import_tasks: autoupdate-ubuntu.yaml
+    - name: Configure unattended update for Apt
+      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      ansible.builtin.import_tasks: autoupdate-apt.yaml
       tags:
         - autoupdate
-
-    - name: Activate unattended-upgrades
-      ansible.builtin.systemd_service:
-        name: unattended-upgrades
-        state: started
-        enabled: true
-        no_block: true

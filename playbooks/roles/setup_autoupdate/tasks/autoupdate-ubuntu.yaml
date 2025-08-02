@@ -1,8 +1,0 @@
----
-- name: Activate unattended-upgrades
-  ansible.builtin.systemd_service:
-    name: unattended-upgrades
-    state: started
-    daemon_reload: true
-    enabled: true
-    no_block: true

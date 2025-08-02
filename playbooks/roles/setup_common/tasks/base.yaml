@@ -36,3 +36,8 @@
     name: unattended-upgrades
     state: stopped
     enabled: false
+
+- name: Un-configure unattended auto upgrade
+  ansible.builtin.file:
+    path: /etc/apt/apt.conf.d/20auto-upgrades
+    state: absent

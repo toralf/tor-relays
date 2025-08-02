@@ -34,7 +34,7 @@ $(dirname $0)/distrust-host-ssh-key.sh $*
 echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 
 set +e
-xargs -r -P ${jobs} -n 50 hcloud --quiet --poll-interval 10s server delete <<<$* 2>/dev/null
+xargs -r -P ${jobs} -n 20 hcloud --quiet --poll-interval 10s server delete <<<$* 2>/dev/null
 rc=$?
 set -e
 [[ ${rc} == 123 ]] && exit 0 || exit ${rc}
