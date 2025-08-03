@@ -47,6 +47,7 @@
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-dist.yaml
       tags:
+        - tor
         - tor-dist
 
     - name: Build from source
@@ -60,6 +61,7 @@
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
+            - tor
             - tor-src
 
         - name: Lyrebird
@@ -67,6 +69,7 @@
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
             - lyrebird
+            - lyrebird-src
 
     - name: DDoS metrics
       when: ddos_metrics

@@ -35,6 +35,7 @@
       ansible.builtin.import_tasks: snowflake-dist.yaml
       tags:
         - snowflake
+        - snowflake-dist
 
     - name: Build form Source
       when: snowflake_build_from_source
@@ -48,6 +49,7 @@
           ansible.builtin.import_tasks: snowflake-src.yaml
           tags:
             - snowflake
+            - snowflake-src
 
         - name: Config
           ansible.builtin.import_tasks: config.yaml
