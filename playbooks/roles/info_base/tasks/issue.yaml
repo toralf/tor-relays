@@ -1,7 +1,6 @@
 ---
 - name: Search for issues in system log
   changed_when: false
-  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
@@ -15,7 +14,8 @@
           -e 'Oops:' \
           -e 'status=9/KILL' \
           -e '.service: Failed' \
-          -e 'WARNING:'
+          -e 'WARNING:' |
+        head -n 500
   register: _result
 
 - name: File issue
