@@ -21,6 +21,16 @@
         - deb
         - deb-src
 
+    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+    - name: Allow low port for Tor or PT respectively
+      when: tor_port | int < 1024
+      vars:
+        _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+      ansible.builtin.lineinfile:
+        line: >-
+          'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
+        path: /etc/apt/apt.conf.d/99-tor-lowport
+
     - name: Install/Update Tor and PT
       ansible.builtin.apt:
         name:
@@ -28,16 +38,6 @@
           - tor
           - tor-geoipdb
       notify: Restart Tor
-
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Configure apt hook to set capabilities for low port
-  when: tor_port | int < 1024
-  vars:
-    _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
-  ansible.builtin.lineinfile:
-    line: >-
-      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
-    path: /etc/apt/apt.conf.d/99-tor-lowport
 
 - name: Ensure that Tor systemd override dir exists
   ansible.builtin.file:
