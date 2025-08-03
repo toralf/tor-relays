@@ -6,6 +6,7 @@ Documentation=man:tor
 Documentation=https://www.torproject.org/
 After=network-online.target docker.socket firewalld.service systemd-networkd-wait-online.service
 Wants=network-online.target
+StartLimitInterval=0
 
 [Service]
 ExecStartPre=/usr/bin/tor --verify-config

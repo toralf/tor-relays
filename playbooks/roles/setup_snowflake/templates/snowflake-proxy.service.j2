@@ -6,6 +6,7 @@ Documentation=man:snowflake-proxy
 Documentation=https://snowflake.torproject.org/
 After=network-online.target docker.socket firewalld.service systemd-networkd-wait-online.service
 Wants=network-online.target
+StartLimitInterval=0
 
 [Service]
 ExecStart=/usr/bin/snowflake-proxy {{ snowflake_command_args }}
