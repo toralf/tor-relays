@@ -174,7 +174,7 @@
       changed_when: true
       vars:
         _is_latest: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
-        _max: "{{ (ansible_facts.memtotal_mb < 2048) | ternary(1, (ansible_facts.memtotal_mb / 2048 + 1) | int) }}"
+        _max: "{{ 1 + (ansible_facts.memtotal_mb / 1576) | int }}"
         _j: "{{ (_max | int < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
       ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: |-
