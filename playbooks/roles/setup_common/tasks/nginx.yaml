@@ -59,7 +59,7 @@
         dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
       notify: Reload nginx
 
-- name: Create site directories
+- name: Create nginx site directories
   when: nginx_site_directories
   ansible.builtin.file:
     path: /var/www/{{ item.dir }}
@@ -77,3 +77,16 @@
   changed_when: false
   ansible.builtin.command:
     cmd: nginx -t
+
+- name: Ensure that nginx systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/nginx.service.d/
+    state: directory
+    mode: "0755"
+
+- name: Add nginx systemd override
+  ansible.builtin.template:
+    src: nginx.override.conf.j2
+    dest: /etc/systemd/system/nginx.service.d/override.conf
+  notify:
+    - Reload systemd

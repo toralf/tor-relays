@@ -37,24 +37,25 @@
         - snowflake
         - snowflake-dist
 
-    - name: Build form Source
+    - name: Build form source
       when: snowflake_build_from_source
       block:
-        - name: Tools Source
+        - name: Tools source
           ansible.builtin.import_tasks: tools-src.yaml
           tags:
             - tools
 
-        - name: Snowflake Source
+        - name: Snowflake from ource
           ansible.builtin.import_tasks: snowflake-src.yaml
           tags:
             - snowflake
             - snowflake-src
 
-        - name: Config
-          ansible.builtin.import_tasks: config.yaml
+        - name: Configure from source Snowflake
+          ansible.builtin.import_tasks: config-src.yaml
           tags:
             - config
+            - config-src
 
     - name: Enable Snowflake
       ansible.builtin.systemd_service:
