@@ -11,14 +11,6 @@
     state: absent
   notify: Reload nginx
 
-- name: Cron job to restart service if needed
-  vars:
-    _service: nginx
-  ansible.builtin.cron:
-    name: restart {{ _service }} if systemd refused to do it
-    job: >-
-      systemctl is-failed {{ _service }} 1>/dev/null && systemctl start {{ _service }}
-
 - name: HTTPs for nginx
   when: metrics_port
   block:
