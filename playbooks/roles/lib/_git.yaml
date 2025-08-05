@@ -25,12 +25,12 @@
         version: "{{ _git_version }}"
 
     - name: Git update "{{ _repo_dir }}"
-      when: __repo.before != None
       ansible.builtin.git:
         repo: "{{ _git_repo_url }}"
         dest: "{{ _repo_dir }}"
         version: "{{ _git_version }}"
         force: true
+      register: __updated
 
 - name: Git remove untracked files "{{ _repo_dir }}"
   changed_when: __cleaned.stdout
@@ -54,8 +54,10 @@
   loop: "{{ _git_patches }}"
   register: __patched
 
-- name: Git set update status "{{ _repo_dir }}"
+- name: Git repo changed "{{ _repo_dir }}"
+  changed_when: _git_repo_changed
   vars:
     __do_rebuild: "{{ force_rebuild is defined and force_rebuild | bool }}"
   ansible.builtin.set_fact:
-    _git_repo_changed: "{{  __repo.changed or __cleaned.changed or __patched.changed or __do_rebuild }}"
+    _git_repo_changed: "{{  __repo.changed or __repo.before == None or
+      __updated.changed or __cleaned.changed or __patched.changed or __do_rebuild }}"
