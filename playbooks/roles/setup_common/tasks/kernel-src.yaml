@@ -28,11 +28,11 @@
         _git_version: "{{ kernel_git_version }}"
         _git_patches: "{{ kernel_git_patches }}"
         _repo_dir: /root/linux
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/lib/_git.yaml"
+      ansible.builtin.include_tasks: "{{ role_path }}/../../../roles/lib/_git.yaml"
 
     - name: Configure kernel
       changed_when: _kernel_configured.rc == 123
-      failed_when: _kernel_configured.rc != 0 and _kernel_configured.rc != 123
+      failed_when: _kernel_configured.rc not in (0, 123)
       ansible.builtin.shell:
         cmd: |-
           set -euf

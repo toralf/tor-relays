@@ -6,7 +6,7 @@
     _git_patches: []
     _remove_git_repo: false
     _repo_dir: /root/stem
-  ansible.builtin.include_tasks: "{{ playbook_dir }}/roles/lib/_git.yaml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../roles/lib/_git.yaml"
 
 - name: Download info.py
   throttle: 20

@@ -1,6 +1,6 @@
 ---
 # where to store certificate materials
-ca_dir: "{{ playbook_dir }}/../secrets/ca"
+ca_dir: "{{ role_path }}/../../../secrets/ca"
 
 # local directory for site-info files
 tmp_dir: "{{ lookup('env', 'HOME') }}/tmp"
