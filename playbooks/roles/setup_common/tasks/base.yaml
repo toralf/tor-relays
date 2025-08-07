@@ -10,33 +10,37 @@
   ansible.builtin.hostname:
     name: "{{ inventory_hostname }}"
 
-- name: Configure SSHd
+- name: Configure sshd
   ansible.builtin.copy:
     src: 00sshd.conf
     dest: /etc/ssh/sshd_config.d/
   notify: Reload ssh
 
-- name: Remove SSHd config for cloud init at IONOS systems
+- name: Remove cloud init config for sshd at IONOS
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.file:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     state: absent
   notify: Reload ssh
 
-- name: Ensure exactly 1 entry in authorized_keys
+- name: Have only 1 authorized key
   changed_when: false
   failed_when: _result.stdout | int != 1
   ansible.builtin.shell:
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: De-activate unattended-upgrades service
-  failed_when: false # might not been installed
+- name: Stop and disable systemd services
+  failed_when: false
   ansible.builtin.systemd_service:
-    name: unattended-upgrades
+    name: "{{ item }}"
     state: stopped
     enabled: false
+  loop:
+    - fstrim
+    - unattended-upgrades
 
+# created in a separate role at the end of the setup (again)
 - name: Remove unattended auto upgrade config
   ansible.builtin.file:
     path: /etc/apt/apt.conf.d/20auto-upgrades
