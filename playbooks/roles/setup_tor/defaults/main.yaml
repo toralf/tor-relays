@@ -32,7 +32,7 @@ configured_relays_v4: ""
 configured_relays_v6: ""
 
 # file containing the private FamilyId key
-secret_family_key: ""
+tor_secret_family_key_file: ""
 
 nickname: ""
 
