@@ -6,7 +6,6 @@
       journalctl --since "{{ issue_since }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
-          -e '-----------[ cut here ]------------' \
           -e 'BUG:' \
           -e 'BUG at' \
           -e 'Call Trace:' \
