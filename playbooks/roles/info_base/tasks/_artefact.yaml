@@ -10,7 +10,7 @@
 - name: Work on new artefact
   when: _known.changed
   vars:
-    _local_fname: "{{ tmptmp_dirdir }}/{{ item.checksum }}"
+    _local_fname: "{{ tmp_dir }}/{{ item.checksum }}"
   block:
     - name: Fetch
       throttle: 1
