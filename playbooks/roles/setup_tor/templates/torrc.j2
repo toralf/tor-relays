@@ -24,11 +24,9 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 ExitRelay 0
 NoExec 1
 {% if ansible_facts.architecture != 'x86_64' %}
-
 # sandbox issues with ARM64 (e.g. aarch64)
 SandBox 0
 {% else %}
-
 SandBox 1
 {% endif %}
 
