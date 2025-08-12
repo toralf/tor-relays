@@ -32,6 +32,16 @@
         force: true
       register: __updated
 
+    - name: Git remove old branches "{{ _repo_dir }}"
+      changed_when: __inactive.stdout
+      when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool
+      ansible.builtin.shell:
+        cmd: >-
+          git branch | grep -vF '*' | xargs -r git branch -D
+        chdir: "{{ _repo_dir }}"
+        executable: /bin/bash
+      register: __inactive
+
     - name: Git clean "{{ _repo_dir }}"
       changed_when: __cleaned.stdout
       ansible.builtin.command:
