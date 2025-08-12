@@ -52,6 +52,7 @@ ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
 
 echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 
+set +e
 xargs -n 1 <<<$* |
   while read -r name; do
     # arch
@@ -79,6 +80,12 @@ xargs -n 1 <<<$* |
 
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
+rc=$?
+set -e
+
+if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
+  exit ${rc}
+fi
 
 $(dirname $0)/update-dns.sh
 $(dirname $0)/distrust-host-ssh-key.sh $*

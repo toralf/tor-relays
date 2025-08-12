@@ -49,7 +49,6 @@ function setImage() {
   if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! setImageBySnapshot; then
     setImageByHostname
   fi
-  [[ -n ${image} ]]
 }
 
 function setImageByHostname() {
@@ -72,8 +71,9 @@ function setImageBySnapshot() {
   while read -r description id; do
     if [[ -n ${description} ]]; then
       if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
+        # shellcheck disable=SC2034
         image=${id}
-        return
+        return 0
       fi
     fi
   done <<<${snapshots}
