@@ -4,7 +4,6 @@
     _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
     _git_version: "{{ lyrebird_git_version }}"
     _git_patches: "{{ lyrebird_git_patches }}"
-    _remove_git_repo: "{{ lyrebird_remove_git_repo }}"
     _repo_dir: /root/lyrebird
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 

@@ -4,7 +4,6 @@
     _git_repo_url: https://github.com/torproject/stem.git
     _git_version: master
     _git_patches: []
-    _remove_git_repo: false
     _repo_dir: /root/stem
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 

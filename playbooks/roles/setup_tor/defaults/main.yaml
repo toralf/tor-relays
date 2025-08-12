@@ -3,11 +3,9 @@ tor_build_from_source: true
 
 tor_git_version: main
 tor_git_patches: []
-tor_remove_git_repo: false
 
 lyrebird_git_version: main
 lyrebird_git_patches: []
-lyrebird_remove_git_repo: false
 
 # 2 lists for additional torrc values
 torrc_config_group: []
