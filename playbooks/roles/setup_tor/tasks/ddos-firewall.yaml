@@ -17,17 +17,17 @@
 
 - name: Ensure that DDoS will be up and running
   changed_when: _ddos_is_up.rc != 0
-  failed_when: _ddos_is_up.rc > 1
+  failed_when: _ddos_is_up.rc in (23, 24)
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
       if ! /root/ipv4-rules.sh >/tmp/ipv4; then
-        exit 2
+        exit 23
       fi
 
       if ! /root/ipv6-rules.sh >/tmp/ipv6; then
-        exit 3
+        exit 24
       fi
 
       grep -q "DDoS IPv4" /tmp/ipv4
