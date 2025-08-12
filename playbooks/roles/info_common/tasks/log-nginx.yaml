@@ -3,7 +3,8 @@
   changed_when: false
   failed_when: false
   ansible.builtin.command:
-    cmd: tail -n 20 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log
+    cmd: >-
+      tail -n 20 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log
   register: _result
 
 - name: Results of nginx log

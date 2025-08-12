@@ -3,7 +3,8 @@
   changed_when: false
   failed_when: false # for a new bridge it takes a while before the file appears
   ansible.builtin.command:
-    cmd: grep -F 'bridge-ips' /var/lib/tor/stats/bridge-stats
+    cmd: >-
+      grep -F 'bridge-ips' /var/lib/tor/stats/bridge-stats
   register: _result
 
 - name: File bridge stats

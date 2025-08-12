@@ -23,7 +23,8 @@
       throttle: 1
       changed_when: false
       ansible.builtin.command:
-        cmd: "file {{ _local_fname }}"
+        cmd: >-
+          file {{ _local_fname }}
       register: _mimetype
 
     - name: Print out artefact file mime type
@@ -38,7 +39,8 @@
           throttle: 1
           changed_when: _script.stdout or _script.stderr
           ansible.builtin.shell: # noqa: command-instead-of-shell
-            cmd: "{{ artefact_script }} {{ _local_fname }}"
+            cmd: >-
+              {{ artefact_script }} {{ _local_fname }}
           register: _script
 
       always:
