@@ -43,7 +43,7 @@
 - name: Git clean "{{ _repo_dir }}"
   changed_when: __cleaned.stdout
   ansible.builtin.command:
-    cmd: git clean --force
+    cmd: git clean --force -d
     chdir: "{{ _repo_dir }}"
   register: __cleaned
 
