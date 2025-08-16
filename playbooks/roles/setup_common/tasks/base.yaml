@@ -30,8 +30,8 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: Stop and disable systemd services
-  failed_when: false
+- name: Stop and disable Debian services
+  when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: stopped
@@ -40,7 +40,16 @@
     - fstrim
     - unattended-upgrades
 
-# created in a separate role at the end of the setup (again)
+- name: Stop and disable Ubuntu services
+  when: ansible_facts.distribution in ('Ubuntu')
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - rsyslog
+
+# recreated in a separate role
 - name: Remove unattended auto upgrade config
   ansible.builtin.file:
     path: /etc/apt/apt.conf.d/20auto-upgrades
