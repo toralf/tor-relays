@@ -54,14 +54,44 @@
           CONFIG_PROC_MEM_FORCE_PTRACE=n
           CONFIG_PROC_MEM_NO_FORCE=y
 
+          CONFIG_AGP=n
+          CONFIG_ATA=n
+          CONFIG_BACKLIGHT_CLASS_DEVICE=n
           CONFIG_BPF=n
+          CONFIG_DMADEVICES=n
           CONFIG_DRM=n
+          CONFIG_EDAC=n
           CONFIG_FB=n
+          CONFIG_HAMRADIO=n
+          CONFIG_HIBERNATION=n
           CONFIG_HID=n
           CONFIG_HID_SUPPORT=n
+          CONFIG_HWMON=n
+          CONFIG_I2C=n
+          CONFIG_INPUT_JOYDEV=n
+          CONFIG_INPUT_KEYBOARD=n
+          CONFIG_INPUT_MOUSE=n
+          CONFIG_INPUT_MOUSEDEV=n
+          CONFIG_LPC_ICH=n
+          CONFIG_MD=n
+          CONFIG_MFD_CORE=n
+          CONFIG_PARTITION_ADVANCED=n
+          CONFIG_PINCTRL=n
+          CONFIG_PM_DEVFREQ=n
+          CONFIG_REGULATOR=n
+          CONFIG_SOUNDWIRE=n
+          CONFIG_SUSPEND=n
+          CONFIG_THERMAL=n
           CONFIG_USB=n
           CONFIG_USB_HID=n
+          CONFIG_USB_SUPPORT=n
           CONFIG_VIRTIO=n
+          CONFIG_VIRTUALIZATION=n
+          CONFIG_WIRELESS=n
+          CONFIG_WLAN=n
+          CONFIG_X86_PLATFORM_DEVICES=n
+          CONFIG_XEN=n
+          CONFIG_ZSWAP=n
 
           # inspired by https://kspp.github.io/Recommended_Settings#gcc-plugins
 
