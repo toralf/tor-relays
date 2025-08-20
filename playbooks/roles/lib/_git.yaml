@@ -56,7 +56,7 @@
 
       rm -f tmp.patch
       curl -s {{ item }} -o tmp.patch
-      patch -p 1 <tmp.patch
+      patch -p 1 --forward -i tmp.patch
       rm tmp.patch
     chdir: "{{ _repo_dir }}"
   loop: "{{ _git_patches }}"
