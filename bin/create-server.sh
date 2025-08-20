@@ -88,5 +88,4 @@ if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
 fi
 
 $(dirname $0)/update-dns.sh
-$(dirname $0)/distrust-host-ssh-key.sh $*
 $(dirname $0)/trust-host-ssh-key.sh $*
