@@ -47,6 +47,7 @@
     state: stopped
     enabled: false
   loop:
+    - multipathd
     - rsyslog
 
 # recreated in a separate role
