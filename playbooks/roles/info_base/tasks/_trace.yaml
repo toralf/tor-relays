@@ -4,12 +4,12 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _trace_start }}"
-    path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace.log"
+    path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace-headline.log"
     regexp: "^{{ _trace_start }}$"
-  register: _new
+  register: _headline
 
 - name: Full trace
-  when: _new.changed
+  when: _headline.changed
   block:
     - name: Get full trace
       changed_when: false
