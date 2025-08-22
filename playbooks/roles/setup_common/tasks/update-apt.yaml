@@ -28,6 +28,7 @@
 - name: Install/Update common software
   ansible.builtin.apt:
     name:
+      - curl
       - git
       - needrestart
       - psmisc

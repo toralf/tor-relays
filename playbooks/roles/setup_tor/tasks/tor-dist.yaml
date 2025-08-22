@@ -1,5 +1,6 @@
 ---
-- name: Enable Tor Debian repository
+# https://support.torproject.org/apt/tor-deb-repo/
+- name: Enable Tor project repository for APT based distros
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   block:
     - name: Install/Update GnuPG
@@ -10,8 +11,14 @@
           - gpg-agent
 
     - name: Get Torproject apt key
-      ansible.builtin.apt_key:
-        url: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
+      vars:
+        _dest: /usr/share/keyrings/deb.torproject.org-keyring.gpg
+      ansible.builtin.shell:
+        cmd: >-
+          curl -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -o - |
+          gpg --dearmor |
+          tee {{ _dest }}
+        creates: "{{ _dest }}"
 
     - name: Configure repository "torproject"
       ansible.builtin.apt_repository:
@@ -21,8 +28,13 @@
         - deb
         - deb-src
 
+    - name: Install/Update Tor project keyring
+      ansible.builtin.apt:
+        name:
+          - deb.torproject.org-keyring
+
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-    - name: Allow low port for Tor or PT respectively
+    - name: Allow low port for either Tor itself or its PT
       when: tor_port | int < 1024
       vars:
         _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
@@ -30,13 +42,18 @@
         line: >-
           'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
         path: /etc/apt/apt.conf.d/99-tor-lowport
+    - name: Install/Update Tor
+      ansible.builtin.apt:
+        name:
+          - tor
+          - tor-geoipdb
+      notify: Restart Tor
 
-    - name: Install/Update Tor and PT
+    - name: Install/Update PT
+      when: bridge_distribution
       ansible.builtin.apt:
         name:
           - obfs4proxy
-          - tor
-          - tor-geoipdb
       notify: Restart Tor
 
 - name: Ensure that Tor systemd override dir exists
