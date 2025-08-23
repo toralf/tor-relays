@@ -42,16 +42,20 @@ function setProject() {
 }
 
 function setSnapshots() {
-  snapshots=$(hcloud --quiet image list --type snapshot --output noheader --output columns=description,id | sort -r -n)
+  snapshots=$(
+    hcloud --quiet image list --type snapshot --output noheader --output columns=description,id |
+      awk '{ if (NF == 2) { print } }' |
+      sort -r -n
+  )
 }
 
 function setImage() {
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! setImageBySnapshot; then
-    setImageByHostname
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! _setImageBySnapshot; then
+    _setImageByHostname
   fi
 }
 
-function setImageByHostname() {
+function _setImageByHostname() {
   # name example: hi-u-amd-main
   if [[ ${name} =~ "-d-" ]]; then
     image="debian-12"
@@ -62,19 +66,26 @@ function setImageByHostname() {
   fi
 }
 
-function setImageBySnapshot() {
+function _setImageBySnapshot() {
   if [[ -z ${snapshots} ]]; then
     return 1
   fi
 
-  # ensure to match "hi-u-intel-stablerc" at "u-intel-stablerc" instead at "u-intel-stable"
+  # prefer a match "hi-u-intel-stablerc" at "u-intel-stablerc" over a match at "u-intel-stable"
+
   while read -r description id; do
-    if [[ -n ${description} ]]; then
-      if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
-        # shellcheck disable=SC2034
-        image=${id}
-        return 0
-      fi
+    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
+      # shellcheck disable=SC2034
+      image=${id}
+      return 0
+    fi
+  done <<<${snapshots}
+
+  while read -r description id; do
+    if [[ ${name} =~ -${description} ]]; then
+      # shellcheck disable=SC2034
+      image=${id}
+      return 0
     fi
   done <<<${snapshots}
 
