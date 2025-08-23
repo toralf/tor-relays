@@ -1,4 +1,12 @@
 ---
+- name: Stop and disable unattended upgrades
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - unattended-upgrades
+
 - name: Allow phased updates in Ubuntu
   when: ansible_facts.distribution in ('Ubuntu')
   ansible.builtin.copy:

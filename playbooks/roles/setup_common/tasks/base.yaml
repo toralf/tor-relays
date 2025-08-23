@@ -38,7 +38,6 @@
     enabled: false
   loop:
     - fstrim
-    - unattended-upgrades
 
 - name: Stop and disable Ubuntu services
   when: ansible_facts.distribution in ('Ubuntu')
@@ -50,7 +49,7 @@
     - multipathd
     - rsyslog
 
-# recreated in a separate role
+# (re)created at the end of the setup
 - name: Remove unattended auto upgrade config
   ansible.builtin.file:
     path: /etc/apt/apt.conf.d/20auto-upgrades
