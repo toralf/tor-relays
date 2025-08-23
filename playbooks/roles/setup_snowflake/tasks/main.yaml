@@ -43,9 +43,9 @@
         - name: Tools source
           ansible.builtin.import_tasks: tools-src.yaml
           tags:
-            - tools
+            - tools-src
 
-        - name: Snowflake from ource
+        - name: Snowflake from source
           ansible.builtin.import_tasks: snowflake-src.yaml
           tags:
             - snowflake
