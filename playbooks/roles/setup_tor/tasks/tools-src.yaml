@@ -10,13 +10,20 @@
       - logrotate
       - zlib1g-dev
 
+- name: Install/Update toolchain for Tor server build
+  when: not bridge_distribution
+  ansible.builtin.apt:
+    name:
+      - libseccomp-dev
+
 - name: Install/Update toolchain for Tor build (Ubuntu)
   when: ansible_facts.distribution in ('Ubuntu')
   ansible.builtin.apt:
     name:
       - autotools-dev
 
-- name: Install/Update Go for Tor proxy build
+- name: Install/Update Go for Tor PT build
+  when: bridge_distribution
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
