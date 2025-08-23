@@ -44,7 +44,7 @@
         - ddos-firewall
 
     - name: Distribution
-      when: not tor_build_from_source
+      when: not tor_build_from_source and ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: tor-dist.yaml
       tags:
         - tor
