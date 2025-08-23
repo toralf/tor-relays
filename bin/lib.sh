@@ -59,6 +59,8 @@ function _setImageByHostname() {
   # name example: hi-u-amd-main
   if [[ ${name} =~ "-d-" ]]; then
     image="debian-12"
+  elif [[ ${name} =~ "-t-" ]]; then
+    image="debian-13"
   elif [[ ${name} =~ "-u-" ]]; then
     image="ubuntu-24.04"
   else

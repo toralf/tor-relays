@@ -41,6 +41,7 @@ if [[ -z ${names} ]]; then
     for i in ${os}; do
       case ${i} in
       d) eval echo hi-d-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      t) eval echo hi-t-${arch}-${branch}-{,no}bp-{,no}cl ;;
       u) eval echo hi-u-${arch}-${branch} ;;
       *)
         echo " os parameter value ${i} is not implemented" >&2
