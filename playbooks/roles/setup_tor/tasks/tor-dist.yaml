@@ -1,68 +1,84 @@
 ---
 # https://support.torproject.org/apt/tor-deb-repo/
-- name: Enable Tor project repository for APT based distros
-  when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+- name: Torproject repository
+  vars:
+    _key: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
   block:
-    - name: Install/Update GnuPG
+    - name: Torproject repository for bookworm
+      when: ansible_facts.distribution_major_version == '12'
+      block:
+        - name: Install/Update GnuPG
+          ansible.builtin.apt:
+            name:
+              - apt-transport-https
+              - gpg
+              - gpg-agent
+
+        - name: Get Torproject apt key
+          vars:
+            _dest: /usr/share/keyrings/deb.torproject.org-keyring.gpg
+          ansible.builtin.shell:
+            cmd: |-
+              if asc=$(curl -q {{ _key }} -o -); then
+                if gpg --dearmor <<<${asc} >{{ _dest }}.tmp; then
+                  cp {{ _dest }}.tmp {{ _dest }}
+                  rm {{ _dest }}.tmp
+                fi
+              fi
+            executable: /bin/bash
+            creates: "{{ _dest }}"
+
+        - name: Enable Tor project repository for bookworm
+          ansible.builtin.apt_repository:
+            filename: tor
+            repo: "{{ item }} }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
+          loop:
+            - deb
+            - deb-src
+
+    - name: Enable Torproject repository for trixie
+      when: ansible_facts.distribution_major_version == '13'
+      ansible.builtin.deb822_repository:
+        name: tor
+        types:
+          - deb
+          - deb-src
+        uris: https://deb.torproject.org/torproject.org
+        suites: "{{ ansible_facts.distribution_release }}"
+        components: main
+        signed_by: "{{ _key }}"
+      register: _new_tor_repo
+
+    - name: Update repositories cache
+      when: _new_tor_repo.changed
       ansible.builtin.apt:
-        name:
-          - apt-transport-https
-          - gpg
-          - gpg-agent
+        cache_valid_time: 1
+        update_cache: true
 
-    - name: Get Torproject apt key
-      vars:
-        _key: "{{
-          (ansible_facts.distribution_major_version == '12') |
-          ternary('A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89', '2265EB4CB2BF88D900AE8D1B74A941BA219EC810')
-          }}"
-        _dest: /usr/share/keyrings/deb.torproject.org-keyring.gpg
-      ansible.builtin.shell:
-        cmd: |-
-          if asc=$(curl -q https://deb.torproject.org/torproject.org/{{ _key }}.asc -o -); then
-            if gpg --dearmor <<<${asc} >{{ _dest }}.tmp; then
-              cp {{ _dest }}.tmp {{ _dest }}
-              rm {{ _dest }}.tmp
-            fi
-          fi
-        executable: /bin/bash
-        creates: "{{ _dest }}"
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+- name: Allow low port for Tor
+  when: tor_port | int < 1024
+  vars:
+    _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+  ansible.builtin.lineinfile:
+    line: >-
+      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
+    path: /etc/apt/apt.conf.d/99-tor-lowport
 
-    - name: Configure repository "torproject"
-      ansible.builtin.apt_repository:
-        filename: tor
-        repo: "{{ item }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
-      loop:
-        - deb
-        - deb-src
+- name: Install/Update Tor
+  ansible.builtin.apt:
+    name:
+      - deb.torproject.org-keyring
+      - tor
+      - tor-geoipdb
+  notify: Restart Tor
 
-    - name: Install/Update Tor project keyring
-      ansible.builtin.apt:
-        name:
-          - deb.torproject.org-keyring
-
-    # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-    - name: Allow low port for either Tor itself or its PT
-      when: tor_port | int < 1024
-      vars:
-        _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
-      ansible.builtin.lineinfile:
-        line: >-
-          'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
-        path: /etc/apt/apt.conf.d/99-tor-lowport
-    - name: Install/Update Tor
-      ansible.builtin.apt:
-        name:
-          - tor
-          - tor-geoipdb
-      notify: Restart Tor
-
-    - name: Install/Update PT
-      when: bridge_distribution
-      ansible.builtin.apt:
-        name:
-          - obfs4proxy
-      notify: Restart Tor
+- name: Install/Update PT
+  when: bridge_distribution
+  ansible.builtin.apt:
+    name:
+      - obfs4proxy
+  notify: Restart Tor
 
 - name: Ensure that Tor systemd override dir exists
   ansible.builtin.file:
