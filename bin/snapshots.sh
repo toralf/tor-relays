@@ -4,17 +4,6 @@
 
 # create/update snaphot images
 
-function generate_names() {
-  xargs -n 1 <<<$* |
-    while read -r os; do
-      case ${os} in
-      d) eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl ;;
-      u) eval echo hi-${os}-${arch}-${branch} ;;
-      *) exit 1 ;;
-      esac
-    done
-}
-
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -29,18 +18,17 @@ setProject
 
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
-names=""                                    # option exclusive to "arch" and "branch"
-os="d u"                                    # operating system, (d)ebian, (u)buntu
+names=""                                    # this option rules over options "arch" and "branch"
+os="d u"                                    # operating system, e.g. (d)ebian  (u)buntu
 parameter=""                                # e.g. -p '-e git_clone_from_scratch=true'
 
-while getopts a:b:n:o:p:s opt; do
+while getopts a:b:n:o:p: opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
   p) parameter="${OPTARG}" ;;
-  s) names=$(hcloud --quiet image list --type snapshot --output noheader --output columns=description | xargs -r -n 1 printf "hi-%s ") ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
@@ -49,12 +37,23 @@ while getopts a:b:n:o:p:s opt; do
 done
 
 if [[ -z ${names} ]]; then
-  names=$(xargs <<<"$(generate_names ${os})")
+  names=$(
+    for i in ${os}; do
+      case ${i} in
+      d) eval echo hi-d-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      u) eval echo hi-u-${arch}-${branch} ;;
+      *)
+        echo " os parameter value ${i} is not implemented" >&2
+        exit 1
+        ;;
+      esac
+    done
+  )
 fi
 
 cd $(dirname $0)/..
 
-trap 'echo "  ^^  systems:    ${names}"' INT QUIT TERM EXIT
+trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 ./bin/create-server.sh ${names}
 ./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
