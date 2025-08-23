@@ -56,7 +56,7 @@
         - name: Tools
           ansible.builtin.import_tasks: tools-src.yaml
           tags:
-            - tools
+            - tools-src
 
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
