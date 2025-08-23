@@ -12,12 +12,20 @@
 
     - name: Get Torproject apt key
       vars:
+        _key: "{{
+          (ansible_facts.distribution_major_version == '12') |
+          ternary('A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89', '2265EB4CB2BF88D900AE8D1B74A941BA219EC810')
+          }}"
         _dest: /usr/share/keyrings/deb.torproject.org-keyring.gpg
       ansible.builtin.shell:
-        cmd: >-
-          curl -q https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc -o - |
-          gpg --dearmor |
-          tee {{ _dest }}
+        cmd: |-
+          if asc=$(curl -q https://deb.torproject.org/torproject.org/{{ _key }}.asc -o -); then
+            if gpg --dearmor <<<${asc} >{{ _dest }}.tmp; then
+              cp {{ _dest }}.tmp {{ _dest }}
+              rm {{ _dest }}.tmp
+            fi
+          fi
+        executable: /bin/bash
         creates: "{{ _dest }}"
 
     - name: Configure repository "torproject"
