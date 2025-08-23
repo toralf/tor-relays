@@ -5,8 +5,17 @@
     - name: Apt upgrade
       retries: 3
       delay: 60
+      environment:
+        DEBIAN_FRONTEND: noninteractive
       ansible.builtin.apt:
         upgrade: full
 
     - name: Check if reboot is needed after upgrade
       ansible.builtin.import_tasks: reboot.yaml
+# trixie: https://gist.github.com/yorickdowne/3cecc7b424ce241b173510e36754af47
+#
+# sed -i 's/bookworm/trixie/g' /etc/apt/sources.list /etc/apt/sources.list.d/*
+# apt update
+# DEBIAN_FRONTEND=noninteractive apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
+# reboot
+# apt -y autoremove && apt clean && apt -y modernize-sources
