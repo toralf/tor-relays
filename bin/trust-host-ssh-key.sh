@@ -9,7 +9,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 [[ $# -ne 0 ]]
 
 attempts=8
-while (( attempts )); do
+while ((attempts)); do
   unknowns=$(
     xargs -n 1 <<<$* |
       while read -r name; do
