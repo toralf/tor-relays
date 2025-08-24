@@ -11,15 +11,14 @@ source $(dirname $0)/lib.sh
 
 # snapshots are bound to region
 export HCLOUD_LOCATION="hel1"
-export ANSIBLE_DISPLAY_OK_HOSTS=false
 
 setProject
 [[ ${project} == "test" ]]
 
 arch="{amd,arm,intel}"
-branch="{lts,ltsrc,stable,stablerc,master}" # mapped in inventory to a git commit-ish
+branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
 names=""                                    # this option rules over options "arch" and "branch"
-os="d u"                                    # operating system, e.g. (d)ebian  (u)buntu
+os="t u"                                    # e.g. (d)ebian bookworm, debian (t)rixie, (u)buntu
 parameter=""                                # e.g. -p '-e git_clone_from_scratch=true'
 
 while getopts a:b:n:o:p: opt; do
@@ -40,8 +39,7 @@ if [[ -z ${names} ]]; then
   names=$(
     for i in ${os}; do
       case ${i} in
-      d) eval echo hi-d-${arch}-${branch}-{,no}bp-{,no}cl ;;
-      t) eval echo hi-t-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      d | t) eval echo hi-${i}-${arch}-${branch}-{,no}bp-{,no}cl ;;
       u) eval echo hi-u-${arch}-${branch} ;;
       *)
         echo " os parameter value ${i} is not implemented" >&2
