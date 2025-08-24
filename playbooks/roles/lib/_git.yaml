@@ -1,38 +1,39 @@
 ---
-- name: Git remove "{{ _repo_dir }}"
-  when: git_clone_from_scratch is defined and git_clone_from_scratch | bool
-  ansible.builtin.file:
-    path: "{{ _repo_dir }}"
-    state: absent
+- name: Git
+  environment: "{{ git_environment | default([]) }}"
+  module_defaults:
+    ansible.builtin.git:
+      repo: "{{ _git_repo_url }}"
+      dest: "{{ _repo_dir }}"
+  block:
+    - name: Git stat "{{ _repo_dir }}"
+      ansible.builtin.git:
+        clone: false
+        update: false
+      register: __repo
 
-- name: Git stat "{{ _repo_dir }}"
-  ansible.builtin.git:
-    repo: "{{ _git_repo_url }}"
-    dest: "{{ _repo_dir }}"
-    clone: false
-    update: false
-  register: __repo
+    - name: Git clone "{{ _repo_dir }}"
+      when: __repo.before == None
+      throttle: 3
+      ansible.builtin.git:
+        version: "{{ _git_version }}"
 
-- name: Git clone "{{ _repo_dir }}"
-  when: __repo.before == None
-  throttle: 3
-  ansible.builtin.git:
-    repo: "{{ _git_repo_url }}"
-    dest: "{{ _repo_dir }}"
-    version: "{{ _git_version }}"
+    - name: Git update "{{ _repo_dir }}"
+      throttle: "{{ _git_patches | ternary(8, 16) }}"
+      ansible.builtin.git:
+        version: "{{ _git_version }}"
+        force: true
+      register: __updated
 
-- name: Git update "{{ _repo_dir }}"
-  throttle: "{{ _git_patches | ternary(8, 16) }}"
-  ansible.builtin.git:
-    repo: "{{ _git_repo_url }}"
-    dest: "{{ _repo_dir }}"
-    version: "{{ _git_version }}"
-    force: true
-  register: __updated
+    - name: Get commit id "{{ _repo_dir }}"
+      ansible.builtin.git:
+        clone: false
+        update: false
+      register: _git_head
 
 - name: Git remove inactive branches "{{ _repo_dir }}"
   changed_when: __inactive.stdout
-  when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool
+  when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool or true
   ansible.builtin.shell:
     cmd: >-
       git branch | grep -vF '*' | xargs -r git branch -D
