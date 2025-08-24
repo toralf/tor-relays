@@ -19,13 +19,13 @@ jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-  setSnapshots
+  snapshots=$(getSnapshots)
 fi
 
 echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
-    setImage
+    image=$(getImage)
     [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="45s" || poll_interval="10s"
     echo --poll-interval ${poll_interval} server rebuild --image ${image} ${name}
   done |

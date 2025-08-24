@@ -44,7 +44,7 @@ if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
 fi
 
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-  setSnapshots
+  snapshots=$(getSnapshots)
 fi
 
 # take the first one
@@ -74,7 +74,7 @@ xargs -n 1 <<<$* |
       esac
     fi
 
-    setImage
+    image=$(getImage)
     [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="45s" || poll_interval="10s"
     echo --poll-interval ${poll_interval} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 
@@ -88,4 +88,8 @@ if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
 fi
 
 $(dirname $0)/update-dns.sh
-$(dirname $0)/trust-host-ssh-key.sh $*
+if ! $(dirname $0)/trust-host-ssh-key.sh $*; then
+  if [[ ${rc} -ne 123 ]]; then
+    exit 1
+  fi
+fi

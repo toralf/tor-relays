@@ -38,55 +38,57 @@ function cleanLocalDataFiles() {
 
 function setProject() {
   project=$(hcloud context active)
-  echo -e "\n >>> using Hetzner project \"${project:?}\""
+  echo -e "\n >>> using Hetzner project \"${project:?NO PROJECT FOUND}\""
 }
 
-function setSnapshots() {
-  snapshots=$(
-    hcloud --quiet image list --type snapshot --output noheader --output columns=description,id |
-      awk '{ if (NF == 2) { print } }' |
-      sort -r -n
-  )
+function getSnapshots() {
+  hcloud --quiet image list --type snapshot --output noheader --output columns=description,id |
+    awk '{ if (NF == 2) { print } }' |
+    sort -r -n
 }
 
-function setImage() {
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! _setImageBySnapshot; then
-    _setImageByHostname
+function getImage() {
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! _getImageBySnapshot ${name}; then
+    _getImageByHostname ${name}
   fi
 }
 
-function _setImageByHostname() {
-  # name example: hi-u-amd-main
+function _getImageByHostname() {
+  local name=${1?NAME NOT GIVEN}
+
+  # name example: hi-u-amd-master
   if [[ ${name} =~ "-d-" ]]; then
-    image="debian-12"
+    echo "debian-12"
   elif [[ ${name} =~ "-t-" ]]; then
-    image="debian-13"
+    echo "debian-13"
   elif [[ ${name} =~ "-u-" ]]; then
-    image="ubuntu-24.04"
+    echo "ubuntu-24.04"
   else
-    image=${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
+    echo ${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
   fi
 }
 
-function _setImageBySnapshot() {
+function _getImageBySnapshot() {
+  local name=${1?NAME NOT GIVEN}
+
   if [[ -z ${snapshots} ]]; then
+    echo " * * * snapshots NOT SET" >&2
     return 1
   fi
 
   # prefer a match "hi-u-intel-stablerc" at "u-intel-stablerc" over a match at "u-intel-stable"
+  # name=$(sed -e 's,stablerc,ltsrc,' <<<${name}) # tweak to reuse an existing snapshot
 
   while read -r description id; do
     if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
-      # shellcheck disable=SC2034
-      image=${id}
+      echo ${id}
       return 0
     fi
   done <<<${snapshots}
 
   while read -r description id; do
     if [[ ${name} =~ -${description} ]]; then
-      # shellcheck disable=SC2034
-      image=${id}
+      echo ${id}
       return 0
     fi
   done <<<${snapshots}
