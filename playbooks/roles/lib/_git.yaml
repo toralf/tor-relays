@@ -37,7 +37,6 @@
     cmd: >-
       git branch | grep -vF '*' | xargs -r git branch -D
     chdir: "{{ _repo_dir }}"
-    executable: /bin/bash
   register: __inactive
 
 - name: Git clean "{{ _repo_dir }}"
