@@ -19,15 +19,13 @@ arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
 names=""                                    # this option rules over options "arch" and "branch"
 os="t u"                                    # e.g. (d)ebian bookworm, debian (t)rixie, (u)buntu
-parameter=""                                # e.g. -p '-e git_clone_from_scratch=true'
 
-while getopts a:b:n:o:p: opt; do
+while getopts a:b:n:o: opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
-  p) parameter="${OPTARG}" ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
@@ -55,7 +53,7 @@ cd $(dirname $0)/..
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 ./bin/create-server.sh ${names}
-./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${parameter}
+./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',')
 ./bin/delete-server.sh ${names} 2>/dev/null
 
 trap - INT QUIT TERM EXIT
