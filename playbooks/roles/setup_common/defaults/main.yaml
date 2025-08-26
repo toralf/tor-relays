@@ -19,7 +19,7 @@ node_metrics: false
 prometheus_server: ""
 prometheus_server6: ""
 
-# e.g.:  -e custom_command="'cd linux; git branch'" --tags custom-command -v
+# e.g.:  -e custom_command="'cd linux; make clean'"
 custom_command: ""
 
 # nginx

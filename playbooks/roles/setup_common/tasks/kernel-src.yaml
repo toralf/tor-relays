@@ -167,8 +167,13 @@
 
     - name: Print stderr of kernel configure step
       when: _kernel_configured.stderr
+      changed_when: true
       ansible.builtin.debug:
-        msg: "{{ _kernel_configured.stderr_lines | reject('search', ':warning: override: reassigning to symbol') }}"
+        msg: "{{
+          _kernel_configured.stderr_lines |
+          reject('search', ':warning: override: reassigning to symbol') |
+          reject('search', ' did not have configs CONFIG_')
+          }}"
 
     - name: Fetch kernel src config
       throttle: "{{ concurrent_local_jobs }}"

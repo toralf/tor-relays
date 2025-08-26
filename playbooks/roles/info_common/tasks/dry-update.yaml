@@ -10,5 +10,6 @@
 
 - name: Output of unattended-upgrade dry-run
   when: _result.stdout
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines

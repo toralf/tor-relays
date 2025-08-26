@@ -21,10 +21,12 @@
 
 - name: Results of notice log
   when: _result.stdout
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
 
 - name: Error
   when: _result.stderr_lines
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stderr_lines

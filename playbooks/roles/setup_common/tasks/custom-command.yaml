@@ -4,21 +4,24 @@
     - name: Run a custom command
       changed_when: false
       ansible.builtin.shell: # noqa: command-instead-of-shell
-        cmd: >-
+        cmd: |-
           {{ custom_command }}
       register: _result
   rescue:
     - name: Rc of custom command
       failed_when: true
+      changed_when: true
       ansible.builtin.debug:
         var: _result.rc
   always:
     - name: Stdout of custom command
       when: _result.stdout
+      changed_when: true
       ansible.builtin.debug:
         var: _result.stdout_lines
 
     - name: Stderr of custom command
       when: _result.stderr
+      changed_when: true
       ansible.builtin.debug:
         var: _result.stderr_lines

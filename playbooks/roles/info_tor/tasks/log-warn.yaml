@@ -14,5 +14,6 @@
 
 - name: Results of warn log
   when: _result.stdout
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines

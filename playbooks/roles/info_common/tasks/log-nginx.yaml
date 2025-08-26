@@ -9,10 +9,12 @@
 
 - name: Results of nginx log
   when: _result.stdout
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
 
 - name: Results of nginx log stderr
   when: _result.stderr
+  changed_when: true
   ansible.builtin.debug:
     var: _result.stderr_lines

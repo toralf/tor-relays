@@ -28,6 +28,7 @@
       register: _mimetype
 
     - name: Print out artefact file mime type
+      changed_when: true
       ansible.builtin.debug:
         var: _mimetype.stdout_lines
 
@@ -46,11 +47,13 @@
       always:
         - name: Script stdout for artefact
           when: _script.stdout
+          changed_when: true
           ansible.builtin.debug:
             var: _script.stdout_lines
 
         - name: Script stderr for artefact
           when: _script.stderr
+          changed_when: true
           ansible.builtin.debug:
             var: _script.stderr_lines
 
