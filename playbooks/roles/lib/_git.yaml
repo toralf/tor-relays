@@ -33,7 +33,7 @@
 
 - name: Git remove inactive branches "{{ _repo_dir }}"
   changed_when: __inactive.stdout
-  when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool or true
+  when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool
   ansible.builtin.shell:
     cmd: >-
       git branch | grep -vF '*' | xargs -r git branch -D
