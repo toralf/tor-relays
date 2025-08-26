@@ -1,7 +1,6 @@
 ---
 hix:
   hosts:
-    # foo:
   children:
     hi:
 
