@@ -76,7 +76,7 @@ function _getImageBySnapshot() {
     return 1
   fi
 
-  # prefer a match "hi-u-intel-stablerc" at "u-intel-stablerc" over a match at "u-intel-stable"
+  # prefer "hi-u-intel-stablerc" to match "u-intel-stablerc" but otherwise to match "u-intel-stable"
   # name=$(sed -e 's,stablerc,ltsrc,' <<<${name}) # tweak to reuse an existing snapshot
 
   while read -r description id; do
