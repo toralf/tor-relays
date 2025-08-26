@@ -31,7 +31,7 @@
         - name: Enable Tor project repository for bookworm
           ansible.builtin.apt_repository:
             filename: tor
-            repo: "{{ item }} }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
+            repo: "{{ item }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
           loop:
             - deb
             - deb-src
