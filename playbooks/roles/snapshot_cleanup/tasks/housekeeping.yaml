@@ -1,12 +1,18 @@
 ---
 # group by description and keep highest id per description
 - name: Remove superseeded snapshots
-  changed_when: _result.stdout
   failed_when: _result.stderr or _result.rc != 0
+  changed_when: false
   ansible.builtin.shell:
     cmd: |-
       hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
         sort -r |
         awk 'x[$2]++ { print $1 }' |
-        xargs -r hcloud --poll-interval 10s image delete
+        xargs -t -r hcloud --poll-interval 10s image delete
   register: _result
+
+- name: Deleted snapshots
+  when: _result.stdout
+  changed_when: true
+  ansible.builtin.debug:
+    var: _result.stdout
