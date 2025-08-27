@@ -1,7 +1,7 @@
 ---
 # group by description and keep highest id per description
 - name: Remove superseeded snapshots
-  failed_when: _result.stderr or _result.rc != 0
+  failed_when: _result.rc != 0
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -12,7 +12,7 @@
   register: _result
 
 - name: Deleted snapshots
-  when: _result.stdout
+  when: _result.stderr
   changed_when: true
   ansible.builtin.debug:
-    var: _result.stdout
+    var: _result.stderr

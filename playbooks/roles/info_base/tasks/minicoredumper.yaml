@@ -4,7 +4,7 @@
     follow: true
     hidden: true
     paths:
-      - /var/lib/minicoredumper/
+      - /var/crash/minicoredumper/
     patterns:
       - "*"
     recurse: true
@@ -12,11 +12,9 @@
 
 - name: Results of Minicoredumper
   when: _found.files is defined
-  vars:
-    _info: "{{ item.path }}    {{ item.size }}"
   changed_when: true
   ansible.builtin.debug:
-    msg: "{{ _info }}"
+    msg: "{{ item.path }}    {{ item.size }}"
   loop_control:
-    label: "{{ _info }}"
+    label: "{{ item.path }}"
   loop: "{{ _found.files }}"

@@ -18,11 +18,6 @@
       tags:
         - artefact
 
-    - name: Create Prometheus config files
-      ansible.builtin.import_tasks: targets.yaml
-      tags:
-        - targets
-
     - name: Dmesg
       ansible.builtin.import_tasks: dmesg.yaml
       tags:
@@ -42,6 +37,16 @@
       ansible.builtin.import_tasks: kernel-config.yaml
       tags:
         - kernel-config
+
+    - name: Minicoredumper
+      ansible.builtin.import_tasks: minicoredumper.yaml
+      tags:
+        - minicoredumper
+
+    - name: Create Prometheus config files
+      ansible.builtin.import_tasks: targets.yaml
+      tags:
+        - targets
 
     - name: Kernel trace
       ansible.builtin.import_tasks: trace.yaml

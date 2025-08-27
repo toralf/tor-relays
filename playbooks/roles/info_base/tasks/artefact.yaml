@@ -13,9 +13,7 @@
 
 - name: Work on found artefact
   when: _found.files is defined
-  block:
-    - name: Loop over artefact/s
-      ansible.builtin.include_tasks: _artefact.yaml
-      loop_control:
-        label: "{{ item.path }}    {{ item.size }}"
-      loop: "{{ _found.files }}"
+  ansible.builtin.include_tasks: _artefact.yaml
+  loop_control:
+    label: "{{ item.path }}    {{ item.size }}"
+  loop: "{{ _found.files }}"

@@ -54,6 +54,8 @@
           CONFIG_PROC_MEM_FORCE_PTRACE=n
           CONFIG_PROC_MEM_NO_FORCE=y
 
+          CONFIG_PANIC_ON_OOPS=n
+
           CONFIG_AGP=n
           CONFIG_ATA=n
           CONFIG_BACKLIGHT_CLASS_DEVICE=n
@@ -165,15 +167,18 @@
         executable: /bin/bash
       register: _kernel_configured
 
-    - name: Print stderr of kernel configure step
-      when: _kernel_configured.stderr
+    - name: Filtered stderr of kernel configure step
+      when: _filtered
       changed_when: true
-      ansible.builtin.debug:
-        msg: "{{
+      vars:
+        _filtered: "{{
           _kernel_configured.stderr_lines |
           reject('search', ':warning: override: reassigning to symbol') |
-          reject('search', ' did not have configs CONFIG_')
+          reject('search', ' did not have configs CONFIG_') |
+          reject('match', 'using config: ')
           }}"
+      ansible.builtin.debug:
+        var: _filtered
 
     - name: Fetch kernel src config
       throttle: "{{ concurrent_local_jobs }}"

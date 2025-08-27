@@ -26,11 +26,6 @@
       tags:
         - log-nginx
 
-    - name: Minicoredumper
-      ansible.builtin.import_tasks: minicoredumper.yaml
-      tags:
-        - minicoredumper
-
     - name: Uptime
       ansible.builtin.import_tasks: uptime.yaml
       tags:
