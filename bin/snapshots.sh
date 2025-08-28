@@ -18,7 +18,7 @@ setProject
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
 names=""                                    # this option rules over options "arch" and "branch"
-os="t u"                                    # e.g. (d)ebian bookworm, debian (t)rixie, (u)buntu
+os="d t u"                                  # e.g. (d)ebian bookworm, debian (t)rixie, (u)buntu
 
 while getopts a:b:n:o: opt; do
   case ${opt} in
@@ -44,7 +44,8 @@ if [[ -z ${names} ]]; then
         exit 1
         ;;
       esac
-    done
+    done |
+    xargs
   )
 fi
 

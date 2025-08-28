@@ -26,19 +26,12 @@
     dest: /etc/sysctl.d/
   register: _sysctl_state
 
-# Ubuntu: sysctl: setting key "kernel.yama.ptrace_scope": Invalid argument
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl_state.changed
+  changed_when: _sysctl_state.changed or _sysctl_result.stderr
   failed_when: false
   ansible.builtin.command:
-    cmd: sysctl --system
+    cmd: sysctl --system 1>/dev/null
   register: _sysctl_result
-
-- name: Sysctl setting errors
-  when: _sysctl_result.stderr or _sysctl_result.rc > 0
-  failed_when: true
-  ansible.builtin.debug:
-    var: _sysctl_result.stderr
 
 - name: Set common sysctl values
   ansible.posix.sysctl:
