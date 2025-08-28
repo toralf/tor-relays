@@ -45,7 +45,7 @@ if [[ -z ${names} ]]; then
         ;;
       esac
     done |
-    xargs
+      xargs
   )
 fi
 
