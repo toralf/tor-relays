@@ -26,24 +26,19 @@
     dest: /etc/sysctl.d/
   register: _sysctl_state
 
+# TODO: remove me after next round
+- name: Sysctl config
+  ansible.builtin.file:
+    path: /etc/sysctl.d/21common.conf
+    state: absent
+  register: _sysctl_state21
+
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl_state.changed or _sysctl_result.stderr
+  changed_when: _sysctl_state.changed or _sysctl_result.stderr or _sysctl_state21.changed
   failed_when: false
   ansible.builtin.command:
     cmd: sysctl --system 1>/dev/null
   register: _sysctl_result
-
-- name: Set common sysctl values
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/21common.conf
-    sysctl_set: true
-  loop:
-    - { name: kernel.sysrq, value: 0 }
-    - { name: net.ipv4.tcp_fin_timeout, value: 10 }
-    - { name: net.ipv4.tcp_notsent_lowat, value: 131072 }
-    - { name: net.ipv6.ip_nonlocal_bind, value: 1 }
 
 - name: Set crontab vars
   ansible.builtin.cron:
