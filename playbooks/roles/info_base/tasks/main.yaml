@@ -52,8 +52,3 @@
       ansible.builtin.import_tasks: trace.yaml
       tags:
         - trace
-
-    - name: Uname
-      ansible.builtin.import_tasks: uname.yaml
-      tags:
-        - uname

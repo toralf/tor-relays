@@ -26,6 +26,11 @@
       tags:
         - log-nginx
 
+    - name: Uname
+      ansible.builtin.import_tasks: uname.yaml
+      tags:
+        - uname
+
     - name: Uptime
       ansible.builtin.import_tasks: uptime.yaml
       tags:
