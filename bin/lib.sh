@@ -29,7 +29,7 @@ function cleanLocalDataFiles() {
   set +e
   while read -r name; do
     # certain files in ~/tmp subdirs
-    rm -f ~/tmp/{ddos,ddos6,dmesg,kconfig}/${name}{,.*}
+    rm -f ~/tmp/{coredump,ddos,ddos6,dmesg,kconfig}/${name}{,.*}
     # client certs
     rm -f $d/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)

@@ -3,6 +3,7 @@
   ansible.builtin.apt:
     name:
       - cron
+      - gdb
       - htop
       - logrotate
       - minicoredumper

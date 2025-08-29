@@ -1,0 +1,19 @@
+---
+- name: Get core dump info
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      ls -lh "{{ _fname }}"
+      rm -f /tmp/core
+      tar -C /tmp -xf "{{ _fname }}"
+      gdb -q -batch \
+        -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
+        -c /tmp/core
+      rm /tmp/core
+  register: _result
+
+- name: File core dump info
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ _result.stdout }}"
+    dest: "{{ tmp_dir }}/coredump/{{ inventory_hostname }}.{{ _fname | dirname | basename }}.txt"
