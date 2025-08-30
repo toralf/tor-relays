@@ -1,5 +1,5 @@
 ---
-- name: Check for being known artefact
+- name: Check for a known artefact
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:

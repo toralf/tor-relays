@@ -1,15 +1,15 @@
 ---
-- name: Keep trace if new
+- name: Check for a known trace
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ _trace_start }}"
-    path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace-headline.log"
-    regexp: "^{{ _trace_start }}$"
-  register: _headline
+    line: "{{ _headline }}"
+    path: "{{ tmp_dir }}/trace-headline.txt"
+    regexp: "^{{ _headline }}$"
+  register: _known
 
-- name: Full trace
-  when: _headline.changed
+- name: Work on new trace
+  when: _known.changed
   block:
     - name: Get full trace
       changed_when: false
@@ -21,7 +21,7 @@
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
             head -n 999
         executable: /bin/bash
-      register: _trace_full
+      register: _full
 
     - name: File full trace
       delegate_to: localhost
@@ -29,14 +29,14 @@
       ansible.builtin.blockinfile:
         block: |
           #    {{ inventory_hostname }}    {{ ansible_facts.lsb.description }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}
-          {{ _trace_full.stdout }}
-        path: "{{ tmp_dir }}/{{ trace_fname_prefix }}-trace-full.log"
-        marker: "# {mark} {{ _trace_start }}"
+          {{ _full.stdout }}
+        path: "{{ tmp_dir }}/trace-full.txt"
+        marker: "# {mark} {{ _headline }}"
         marker_begin: "TRACE BEGIN"
         marker_end: "TRACE END"
 
-    - name: Include dmesg
+    - name: Get dmesg for the trace
       ansible.builtin.include_tasks: dmesg.yaml
 
-    - name: Include kernel-config
+    - name: Get kernel config for the trace
       ansible.builtin.include_tasks: kernel-config.yaml

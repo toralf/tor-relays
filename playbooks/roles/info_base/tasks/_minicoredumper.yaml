@@ -1,19 +1,30 @@
 ---
-- name: Get core dump info
-  changed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      ls -lh "{{ _fname }}"
-      rm -f /tmp/core
-      tar -C /tmp -xf "{{ _fname }}"
-      gdb -q -batch \
-        -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
-        -c /tmp/core
-      rm /tmp/core
-  register: _result
-
-- name: File core dump info
+- name: Check for a known core dump
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ _result.stdout }}"
-    dest: "{{ tmp_dir }}/coredump/{{ inventory_hostname }}.{{ _fname | dirname | basename }}.txt"
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ _unique_id }}"
+    path: "{{ tmp_dir }}/coredump.log"
+  register: _known
+
+- name: Work on new core dump
+  when: _known.changed
+  block:
+    - name: Get core dump info
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          ls -lh "{{ _fname }}"
+          rm -f /tmp/core
+          tar -C /tmp -xf "{{ _fname }}"
+          gdb -q -batch \
+            -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
+            -c /tmp/core
+          rm /tmp/core
+      register: _result
+
+    - name: File core dump info
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ _result.stdout }}"
+        dest: "{{ tmp_dir }}/coredump/{{ _unique_id }}.txt"

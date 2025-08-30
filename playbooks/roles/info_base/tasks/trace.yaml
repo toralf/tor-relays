@@ -11,6 +11,6 @@
 
 - name: Results of trace
   vars:
-    _trace_start: "{{ (item | split(' '))[5:] | join(' ') }}"
+    _headline: "{{ (item | split(' '))[5:] | join(' ') }}"
   ansible.builtin.include_tasks: _trace.yaml
   loop: "{{ _result.stdout_lines }}"

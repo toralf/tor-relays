@@ -11,6 +11,7 @@
 - name: Loop over core dump files
   vars:
     _fname: "{{ item.path }}"
+    _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
   ansible.builtin.include_tasks: _mninicoredumper.yaml
   loop_control:
     label: "{{ _fname }}"

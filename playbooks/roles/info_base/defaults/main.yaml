@@ -9,6 +9,5 @@ artefact_size: "300k"
 
 issue_since: "1 day ago"
 
-trace_fname_prefix: common
 # -e "trace_since='10 hour ago'"
 trace_since: "1 day ago"
