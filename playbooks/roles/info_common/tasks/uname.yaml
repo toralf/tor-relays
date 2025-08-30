@@ -10,5 +10,5 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/all_uname"
+    path: "{{ tmp_dir }}/uname"
     regexp: "^{{ inventory_hostname }} "

@@ -5,7 +5,7 @@
       create: true
       firstmatch: true
       mode: "0644"
-      line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port | default(0)}}"]'
+      line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port | default(0) }}"]'
       regexp: '^- targets: \["{{ inventory_hostname }}:'
   block:
     - name: Node targets
