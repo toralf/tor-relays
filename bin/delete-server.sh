@@ -18,8 +18,8 @@ setProject
 jobs=$((3 * $(nproc)))
 [[ ${jobs} -gt 48 ]] && jobs=48
 
-cleanLocalDataEntries $*
 cleanLocalDataFiles $*
+cleanLocalDataEntries $*
 
 echo " delete from DNS config ..."
 while read -r name; do

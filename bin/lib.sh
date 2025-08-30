@@ -4,34 +4,30 @@
 # hint: ./.wellknown entries will not cleaned here
 
 function cleanLocalDataEntries() {
-  local d
-  d=$(dirname $0)
-
   echo -e " deleting local entries and facts ..."
+  local files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
   set +e
   while read -r name; do
     [[ -n ${name} ]] || continue
     # Ansible facts
-    rm -f $d/../.ansible_facts/${name}
-    # line in files under ~/tmp
-    sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" ~/tmp/*_* ~/tmp/*.yaml 2>/dev/null
+    rm -f $(dirname $0)/../.ansible_facts/${name}
+    # line in files under {{ tmp_dir }}
+    sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" ${files} 2>/dev/null
     # private Tor bridge lines
-    sed -i -e "/ # ${name}$/d" /tmp/*_bridgeline 2>/dev/null
+    sed -i -e "/ # ${name}$/d" /tmp/tor-relays/*_bridgeline 2>/dev/null
   done < <(xargs -n 1 <<<$*)
   set -e
 }
 
 function cleanLocalDataFiles() {
-  local d
-  d=$(dirname $0)
-
   echo -e " deleting local data files ..."
   set +e
   while read -r name; do
-    # certain files in ~/tmp subdirs
-    rm -f ~/tmp/{coredump,ddos,ddos6,dmesg,kconfig}/${name}{,.*}
+    [[ -n ${name} ]] || continue
+    # certain files in {{ tmp_dir }} subdirs
+    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig}/${name}{,.*}
     # client certs
-    rm -f $d/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
+    rm -f $(dirname $0)/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)
   set -e
 }

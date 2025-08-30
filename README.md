@@ -40,8 +40,8 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
 1. inspect it:
 
    ```bash
-   grep "my_bridge" ~/tmp/*
-   ls ~/tmp/**/my_bridge*
+   grep "my_bridge" ~/tmp/tor-relays/*
+   ls ~/tmp/tor-relays/**/my_bridge*
    ```
 
 1. enjoy it
@@ -111,7 +111,7 @@ A static prometheus config contains something like:
 ...
 ```
 
-The _targets_ lines for the Prometheus config are put into _~/tmp/\*\-targets.yaml_.
+The _targets_ lines for the Prometheus config are put into _~/tmp/tor-relays/\*\-targets.yaml_.
 
 ### Misc
 

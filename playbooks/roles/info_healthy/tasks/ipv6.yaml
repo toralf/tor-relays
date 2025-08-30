@@ -6,6 +6,6 @@
     _is_public: "{{ ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
-    path: "{{ tmp_dir }}/ipv6_addresses"
+    path: "{{ tmp_dir }}/ipv6"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ _is_public | ternary('present', 'absent') }}"
