@@ -9,6 +9,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} Uptime {{ _result.stdout | default('- -') }}"
+    line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
     path: "{{ tmp_dir }}/uptime"
     regexp: "^{{ inventory_hostname }} "
