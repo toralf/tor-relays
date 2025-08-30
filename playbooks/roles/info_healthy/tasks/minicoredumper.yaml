@@ -1,18 +1,20 @@
 ---
 - name: Minicoredumper
+  changed_when: _result.files is defined and _result.files
   ansible.builtin.find:
     paths:
       - /var/crash/minicoredumper/
     patterns:
       - core.tar.gz
     recurse: true
-  register: _found
+  register: _result
 
 - name: Loop over core dump files
+  when: _result.files is defined and _result.files
   vars:
     _fname: "{{ item.path }}"
     _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
   ansible.builtin.include_tasks: _mninicoredumper.yaml
   loop_control:
     label: "{{ _fname }}"
-  loop: "{{ _found.files }}"
+  loop: "{{ _result.files }}"

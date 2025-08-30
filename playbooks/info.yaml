@@ -2,15 +2,23 @@
 - name: Info Misc
   hosts: all
   roles:
-    - role: info_base
+    - role: info_healthy
+      tags:
+        - info-healthy
     - role: info_common
+      tags:
+        - info-common
 
 - name: Info Snowflake
   hosts: snowflake
   roles:
     - role: info_snowflake
+      tags:
+        - info-snowflake
 
 - name: Info Tor
   hosts: tor
   roles:
     - role: info_tor
+      tags:
+        - info-tor

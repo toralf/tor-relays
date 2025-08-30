@@ -1,3 +1,4 @@
+.ansible/
 .ansible_facts/
 .trunk/
 inventory/*.yaml

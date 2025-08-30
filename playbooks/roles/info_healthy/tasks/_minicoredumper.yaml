@@ -14,9 +14,9 @@
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          ls -lh "{{ _fname }}"
+          ls -lh {{ _fname }}
           rm -f /tmp/core
-          tar -C /tmp -xf "{{ _fname }}"
+          tar -C /tmp -xf {{ _fname }}
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
             -c /tmp/core
