@@ -8,6 +8,9 @@
     - role: setup_common
       tags:
         - setup-common
+    - role: info_common
+      tags:
+        - info-common
     - role: info_healthy
       tags:
         - info-healthy

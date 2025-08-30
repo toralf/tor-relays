@@ -43,11 +43,6 @@
       tags:
         - minicoredumper
 
-    - name: Create Prometheus config files
-      ansible.builtin.import_tasks: targets.yaml
-      tags:
-        - targets
-
     - name: Kernel trace
       ansible.builtin.import_tasks: trace.yaml
       tags:

@@ -1,7 +1,10 @@
 ---
-- name: Setup Misc
+- name: Setup common
   hosts: all
   roles:
+    - role: info_common
+      tags:
+        - info-common
     - role: setup_common
       tags:
         - setup-common
@@ -9,14 +12,14 @@
       tags:
         - info-healthy
 
-- name: Setup Snowflake
+- name: Setup snowflake
   hosts: snowflake
   roles:
     - role: setup_snowflake
       tags:
         - setup-snowflake
 
-- name: Setup Tor
+- name: Setup tor
   hosts: tor
   roles:
     - role: setup_tor

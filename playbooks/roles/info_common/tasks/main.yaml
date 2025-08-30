@@ -6,25 +6,10 @@
       firstmatch: true
       mode: "0644"
   block:
-    - name: Dryrun of unattended-upgrade
-      ansible.builtin.import_tasks: dry-update.yaml
+    - name: Create Prometheus config files
+      ansible.builtin.import_tasks: targets.yaml
       tags:
-        - dry-update
-
-    - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
-      tags:
-        - firewall
-
-    - name: Log unattended
-      ansible.builtin.import_tasks: log-unattended.yaml
-      tags:
-        - log-unattended
-
-    - name: Log nginx error
-      ansible.builtin.import_tasks: log-nginx.yaml
-      tags:
-        - log-nginx
+        - targets
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml
