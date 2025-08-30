@@ -26,4 +26,3 @@
   changed_when: true
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6
-    verbosity: 1
