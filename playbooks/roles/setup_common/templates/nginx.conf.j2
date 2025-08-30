@@ -113,6 +113,13 @@ server {
   server_name _{{ metrics_port }};
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
+{% if ddos_metrics is defined and ddos_metrics %}
+
+  location = /metrics-ddos {
+    proxy_pass http://127.0.0.1:3305/;
+    access_log off;
+  }
+{% endif %}
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
@@ -131,13 +138,6 @@ server {
 
   location = /metrics-tor {
     proxy_pass http://127.0.0.1:9052/metrics;
-    access_log off;
-  }
-{% endif %}
-{% if ddos_metrics is defined and ddos_metrics %}
-
-  location = /metrics-ddos {
-    proxy_pass http://127.0.0.1:3305/;
     access_log off;
   }
 {% endif %}
