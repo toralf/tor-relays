@@ -4,7 +4,7 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ trace_since }}" --quiet |
-        grep -F -B 1 -e ' kernel: ------------[ cut here ]------------' |
+        grep -F -B 1 -A 1 -e ' kernel: ------------[ cut here ]------------' |
         head -n 1
     executable: /bin/bash
   register: _result
@@ -12,6 +12,7 @@
 
 - name: Results of trace
   vars:
-    _headline: "{{ (item | split(' '))[5:] | join(' ') }}"
+    _codeline: "{{ _result.stdout_lines | join('\n') | split(' ') | select('match', '.*/.*\\.c:[0-9]+$') | first }}"
+    _headline: "{{ _result.stdout[0] }}"
   ansible.builtin.include_tasks: _trace.yaml
   loop: "{{ _result.stdout_lines }}"
