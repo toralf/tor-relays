@@ -43,17 +43,18 @@
       - rsync
       - sysstat
 
-- name: Do not run Git cleanup in background
+- name: Do not run Git cleanup in background for tiny systems
   when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
   changed_when: false
   ansible.builtin.command:
     cmd: git config --global --add gc.autoDetach false
 
-- name: Acticate sysstat
-  ansible.builtin.lineinfile:
-    line: 'ENABLED="true"'
-    path: /etc/default/sysstat
-    regex: '^ENABLED="'
+- name: Ensure systat is enabled and started
+  ansible.builtin.systemd_service:
+    name: sysstat
+    state: started
+  tags:
+    - meow
 
 - name: Install/Update additional software
   when: additional_software
