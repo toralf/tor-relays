@@ -4,6 +4,7 @@
     name: "{{ item }}"
     state: stopped
     enabled: false
+    no_block: false
   loop:
     - unattended-upgrades
 
