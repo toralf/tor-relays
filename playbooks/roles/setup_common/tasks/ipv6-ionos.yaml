@@ -13,7 +13,6 @@
     _ipv6_new: "{{ _ipv6_prefix }}:{{ '%x' % (_a | int) }}:{{ '%x' % (_b | int) }}:{{ '%x' % (_c | int) }}:{{ '%x' % (_d | int) }}"
   when: _ipv6_new != ansible_facts.default_ipv6.address
   failed_when: true
-  changed_when: true
   ansible.builtin.debug:
     msg:
       - "expected: {{ _ipv6_new }}"
@@ -23,6 +22,5 @@
 - name: Ensure Ipv6 address is non-default
   when: ansible_facts.default_ipv6.address is search('::1$')
   failed_when: true
-  changed_when: true
   ansible.builtin.debug:
     var: ansible_facts.default_ipv6

@@ -10,7 +10,6 @@
   rescue:
     - name: Rc of custom command
       failed_when: true
-      changed_when: true
       ansible.builtin.debug:
         var: _result.rc
   always:
