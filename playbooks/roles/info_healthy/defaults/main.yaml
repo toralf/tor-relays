@@ -1,11 +1,9 @@
 ---
 artefact_cleanup: false
-artefact_paths:
-  - /tmp
-artefact_patterns:
-  - "*"
-artefact_script: ""
-artefact_size: "300k"
+artefact_paths: []
+artefact_patterns: []
+artefact_hook: ""
+artefact_size: "0"
 
 issue_since: "1 day ago"
 

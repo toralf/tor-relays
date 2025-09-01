@@ -10,13 +10,13 @@
 - name: Work on new artefact
   when: _known.changed
   vars:
-    _local_fname: "{{ tmp_dir }}/{{ item.checksum }}"
+    _tmp_filename: "{{ tmp_dir }}/{{ item.checksum }}"
   block:
     - name: Fetch
       throttle: 1
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ _local_fname }}"
+        dest: "{{ _tmp_filename }}"
 
     - name: Inspect artefact mime type
       delegate_to: localhost
@@ -24,7 +24,7 @@
       changed_when: false
       ansible.builtin.command:
         cmd: >-
-          file {{ _local_fname }}
+          file {{ _tmp_filename }}
       register: _mimetype
 
     - name: Print out artefact file mime type
@@ -33,7 +33,7 @@
         var: _mimetype.stdout_lines
 
     - name: External script for artefact
-      when: artefact_script
+      when: artefact_hook
       block:
         - name: Run script for artefact
           delegate_to: localhost
@@ -41,7 +41,7 @@
           changed_when: _script.stdout or _script.stderr
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ artefact_script }} {{ _local_fname }}
+              {{ artefact_hook }} {{ _tmp_filename }}
           register: _script
 
       always:
@@ -72,5 +72,5 @@
       throttle: 1
       when: artefact_cleanup
       ansible.builtin.file:
-        path: "{{ _local_fname }}"
+        path: "{{ _tmp_filename }}"
         state: absent
