@@ -5,4 +5,4 @@
   changed_when: true
   ansible.builtin.command:
     cmd: >-
-      {{ role_path }}/../../../playbooks/bindelete-server.sh {{ inventory_hostname }}
+      hcloud --quiet --poll-interval 10s server delete {{ inventory_hostname }}
