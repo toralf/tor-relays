@@ -26,7 +26,6 @@
       allow_change_held_packages: true
       autoclean: true
       autoremove: true
-      cache_valid_time: 600
       purge: true
       state: latest
     ansible.builtin.copy:

@@ -14,6 +14,13 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
+- name: Run "apt-get update"
+  failed_when: _result.rc != 0 and _result.rc != 100
+  ansible.builtin.apt:
+    cache_valid_time: 600
+    update_cache: true
+  register: _result
+
 - name: Install/Update dep package for Ansible
   ansible.builtin.apt:
     name:
