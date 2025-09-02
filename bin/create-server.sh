@@ -91,5 +91,7 @@ $(dirname $0)/update-dns.sh
 if ! $(dirname $0)/trust-host-ssh-key.sh $*; then
   if [[ ${rc} -ne 123 ]]; then
     exit 1
+  else
+    echo " ^^ ignoring due to rc=${rc} at server creation" >&2
   fi
 fi
