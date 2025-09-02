@@ -15,7 +15,7 @@
     dest: /etc/apt/apt.conf.d/
 
 - name: Run "apt-get update"
-  failed_when: _result.rc != 0 and _result.rc != 100
+  changed_when: _result.cache_updated
   ansible.builtin.apt:
     cache_valid_time: 600
     update_cache: true
