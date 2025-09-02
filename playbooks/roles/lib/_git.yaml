@@ -50,7 +50,6 @@
 - name: Git patch "{{ _repo_dir }}"
   throttle: 8
   changed_when: __patched.stdout_lines is search('patching file ')
-  when: _git_patches
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -66,5 +65,5 @@
 - name: Git repo changed "{{ _repo_dir }}"
   ansible.builtin.set_fact:
     _git_repo_changed: "{{  __repo.changed or __repo.before == None or
-      __updated.changed or __cleaned.changed or __patched is defined and __patched.changed or
+      __updated.changed or __cleaned.changed or __patched.changed or
       force_rebuild is defined and force_rebuild | bool }}"
