@@ -59,24 +59,28 @@
         dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
       notify: Reload nginx
 
-- name: Create nginx site directories
-  when: nginx_site_directories
-  ansible.builtin.file:
-    path: /var/www/{{ item.dir }}
-    state: directory
-    mode: "0755"
-  loop: "{{ nginx_site_directories }}"
+- name: Nginx config
+  tags:
+    - nginx-config
+  block:
+    - name: Create nginx site directories
+      when: nginx_site_directories
+      ansible.builtin.file:
+        path: /var/www/{{ item.dir }}
+        state: directory
+        mode: "0755"
+      loop: "{{ nginx_site_directories }}"
 
-- name: Configure nginx
-  ansible.builtin.template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/conf.d/tor-relays.conf
-  notify: Reload nginx
+    - name: Configure nginx
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/conf.d/tor-relays.conf
+      notify: Reload nginx
 
-- name: Verify nginx config
-  changed_when: false
-  ansible.builtin.command:
-    cmd: nginx -t
+    - name: Verify nginx config
+      changed_when: false
+      ansible.builtin.command:
+        cmd: nginx -t
 
 - name: Ensure that nginx systemd override dir exists
   ansible.builtin.file:
