@@ -10,10 +10,7 @@
     create: false
     line: >-
       ARGS='
-      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+)($|/)"
-      --collector.processes
-      --collector.systemd
-      --collector.tcpstat
+      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
       --web.listen-address=localhost:9100
       '
     path: /etc/default/prometheus-node-exporter
