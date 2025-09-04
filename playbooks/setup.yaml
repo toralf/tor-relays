@@ -1,5 +1,5 @@
 ---
-- name: Setup common
+- name: Setup all
   hosts: all
   roles:
     - role: setup_common
