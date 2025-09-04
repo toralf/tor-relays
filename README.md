@@ -92,19 +92,38 @@ snowflake:
 A _Prometheus node exporter_ is deployed if `node_metrics: true` is set.
 For Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
 
-A static prometheus config contains something like:
+A static prometheus config could look like this:
 
 ```yaml
+- job_name: "Nodes"
+  metrics_path: '/metrics-node'
+  scheme: https
+  tls_config:
+  ca_file: 'RootCA.crt'
+  file_sd_configs:
+    - files:
+      - 'targets_nodes.yaml'
+  params:
+    collect[]:
+      - conntrack
+      - cpu
+      - filesystem
+      - loadavg
+      - meminfo
+      - netdev
+      - netstat
+      - vmstat
+
 - job_name: "Tor-Snowflake-hx"
-   metrics_path: '/metrics-snowflake'
-   scheme: https
-   tls_config:
-   ca_file: 'RootCA.crt'
-   file_sd_configs:
-   - files:
+  metrics_path: '/metrics-snowflake'
+  scheme: https
+  tls_config:
+  ca_file: 'RootCA.crt'
+  file_sd_configs:
+    - files:
       - 'targets_snowflake-hx.yaml'
-   relabel_configs:
-   - source_labels: [__address__]
+  relabel_configs:
+    - source_labels: [__address__]
       target_label: instance
       regex: "([^:]+).*"
       replacement: '${1}'
