@@ -1,6 +1,7 @@
 ---
-- name: Search for issues in system log
-  changed_when: false
+- name: Grep system log for an issue
+  changed_when: _result.stdout
+  failed_when: _result.stderr or _result.rc > 0
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
@@ -16,6 +17,7 @@
           -e 'WARNING:' |
         head -n 500
   register: _result
+  notify: Not Healthy
 
 - name: File issue
   delegate_to: localhost
@@ -25,4 +27,3 @@
     path: "{{ tmp_dir }}/issue.log"
     marker: "# {mark} {{ inventory_hostname }} "
     state: "{{ _result.stdout | ternary('present', 'absent') }}"
-  notify: Not Healthy
