@@ -25,6 +25,7 @@
 
     - name: File core dump info
       delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         content: "{{ _result.stdout }}"
         dest: "{{ tmp_dir }}/coredump/{{ _unique_id }}.txt"

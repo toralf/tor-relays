@@ -17,6 +17,7 @@
 
     - name: Wait for network ping
       delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
       changed_when: _network.rc == 0
       ansible.builtin.shell:
         cmd: |-
