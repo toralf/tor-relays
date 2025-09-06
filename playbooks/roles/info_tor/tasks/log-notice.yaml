@@ -26,7 +26,7 @@
     var: _result.stdout_lines
 
 - name: Error
-  when: _result.stderr_lines
+  when: _result.stderr
   changed_when: true
   ansible.builtin.debug:
     var: _result.stderr_lines
