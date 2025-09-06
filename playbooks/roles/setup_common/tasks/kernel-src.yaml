@@ -59,7 +59,6 @@
           CONFIG_AGP=n
           CONFIG_ATA=n
           CONFIG_BACKLIGHT_CLASS_DEVICE=n
-          CONFIG_BPF=n
           CONFIG_DMADEVICES=n
           CONFIG_DRM=n
           CONFIG_EDAC=n
@@ -74,7 +73,9 @@
           CONFIG_INPUT_KEYBOARD=n
           CONFIG_INPUT_MOUSE=n
           CONFIG_INPUT_MOUSEDEV=n
+          CONFIG_IPV6_SEG6_BPF=n
           CONFIG_LPC_ICH=n
+          CONFIG_LWTUNNEL_BPF=n
           CONFIG_MD=n
           CONFIG_MFD_CORE=n
           CONFIG_PARTITION_ADVANCED=n
