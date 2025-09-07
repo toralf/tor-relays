@@ -3,9 +3,8 @@
   changed_when: _result.files is defined and _result.files
   ansible.builtin.find:
     paths:
-      - /var/crash/minicoredumper/
+      - /var/crash/minicoredumper
     patterns:
-      - core
       - core.tar.gz
     recurse: true
   register: _result

@@ -18,14 +18,8 @@
 
           ls -l {{ _fname }}
           echo
-          if [[ ! -s {{ _fname }} ]]; then
-            exit 0
-          fi
-
           cd {{ _fname | dirname }}
-          if [[ {{ _fname }} =~ .tar.*$ ]]; then
-            tar -xf {{ _fname | basename }}
-          fi
+          tar -xf {{ _fname | basename }}
 
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
