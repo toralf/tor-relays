@@ -25,20 +25,13 @@
   ansible.builtin.copy:
     src: 20tor-system.conf
     dest: /etc/sysctl.d/
-  register: _sysctl_state
-
-# TODO: remove me after next round
-- name: Sysctl config
-  ansible.builtin.file:
-    path: /etc/sysctl.d/21common.conf
-    state: absent
-  register: _sysctl_state21
+  register: _sysctl
 
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl_state.changed or _sysctl_state21.changed or _sysctl_result.stderr
+  changed_when: _sysctl.changed or _result.stderr
   ansible.builtin.command:
     cmd: sysctl --system 1>/dev/null
-  register: _sysctl_result
+  register: _result
 
 - name: Set crontab vars
   ansible.builtin.cron:
