@@ -3,5 +3,3 @@
   hosts: localhost
   roles:
     - role: ca
-      tags:
-        - ca

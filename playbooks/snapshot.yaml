@@ -3,21 +3,11 @@
   hosts: snapshot
   roles:
     - role: poweron
-      tags:
-        - poweron
     - role: setup_common
-      tags:
-        - setup-common
     - role: info_healthy
-      tags:
-        - info-healthy
     - role: snapshot
-      tags:
-        - snapshot
 
 - name: Snapshot cleanup
   hosts: localhost
   roles:
     - role: snapshot_cleanup
-      tags:
-        - snapshot-cleanup

@@ -3,25 +3,15 @@
   hosts: all
   roles:
     - role: info_common
-      tags:
-        - info-common
     - role: info_healthy
-      tags:
-        - info-healthy
     - role: info_misc
-      tags:
-        - info-misc
 
 - name: Info snowflake
   hosts: snowflake
   roles:
     - role: info_snowflake
-      tags:
-        - info-snowflake
 
 - name: Info tor
   hosts: tor
   roles:
     - role: info_tor
-      tags:
-        - info-tor

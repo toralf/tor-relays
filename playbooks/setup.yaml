@@ -3,32 +3,20 @@
   hosts: all
   roles:
     - role: setup_common
-      tags:
-        - setup-common
     - role: info_common
-      tags:
-        - info-common
     - role: info_healthy
-      tags:
-        - info-healthy
 
 - name: Setup snowflake
   hosts: snowflake
   roles:
     - role: setup_snowflake
-      tags:
-        - setup-snowflake
 
 - name: Setup tor
   hosts: tor
   roles:
     - role: setup_tor
-      tags:
-        - setup-tor
 
 - name: Setup autoupdate
   hosts: all
   roles:
     - role: setup_autoupdate
-      tags:
-        - setup-autoupdate
