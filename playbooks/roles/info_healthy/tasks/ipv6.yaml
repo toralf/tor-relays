@@ -3,7 +3,8 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    _is_global: "{{ ansible_facts.default_ipv6.address is defined and ansible_facts.default_ipv6.address is not match('fe80::') }}"
+    _is_global: "{{ ansible_facts.default_ipv6.address is defined and
+      ansible_facts.default_ipv6.address is not match('fe80::') }}"
   changed_when: not _is_global
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
