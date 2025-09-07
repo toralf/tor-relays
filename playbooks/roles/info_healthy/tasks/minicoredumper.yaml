@@ -16,5 +16,5 @@
     _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
   ansible.builtin.include_tasks: _minicoredumper.yaml
   loop_control:
-    label: "{{ _fname }}"
+    label: "{{ _unique_id }}"
   loop: "{{ _result.files }}"

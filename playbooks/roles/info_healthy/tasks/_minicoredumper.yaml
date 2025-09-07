@@ -16,14 +16,11 @@
         cmd: |-
           set -eu
 
-          ls -l {{ _fname }}
-          echo
-          cd {{ _fname | dirname }}
-          tar -xf {{ _fname | basename }}
+          tar -xf {{ _fname }} --to-stdout >/tmp/core
 
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
-            -c ./core
+            -c /tmp/core
         executable: /bin/bash
       register: _result
 
