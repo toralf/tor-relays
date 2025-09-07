@@ -96,13 +96,13 @@ A static prometheus config could look like this:
 
 ```yaml
 - job_name: "Nodes"
-  metrics_path: '/metrics-node'
+  metrics_path: "/metrics-node"
   scheme: https
   tls_config:
-  ca_file: 'RootCA.crt'
+  ca_file: "RootCA.crt"
   file_sd_configs:
     - files:
-      - 'targets_nodes.yaml'
+        - "targets_nodes.yaml"
   params:
     collect[]:
       - conntrack
@@ -115,19 +115,18 @@ A static prometheus config could look like this:
       - vmstat
 
 - job_name: "Tor-Snowflake-hx"
-  metrics_path: '/metrics-snowflake'
+  metrics_path: "/metrics-snowflake"
   scheme: https
   tls_config:
-  ca_file: 'RootCA.crt'
+  ca_file: "RootCA.crt"
   file_sd_configs:
     - files:
-      - 'targets_snowflake-hx.yaml'
+        - "targets_snowflake-hx.yaml"
   relabel_configs:
     - source_labels: [__address__]
       target_label: instance
       regex: "([^:]+).*"
-      replacement: '${1}'
-...
+      replacement: "${1}"
 ```
 
 The _targets_ lines for the Prometheus config are put into _~/tmp/tor-relays/\*\-targets.yaml_.
