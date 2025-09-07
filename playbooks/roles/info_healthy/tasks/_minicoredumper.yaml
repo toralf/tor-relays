@@ -14,13 +14,23 @@
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          ls -lh {{ _fname }}
-          rm -f /tmp/core
-          tar -C /tmp -xf {{ _fname }}
+          set -eu
+
+          ls -l {{ _fname }}
+          echo
+          if [[ ! -s {{ _fname }} ]]; then
+            exit 0
+          fi
+
+          cd {{ _fname | dirname }}
+          if [[ {{ _fname }} =~ .tar.*$ ]]; then
+            tar -xf {{ _fname | basename }}
+          fi
+
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
-            -c /tmp/core
-          rm /tmp/core
+            -c ./core
+        executable: /bin/bash
       register: _result
 
     - name: File core dump info

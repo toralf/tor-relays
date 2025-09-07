@@ -5,6 +5,7 @@
     paths:
       - /var/crash/minicoredumper/
     patterns:
+      - core
       - core.tar.gz
     recurse: true
   register: _result
@@ -14,7 +15,7 @@
   vars:
     _fname: "{{ item.path }}"
     _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
-  ansible.builtin.include_tasks: _mninicoredumper.yaml
+  ansible.builtin.include_tasks: _minicoredumper.yaml
   loop_control:
     label: "{{ _fname }}"
   loop: "{{ _result.files }}"
