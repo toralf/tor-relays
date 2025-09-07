@@ -35,7 +35,7 @@
   register: _sysctl_state21
 
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl_state.changed or _sysctl_state21.changed
+  changed_when: _sysctl_state.changed or _sysctl_state21.changed or _sysctl_result.stderr
   ansible.builtin.command:
     cmd: sysctl --system 1>/dev/null
   register: _sysctl_result
