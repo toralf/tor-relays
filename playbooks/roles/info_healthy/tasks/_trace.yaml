@@ -36,7 +36,7 @@
         marker_end: "TRACE END"
 
     - name: Get dmesg for the trace
-      ansible.builtin.include_tasks: dmesg.yaml
+      ansible.builtin.include_tasks: _dmesg.yaml
 
     - name: Get kernel config for the trace
-      ansible.builtin.include_tasks: kernel-config.yaml
+      ansible.builtin.include_tasks: _kernel-config.yaml

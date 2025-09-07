@@ -18,11 +18,6 @@
       tags:
         - artefact
 
-    - name: Dmesg
-      ansible.builtin.import_tasks: dmesg.yaml
-      tags:
-        - dmesg
-
     - name: IPv6
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
@@ -32,11 +27,6 @@
       ansible.builtin.import_tasks: issue.yaml
       tags:
         - issue
-
-    - name: Kernel config
-      ansible.builtin.import_tasks: kernel-config.yaml
-      tags:
-        - kernel-config
 
     - name: Minicoredumper
       ansible.builtin.import_tasks: minicoredumper.yaml
