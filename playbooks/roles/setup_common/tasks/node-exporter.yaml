@@ -5,13 +5,31 @@
       - prometheus-node-exporter
   notify: Restart Prometheus node exporter
 
+# https://github.com/prometheus/node_exporter
+# reduce the load at the tiny cloud instances itself, see "params:" in the prometheus.yaml config file
 - name: Configure Prometheus node exporter
+  vars:
+    _collectors:
+      [
+        "conntrack",
+        "cpu",
+        "filesystem",
+        "loadavg",
+        "meminfo",
+        "netdev",
+        "netstat",
+        "sockstat",
+        "uname",
+        "vmstat",
+      ]
   ansible.builtin.lineinfile:
     create: false
     line: >-
       ARGS='
-      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
       --web.listen-address=localhost:9100
+      --collector.disable-defaults
+      {{ ["--collector"] | product(_collectors) | map('join', ' ') | join(' ') }}
+      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
       '
     path: /etc/default/prometheus-node-exporter
     regexp: "^ARGS="
