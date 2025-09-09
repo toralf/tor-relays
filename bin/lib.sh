@@ -77,7 +77,7 @@ function _getImageBySnapshot() {
   # name=$(sed -e 's,stablerc,ltsrc,' <<<${name}) # tweak to reuse an existing snapshot
 
   while read -r description id; do
-    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- ]]; then
+    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
       echo ${id}
       return 0
     fi
