@@ -15,8 +15,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=$((3 * $(nproc)))
-[[ ${jobs} -gt 48 ]] && jobs=48
+jobs=24
 
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
   snapshots=$(getSnapshots)
@@ -26,8 +25,7 @@ echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
 xargs -n 1 <<<$* |
   while read -r name; do
     image=$(getImage)
-    [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="45s" || poll_interval="10s"
-    echo --poll-interval ${poll_interval} server rebuild --image ${image} ${name}
+    echo --poll-interval 12s server rebuild --image ${image} ${name}
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 

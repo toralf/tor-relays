@@ -9,7 +9,7 @@
         tee /tmp/snapshots_before |
         awk 'x[$2]++ { print $1 }' |
         tee /tmp/snapshots_id |
-        xargs -r hcloud --poll-interval 10s image delete
+        xargs -r hcloud --poll-interval 5s image delete
 
         if [[ -s /tmp/snapshots_id ]]; then
           echo

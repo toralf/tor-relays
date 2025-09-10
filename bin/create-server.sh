@@ -17,8 +17,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=$((3 * $(nproc)))
-[[ ${jobs} -gt 48 ]] && jobs=48
+jobs=24
 
 if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
   echo " ^^ invalid hostname/s" >&2
@@ -75,8 +74,7 @@ xargs -n 1 <<<$* |
     fi
 
     image=$(getImage)
-    [[ ${image} =~ ^[0-9]+$ ]] && poll_interval="45s" || poll_interval="10s"
-    echo --poll-interval ${poll_interval} server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+    echo --poll-interval 12s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 
   done |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
