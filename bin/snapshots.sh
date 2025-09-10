@@ -18,7 +18,7 @@ setProject
 arch="{amd,arm,intel}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
 names=""                                    # this option rules over options "arch" and "branch"
-os="d t u"                                  # e.g. (d)ebian bookworm, debian (t)rixie, (u)buntu
+os="db dt un"                               # e.g. debian bookworm, debian trixie, ubuntu noble
 
 while getopts a:b:n:o: opt; do
   case ${opt} in
@@ -37,8 +37,8 @@ if [[ -z ${names} ]]; then
   names=$(
     for i in ${os}; do
       case ${i} in
-      d | t) eval echo hi-${i}-${arch}-${branch}-{,no}bp-{,no}cl ;;
-      u) eval echo hi-u-${arch}-${branch} ;;
+      db | dt) eval echo hi-${i}-${arch}-${branch}-{,no}bp-{,no}cl ;;
+      un) eval echo hi-${i}-${arch}-${branch} ;;
       *)
         echo " os parameter value ${i} is not implemented" >&2
         exit 1

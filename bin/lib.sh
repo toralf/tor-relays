@@ -51,14 +51,15 @@ function getImage() {
 }
 
 function _getImageByHostname() {
-  local name=${1?NAME NOT GIVEN}
+  local name
 
+  name=${1?NAME NOT GIVEN}
   # name example: hi-u-amd-master
-  if [[ ${name} =~ "-d-" ]]; then
+  if [[ ${name} =~ "-db-" ]]; then
     echo "debian-12"
-  elif [[ ${name} =~ "-t-" ]]; then
+  elif [[ ${name} =~ "-dt-" ]]; then
     echo "debian-13"
-  elif [[ ${name} =~ "-u-" ]]; then
+  elif [[ ${name} =~ "-un-" ]]; then
     echo "ubuntu-24.04"
   else
     echo ${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
@@ -66,8 +67,9 @@ function _getImageByHostname() {
 }
 
 function _getImageBySnapshot() {
-  local name=${1?NAME NOT GIVEN}
+  local name description id
 
+  name=${1?NAME NOT GIVEN}
   if [[ -z ${snapshots} ]]; then
     echo " * * * snapshots NOT SET" >&2
     return 1
