@@ -2,6 +2,10 @@
 - name: Info all
   hosts: all
   roles:
+    - role: poweron
+      tags:
+        - never
+        - poweron
     - role: info_common
     - role: info_healthy
     - role: info_misc
