@@ -51,18 +51,22 @@
       - rsync
       - sysstat
 
-- name: Do not run Git cleanup in background for tiny systems
+- name: Configure Git for tiny systems
   when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
   changed_when: false
   ansible.builtin.command:
-    cmd: git config --global --add gc.autoDetach false
+    cmd: >-
+      git config --global --replace-all {{ item }}
+  loop:
+    - gc.autoDetach false
+    - pack.packSizeLimit 20m
+    - pack.threads "{{ ansible_facts.processor_vcpus }}"
+    - pack.windowMemory 10m
 
 - name: Ensure systat is enabled and started
   ansible.builtin.systemd_service:
     name: sysstat
     state: started
-  tags:
-    - meow
 
 - name: Install/Update additional software
   when: additional_software

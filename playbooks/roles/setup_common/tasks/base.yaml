@@ -54,3 +54,18 @@
   ansible.builtin.file:
     path: /etc/apt/apt.conf.d/20auto-upgrades
     state: absent
+
+- name: Create swapfile for systems with small RAM
+  when: ansible_facts.memtotal_mb < 2048 and (kernel_build_from_source or tor_port is defined)
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      fallocate -l 2G /swapfile
+      chmod 600 /swapfile
+      mkswap /swapfile
+      if ! grep -q "^/swapfile " /etc/fstab; then
+        echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+      fi
+      swapon /swapfile
+    creates: /swapfile

@@ -41,8 +41,6 @@
     path: /etc/default/prometheus-node-exporter
     regexp: "^ARGS="
   notify: Restart Prometheus node exporter
-  tags:
-    - meow
 
 - name: Enable Prometheus node exporter at boot
   ansible.builtin.systemd_service:
