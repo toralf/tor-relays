@@ -75,8 +75,8 @@ function _getImageBySnapshot() {
     return 1
   fi
 
-  # prefer "hi-u-intel-stablerc" to match "u-intel-stablerc" but otherwise to match "u-intel-stable"
-  # name=$(sed -e 's,stablerc,ltsrc,' <<<${name}) # tweak to reuse an existing snapshot
+  # try to match "hi-u-intel-stablerc" to "u-intel-stablerc", fallback is to match to "u-intel-stable"
+  # tweak to reuse an existing snapshot: name=$(sed -e 's,stablerc,ltsrc,' <<<${name})
 
   while read -r description id; do
     if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
