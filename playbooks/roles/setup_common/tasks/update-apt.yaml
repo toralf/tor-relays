@@ -56,7 +56,7 @@
   changed_when: false
   ansible.builtin.command:
     cmd: >-
-      git config --global --replace-all {{ item }}
+      git config --global {{ item }}
   loop:
     - gc.autoDetach false
     - pack.packSizeLimit 20m
