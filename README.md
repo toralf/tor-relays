@@ -172,6 +172,14 @@ git bisect log
 git bisect reset
 ```
 
+## Resources
+
+If you have a big inventory then increase your ulimits, e.g.
+
+```bash
+ulimit -S -n 4096
+```
+
 ## Links
 
 - https://bridges.torproject.org
