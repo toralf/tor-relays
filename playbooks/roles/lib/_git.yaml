@@ -14,7 +14,7 @@
 
     - name: Git clone "{{ _repo_dir }}"
       when: __repo.before == None
-      throttle: 3
+      throttle: 4
       ansible.builtin.git:
         version: "{{ _git_version }}"
 
