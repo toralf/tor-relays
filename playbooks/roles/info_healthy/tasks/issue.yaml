@@ -17,7 +17,6 @@
           -e 'WARNING:' |
         head -n 500
   register: _result
-  notify: Not Healthy
 
 - name: File issue
   delegate_to: localhost
