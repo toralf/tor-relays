@@ -57,9 +57,9 @@ xargs -n 1 <<<$* |
     # arch
     htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1)
     case ${name} in
-    *-amd-*) htype="cpx11" ;;
-    *-arm-*) htype="cax11" ;;
-    *-intel-*) htype="cx22" ;;
+    *-amd | *-amd-*) htype="cpx11" ;;
+    *-arm | *-arm-*) htype="cax11" ;;
+    *-intel | *-intel-*) htype="cx22" ;;
     esac
 
     loc=""
