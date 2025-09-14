@@ -35,7 +35,7 @@ function cleanLocalDataFiles() {
 
 function setProject() {
   project=$(hcloud context active)
-  echo -e "\n >>> using Hetzner project \"${project:?NO PROJECT FOUND}\""
+  echo -e "\n >>> using Hetzner project \"${project?NO PROJECT FOUND}\""
 }
 
 function getSnapshots() {
@@ -45,7 +45,7 @@ function getSnapshots() {
 }
 
 function getImage() {
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" ]] || ! _getImageBySnapshot ${name}; then
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" || -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
     _getImageByHostname ${name}
   fi
 }
@@ -70,27 +70,27 @@ function _getImageBySnapshot() {
   local name description id
 
   name=${1?NAME NOT GIVEN}
-  if [[ -z ${snapshots} ]]; then
-    echo " * * * snapshots NOT SET" >&2
-    return 1
-  fi
 
-  # try to match "hi-u-intel-stablerc" to "u-intel-stablerc", fallback is to match to "u-intel-stable"
-  # tweak to reuse an existing snapshot: name=$(sed -e 's,stablerc,ltsrc,' <<<${name})
+  # example for a match order for e.g. hi-dt-intel-stablerc or hs0-dt-intel-stablerc-bp-cl-89
+  #   dt-intel-stablerc
+  #   dt-intel-stable
+  #   dt-x86-stablerc
+  #   dt-x86-stable
+  for n in $(echo ${name} $(sed -e 's,-amd,-x86,' -e 's,-intel,-x86,' <<<${name}) | xargs -n 1 | sort -u | xargs); do
+    while read -r description id; do
+      if [[ ${n} =~ -${description}$ || ${n} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
+        echo ${id}
+        return 0
+      fi
+    done <<<${snapshots}
 
-  while read -r description id; do
-    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
-      echo ${id}
-      return 0
-    fi
-  done <<<${snapshots}
-
-  while read -r description id; do
-    if [[ ${name} =~ -${description} ]]; then
-      echo ${id}
-      return 0
-    fi
-  done <<<${snapshots}
+    while read -r description id; do
+      if [[ ${n} =~ -${description} ]]; then
+        echo ${id}
+        return 0
+      fi
+    done <<<${snapshots}
+  done
 
   return 1
 }

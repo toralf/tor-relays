@@ -19,7 +19,9 @@ setProject
 
 jobs=24
 
-if xargs -n 1 <<<$* | grep -Ev "^[a-z0-9\-]+$"; then
+names=$(xargs -n 1 <<<$*)
+
+if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   echo " ^^ invalid hostname/s" >&2
   exit 2
 fi
@@ -49,34 +51,39 @@ fi
 # take the first one
 ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
 
-echo -e " creating $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
+echo -e " creating $(wc -w <<<${names}) system/s ..."
 
 set +e
-xargs -n 1 <<<$* |
-  while read -r name; do
-    # arch
-    htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1)
-    case ${name} in
-    *-amd | *-amd-*) htype="cpx11" ;;
-    *-arm | *-arm-*) htype="cax11" ;;
-    *-intel | *-intel-*) htype="cx22" ;;
+while read -r name; do
+  # set htype based on hostname
+  case ${name} in
+  *-amd | *-amd-*) htype="cpx11" ;;
+  *-arm | *-arm-*) htype="cax11" ;;
+  *-intel | *-intel-*) htype="cx22" ;;
+  *-x86 | *-x86-*) htype=$(echo "cpx11" "cx22" | xargs -n 1 | shuf -n 1) ;;
+  *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1) ;;
+  esac
+
+  # no preferences for the location
+  loc=""
+  if [[ -n ${HCLOUD_LOCATION-} ]]; then
+    loc="--location ${HCLOUD_LOCATION}"
+  elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
+    case ${htype} in
+    cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+    cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+    cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
     esac
+  fi
 
-    loc=""
-    if [[ -n ${HCLOUD_LOCATION-} ]]; then
-      loc="--location ${HCLOUD_LOCATION}"
-    elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
-      case ${htype} in
-      cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-      cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
-      esac
-    fi
+  image=$(getImage)
+  if [[ -z ${image} ]]; then
+    echo " ERROR: empty image for ${name}" >&2
+    exit 1
+  fi
 
-    image=$(getImage)
-    echo --poll-interval 12s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
-
-  done |
+  echo --poll-interval 12s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+done <<<${names} |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 rc=$?
 set -e
@@ -86,7 +93,7 @@ if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
 fi
 
 $(dirname $0)/update-dns.sh
-if ! $(dirname $0)/trust-host-ssh-key.sh $*; then
+if ! $(dirname $0)/trust-host-ssh-key.sh ${names}; then
   if [[ ${rc} -ne 123 ]]; then
     exit 1
   else

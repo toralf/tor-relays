@@ -15,20 +15,22 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=24
+# be optimistic that the snapshot image location is a nearby cache
+jobs=48
+
+names=$(xargs -n 1 <<<$*)
 
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
   snapshots=$(getSnapshots)
 fi
 
-echo -e " rebuilding $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
-xargs -n 1 <<<$* |
-  while read -r name; do
-    image=$(getImage)
-    echo --poll-interval 12s server rebuild --image ${image} ${name}
-  done |
+echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
+while read -r name; do
+  image=$(getImage)
+  echo --poll-interval 24s server rebuild --image ${image} ${name}
+done <<<${names} |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 
-cleanLocalDataEntries $*
-$(dirname $0)/distrust-host-ssh-key.sh $*
-$(dirname $0)/trust-host-ssh-key.sh $*
+cleanLocalDataEntries ${names}
+$(dirname $0)/distrust-host-ssh-key.sh ${names}
+$(dirname $0)/trust-host-ssh-key.sh ${names}

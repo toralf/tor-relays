@@ -4,6 +4,16 @@
 
 # create/update snaphot images
 
+function allFlavours() {
+  for i in $(eval echo ${os}); do
+    case ${i} in
+    db | dt) eval echo hi-${i}-${arch}-${branch}-{,no}bp-{,no}cl ;;
+    un) eval echo hi-${i}-${arch}-${branch} ;;
+    esac
+  done |
+    xargs
+}
+
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -15,15 +25,21 @@ export HCLOUD_LOCATION="hel1"
 setProject
 [[ ${project} == "test" ]]
 
-arch="{amd,arm,intel}"
+arch="{x86,arm}"
 branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
-names=""                                    # this option rules over options "arch" and "branch"
-os="db dt un"                               # e.g. debian bookworm, debian trixie, ubuntu noble
+names=""                                    # directly set image names
+os="{db,dt,un}"                             # debian bookworm, debian trixie, ubuntu noble
+snapshot_parameters=""
 
-while getopts a:b:n:o: opt; do
+while getopts a:b:fn:o: opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
+  f)
+    arch="{amd,intel,arm}"
+    snapshot_parameters='-e kernel_vanilla_build=yes'
+    names=$(allFlavours)
+    ;;
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
   *)
@@ -34,19 +50,7 @@ while getopts a:b:n:o: opt; do
 done
 
 if [[ -z ${names} ]]; then
-  names=$(
-    for i in ${os}; do
-      case ${i} in
-      db | dt) eval echo hi-${i}-${arch}-${branch}-{,no}bp-{,no}cl ;;
-      un) eval echo hi-${i}-${arch}-${branch} ;;
-      *)
-        echo " os parameter value ${i} is not implemented" >&2
-        exit 1
-        ;;
-      esac
-    done |
-      xargs
-  )
+  names=$(eval echo hi-${os}-${arch}-${branch})
 fi
 
 cd $(dirname $0)/..
@@ -54,7 +58,7 @@ cd $(dirname $0)/..
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 ./bin/create-server.sh ${names}
-./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') -e delete_image_after_snapshot=true
+./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${snapshot_parameters}
 ./bin/delete-server.sh ${names} 2>/dev/null
 
 trap - INT QUIT TERM EXIT

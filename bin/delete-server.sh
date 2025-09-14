@@ -17,23 +17,25 @@ setProject
 
 jobs=24
 
-cleanLocalDataFiles $*
-cleanLocalDataEntries $*
+names=$(xargs -n 1 <<<$*)
+
+cleanLocalDataFiles ${names}
+cleanLocalDataEntries ${names}
 
 echo " delete from DNS config ..."
 while read -r name; do
   sudo -- sed -i -e "/ \"${name} /d" -e "/ ${name}\"$/d" /etc/unbound/hetzner-${project}.conf
-done < <(xargs -n 1 <<<$*)
+done <<<${names}
 
 echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
 
-$(dirname $0)/distrust-host-ssh-key.sh $*
+$(dirname $0)/distrust-host-ssh-key.sh ${names}
 
-echo -e " deleting $(wc -w <<<$*) system/s: $(cut -c -16 <<<$*)..."
+echo -e " deleting $(wc -w <<<${names}) system/s ..."
 
 set +e
-xargs -r -P ${jobs} -n 10 hcloud --quiet --poll-interval 12s server delete <<<$* 2>/dev/null
+xargs -r -P ${jobs} -n 24 hcloud --quiet --poll-interval 12s server delete <<<${names} 2>/dev/null
 rc=$?
 set -e
 [[ ${rc} == 123 ]] && exit 0 || exit ${rc}
