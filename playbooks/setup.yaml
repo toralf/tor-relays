@@ -1,22 +1,27 @@
 ---
+# "de-normalize" plays, otherwise "-e kernel_vanilla_build=detached" could yield to unreachable systems
 - name: Setup all
-  hosts: all
+  hosts: "!snowflake:!tor"
   roles:
     - role: setup_common
     - role: info_common
     - role: info_healthy
+    - role: setup_autoupdate
 
 - name: Setup snowflake
   hosts: snowflake
   roles:
+    - role: setup_common
+    - role: info_common
+    - role: info_healthy
     - role: setup_snowflake
+    - role: setup_autoupdate
 
 - name: Setup tor
   hosts: tor
   roles:
+    - role: setup_common
+    - role: info_common
+    - role: info_healthy
     - role: setup_tor
-
-- name: Setup autoupdate
-  hosts: all
-  roles:
     - role: setup_autoupdate

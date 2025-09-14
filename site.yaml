@@ -3,5 +3,3 @@
 
 ---
 - ansible.builtin.import_playbook: playbooks/setup.yaml
-
-- ansible.builtin.import_playbook: playbooks/info.yaml
