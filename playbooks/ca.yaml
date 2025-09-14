@@ -3,3 +3,4 @@
   hosts: localhost
   roles:
     - role: ca
+    # tags "never" is added to the task where the root CA is created

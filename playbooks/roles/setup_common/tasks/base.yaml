@@ -56,7 +56,7 @@
     state: absent
 
 - name: Create swapfile for systems with small RAM
-  when: ansible_facts.memtotal_mb < 2048 and (kernel_build_from_source or tor_port is defined)
+  when: ansible_facts.memtotal_mb < 2048 and (kernel_vanilla or tor_port is defined)
   ansible.builtin.shell:
     cmd: |-
       set -euf

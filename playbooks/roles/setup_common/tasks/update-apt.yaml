@@ -59,9 +59,9 @@
       git config --global {{ item }}
   loop:
     - gc.autoDetach false
-    - pack.packSizeLimit 20m
+    - pack.packSizeLimit 200m
     - pack.threads "{{ ansible_facts.processor_vcpus }}"
-    - pack.windowMemory 10m
+    - pack.windowMemory 100m
 
 - name: Ensure systat is enabled and started
   ansible.builtin.systemd_service:

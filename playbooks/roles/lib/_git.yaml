@@ -1,6 +1,6 @@
 ---
 - name: Git
-  environment: "{{ git_environment }}"
+  environment: "{{ git_environment | default({}) }}"
   module_defaults:
     ansible.builtin.git:
       repo: "{{ _git_repo_url }}"
@@ -12,33 +12,26 @@
         update: false
       register: __repo
 
-    - name: Git clone "{{ _repo_dir }}"
-      when: __repo.before == None
-      throttle: 4
-      ansible.builtin.git:
-        version: "{{ _git_version }}"
+    - name: Git clone/update
+      throttle: 16
+      block:
+        - name: Git clone "{{ _repo_dir }}"
+          when: __repo.before == None
+          throttle: 6
+          ansible.builtin.git:
+            version: "{{ _git_version }}"
 
-    - name: Git update "{{ _repo_dir }}"
-      throttle: "{{ _git_patches | ternary(8, 16) }}"
-      ansible.builtin.git:
-        version: "{{ _git_version }}"
-        force: true
-      register: __updated
+        - name: Git update "{{ _repo_dir }}"
+          ansible.builtin.git:
+            version: "{{ _git_version }}"
+            force: true
+          register: __updated
 
     - name: Get commit id "{{ _repo_dir }}"
       ansible.builtin.git:
         clone: false
         update: false
       register: _git_head
-
-- name: Git remove inactive branches "{{ _repo_dir }}"
-  changed_when: __inactive.stdout
-  when: git_remove_inactive_branches is defined and git_remove_inactive_branches | bool
-  ansible.builtin.shell:
-    cmd: >-
-      git branch | grep -vF '*' | xargs -r git branch -D
-    chdir: "{{ _repo_dir }}"
-  register: __inactive
 
 - name: Git clean "{{ _repo_dir }}"
   changed_when: __cleaned.stdout
@@ -47,6 +40,7 @@
     chdir: "{{ _repo_dir }}"
   register: __cleaned
 
+# must be after git clean
 - name: Git patch "{{ _repo_dir }}"
   throttle: 8
   changed_when: __patched.stdout_lines is search('patching file ')

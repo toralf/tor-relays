@@ -17,7 +17,7 @@
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
 - name: Build
-  throttle: 10
+  throttle: 8
   changed_when: false
   ansible.builtin.command:
     cmd: go build -v

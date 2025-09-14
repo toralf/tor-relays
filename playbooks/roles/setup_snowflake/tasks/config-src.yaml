@@ -15,7 +15,7 @@
 
 - name: Get GeoIP data
   when: use_tor_geoip_data
-  throttle: 10
+  throttle: 16
   ansible.builtin.get_url:
     url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"
     dest: /usr/share/tor/

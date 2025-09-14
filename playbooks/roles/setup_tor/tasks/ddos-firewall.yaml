@@ -6,7 +6,7 @@
       - jq
 
 - name: Download DDoS solution
-  throttle: 20
+  throttle: 16
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
     dest: "/root/{{ item }}"

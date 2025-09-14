@@ -1,6 +1,6 @@
 ---
 - name: Query Onionoo
-  throttle: 10
+  throttle: 16
   ansible.builtin.uri:
     url: "https://onionoo.torproject.org/details?search={{ _fingerprint_hashed }}"
     return_content: true
