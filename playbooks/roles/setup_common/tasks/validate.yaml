@@ -34,11 +34,18 @@
       - "prometheus_server6 is ansible.utils.ipv6"
 
 - name: Validate RAM for kernel build from source
-  when: kernel_build_from_source
+  when: kernel_vanilla
   ansible.builtin.assert:
     quiet: true
     that:
       - "ansible_facts.memtotal_mb > 1024"
+
+- name: Validate vanilla kernel build method
+  when: kernel_vanilla
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "kernel_vanilla_build is in ['detached', 'no', 'yes']"
 
 - name: Validate Nginx site directories
   when: nginx_site_directories
