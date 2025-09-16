@@ -17,7 +17,6 @@
       block:
         - name: Git clone "{{ _repo_dir }}"
           when: __repo.before == None
-          throttle: 6
           ansible.builtin.git:
             version: "{{ _git_version }}"
 
@@ -42,7 +41,7 @@
 
 # must be after git clean
 - name: Git patch "{{ _repo_dir }}"
-  throttle: 8
+  throttle: 16
   changed_when: __patched.stdout_lines is search('patching file ')
   ansible.builtin.shell:
     cmd: |-
