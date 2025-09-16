@@ -4,6 +4,7 @@
 
 # create/update snaphot images
 
+# Debian has 4 different dist kernels
 function allFlavours() {
   for i in $(eval echo ${os}); do
     case ${i} in
@@ -25,23 +26,20 @@ export HCLOUD_LOCATION="hel1"
 setProject
 [[ ${project} == "test" ]]
 
-arch="{x86,arm}"
-branch="{lts,ltsrc,stable,stablerc,master}" # mapped to a git commit-ish in ./inventory
-names=""                                    # directly set image names
+arch="{arm,x86}"                            # e.g. -a "{amd,arm,intel}"
+branch="{lts,ltsrc,master,stable,stablerc}" # mapped to a git commit-ish in ./inventory
+names=""                                    # set image names explicitly
 os="{db,dt,un}"                             # debian bookworm, debian trixie, ubuntu noble
-snapshot_parameters=""
+play_args="-e kernel_vanilla_build=false -e delete_instance_afterwards=true"
 
-while getopts a:b:fn:o: opt; do
+while getopts a:b:fn:o:p: opt; do
   case ${opt} in
   a) arch="${OPTARG}" ;;
   b) branch="${OPTARG}" ;;
-  f)
-    arch="{amd,intel,arm}"
-    snapshot_parameters='-e kernel_vanilla_build=yes'
-    names=$(allFlavours)
-    ;;
+  f) names=$(allFlavours) ;;
   n) names="${OPTARG}" ;;
   o) os="${OPTARG}" ;;
+  p) play_args="${OPTARG}" ;;
   *)
     echo " unknown parameter '${opt}'" >&2
     exit 1
@@ -58,7 +56,7 @@ cd $(dirname $0)/..
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 ./bin/create-server.sh ${names}
-./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${snapshot_parameters}
+./site-snapshot.yaml --limit $(xargs <<<"${names} localhost" | tr ' ' ',') ${play_args}
 ./bin/delete-server.sh ${names} 2>/dev/null
 
 trap - INT QUIT TERM EXIT

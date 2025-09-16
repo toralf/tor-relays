@@ -11,7 +11,7 @@ kernel_debian_cloud: false
 
 # vanilla kernel
 kernel_vanilla: false
-kernel_vanilla_build: "{{ ('snapshot' in group_names) | ternary('no', 'yes') }}" # or "detached"
+kernel_vanilla_build: true
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []

@@ -1,2 +1,2 @@
 ---
-delete_image_after_snapshot: "{{ ('snapshot' in group_names) | bool }}"
+delete_instance_afterwards: false

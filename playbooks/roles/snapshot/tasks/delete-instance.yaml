@@ -1,7 +1,8 @@
 ---
-- name: Delete cloud instance
+- name: Delete
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
+  when: delete_instance_afterwards | bool
   changed_when: true
   ansible.builtin.command:
     cmd: >-

@@ -12,8 +12,7 @@
   tags:
     - snapshot
 
-- name: Delete instance
-  when: delete_image_after_snapshot | bool
+- name: Delete
   ansible.builtin.import_tasks: delete-instance.yaml
   tags:
     - delete-instance
