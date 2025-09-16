@@ -7,7 +7,7 @@
   register: _result
 
 - name: Set fact _fingerprint
-  when: _result.stdout
+  when: _result.stdout | length > 0
   ansible.builtin.set_fact:
     _fingerprint: "{{ _result.stdout_lines[0] }}"
 
@@ -19,12 +19,12 @@
   register: _result
 
 - name: Set fact _fingerprint_ed25519
-  when: _result.stdout
+  when: _result.stdout | length > 0
   ansible.builtin.set_fact:
     _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
 - name: Hashed fingerprint
-  when: bridge_distribution
+  when: bridge_distribution | length > 0
   block:
     - name: Get hashed fingerprint of a bridge
       changed_when: false
@@ -34,6 +34,6 @@
       register: _result
 
     - name: Set fact _fingerprint_hashed
-      when: _result.stdout
+      when: _result.stdout | length > 0
       ansible.builtin.set_fact:
         _fingerprint_hashed: "{{ _result.stdout_lines[0] }}"

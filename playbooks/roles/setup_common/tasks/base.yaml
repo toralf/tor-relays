@@ -25,7 +25,7 @@
 
 - name: Have only 1 authorized key
   changed_when: false
-  failed_when: _result.stdout | int != 1
+  failed_when: _result.stdout_lines | length != 1
   ansible.builtin.shell:
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result

@@ -9,7 +9,7 @@
     - Reload Tor
 
 - name: Install family key
-  when: tor_secret_family_key_file
+  when: tor_secret_family_key_file | length > 0
   ansible.builtin.copy:
     src: "{{ tor_secret_family_key_file }}"
     dest: /var/lib/tor/keys/

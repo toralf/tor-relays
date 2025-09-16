@@ -5,7 +5,7 @@
   register: _build_is_running
 
 - name: Self-compiled kernel
-  when: not _build_is_running.pids
+  when: _build_is_running.pids | length == 0
   block:
     - name: Install/Update toolchain
       ansible.builtin.apt:

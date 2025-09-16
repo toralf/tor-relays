@@ -8,7 +8,7 @@
   register: _result
 
 - name: Findings of unattended log
-  when: _result.stdout
+  when: _result.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines

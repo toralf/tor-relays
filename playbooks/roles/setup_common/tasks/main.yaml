@@ -58,7 +58,7 @@
       mode: "0644"
   block:
     - name: Run a custom command
-      when: custom_command
+      when: custom_command | length > 0
       ansible.builtin.import_tasks: custom-command.yaml
       tags:
         - custom-command

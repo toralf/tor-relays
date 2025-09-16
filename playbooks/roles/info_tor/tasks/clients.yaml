@@ -19,4 +19,4 @@
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/tor_clients"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"
+    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

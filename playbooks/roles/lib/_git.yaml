@@ -33,7 +33,7 @@
       register: _git_head
 
 - name: Git clean "{{ _repo_dir }}"
-  changed_when: __cleaned.stdout
+  changed_when: __cleaned.stdout | length > 0
   ansible.builtin.command:
     cmd: git clean --force -d
     chdir: "{{ _repo_dir }}"
@@ -59,4 +59,4 @@
   ansible.builtin.set_fact:
     _git_repo_changed: "{{  __repo.changed or __repo.before == None or
       __updated.changed or __cleaned.changed or __patched.changed or
-      force_rebuild is defined and force_rebuild | bool }}"
+      force_rebuild is defined and force_rebuild }}"

@@ -59,7 +59,7 @@
 - name: Allow low port for Tor
   when: tor_port | int < 1024
   vars:
-    _exe: "{{ bridge_distribution | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+    _exe: "{{ (bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
   ansible.builtin.lineinfile:
     line: >-
       'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
@@ -74,7 +74,7 @@
   notify: Restart Tor
 
 - name: Install/Update PT
-  when: bridge_distribution
+  when: bridge_distribution | length > 0
   ansible.builtin.apt:
     name:
       - obfs4proxy

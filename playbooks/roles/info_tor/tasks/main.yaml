@@ -14,26 +14,26 @@
         - wellknown
 
     - name: Bridge stats
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       ansible.builtin.import_tasks: bridge-stats.yaml
       tags:
         - bridge-stats
 
     - name: Bridge line
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       ansible.builtin.import_tasks: bridgeline.yaml
       tags:
         - never
         - bridgeline
 
     - name: Bto
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       ansible.builtin.import_tasks: bto.yaml
       tags:
         - bto
 
     - name: Clients
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       ansible.builtin.import_tasks: clients.yaml
       tags:
         - clients
@@ -64,7 +64,7 @@
         - log-warn
 
     - name: Onionoo
-      when: bridge_distribution
+      when: bridge_distribution | length > 0
       ansible.builtin.import_tasks: onionoo.yaml
       tags:
         - onionoo

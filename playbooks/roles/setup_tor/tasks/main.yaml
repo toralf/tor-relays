@@ -65,7 +65,7 @@
             - tor-src
 
         - name: Lyrebird
-          when: bridge_distribution
+          when: bridge_distribution | length > 0
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
             - lyrebird

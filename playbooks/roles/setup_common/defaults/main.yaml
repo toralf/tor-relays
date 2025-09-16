@@ -11,13 +11,13 @@ kernel_debian_cloud: false
 
 # vanilla kernel
 kernel_vanilla: false
-kernel_vanilla_build: true
+kernel_vanilla_build: "yes"
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []
 
 # metrics
-metrics_port: ""
+metrics_port: 0
 nginx_metrics: false
 node_metrics: false
 prometheus_server: ""

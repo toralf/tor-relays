@@ -1,7 +1,7 @@
 ---
 # group by description and keep highest id per description
 - name: Remove superseeded snapshot/s
-  changed_when: _result.stdout
+  changed_when: _result.stdout | length > 0
   ansible.builtin.shell:
     cmd: |-
       hcloud --quiet image list --type snapshot --output noheader --output columns=id,description,created,image_size |
@@ -20,7 +20,7 @@
   register: _result
 
 - name: File result
-  when: _result.stdout
+  when: _result.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines

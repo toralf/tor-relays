@@ -38,7 +38,7 @@
         - name: Run script for artefact
           delegate_to: localhost
           throttle: 1
-          changed_when: _script.stdout or _script.stderr
+          changed_when: _script.stdout | length > 0 or _script.stderr | length > 0
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
               {{ artefact_hook }} {{ _tmp_filename }}
@@ -46,13 +46,13 @@
 
       always:
         - name: Script stdout for artefact
-          when: _script.stdout
+          when: _script.stdout | length > 0
           changed_when: true
           ansible.builtin.debug:
             var: _script.stdout_lines
 
         - name: Script stderr for artefact
-          when: _script.stderr
+          when: _script.stderr | length > 0
           changed_when: true
           ansible.builtin.debug:
             var: _script.stderr_lines

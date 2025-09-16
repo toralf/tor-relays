@@ -23,4 +23,4 @@
     line: "{{ inventory_hostname }} sf {{ _version }} {{ _package }}"
     path: "{{ tmp_dir }}/snowflake_version"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"
+    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

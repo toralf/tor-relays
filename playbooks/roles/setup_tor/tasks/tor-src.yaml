@@ -84,7 +84,7 @@
 # for bridges the PT needs the capability
 - name: Allow low port
   changed_when: false
-  when: tor_port | int < 1024 and not bridge_distribution
+  when: tor_port | int < 1024 and bridge_distribution | length == 0
   community.general.capabilities:
     path: /usr/bin/tor
     capability: cap_net_bind_service+ep

@@ -20,7 +20,7 @@
         insertafter: "^# {{ inventory_hostname }}\n"
 
 - name: Wellknown for server
-  when: not bridge_distribution
+  when: not bridge_distribution | length > 0
   block:
     - name: Ensure hostname is in wellknown files
       delegate_to: localhost

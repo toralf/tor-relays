@@ -16,4 +16,4 @@
     line: "{{ inventory_hostname }} etimes {{ _result.stdout | default('-') }}"
     path: "{{ tmp_dir }}/snowflake_process_runtime"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _result.stdout_lines | ternary('present', 'absent') }}"
+    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

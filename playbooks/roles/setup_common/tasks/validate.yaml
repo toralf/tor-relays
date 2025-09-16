@@ -6,28 +6,28 @@
       - "ansible_facts.distribution in ('Debian', 'Ubuntu')"
 
 - name: Validate metrics_port
-  when: metrics_port
+  when: metrics_port > 0
   ansible.builtin.assert:
     quiet: true
     that:
       - "metrics_port | int > 0 and metrics_port | int < 2**16"
 
 - name: Validate prometheus_server
-  when: prometheus_server
+  when: prometheus_server | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
       - "prometheus_server is ansible.utils.ipv4"
 
 - name: Validate additional_ports
-  when: additional_ports
+  when: additional_ports | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
       - "additional_ports | unique | length == additional_ports | length"
 
 - name: Validate prometheus_server IPv6
-  when: prometheus_server6
+  when: prometheus_server6 | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
@@ -45,10 +45,10 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "kernel_vanilla_build is in ['detached', 'no', 'yes']"
+      - "kernel_vanilla_build in ('detached', 'no', 'yes')"
 
 - name: Validate Nginx site directories
-  when: nginx_site_directories
+  when: nginx_site_directories | length > 0
   ansible.builtin.assert:
     quiet: true
     that:

@@ -1,7 +1,7 @@
 ---
 - name: Grep system log for an issue
-  changed_when: _result.stdout
-  failed_when: _result.stderr or _result.rc > 0
+  changed_when: _result.stdout | length > 0
+  failed_when: _result.stderr | length > 0 or _result.rc > 0
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ issue_since }}" --quiet |
@@ -25,4 +25,4 @@
     block: "{{ _result.stdout }}"
     path: "{{ tmp_dir }}/issue.log"
     marker: "# {mark} {{ inventory_hostname }} "
-    state: "{{ _result.stdout | ternary('present', 'absent') }}"
+    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

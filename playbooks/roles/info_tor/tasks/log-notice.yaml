@@ -20,13 +20,13 @@
   register: _result
 
 - name: Results of notice log
-  when: _result.stdout
+  when: _result.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
 
 - name: Error
-  when: _result.stderr
+  when: _result.stderr | length > 0
   changed_when: true
   ansible.builtin.debug:
     var: _result.stderr_lines

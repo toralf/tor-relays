@@ -27,7 +27,7 @@
       - python3-psutil
 
 - name: Ensure no package manager is running
-  failed_when: _processes.pids
+  failed_when: _processes.pids | length > 0
   retries: 3
   delay: 60
   community.general.pids:
@@ -69,6 +69,6 @@
     state: started
 
 - name: Install/Update additional software
-  when: additional_software
+  when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"

@@ -14,13 +14,13 @@
         var: _result.rc
   always:
     - name: Stdout of custom command
-      when: _result.stdout
+      when: _result.stdout | length > 0
       changed_when: true
       ansible.builtin.debug:
         var: _result.stdout_lines
 
     - name: Stderr of custom command
-      when: _result.stderr
+      when: _result.stderr | length > 0
       changed_when: true
       ansible.builtin.debug:
         var: _result.stderr_lines

@@ -13,21 +13,29 @@
       - "tor_port | int > 0 and tor_port | int < 2**16"
 
 - name: Validate metrics_port
-  when: metrics_port
+  when: metrics_port > 0
   ansible.builtin.assert:
     quiet: true
     that:
+      - "metrics_port | int > 0 and metrics_port | int < 2**16"
       - "tor_port != metrics_port"
 
+- name: Validate tor_port
+  when: tor_port != 0
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "tor_port | int > 0 and tor_port | int < 2**16"
+
 - name: Validate nickname
-  when: nickname
+  when: nickname | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
       - "nickname | length >= 1 and nickname | length <= 19"
 
 - name: Validate additional_ports
-  when: additional_ports
+  when: additional_ports | length > 0
   ansible.builtin.assert:
     quiet: true
     that:

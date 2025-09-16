@@ -1,7 +1,7 @@
 ---
 - name: Look for artefact
-  when: artefact_paths
-  changed_when: _result.files is defined and _result.files
+  when: artefact_paths | length > 0
+  changed_when: _result.files is defined and _result.files | length > 0
   ansible.builtin.find:
     paths: "{{ artefact_paths }}"
     patterns: "{{ artefact_patterns }}"
@@ -13,7 +13,7 @@
   register: _result
 
 - name: Work on found artefact
-  when: _result.files is defined and _result.files
+  when: _result.files is defined and _result.files | length > 0
   ansible.builtin.include_tasks: _artefact.yaml
   loop_control:
     label: "{{ item.path }}    {{ item.size }}"

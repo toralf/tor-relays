@@ -32,4 +32,4 @@
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/firewall_ct_counter"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _result.stderr | bool | ternary('absent', 'present') }}"
+    state: "{{ (_result.stderr | length > 0) | ternary('absent', 'present') }}"

@@ -1,6 +1,6 @@
 ---
 - name: Minicoredumper
-  changed_when: _result.files is defined and _result.files
+  changed_when: _result.files is defined and _result.files | length > 0
   ansible.builtin.find:
     paths:
       - /var/crash/minicoredumper
@@ -10,7 +10,7 @@
   register: _result
 
 - name: Loop over core dump files
-  when: _result.files is defined and _result.files
+  when: _result.files is defined and _result.files | length > 0
   vars:
     _fname: "{{ item.path }}"
     _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
