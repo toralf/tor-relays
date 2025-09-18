@@ -15,26 +15,10 @@
       ansible.builtin.command:
         cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-    - name: Wait for network ping
+    - name: Additional wait after Poweron
       delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      changed_when: _network.rc == 0
-      ansible.builtin.shell:
-        cmd: |-
-          set -e
-
-          i=20
-          while (( i-- )); do
-            if ping -q -c 1 {{ inventory_hostname }} &>/dev/null; then
-              sleep 20
-              exit 0
-            fi
-            sleep 1
-          done
-
-          exit 2
-        executable: /bin/bash
-      register: _network
+      ansible.builtin.wait_for:
+        timeout: 45
 
     - name: SSH ping after poweron
       ansible.builtin.ping:
