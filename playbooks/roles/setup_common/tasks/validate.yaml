@@ -40,7 +40,7 @@
     that:
       - "ansible_facts.memtotal_mb > 1024"
 
-- name: Validate vanilla kernel build method
+- name: Validate vanilla kernel build
   when: kernel_vanilla
   ansible.builtin.assert:
     quiet: true
