@@ -45,7 +45,7 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "kernel_vanilla_build in ('detached', 'no', 'yes')"
+      - "kernel_vanilla_build in ('no', 'nowait', 'yes')"
 
 - name: Validate Nginx site directories
   when: nginx_site_directories | length > 0

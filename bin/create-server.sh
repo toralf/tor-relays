@@ -17,7 +17,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=24
+jobs=$(nproc)
 
 names=$(xargs -n 1 <<<$*)
 
@@ -82,7 +82,7 @@ while read -r name; do
     exit 1
   fi
 
-  echo --poll-interval 12s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+  echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
 done <<<${names} |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 rc=$?

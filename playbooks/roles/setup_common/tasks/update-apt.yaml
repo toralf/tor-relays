@@ -14,7 +14,7 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
-- name: Run "apt-get update"
+- name: Update apt cache
   changed_when: _result.cache_updated
   ansible.builtin.apt:
     cache_valid_time: 600

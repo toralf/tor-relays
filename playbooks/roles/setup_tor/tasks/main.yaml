@@ -51,6 +51,8 @@
         - tor-dist
 
     - name: Build from source
+      tags:
+        - tor
       when: tor_build_from_source and ansible_facts.distribution in ('Debian', 'Ubuntu')
       block:
         - name: Tools
@@ -61,7 +63,6 @@
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
-            - tor
             - tor-src
 
         - name: Lyrebird

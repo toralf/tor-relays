@@ -39,19 +39,20 @@
 
     - name: Build form source
       when: snowflake_build_from_source
+      tags:
+        - snowflake
       block:
         - name: Tools source
           ansible.builtin.import_tasks: tools-src.yaml
           tags:
             - tools-src
 
-        - name: Snowflake from source
+        - name: Build from source
           ansible.builtin.import_tasks: snowflake-src.yaml
           tags:
-            - snowflake
             - snowflake-src
 
-        - name: Configure from source Snowflake
+        - name: Configure from source
           ansible.builtin.import_tasks: config-src.yaml
           tags:
             - config

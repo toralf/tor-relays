@@ -15,8 +15,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-# be optimistic that the snapshot image location is a nearby cache
-jobs=48
+jobs=$(nproc)
 
 names=$(xargs -n 1 <<<$*)
 
@@ -27,7 +26,7 @@ fi
 echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
 while read -r name; do
   image=$(getImage)
-  echo --poll-interval 24s server rebuild --image ${image} ${name}
+  echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
 done <<<${names} |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 

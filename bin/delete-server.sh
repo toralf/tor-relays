@@ -15,7 +15,7 @@ hash -r hcloud rc-service
 [[ $# -ne 0 ]] || exit 1
 setProject
 
-jobs=24
+jobs=$(nproc)
 
 names=$(xargs -n 1 <<<$*)
 

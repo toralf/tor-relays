@@ -15,7 +15,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/firewall_ct_drops"
+    path: "{{ tmp_dir }}/firewall_ct_drop"
     regexp: "^{{ inventory_hostname }} "
 
 - name: Get ct counter
