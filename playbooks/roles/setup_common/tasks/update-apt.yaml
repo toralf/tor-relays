@@ -41,10 +41,11 @@
       - freeipmi-common
     state: absent
 
-- name: Install/Update common software
+- name: Install/Update tools
   ansible.builtin.apt:
     name:
       - curl
+      - elfutils
       - git
       - needrestart
       - psmisc
