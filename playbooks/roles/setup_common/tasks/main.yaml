@@ -119,7 +119,9 @@
         - kernel-src
 
     - name: Nginx
-      when: metrics_port > 0 or nginx_public_site or nginx_site_directories | default([]) | length > 0
+      when:
+        nginx_metrics or nginx_public_site or nginx_site_directories | default([]) | length > 0 or
+        ddos_metrics | default(false) or node_metrics or snowflake_metrics | default(false) or tor_metrics | default(false)
       block:
         - name: Nginx
           ansible.builtin.import_tasks: nginx.yaml
