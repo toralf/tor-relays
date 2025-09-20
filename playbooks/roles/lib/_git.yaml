@@ -60,4 +60,4 @@
   ansible.builtin.set_fact:
     _git_repo_changed: "{{  __repo.changed or __repo.before == None or
       __updated.changed or __cleaned.changed or __patched.changed or
-      force_rebuild is defined and force_rebuild }}"
+      force_rebuild | default(false) }}"

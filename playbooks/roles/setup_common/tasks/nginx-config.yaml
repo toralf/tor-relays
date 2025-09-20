@@ -1,6 +1,5 @@
 ---
 - name: Create nginx site directories
-  when: nginx_site_directories | length > 0
   ansible.builtin.file:
     path: /var/www/{{ item.dir }}
     state: directory
