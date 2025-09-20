@@ -1,6 +1,5 @@
 ---
 - name: Minicoredumper
-  changed_when: _result.files is defined and _result.files | length > 0
   ansible.builtin.find:
     paths:
       - /var/crash/minicoredumper
@@ -9,12 +8,20 @@
     recurse: true
   register: _result
 
-- name: Loop over core dump files
-  when: _result.files is defined and _result.files | length > 0
-  vars:
-    _fname: "{{ item.path }}"
-    _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
-  ansible.builtin.include_tasks: _minicoredumper.yaml
-  loop_control:
-    label: "{{ _unique_id }}"
-  loop: "{{ _result.files }}"
+- name: Result
+  when: _result.files | default([]) | length > 0
+  block:
+    - name: Bail out if there are too many (new) core dump files
+      ansible.builtin.assert:
+        quiet: true
+        that:
+          - "_result.files | length < 50"
+
+    - name: Loop over core dump files
+      vars:
+        _fname: "{{ item.path }}"
+        _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
+      ansible.builtin.include_tasks: _minicoredumper.yaml
+      loop_control:
+        label: "{{ _unique_id }}"
+      loop: "{{ _result.files }}"
