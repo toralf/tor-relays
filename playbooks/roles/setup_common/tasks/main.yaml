@@ -119,9 +119,17 @@
         - kernel-src
 
     - name: Nginx
-      ansible.builtin.import_tasks: nginx.yaml
-      tags:
-        - nginx
+      when: metrics_port > 0 or nginx_public_site or nginx_site_directories | default([]) | length > 0
+      block:
+        - name: Nginx
+          ansible.builtin.import_tasks: nginx.yaml
+          tags:
+            - nginx
+
+        - name: Nginx config
+          ansible.builtin.import_tasks: nginx-config.yaml
+          tags:
+            - nginx-config
 
     - name: Prometheus Node Exporter
       when: node_metrics

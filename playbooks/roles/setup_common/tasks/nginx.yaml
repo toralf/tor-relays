@@ -11,76 +11,50 @@
     state: absent
   notify: Reload nginx
 
-- name: HTTPs for nginx
-  when: metrics_port > 0
-  block:
-    - name: Generate host key
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      community.crypto.openssl_privatekey:
-        path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+- name: Generate host key
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.openssl_privatekey:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
 
-    - name: Generate host CSR
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      community.crypto.openssl_csr:
-        path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
-        privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
-        common_name: "{{ inventory_hostname }}"
-        country_name: "{{ ca_country_name }}"
-        subject_alt_name:
-          - "DNS:{{ inventory_hostname }}"
-          - "IP:{{ ansible_facts.default_ipv4.address }}"
-          - "IP:{{ ansible_facts.default_ipv6.address }}"
+- name: Generate host CSR
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.openssl_csr:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    privatekey_path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+    common_name: "{{ inventory_hostname }}"
+    country_name: "{{ ca_country_name }}"
+    subject_alt_name:
+      - "DNS:{{ inventory_hostname }}"
+      - "IP:{{ ansible_facts.default_ipv4.address }}"
+      - "IP:{{ ansible_facts.default_ipv6.address }}"
 
-    - name: Generate host certificate
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      community.crypto.x509_certificate:
-        path: "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt"
-        csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
-        ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
-        ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
-        provider: ownca
+- name: Generate host certificate
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  community.crypto.x509_certificate:
+    path: "{{ ca_dir }}/{{ ca_name }}/clients/crts/{{ inventory_hostname }}.crt"
+    csr_path: "{{ ca_dir }}/{{ ca_name }}/clients/csrs/{{ inventory_hostname }}.csr"
+    ownca_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.crt"
+    ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
+    provider: ownca
 
-    - name: Copy host key
-      ansible.builtin.copy:
-        src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
-        dest: /etc/nginx/conf.d/
-        mode: "0600"
-      notify: Reload nginx
+- name: Copy host key
+  ansible.builtin.copy:
+    src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
+    dest: /etc/nginx/conf.d/
+    mode: "0600"
+  notify: Reload nginx
 
-    - name: Compile nginx certificate
-      ansible.builtin.copy:
-        content: |
-          {{ lookup("file", ca_dir + "/" + ca_name + "/clients/crts/" + inventory_hostname + ".crt") }}
-          {{ lookup("file", ca_dir + "/" + ca_name + "/" + ca_name + ".crt") }}
+- name: Compile nginx certificate
+  ansible.builtin.copy:
+    content: |
+      {{ lookup("file", ca_dir + "/" + ca_name + "/clients/crts/" + inventory_hostname + ".crt") }}
+      {{ lookup("file", ca_dir + "/" + ca_name + "/" + ca_name + ".crt") }}
 
-        dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
-      notify: Reload nginx
-
-- name: Nginx config
-  tags:
-    - nginx-config
-  block:
-    - name: Create nginx site directories
-      when: nginx_site_directories | length > 0
-      ansible.builtin.file:
-        path: /var/www/{{ item.dir }}
-        state: directory
-        mode: "0755"
-      loop: "{{ nginx_site_directories }}"
-
-    - name: Configure nginx
-      ansible.builtin.template:
-        src: nginx.conf.j2
-        dest: /etc/nginx/conf.d/tor-relays.conf
-      notify: Reload nginx
-
-    - name: Verify nginx config
-      changed_when: false
-      ansible.builtin.command:
-        cmd: nginx -t
+    dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
+  notify: Reload nginx
 
 - name: Ensure that nginx systemd override dir exists
   ansible.builtin.file:
