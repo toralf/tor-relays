@@ -2,12 +2,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-function Exit() {
-  trap - INT QUIT TERM EXIT
-  sudo rm -f ${hconf}.new
-}
-
-#######################################################################
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
@@ -33,7 +27,7 @@ while [[ -e ${hconf}.new ]]; do
 done
 
 echo -e "# managed by $(realpath $0)\nserver:" | sudo tee ${hconf}.new >/dev/null
-trap Exit INT QUIT TERM EXIT
+trap 'sudo rm -f ${hconf}.new' INT QUIT TERM EXIT
 
 hcloud --quiet server list --output noheader --output columns=name,ipv4 |
   sort |
