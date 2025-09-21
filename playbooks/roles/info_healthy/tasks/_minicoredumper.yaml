@@ -17,12 +17,12 @@
           set -eu
 
           tar -xf {{ _fname }} --to-stdout >/tmp/core
-
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
             -c /tmp/core
           echo
           eu-stack --core /tmp/core
+          rm /tmp/core
         executable: /bin/bash
       register: _result
 

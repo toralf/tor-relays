@@ -12,33 +12,40 @@
   vars:
     _tmp_filename: "{{ tmp_dir }}/{{ item.checksum }}"
   block:
+    - name: Log artefact history
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ item.checksum }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}    {{ inventory_hostname }}"
+        path: "{{ tmp_dir }}/artefact-history.log"
+
     - name: Fetch
       throttle: 1
       ansible.builtin.fetch:
         src: "{{ item.path }}"
         dest: "{{ _tmp_filename }}"
 
-    - name: Inspect artefact mime type
+    - name: Inspect artefact file type
       delegate_to: localhost
-      throttle: 1
+      throttle: "{{ concurrent_local_jobs }}"
       changed_when: false
       ansible.builtin.command:
         cmd: >-
           file {{ _tmp_filename }}
-      register: _mimetype
+      register: _filetype
 
-    - name: Print out artefact file mime type
+    - name: Print out artefact file type
       changed_when: true
       ansible.builtin.debug:
-        var: _mimetype.stdout_lines
+        var: _filetype.stdout_lines
 
     - name: External script for artefact
       when: artefact_hook
       block:
         - name: Run script for artefact
           delegate_to: localhost
-          throttle: 1
-          changed_when: _script.stdout | length > 0 or _script.stderr | length > 0
+          throttle: "{{ concurrent_local_jobs }}"
+          changed_when: false
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
               {{ artefact_hook }} {{ _tmp_filename }}
