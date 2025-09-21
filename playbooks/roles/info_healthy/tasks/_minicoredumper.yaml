@@ -23,7 +23,6 @@
           echo
           eu-stack --core /tmp/core
           rm /tmp/core
-        executable: /bin/bash
       register: _result
 
     - name: File core dump info
