@@ -5,6 +5,9 @@ additional_software: []
 # e.g.:  -e custom_command="'cd linux; make clean'"
 custom_command: ""
 
+# e.g.:  -e desired_debian_release=trixie
+desired_debian_release: ""
+
 # Debian kernel flavours
 kernel_debian_backports: false
 kernel_debian_cloud: false

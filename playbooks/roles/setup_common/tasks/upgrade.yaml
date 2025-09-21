@@ -1,21 +1,50 @@
 ---
 - name: Upgrade system
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+  vars:
+    _new_release: "{{ ansible_facts.distribution == 'Debian' and
+      desired_debian_release | length > 0 and ansible_facts.distribution_release != desired_debian_release }}"
+  environment:
+    DEBIAN_FRONTEND: noninteractive
   block:
+    - name: New Debian release
+      when: _new_release
+      block:
+        - name: Upgrade to new Debian release
+          changed_when: true
+          ansible.builtin.shell:
+            cmd: |-
+              set -e
+
+              sed -i 's/{{ ansible_facts.distribution_release }}/{{ desired_debian_release }}/g' \
+                /etc/apt/sources.list /etc/apt/sources.list.d/*
+              apt update
+              apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
+
+        - name: Reboot
+          ansible.builtin.import_tasks: reboot.yaml
+
+        - name: Finish new Debian release
+          changed_when: true
+          ansible.builtin.shell:
+            cmd: |-
+              set -e
+
+              apt -y autoremove
+              apt clean
+              apt -y modernize-sources
+
     - name: Apt upgrade
-      retries: 3
-      delay: 60
-      environment:
-        DEBIAN_FRONTEND: noninteractive
+      when: not _new_release
       ansible.builtin.apt:
         upgrade: full
 
-    - name: Check if reboot is needed after upgrade
+    - name: Reboot
       ansible.builtin.import_tasks: reboot.yaml
-# trixie: https://gist.github.com/yorickdowne/3cecc7b424ce241b173510e36754af47
-#
-# sed -i 's/bookworm/trixie/g' /etc/apt/sources.list /etc/apt/sources.list.d/*
-# apt update
-# DEBIAN_FRONTEND=noninteractive apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
-# reboot
-# apt -y autoremove && apt clean && apt -y modernize-sources
+
+    - name: Gather facts - distribution
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "!min"
+          - distribution
