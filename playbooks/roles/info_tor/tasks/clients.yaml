@@ -17,6 +17,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/tor_client"
+    path: "{{ tmp_dir }}/tor_clients"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

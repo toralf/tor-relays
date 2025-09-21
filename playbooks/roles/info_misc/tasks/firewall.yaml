@@ -1,5 +1,5 @@
 ---
-- name: Get ct drops
+- name: Get conntrack drop value
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -10,26 +10,26 @@
         xargs
   register: _result
 
-- name: File ct drops
+- name: File conntrack drop value
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/firewall_ct_drop"
+    path: "{{ tmp_dir }}/firewall_conntrack_drop"
     regexp: "^{{ inventory_hostname }} "
 
-- name: Get ct counter
+- name: Get conntrack counter
   changed_when: false
   failed_when: false
   ansible.builtin.command:
     cmd: conntrack -C
   register: _result
 
-- name: File ct counter
+- name: File conntrack counter
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/firewall_ct_counter"
+    path: "{{ tmp_dir }}/firewall_conntrack_counter"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (_result.stderr | length > 0) | ternary('absent', 'present') }}"
