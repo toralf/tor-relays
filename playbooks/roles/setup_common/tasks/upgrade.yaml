@@ -7,6 +7,14 @@
   environment:
     DEBIAN_FRONTEND: noninteractive
   block:
+    - name: Apt upgrade
+      when: not _new_release
+      ansible.builtin.apt:
+        upgrade: full
+
+    - name: Reboot
+      ansible.builtin.import_tasks: reboot.yaml
+
     - name: New Debian release
       when: _new_release
       block:
@@ -34,17 +42,9 @@
               apt clean
               apt -y modernize-sources
 
-    - name: Apt upgrade
-      when: not _new_release
-      ansible.builtin.apt:
-        upgrade: full
-
-    - name: Reboot
-      ansible.builtin.import_tasks: reboot.yaml
-
-    - name: Gather facts - distribution
-      ansible.builtin.setup:
-        gather_subset:
-          - "!all"
-          - "!min"
-          - distribution
+        - name: Gather facts - distribution
+          ansible.builtin.setup:
+            gather_subset:
+              - "!all"
+              - "!min"
+              - distribution
