@@ -1,14 +1,10 @@
 ---
 - name: Upgrade system
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-  vars:
-    _new_release: "{{ ansible_facts.distribution == 'Debian' and
-      desired_debian_release | length > 0 and ansible_facts.distribution_release != desired_debian_release }}"
   environment:
     DEBIAN_FRONTEND: noninteractive
   block:
     - name: Apt upgrade
-      when: not _new_release
       ansible.builtin.apt:
         upgrade: full
 
@@ -16,7 +12,8 @@
       ansible.builtin.import_tasks: reboot.yaml
 
     - name: New Debian release
-      when: _new_release
+      when: ansible_facts.distribution == 'Debian' and
+        desired_debian_release | length > 0 and desired_debian_release != ansible_facts.distribution_release
       block:
         - name: Upgrade to new Debian release
           changed_when: true
