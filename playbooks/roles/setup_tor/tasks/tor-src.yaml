@@ -19,6 +19,8 @@
 - name: Build
   when: _git_repo_changed
   changed_when: true
+  vars:
+    _j: "{{ (ansible_facts.processor_vcpus == 1) | ternary(1, ansible_facts.processor_vcpus - 1) }}"
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -36,7 +38,7 @@
           --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
           1>>make.log
       make clean 1>>make.log
-      make -j {{ ansible_facts.processor_vcpus }} 1>>make.log
+      make -j {{ _j }} 1>>make.log
     chdir: /root/tor
 
 - name: Create directories
