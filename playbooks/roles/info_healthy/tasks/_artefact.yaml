@@ -39,10 +39,10 @@
       ansible.builtin.debug:
         var: _filetype.stdout_lines
 
-    - name: External script for artefact
-      when: artefact_hook
+    - name: Hook
+      when: artefact_hook | length > 0
       block:
-        - name: Run script for artefact
+        - name: Hook for artefact
           delegate_to: localhost
           throttle: "{{ concurrent_local_jobs }}"
           changed_when: false
@@ -71,13 +71,4 @@
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
         path: "{{ tmp_dir }}/artefact.log"
-        state: absent
-
-  always:
-    - name: Cleanup artefact
-      delegate_to: localhost
-      throttle: 1
-      when: artefact_cleanup
-      ansible.builtin.file:
-        path: "{{ _tmp_filename }}"
         state: absent

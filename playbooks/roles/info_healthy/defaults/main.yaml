@@ -1,9 +1,8 @@
 ---
-artefact_cleanup: false
 artefact_paths: []
 artefact_patterns: []
 artefact_hook: ""
-artefact_size: "0"
+artefact_size: "0k"
 
 issue_since: "1 day ago"
 
