@@ -16,7 +16,7 @@ fi
 name=${1}
 
 # we're called from git bisect run ...
-bisect_id=$(cat .git/BISECT_HEAD) || exit 254
+bisect_id=$(<.git/BISECT_HEAD) || exit 254
 
 cd $(dirname $0)/..
 
