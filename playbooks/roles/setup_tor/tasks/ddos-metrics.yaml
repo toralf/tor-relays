@@ -21,22 +21,20 @@
   register: _ddos_metrics_pids_2_kill
 
 - name: Ensure no outdated DDoS metrics script is running
+  when: (_download.changed or not ddos_metrics or _cronjob.changed) and _ddos_metrics_pids_running.pids | length > 0
   changed_when: true
-  when: _download.changed or not ddos_metrics or _cronjob.changed
   ansible.builtin.shell:
     cmd: |-
       kill -0 "{{ item }}" && kill -9 "{{ item }}"
   with_items: "{{ _ddos_metrics_pids_2_kill.pids }}"
-  register: _ddos_metrics_killed
 
-- name: Check if DDoS metrics script is running
+- name: Look if DDoS metrics script is running
   community.general.pids:
     name: metrics.sh
   register: _ddos_metrics_pids_running
 
-- name: Ensure DDoS metrics script is running
+- name: Start DDoS metrics script
+  when: ddos_metrics and _ddos_metrics_pids_running.pids | length == 0
   changed_when: true
-  when: ddos_metrics and not _ddos_metrics_pids_running.pids
   ansible.builtin.shell:
     cmd: nice /root/metrics.sh 15 /var/www/html/ &
-  register: _ddos_metrics_started
