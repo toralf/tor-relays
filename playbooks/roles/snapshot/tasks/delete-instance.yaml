@@ -1,5 +1,5 @@
 ---
-- name: Delete
+- name: Delete instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   when: delete_instance_afterwards | bool
