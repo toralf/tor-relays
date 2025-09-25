@@ -13,7 +13,7 @@ function cleanLocalDataEntries() {
     # Ansible facts
     rm -f $(dirname $0)/../.ansible_facts/{,s1_}${name}
     # line in files under {{ tmp_dir }}
-    sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" ${files} 2>/dev/null
+    sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" -e "/ ${name} /d" -e "/ ${name}$/d" ${files} 2>/dev/null
     # private Tor bridge lines
     sed -i -e "/ # ${name}$/d" /tmp/tor-relays/*_bridgeline 2>/dev/null
   done < <(xargs -n 1 <<<$*)
