@@ -5,39 +5,13 @@
       - prometheus-node-exporter
   notify: Restart Prometheus node exporter
 
-# https://github.com/prometheus/node_exporter
-# reduce the pressure at the (tiny cloud) instances itself instead filtering by "params:" in the prometheus.yaml config file
 - name: Configure Prometheus node exporter
   vars:
-    _collectors:
-      [
-        "arp",
-        "conntrack",
-        "cpu",
-        "diskstats",
-        "filefd",
-        "filesystem",
-        "loadavg",
-        "meminfo",
-        "netdev",
-        "netstat",
-        "processes",
-        "sockstat",
-        "softnet",
-        "stat",
-        "udp_queues",
-        "uname",
-        "vmstat",
-      ]
+    _collectors: "{{ ['--collector'] | product(node_exporter_collectors) | map('join', '.') | join(' ') }}"
   ansible.builtin.lineinfile:
     create: false
     line: >-
-      ARGS='
-      --web.listen-address=localhost:9100
-      --collector.disable-defaults
-      {{ ["--collector"] | product(_collectors) | map('join', '.') | join(' ') }}
-      --collector.filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
-      '
+      ARGS='--web.listen-address=localhost:9100 {{ _collectors }}'
     path: /etc/default/prometheus-node-exporter
     regexp: "^ARGS="
   notify: Restart Prometheus node exporter

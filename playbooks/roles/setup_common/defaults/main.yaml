@@ -29,3 +29,26 @@ prometheus_server6: ""
 # nginx
 nginx_public_site: false
 nginx_site_directories: []
+
+# https://github.com/prometheus/node_exporter
+# reduce the pressure at the (tiny cloud) instances itself instead filtering by "params:" in the prometheus.yaml config file
+node_exporter_collectors:
+  - disable-defaults
+  - arp
+  - conntrack
+  - cpu
+  - diskstats
+  - filefd
+  - filesystem
+  - filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
+  - loadavg
+  - meminfo
+  - netdev
+  - netstat
+  - processes
+  - sockstat
+  - softnet
+  - stat
+  - udp_queues
+  - uname
+  - vmstat
