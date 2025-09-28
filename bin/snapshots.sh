@@ -3,7 +3,7 @@
 # set -x
 
 # create/update snaphot images -or- test kernel versions, e.g.
-# -a "{amd,arm,intel}" -b "{lts,stable}rc" o "{dt,un}" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
+# -a "{amd,arm,intel}" -b "{lts,stable}rc" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
 
 # Debian has 4 different dist kernels
 function allFlavours() {
