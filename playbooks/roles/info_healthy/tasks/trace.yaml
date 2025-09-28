@@ -1,6 +1,6 @@
 ---
 - name: Get trace from system log
-  changed_when: _result.stdout | length > 0
+  changed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ trace_since }}" --quiet |

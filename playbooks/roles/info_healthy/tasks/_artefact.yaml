@@ -49,20 +49,20 @@
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
               {{ artefact_hook }} {{ _tmp_filename }}
-          register: _script
+          register: _hook
 
       always:
-        - name: Script stdout for artefact
-          when: _script.stdout | length > 0
+        - name: Hook stdout for artefact
+          when: _hook.stdout | length > 0
           changed_when: true
           ansible.builtin.debug:
-            var: _script.stdout_lines
+            var: _hook.stdout_lines
 
-        - name: Script stderr for artefact
-          when: _script.stderr | length > 0
+        - name: Hook stderr for artefact
+          when: _hook.stderr | length > 0
           changed_when: true
           ansible.builtin.debug:
-            var: _script.stderr_lines
+            var: _hook.stderr_lines
 
   rescue:
     - name: Reset known state of artefact
