@@ -113,7 +113,7 @@
         - kernel-dist
 
     - name: Self-compiled kernel
-      when: kernel_vanilla | bool
+      when: kernel_git | bool
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel-src
@@ -150,7 +150,7 @@
       when: _kernel_build is defined and _kernel_build.changed
       block:
         - name: Wait till kernel build finished
-          when: kernel_vanilla_build == "yes"
+          when: kernel_git_build == "yes"
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
           register: _job_result

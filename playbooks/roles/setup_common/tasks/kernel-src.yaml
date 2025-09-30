@@ -31,7 +31,7 @@
       ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
     - name: Kernel
-      when: kernel_vanilla_build in ('nowait', 'yes')
+      when: kernel_git_build in ('nowait', 'yes')
       block:
         - name: Configure kernel
           changed_when: _kernel_configured.rc == 123
@@ -194,6 +194,6 @@
             _j: "{{ (_max | int < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ (kernel_vanilla_build == "nowait") |
+              {{ (kernel_git_build == "nowait") |
               ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
           register: _kernel_build
