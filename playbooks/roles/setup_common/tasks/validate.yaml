@@ -34,14 +34,14 @@
       - "prometheus_server6 is ansible.utils.ipv6"
 
 - name: Validate RAM for kernel build from source
-  when: kernel_vanilla
+  when: kernel_vanilla | bool
   ansible.builtin.assert:
     quiet: true
     that:
       - "ansible_facts.memtotal_mb > 1024"
 
 - name: Validate vanilla kernel build
-  when: kernel_vanilla
+  when: kernel_vanilla | bool
   ansible.builtin.assert:
     quiet: true
     that:

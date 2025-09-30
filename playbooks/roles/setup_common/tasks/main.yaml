@@ -113,7 +113,7 @@
         - kernel-dist
 
     - name: Self-compiled kernel
-      when: kernel_vanilla
+      when: kernel_vanilla | bool
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel-src
