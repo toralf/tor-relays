@@ -4,7 +4,6 @@
   hosts: "!snowflake:!tor"
   roles:
     - role: setup_common
-    - role: info_common
     - role: info_healthy
     - role: setup_autoupdate
 
@@ -12,7 +11,6 @@
   hosts: snowflake
   roles:
     - role: setup_common
-    - role: info_common
     - role: info_healthy
     - role: setup_snowflake
     - role: setup_autoupdate
@@ -21,7 +19,6 @@
   hosts: tor
   roles:
     - role: setup_common
-    - role: info_common
     - role: info_healthy
     - role: setup_tor
     - role: setup_autoupdate
