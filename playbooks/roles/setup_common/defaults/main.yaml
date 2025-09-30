@@ -14,7 +14,7 @@ kernel_debian_cloud: false
 
 # vanilla kernel
 kernel_vanilla: false
-kernel_vanilla_build: "yes"
+kernel_vanilla_build: "{{ kernel_vanilla | ternary('yes', 'no') }}"
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []

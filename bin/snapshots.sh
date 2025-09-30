@@ -31,7 +31,7 @@ arch="{arm,x86}"                            # e.g. -a "{amd,arm,intel}"
 branch="{lts,ltsrc,master,stable,stablerc}" # mapped to a git commit-ish in ./inventory
 names=""                                    # set image names explicitly
 os="{db,dt,un}"                             # debian bookworm, debian trixie, ubuntu noble
-play_args="-e kernel_vanilla_build=no -e delete_instance_afterwards=true"
+play_args="-e kernel_vanilla=yes -e kernel_vanilla_build=no -e delete_instance_afterwards=true"
 
 while getopts a:b:fn:o:p: opt; do
   case ${opt} in
