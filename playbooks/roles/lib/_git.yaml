@@ -1,4 +1,11 @@
 ---
+- name: Bail out if Git vars aren't set
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "_git_repo_url | length > 0"
+      - "_repo_dir | length > 0"
+
 - name: Git
   environment: "{{ git_environment | default({}) }}"
   module_defaults:
