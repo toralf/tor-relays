@@ -42,121 +42,13 @@
 
               before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
-              # force loading of needed modules (if not yet loaded), e.g. for the firewall/DDoS solution
+              # force loading of modules (maybe not yet loaded), e.g. for the firewall/DDoS solution
               conntrack -C || true
 
               yes '' | make localmodconfig >/dev/null
 
               cat <<EOF >>.config
-              # generic
-
-              CONFIG_LOCALVERSION=""
-              CONFIG_LOCALVERSION_AUTO=y
-
-              CONFIG_PROC_MEM_ALWAYS_FORCE=n
-              CONFIG_PROC_MEM_FORCE_PTRACE=n
-              CONFIG_PROC_MEM_NO_FORCE=y
-
-              CONFIG_PANIC_ON_OOPS=n
-
-              CONFIG_AGP=n
-              CONFIG_ATA=n
-              CONFIG_BACKLIGHT_CLASS_DEVICE=n
-              CONFIG_DMADEVICES=n
-              CONFIG_DRM=n
-              CONFIG_EDAC=n
-              CONFIG_FB=n
-              CONFIG_HAMRADIO=n
-              CONFIG_HIBERNATION=n
-              CONFIG_HID=n
-              CONFIG_HID_SUPPORT=n
-              CONFIG_HWMON=n
-              CONFIG_I2C=n
-              CONFIG_INPUT_JOYDEV=n
-              CONFIG_INPUT_KEYBOARD=n
-              CONFIG_INPUT_MOUSE=n
-              CONFIG_INPUT_MOUSEDEV=n
-              CONFIG_IPV6_SEG6_BPF=n
-              CONFIG_LPC_ICH=n
-              CONFIG_LWTUNNEL_BPF=n
-              CONFIG_MD=n
-              CONFIG_MFD_CORE=n
-              CONFIG_PARTITION_ADVANCED=n
-              CONFIG_PINCTRL=n
-              CONFIG_PM_DEVFREQ=n
-              CONFIG_REGULATOR=n
-              CONFIG_SOUNDWIRE=n
-              CONFIG_SUSPEND=n
-              CONFIG_THERMAL=n
-              CONFIG_USB=n
-              CONFIG_USB_HID=n
-              CONFIG_USB_SUPPORT=n
-              CONFIG_VIRTIO=n
-              CONFIG_VIRTUALIZATION=n
-              CONFIG_WIRELESS=n
-              CONFIG_WLAN=n
-              CONFIG_X86_PLATFORM_DEVICES=n
-              CONFIG_XEN=n
-              CONFIG_ZSWAP=n
-
-              # inspired by https://kspp.github.io/Recommended_Settings#gcc-plugins
-
-              CONFIG_GCC_PLUGINS=y
-              CONFIG_GCC_PLUGIN_LATENT_ENTROPY=y
-              CONFIG_GCC_PLUGIN_RANDSTRUCT=y
-              CONFIG_GCC_PLUGIN_STRUCTLEAK=y
-              CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
-              CONFIG_GCC_PLUGIN_STACKLEAK=y
-
-              # DDoS firewall
-
-              CONFIG_NETFILTER_EGRESS=n
-              CONFIG_NETFILTER_INGRESS=n
-              CONFIG_NF_CT_PROTO_DCCP=n
-              CONFIG_NF_CT_PROTO_SCTP=n
-              CONFIG_NF_CT_PROTO_UDPLITE=n
-              CONFIG_NF_TABLES_ARP=n
-              CONFIG_NF_TABLES_NETDEV=n
-
-              CONFIG_IP_NF_FILTER=m
-              CONFIG_IP_NF_IPTABLES=m
-              CONFIG_IP_NF_NAT=m
-              CONFIG_IP_SET=m
-              CONFIG_IP_SET_HASH_IP=m'
-              CONFIG_IP6_NF_FILTER=m
-              CONFIG_IP6_NF_IPTABLES=m
-              CONFIG_IP6_NF_NAT=m
-              CONFIG_NETFILTER_XT_MATCH_COMMENT=m
-              CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
-              CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
-              CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
-              CONFIG_NETFILTER_XT_MATCH_LIMIT=m
-              CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
-              CONFIG_NETFILTER_XT_MATCH_STATE=m
-              CONFIG_NETFILTER_XT_NAT=m
-              CONFIG_NETFILTER_XT_SET=m
-              CONFIG_NF_CONNTRACK=m
-              CONFIG_NF_CT_NETLINK=m
-              CONFIG_NF_NAT=m
-              CONFIG_NF_TABLES=m
-              CONFIG_NF_TABLES_INET=y
-              CONFIG_NF_TABLES_IPV4=y
-              CONFIG_NF_TABLES_IPV6=y
-              CONFIG_NFT_LIMIT=m
-              CONFIG_NFT_NAT=m
-
-              # Ubuntu
-
-              CONFIG_SYSTEM_REVOCATION_KEYS=""
-
-              CONFIG_BPF_SYSCALL=n
-              CONFIG_BPF_JIT=n
-              CONFIG_BPF_JIT_ALWAYS_ON=n
-              CONFIG_BPF_JIT_DEFAULT_ON=n
-              CONFIG_PAHOLE_HAS_BTF_TAG=n
-              CONFIG_DEBUG_INFO_BTF=n
-              CONFIG_DEBUG_INFO_BTF_MODULES=n
-
+              {{ kernel_git_config }}
               EOF
 
               yes '' | make oldconfig >/dev/null
@@ -184,10 +76,10 @@
               - hardware
 
         - name: Build kernel
-          async: "{{ (75 * 60) | int }}"
-          poll: 0
           when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
           changed_when: true
+          async: "{{ (75 * 60) | int }}"
+          poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
             _max: "{{ 1 + (ansible_facts.memtotal_mb / 1576) | int }}"
@@ -197,3 +89,21 @@
               {{ (kernel_git_build == "nowait") |
               ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
           register: _kernel_build
+
+        - name: Kernel build
+          when: _kernel_build.changed
+          block:
+            - name: Wait till kernel build finished
+              when: kernel_git_build == "yes"
+              retries: 75
+              delay: 60
+              until: _job_result.finished
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_build.ansible_job_id }}"
+              register: _job_result
+              notify: Reboot system
+
+            - name: Cleanup kernel build job
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_build.ansible_job_id }}"
+                mode: cleanup

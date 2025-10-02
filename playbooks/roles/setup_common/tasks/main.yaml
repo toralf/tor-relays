@@ -107,17 +107,6 @@
       tags:
         - upgrade
 
-    - name: Distribution kernel flavour
-      ansible.builtin.import_tasks: kernel-dist.yaml
-      tags:
-        - kernel-dist
-
-    - name: Self-compiled kernel
-      when: kernel_git | bool
-      ansible.builtin.import_tasks: kernel-src.yaml
-      tags:
-        - kernel-src
-
     - name: Nginx
       when:
         nginx_metrics or nginx_public_site or nginx_site_directories | default([]) | length > 0 or
@@ -144,25 +133,20 @@
       tags:
         - node-exporter
 
-    - name: Kernel build job id
+    - name: Flush handlers (Nginx, metrics)
+      ansible.builtin.meta: flush_handlers
+
+    - name: Debian kernel flavour
+      when: ansible_facts.distribution in ('Debian')
+      ansible.builtin.import_tasks: kernel-deb.yaml
+      tags:
+        - kernel-deb
+
+    - name: Self-compiled kernel
+      when: kernel_git | bool
+      ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel-src
-      when: _kernel_build is defined and _kernel_build.changed
-      block:
-        - name: Wait till kernel build finished
-          when: kernel_git_build == "yes"
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_build.ansible_job_id }}"
-          register: _job_result
-          until: _job_result.finished
-          retries: 75
-          delay: 60
-          notify: Reboot system
-
-        - name: Cleanup kernel build job id
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_build.ansible_job_id }}"
-            mode: cleanup
 
     - name: Check if a reboot is needed
       ansible.builtin.import_tasks: reboot.yaml
