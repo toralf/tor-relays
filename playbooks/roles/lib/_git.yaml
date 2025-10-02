@@ -1,5 +1,5 @@
 ---
-- name: Bail out if Git vars aren't set
+- name: Internal error
   ansible.builtin.assert:
     quiet: true
     that:
@@ -60,7 +60,7 @@
       patch -p 1 --forward -i tmp.patch
       rm tmp.patch
     chdir: "{{ _repo_dir }}"
-  loop: "{{ _git_patches }}"
+  loop: "{{ _git_patches | default([]) }}"
   register: __patched
 
 - name: Git repo changed "{{ _repo_dir }}"
