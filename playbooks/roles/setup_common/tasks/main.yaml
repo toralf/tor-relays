@@ -133,10 +133,10 @@
           tags:
             - nginx-config
 
-        - name: Targets
-          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/info_common/tasks/targets.yaml"
-          tags:
-            - targets
+    - name: Create Prometheus config files
+      ansible.builtin.import_tasks: targets.yaml
+      tags:
+        - targets
 
     - name: Prometheus Node Exporter
       when: node_metrics

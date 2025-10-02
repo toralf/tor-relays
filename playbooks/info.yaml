@@ -7,7 +7,6 @@
         - never
     - role: info_common
     - role: info_healthy
-    - role: info_misc
 
 - name: Info snowflake
   hosts: snowflake
