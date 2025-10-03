@@ -7,6 +7,9 @@
 - name: Restart Snowflake
   listen: Restart Snowflake
   ansible.builtin.systemd_service:
-    name: snowflake-proxy
+    name: "{{ item.name }}"
     state: restarted
     no_block: true
+  loop_control:
+    label: "{{ item.name }}"
+  loop: "{{ snowflake_proxies }}"

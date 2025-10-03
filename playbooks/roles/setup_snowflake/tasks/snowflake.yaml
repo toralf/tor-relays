@@ -1,0 +1,43 @@
+---
+- name: Add the group {{ item.name }}
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+
+- name: Add the user {{ item.name }}
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    group: "{{ item.name }}"
+
+- name: Git {{ item.name }}
+  vars:
+    _git_repo_url: "{{ item.git_url }}"
+    _git_version: "{{ item.git_version | default('main') }}"
+    _git_patches: "{{ item.git_patches | default([]) }}"
+    _repo_dir: "/root/{{ item.name }}"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+
+- name: Build {{ item.name }}
+  throttle: 24
+  changed_when: false
+  ansible.builtin.command:
+    cmd: go build -v
+    chdir: "/root/{{ item.name }}/proxy"
+
+- name: Copy {{ item.name }}
+  ansible.builtin.copy:
+    src: "/root/{{ item.name }}/proxy/proxy"
+    dest: "/usr/bin/{{ item.name }}"
+    mode: a+x
+    remote_src: true
+  notify: Restart Snowflake
+
+- name: Add systemd unit {{ item.name }}
+  ansible.builtin.template:
+    src: snowflake-proxy.service.j2
+    dest: "/etc/systemd/system/{{ item.name }}.service"
+  notify: Restart Snowflake
+
+- name: Enable {{ item.name }}
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}"
+  notify: Restart Snowflake

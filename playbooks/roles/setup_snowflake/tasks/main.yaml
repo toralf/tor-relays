@@ -30,46 +30,22 @@
       tags:
         - firewall
 
-    - name: Distribution
-      when: not snowflake_build_from_source
-      ansible.builtin.import_tasks: snowflake-dist.yaml
+    - name: Tools
+      ansible.builtin.import_tasks: tools.yaml
       tags:
-        - snowflake
-        - snowflake-dist
+        - tools
 
-    - name: Build form source
-      when: snowflake_build_from_source
+    - name: Build
       tags:
         - snowflake
       block:
-        - name: Tools source
-          ansible.builtin.import_tasks: tools-src.yaml
-          tags:
-            - tools-src
+        - name: Include
+          ansible.builtin.include_tasks: snowflake.yaml
+          loop_control:
+            label: "{{ item.name }}"
+          loop: "{{ snowflake_proxies }}"
 
-        - name: Build from source
-          ansible.builtin.import_tasks: snowflake-src.yaml
-          tags:
-            - snowflake-src
-
-        - name: Configure from source
-          ansible.builtin.import_tasks: config-src.yaml
-          tags:
-            - config
-            - config-src
-
-    - name: Enable Snowflake
-      ansible.builtin.systemd_service:
-        name: snowflake-proxy
-      notify: Restart Snowflake
+    - name: Configure
+      ansible.builtin.import_tasks: config.yaml
       tags:
-        - snowflake
-
-    - name: Force restart of Snowflake
-      changed_when: true
-      ansible.builtin.systemd_service:
-        name: snowflake-proxy
-      notify: Restart Snowflake
-      tags:
-        - never
-        - force-restart
+        - config

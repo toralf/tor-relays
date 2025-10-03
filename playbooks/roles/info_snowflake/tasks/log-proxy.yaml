@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" --quiet |
+      journalctl -u {{ item.name }} --since "{{ log_proxy_since }}" --quiet |
         grep -v \
           -e ' client connected' \
           -e ' completed successful connections.' \

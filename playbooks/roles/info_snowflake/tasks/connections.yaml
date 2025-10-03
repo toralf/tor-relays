@@ -14,7 +14,7 @@
       lines=$(
         set -o pipefail
 
-        journalctl -u snowflake-proxy --since "{{ log_connections_seconds_ago }} second ago" \
+        journalctl -u {{ item.name }} --since "{{ log_connections_seconds_ago }} second ago" \
           -g ', there were .* connections' --quiet |
         awk '{ print $14 }' |
         xargs |
@@ -35,6 +35,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout | default('n/a') }}"
-    path: "{{ tmp_dir }}/snowflake_connections"
+    path: "{{ tmp_dir }}/{{ item.name }}_connections"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (_result.stderr | length > 0) | ternary('absent', 'present') }}"

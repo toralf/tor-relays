@@ -25,9 +25,13 @@ snapshot:
 
 snowflake:
   vars:
-    snowflake_command_args: -nat-retest-interval 1h -metrics -summary-interval 0h0m15s
+    snowflake_proxies:
+      - name: snowflake
+        command_args: >-
+          -nat-retest-interval 1h -summary-interval 0h0m15s -metrics -metrics-port 9999
+        git_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+        proxy_metrics_port: 9999
     snowflake_metrics: true
-    snowflake_patches: []
   children:
     snowflake_ionos:
     snowflake_test:

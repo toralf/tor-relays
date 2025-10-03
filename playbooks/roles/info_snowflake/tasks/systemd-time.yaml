@@ -1,7 +1,7 @@
 ---
 - name: Get service status
   ansible.builtin.systemd:
-    name: snowflake-proxy
+    name: "{{ item.name }}"
   register: _service
 
 - name: File systemd time
@@ -12,6 +12,6 @@
     _changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Start {{ _starttime }} Change {{ _changetime }}"
-    path: "{{ tmp_dir }}/snowflake_systemd_time"
+    path: "{{ tmp_dir }}/{{ item.name }}_systemd_time"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ _service.status | ternary('present', 'absent') }}"

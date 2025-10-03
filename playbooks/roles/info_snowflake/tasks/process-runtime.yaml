@@ -4,8 +4,8 @@
   ansible.builtin.shell:
     cmd: |-
       ps -eo etimes,cmd --no-headers |
-        grep /usr/bin/snowflake-proxy |
-        grep -v grep |
+        grep "/usr/bin/{{ item.name }} " |
+        grep -v "grep" |
         awk '{ printf("%i-%02i\n", $1 / 86400, $1 % 86400 / 3600) }'
   register: _result
 
@@ -14,6 +14,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} etimes {{ _result.stdout | default('-') }}"
-    path: "{{ tmp_dir }}/snowflake_process_runtime"
+    path: "{{ tmp_dir }}/{{ item.name }}_process_runtime"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
