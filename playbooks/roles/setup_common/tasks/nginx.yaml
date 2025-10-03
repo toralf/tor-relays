@@ -68,3 +68,8 @@
     dest: /etc/systemd/system/nginx.service.d/override.conf
   notify:
     - Reload systemd
+
+- name: Enable nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+  notify: Restart nginx
