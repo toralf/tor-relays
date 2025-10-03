@@ -4,9 +4,10 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl -u {{ item.name }} --since "{{ log_proxy_since }}" --quiet |
-        grep -v \
+        grep -F -v \
           -e ' client connected' \
           -e ' completed successful connections.' \
+          -e ' completed connections.' \
           -e ' Proxy connection closed' |
         tail -n {{ log_lines }}
   register: _result
