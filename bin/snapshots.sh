@@ -2,8 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# create/update snaphot images -or- test kernel versions, e.g.
-# -a "{amd,arm,intel}" -b "{lts,stable}rc" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
+# create/update snaphot images -or- test kernel versions
 
 # Debian has 4 different dist kernels
 function allFlavours() {
@@ -31,6 +30,9 @@ arch="{arm,x86}"                            # e.g. -a "{amd,arm,intel}"
 branch="{lts,ltsrc,master,stable,stablerc}" # mapped to a git commit-ish in ./inventory
 names=""                                    # set image names explicitly
 os="{db,dt,un}"                             # debian bookworm, debian trixie, ubuntu noble
+
+# test of recent kernels: -a "{amd,arm,intel}" -b "{ltsrc,master,stablerc}" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
+# default: do only update the Git repo of snapshots
 play_args="-e kernel_git_build=no -e delete_instance_afterwards=true"
 
 while getopts a:b:fn:o:p: opt; do
