@@ -68,11 +68,12 @@
       tags:
         - base
 
-    - name: Update apt
+    - name: Tools
       when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-      ansible.builtin.import_tasks: update-apt.yaml
+      ansible.builtin.import_tasks: tools-apt.yaml
       tags:
-        - update-apt
+        - tools
+        - tools-apt
 
     - name: IPv6
       tags:
