@@ -1,5 +1,5 @@
 ---
-- name: Check for a pseudo-random choosen ipv6 address
+- name: Test at pseudo-random ipv6 address
   vars:
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _a: "{{ (ansible_facts.default_ipv6.address | split(':'))[4] | default('0') }}"
@@ -17,7 +17,6 @@
     msg:
       - "expected: {{ _ipv6_new }}"
       - "current:  {{ ansible_facts.default_ipv6.address }}"
-      - "ssh {{ inventory_hostname }} 'service systemd-networkd restart; sleep 3; ip a'"
 
 - name: Ensure Ipv6 address is non-default
   when: ansible_facts.default_ipv6.address is search('::1$')
