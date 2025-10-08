@@ -5,10 +5,10 @@
       - default_ipv6
 
 - name: Ensure IPv6 address has valid prefix
-  when: ansible_facts.default_ipv6.address is not defined or ansible_facts.default_ipv6.address is match('fe80::')
-  failed_when: true
-  ansible.builtin.debug:
-    var: ansible_facts.default_ipv6
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
 - name: Change IPv6 to non-default ::1
   when: ansible_facts.default_ipv6.address != _ipv6_new
@@ -72,8 +72,8 @@
         gather_subset:
           - default_ipv6
 
-- name: Ensure IPv6 address is non-default
-  when: ansible_facts.default_ipv6.address is not defined or ansible_facts.default_ipv6.address is search('::1$')
-  failed_when: true
-  ansible.builtin.debug:
-    var: ansible_facts.default_ipv6
+- name: Ensure Ipv6 address is non-default
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is not search('::1$')"

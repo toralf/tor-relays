@@ -19,7 +19,7 @@
       - "current:  {{ ansible_facts.default_ipv6.address }}"
 
 - name: Ensure Ipv6 address is non-default
-  when: ansible_facts.default_ipv6.address is search('::1$')
-  failed_when: true
-  ansible.builtin.debug:
-    var: ansible_facts.default_ipv6
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is not search('::1$')"
