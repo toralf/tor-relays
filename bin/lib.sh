@@ -62,7 +62,7 @@ function _getImageByHostname() {
   elif [[ ${name} =~ "-un-" ]]; then
     echo "ubuntu-24.04"
   else
-    echo ${HCLOUD_FALLBACK_IMAGE:-"debian-12"}
+    echo ${HCLOUD_FALLBACK_IMAGE:-"debian-13"}
   fi
 }
 
