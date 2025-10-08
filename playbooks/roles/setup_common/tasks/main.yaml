@@ -110,7 +110,7 @@
 
     - name: Nginx
       when:
-        nginx_metrics or nginx_public_site or nginx_site_directories | default([]) | length > 0 or
+        nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
         ddos_metrics | default(false) or node_metrics or snowflake_metrics | default(false) or tor_metrics | default(false)
       block:
         - name: Nginx
