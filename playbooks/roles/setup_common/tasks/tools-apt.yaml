@@ -34,13 +34,6 @@
     pattern: apt.*|dpkg.*
   register: _processes
 
-- name: De-install freeipmi at IONOS
-  when: ansible_facts.system_vendor == 'QEMU'
-  ansible.builtin.apt:
-    name:
-      - freeipmi-common
-    state: absent
-
 - name: Install/Update tools
   ansible.builtin.apt:
     name:
@@ -64,7 +57,7 @@
     - pack.threads "{{ ansible_facts.processor_vcpus }}"
     - pack.windowMemory 100m
 
-- name: Ensure systat is enabled and started
+- name: Enable and start systat
   ansible.builtin.systemd_service:
     name: sysstat
     state: started
