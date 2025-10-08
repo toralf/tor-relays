@@ -26,14 +26,14 @@ export HCLOUD_LOCATION="hel1"
 setProject
 [[ ${project} == "test" ]]
 
-arch="{arm,x86}"                            # e.g. -a "{amd,arm,intel}"
-branch="{lts,ltsrc,master,stable,stablerc}" # mapped to a git commit-ish in ./inventory
-names=""                                    # set image names explicitly
-os="{db,dt,un}"                             # debian bookworm, debian trixie, ubuntu noble
+arch="{arm,x86}"                 # e.g. -a "{amd,arm,intel}"
+branch="{ltsrc,master,stablerc}" # mapped to a git commit-ish in ./inventory
+names=""                         # set image names explicitly
+os="{dt,un}"                     # debian trixie, ubuntu noble
 
-# test of recent kernels: -a "{amd,arm,intel}" -b "{ltsrc,master,stablerc}" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
+# test of recent kernels: -a "{amd,arm,intel}" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
 # default: do only update the Git repo of snapshots
-play_args="-e kernel_git_build=no -e delete_instance_afterwards=true"
+play_args="-e delete_instance_afterwards=true -e kernel_git_build=no"
 
 while getopts a:b:fn:o:p: opt; do
   case ${opt} in
