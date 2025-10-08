@@ -21,7 +21,7 @@
     - name: IPv6
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
-        - ipv6
+        - ipv6-healthy
 
     - name: Issue
       ansible.builtin.import_tasks: issue.yaml

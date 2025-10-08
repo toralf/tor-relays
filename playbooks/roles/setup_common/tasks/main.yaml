@@ -77,6 +77,8 @@
 
     - name: IPv6
       when: ansible_facts.default_ipv6.address is defined
+        and ansible_facts.default_ipv6.address | length > 0
+        and ansible_facts.default_ipv6.address is not match('fe80::')
       tags:
         - ipv6
       block:
