@@ -54,9 +54,10 @@
     - name: Build from source
       tags:
         - tor
-      when: tor_build_from_source and ansible_facts.distribution in ('Debian', 'Ubuntu')
+      when: tor_build_from_source
       block:
         - name: Tools
+          when: ansible_facts.distribution in ('Debian', 'Ubuntu')
           ansible.builtin.import_tasks: tools-src.yaml
           tags:
             - tools-src
