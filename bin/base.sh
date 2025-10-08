@@ -35,7 +35,7 @@ all:
     # throttle local processes
     concurrent_local_jobs: $(nproc)
     # seed for various system-specific pseudo-randomized settings
-    seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address }}"
+    seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address }}"
 EOF
   chmod 600 ${local_inventory}
 fi
