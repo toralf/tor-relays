@@ -5,7 +5,8 @@
       changed_when: false
       ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: |-
-          {{ custom_command }}
+          {{ lookup('ansible.builtin.file', custom_command_file) }}
+        executable: /bin/bash
       register: _result
   rescue:
     - name: Rc of custom command

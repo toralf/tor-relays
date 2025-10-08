@@ -2,8 +2,7 @@
 additional_ports: []
 additional_software: []
 
-# e.g.:  -e custom_command="'cd linux; make clean'"
-custom_command: ""
+custom_command_file: ""
 
 # e.g.:  -e desired_debian_release=trixie
 desired_debian_release: ""
