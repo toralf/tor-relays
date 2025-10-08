@@ -55,6 +55,11 @@
     path: /etc/apt/apt.conf.d/20auto-upgrades
     state: absent
 
+- name: Configure Apt
+  ansible.builtin.copy:
+    src: 99local-apt-conf
+    dest: /etc/apt/apt.conf.d/
+
 - name: Create swapfile for systems with small RAM
   when: ansible_facts.memtotal_mb < 2048 and (kernel_git | bool or tor_port is defined)
   ansible.builtin.shell:
