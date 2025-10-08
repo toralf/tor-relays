@@ -41,6 +41,7 @@
     - name: DDoS firewall
       ansible.builtin.import_tasks: ddos-firewall.yaml
       tags:
+        - firewall
         - ddos-firewall
 
     - name: Distribution
@@ -70,7 +71,6 @@
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
             - lyrebird
-            - lyrebird-src
 
     - name: DDoS metrics
       when: ddos_metrics

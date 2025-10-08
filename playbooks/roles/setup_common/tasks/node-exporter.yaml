@@ -16,6 +16,6 @@
     regexp: "^ARGS="
   notify: Restart Prometheus node exporter
 
-- name: Enable Prometheus node exporter at boot
+- name: Enable Prometheus node exporter
   ansible.builtin.systemd_service:
     name: prometheus-node-exporter
