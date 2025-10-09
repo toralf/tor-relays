@@ -144,12 +144,14 @@
       when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: kernel-deb.yaml
       tags:
+        - kernel
         - kernel-deb
 
     - name: Self-compiled kernel
       when: kernel_git | bool
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
+        - kernel
         - kernel-src
 
     - name: Check if a reboot is needed
