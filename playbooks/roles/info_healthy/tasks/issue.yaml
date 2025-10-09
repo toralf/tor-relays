@@ -7,10 +7,12 @@
       journalctl --since "{{ issue_since }}" --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
         grep -F \
+          -e '(nowflake)' \
           -e 'BUG:' \
           -e 'BUG at' \
           -e 'Call Trace:' \
           -e 'invoked oom-killer' \
+          -e 'No space left on device' \
           -e 'Oops:' \
           -e 'status=9/KILL' \
           -e '.service: Failed' \
