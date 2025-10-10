@@ -11,7 +11,7 @@
     cmd: |-
       set -eu
 
-      lines=$(
+      equatation=$(
         set -o pipefail
 
         journalctl -u {{ item.name }} --since "{{ log_connections_seconds_ago }} second ago" \
@@ -20,13 +20,7 @@
         xargs |
         tr ' ' '+'
       )
-      sum=$(( lines ))
-
-      if [[ {{ ansible_facts.uptime_seconds }} -ge {{ log_connections_seconds_ago }} ]]; then
-        echo "$sum"
-      else
-        echo ">=$sum"
-      fi
+      echo $(( equatation ))
     executable: /bin/bash
   register: _result
 
