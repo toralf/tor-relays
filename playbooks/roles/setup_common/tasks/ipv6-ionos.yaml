@@ -1,7 +1,7 @@
 ---
 - name: Test at pseudo-random ipv6 address
   vars:
-    _a: "{{ '%x' % ((ansible_facts.default_ipv6.address | split(':'))[4] | default(0)) }}"
+    _a: "0"
     _b: "{{ '%x' % (range(0, 65535) |
       random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix)) }}"
     _c: "{{ '%x' % (range(0, 65535) |
@@ -17,9 +17,11 @@
     msg:
       - "expected: {{ _ipv6_new }}"
       - "current:  {{ ansible_facts.default_ipv6.address }}"
+      - "run:      ssh inventory_hostname 'service systemd-networkd restart; sleep 3; ip a'"
 
 - name: Ensure Ipv6 address is non-default
   ansible.builtin.assert:
     quiet: true
     that:
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
       - "ansible_facts.default_ipv6.address is not search('::1$')"

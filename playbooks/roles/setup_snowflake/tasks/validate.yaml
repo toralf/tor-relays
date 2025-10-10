@@ -1,7 +1,1 @@
 ---
-- name: Validate IPv6 address
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ansible_facts.default_ipv6.address is not match('fe80::')"
-      - "ansible_facts.default_ipv6.address is not search('::1$')"

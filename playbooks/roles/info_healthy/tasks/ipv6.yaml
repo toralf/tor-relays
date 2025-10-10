@@ -8,7 +8,7 @@
       and ansible_facts.default_ipv6.address | length > 0
       and ansible_facts.default_ipv6.address is not match('fe80::') }}"
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address | default('n/a') }}"
+    line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
     path: "{{ tmp_dir }}/ipv6"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ _is_global | ternary('present', 'absent') }}"
