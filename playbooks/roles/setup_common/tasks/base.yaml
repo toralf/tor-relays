@@ -61,7 +61,7 @@
     dest: /etc/apt/apt.conf.d/
 
 - name: Create swapfile for systems with small RAM
-  when: ansible_facts.memtotal_mb < 2048 and (kernel_git | bool or tor_port is defined)
+  when: ansible_facts.memtotal_mb < 2048 and (kernel_git_repo_url | length > 0 or tor_port is defined)
   ansible.builtin.shell:
     cmd: |-
       set -euf

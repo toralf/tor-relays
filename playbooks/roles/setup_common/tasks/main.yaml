@@ -148,7 +148,7 @@
         - kernel-deb
 
     - name: Self-compiled kernel
-      when: kernel_git | bool
+      when: kernel_git_repo_url | length > 0
       ansible.builtin.import_tasks: kernel-src.yaml
       tags:
         - kernel

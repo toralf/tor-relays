@@ -42,14 +42,14 @@
       - "prometheus_server6 is ansible.utils.ipv6"
 
 - name: Validate RAM for kernel build from source
-  when: kernel_git | bool
+  when: kernel_git_repo_url | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
       - "ansible_facts.memtotal_mb > 1024"
 
 - name: Validate Git kernel build method
-  when: kernel_git | bool
+  when: kernel_git_repo_url | length > 0
   ansible.builtin.assert:
     quiet: true
     that:
