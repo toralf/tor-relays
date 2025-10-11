@@ -59,7 +59,7 @@
               netplan generate
               netplan apply
 
-    - name: Check that IPv6 is up
+    - name: Check that IPv6 is up and confirmed
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
