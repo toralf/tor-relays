@@ -8,11 +8,13 @@
         cut -f 10 -d ' '
   register: _result
 
+# Keep last state if nothing newer was found
 - name: File NAT type
   delegate_to: localhost
   throttle: 1
+  when: _result.stdout | length > 0 or _result.stderr | length > 0
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ item.name }}_nat"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (_result.stderr | length == 0) | ternary('present', 'absent') }}"
