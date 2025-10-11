@@ -1,5 +1,5 @@
 ---
 log_lines: 10
 
-log_connections_seconds_ago: 3600
+log_connections_seconds_ago: 86400
 log_proxy_since: 1 day ago
