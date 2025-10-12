@@ -40,7 +40,7 @@
         - snowflake
       block:
         - name: Include
-          ansible.builtin.include_tasks: snowflake.yaml
+          ansible.builtin.include_tasks: _snowflake.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
