@@ -3,7 +3,7 @@
   ansible.posix.sysctl:
     name: user.max_user_namespaces
     # https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
-    value: "{{ snowflake_proxies | length * 4 }}"
+    value: "{{ snowflake_proxies | length * 2 }}"
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
 
