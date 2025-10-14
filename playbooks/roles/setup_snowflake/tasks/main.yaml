@@ -39,11 +39,17 @@
       tags:
         - snowflake
       block:
-        - name: Include
+        - name: Add
           ansible.builtin.include_tasks: _snowflake.yaml
           loop_control:
             label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
+          loop: "{{ snowflake_proxies | selectattr('state', 'match', 'present') }}"
+
+        - name: Remove
+          ansible.builtin.include_tasks: _snowflake-remove.yaml
+          loop_control:
+            label: "{{ item.name }}"
+          loop: "{{ snowflake_proxies | selectattr('state', 'match', 'absent') }}"
 
     - name: Configure
       ansible.builtin.import_tasks: config.yaml

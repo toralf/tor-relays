@@ -1,0 +1,23 @@
+---
+- name: Disable {{ item.name }}
+  failed_when: false
+  ansible.builtin.systemd_service:
+    name: "{{ item.name }}"
+    enabled: false
+    state: stopped
+
+- name: Remove files {{ item.name }}
+  ansible.builtin.file:
+    path: "{{ inside_item }}"
+    state: absent
+  loop_control:
+    loop_var: inside_item
+  loop:
+    - "/etc/systemd/system/{{ item.name }}.service"
+    - "/usr/bin/{{ item.name }}"
+    - "/root/{{ item.name }}"
+
+- name: Remove the user {{ item.name }}
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    state: absent
