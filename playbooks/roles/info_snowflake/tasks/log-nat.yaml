@@ -17,4 +17,4 @@
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ item.name }}_nat"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stderr | length == 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _result.stderr | length == 0) | ternary('present', 'absent') }}"

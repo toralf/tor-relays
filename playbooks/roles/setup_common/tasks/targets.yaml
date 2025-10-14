@@ -27,7 +27,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         path: "{{ tmp_dir }}/targets_{{ item.name }}.yaml"
-        state: "{{ (snowflake_metrics | default(false)) | ternary('present', 'absent') }}"
+        state: "{{ (item.state == 'present' and snowflake_metrics | default(false)) | ternary('present', 'absent') }}"
       loop_control:
         label: "{{ item.name }}"
       loop: "{{ snowflake_proxies | default([]) }}"

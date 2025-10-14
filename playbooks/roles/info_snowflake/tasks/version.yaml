@@ -18,4 +18,4 @@
     line: "{{ inventory_hostname }} sf {{ _version }}"
     path: "{{ tmp_dir }}/{{ item.name }}_version"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _result.stdout | length > 0) | ternary('present', 'absent') }}"

@@ -14,4 +14,4 @@
     line: "{{ inventory_hostname }} Start {{ _starttime }} Change {{ _changetime }}"
     path: "{{ tmp_dir }}/{{ item.name }}_systemd_time"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ _service.status | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _service.status) | ternary('present', 'absent') }}"
