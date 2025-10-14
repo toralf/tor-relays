@@ -56,10 +56,12 @@
       set -euf
 
       rm -f tmp.patch
-      curl -s {{ item }} -o tmp.patch
+      curl -s {{ inside_item }} -o tmp.patch
       patch -p 1 --forward -i tmp.patch
       rm tmp.patch
     chdir: "{{ _repo_dir }}"
+  loop_control:
+    loop_var: inside_item
   loop: "{{ _git_patches | default([]) }}"
   register: __patched
 
