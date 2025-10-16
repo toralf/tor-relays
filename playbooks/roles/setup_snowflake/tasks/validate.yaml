@@ -1,1 +1,7 @@
 ---
+- name: Validate snowflake_proxies
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "snowflake_proxies | length > 0"
+      - "snowflake_proxies | selectattr('state', 'eq', 'present') | length > 0"
