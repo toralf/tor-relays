@@ -142,7 +142,7 @@ server {
   }
 {% endif %}
 {% if snowflake_metrics | default(false) %}
-{% for _proxy in snowflake_proxies | default({}) | selectattr('state', 'eq', 'present') %}
+{% for _proxy in snowflake_proxies | selectattr('state', 'eq', 'present') %}
 {% if _proxy.proxy_metrics_port is defined %}
 
   location = /metrics-{{ _proxy.name }} {

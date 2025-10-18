@@ -2,5 +2,7 @@
 # metrics could expose potential sensitive information
 snowflake_metrics: false
 
-# needed for country-specific metrics
-use_tor_geoip_data: true
+# if country-specific metrics are wanted
+use_tor_geoip_data: false
+
+snowflake_proxies: []
