@@ -4,8 +4,8 @@
   ansible.builtin.shell:
     cmd: |-
       ps -eo etimes,cmd --no-headers |
-        grep "/usr/bin/{{ item.name }} " |
-        grep -v "grep" |
+        grep " /usr/bin/{{ item.name }} " |
+        grep -v " grep " |
         awk '{ printf("%i-%02i\n", $1 / 86400, $1 % 86400 / 3600) }'
   register: _result
 
