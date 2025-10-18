@@ -29,7 +29,7 @@ setProject
 arch="{arm,x86}"                 # e.g. -a "{amd,arm,intel}"
 branch="{ltsrc,master,stablerc}" # mapped to a git commit-ish in ./inventory
 names=""                         # set image names explicitly
-os="{dt,un}"                     # debian trixie, ubuntu noble
+os="{db,dt,un}"                  # debian bookworm + trixie, ubuntu noble
 
 # test of recent kernels: -a "{amd,arm,intel}" -p "-e delete_instance_afterwards=true --skip-tags snapshot"
 # default: do only update the Git repo of snapshots
