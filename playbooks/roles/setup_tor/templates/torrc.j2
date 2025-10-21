@@ -15,7 +15,7 @@ PublishServerDescriptor 0
 {% endif %}
 SandBox 0
 
-ORPort 127.0.0.1:auto
+ORPort 127.0.0.1:auto IPv4Only
 AssumeReachable 1
 ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
@@ -39,18 +39,12 @@ ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
 
 MetricsPort 127.0.0.1:9052
 MetricsPortPolicy accept 127.0.0.1
-# MetricsPort [::1]:9052
-# MetricsPortPolicy accept [::1]
 {% endif %}
 {# common part #}
 
 SocksPort 0
 
 HardwareAccel 1
-
-# CookieAuthentication 1
-# ControlPort 127.0.0.1:19051
-# ControlPort [::1]:19051
 
 {% for item in torrc_config_log + torrc_config_group + torrc_config_hosts %}
 {{ item.name }} {{ item.value }}
