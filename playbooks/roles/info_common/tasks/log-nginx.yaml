@@ -2,9 +2,12 @@
 - name: Get nginx log
   changed_when: false
   failed_when: false
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: >-
-      tail -n 20 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log
+      tail -q -n 20 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
+        sort |
+        tail -n 20
+    executable: /bin/bash
   register: _result
 
 - name: Results of nginx log

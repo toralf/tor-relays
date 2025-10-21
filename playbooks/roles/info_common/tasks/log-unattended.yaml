@@ -3,7 +3,9 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      grep -v -e 'Reading database' -e '^$' /var/log/unattended-upgrades/unattended-upgrades-dpkg.log |
+      grep -h -v -e 'Reading database' -e '^$' \
+        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log.1 \
+        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log 2>/dev/null |
         tail -n 20
   register: _result
 
