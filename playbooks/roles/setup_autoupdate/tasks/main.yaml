@@ -32,13 +32,13 @@
       enabled: true
       no_block: true
   block:
-    - name: Configure unattended update for Debian
+    - name: Configure unattended update of Debian
       when: ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: autoupdate-debian.yaml
       tags:
         - autoupdate
 
-    - name: Configure unattended update for Apt
+    - name: Enable unattended update
       when: ansible_facts.distribution in ('Debian', 'Ubuntu')
       ansible.builtin.import_tasks: autoupdate-apt.yaml
       tags:
