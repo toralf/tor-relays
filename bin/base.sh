@@ -17,7 +17,7 @@ if [[ ! -s ${secrets} ]]; then
 
 seed_address: "$(base64 </dev/urandom | tr -d '+/=' | head -c 32)"
 seed_metrics: "$(base64 </dev/urandom | tr -d '+/=' | head -c 32)"
-seed_tor_port: "$(base64 </dev/urandom | tr -d '+/=' | head -c 32)"
+seed_torport: "$(base64 </dev/urandom | tr -d '+/=' | head -c 32)"
 
 EOF
   chmod 400 ${secrets}

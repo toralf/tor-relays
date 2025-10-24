@@ -70,7 +70,7 @@ tor:
       #   value: 1
       # - name: EntryStatistics
       #   value: 1
-    tor_port: "{{ range(..., ...) | random(seed=seed_tor_port + seed_host) }}"
+    tor_port: "{{ range(..., ...) | random(seed=seed_torport + seed_host) }}"
     tor_metrics: true
   children:
     private:
