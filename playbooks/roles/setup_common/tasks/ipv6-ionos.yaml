@@ -3,25 +3,17 @@
   vars:
     _a: "0"
     _b: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'B' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'B' + _ipv6_prefix)) }}"
     _c: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'C' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'C' + _ipv6_prefix)) }}"
     _d: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + inventory_hostname + ansible_facts.default_ipv4.address + 'D' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'D' + _ipv6_prefix)) }}"
     # yamllint disable-line rule:line-length
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
-  when: _ipv6_new != ansible_facts.default_ipv6.address
-  failed_when: true
+  failed_when: _ipv6_new != ansible_facts.default_ipv6.address
   ansible.builtin.debug:
     msg:
       - "expected: {{ _ipv6_new }}"
       - "current:  {{ ansible_facts.default_ipv6.address }}"
       - "run:      ssh {{ inventory_hostname }} 'service systemd-networkd restart; sleep 3; ip a'"
-
-- name: Ensure Ipv6 address is non-default
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ansible_facts.default_ipv6.address is not match('fe80::')"
-      - "ansible_facts.default_ipv6.address is not search('::1$')"

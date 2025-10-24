@@ -90,11 +90,12 @@
           when: ansible_facts.system_vendor == 'QEMU'
           ansible.builtin.import_tasks: ipv6-ionos.yaml
 
-        - name: Ensure IPv6 address is global scope
+        - name: Ensure Ipv6 address is non-default
           ansible.builtin.assert:
             quiet: true
             that:
               - "ansible_facts.default_ipv6.address is not match('fe80::')"
+              - "ansible_facts.default_ipv6.address is not search('::1$')"
 
     - name: Firewall
       ansible.builtin.import_tasks: firewall.yaml
