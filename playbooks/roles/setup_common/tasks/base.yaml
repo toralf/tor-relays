@@ -49,12 +49,6 @@
     - multipathd
     - rsyslog
 
-# (re)created at the end of the setup
-- name: Remove unattended auto upgrade config
-  ansible.builtin.file:
-    path: /etc/apt/apt.conf.d/20auto-upgrades
-    state: absent
-
 - name: Configure Apt
   ansible.builtin.copy:
     src: 99local-apt-conf
