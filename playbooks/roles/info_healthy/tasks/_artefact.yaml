@@ -16,7 +16,7 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        line: "{{ item.checksum }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}    {{ inventory_hostname }}"
+        line: "{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }} {{ inventory_hostname }} {{ item.checksum }} {{ item.path }}"
         path: "{{ tmp_dir }}/artefact-history.log"
 
     - name: Fetch
