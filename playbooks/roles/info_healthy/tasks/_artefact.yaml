@@ -10,7 +10,7 @@
 - name: Work on new artefact
   when: _known.changed
   vars:
-    _tmp_filename: "{{ tmp_dir }}/{{ item.checksum }}"
+    _tmp_filename: "{{ tmp_dir }}/artefact/{{ item.checksum }}"
   block:
     - name: Log artefact history
       delegate_to: localhost

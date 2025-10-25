@@ -13,7 +13,7 @@
   register: _result
 
 - name: Work on found artefact
-  when: _result.files is defined and _result.files | length > 0
+  when: _result.files is defined
   ansible.builtin.include_tasks: _artefact.yaml
   loop_control:
     label: "{{ item.path }}    {{ item.size }}"

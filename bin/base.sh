@@ -29,7 +29,6 @@ if [[ ! -s ${local_inventory} ]]; then
 ---
 # created by $0 at $(date)
 
-# for localhost set upper job count to vCPU count
 all:
   vars:
     # throttle local processes
@@ -41,4 +40,4 @@ EOF
 fi
 
 # Root CA and certificates are stored under ./secrets
-mkdir -p ${HOME}/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig}
+mkdir -p ${HOME}/tmp/tor-relays/{artefact,coredump,ddos,ddos6,dmesg,kconfig}

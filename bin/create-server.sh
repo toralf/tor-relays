@@ -60,7 +60,7 @@ while read -r name; do
   *-amd | *-amd-*) htype="cpx11" ;;
   *-arm | *-arm-*) htype="cax11" ;;
   *-intel | *-intel-*) htype="cx22" ;;
-  *-x86 | *-x86-*) htype=$(echo "cpx11" "cx22" | xargs -n 1 | shuf -n 1) ;;
+  *-x86 | *-x86-*) htype=$(xargs -n 1 <<<"cpx11 cx22" | shuf -n 1) ;;
   *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1) ;;
   esac
 
