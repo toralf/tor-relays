@@ -70,10 +70,10 @@
 
     - name: Tools
       when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-      ansible.builtin.import_tasks: tools-apt.yaml
+      ansible.builtin.import_tasks: basetools-apt.yaml
       tags:
-        - tools
-        - tools-apt
+        - basetools
+        - basetools-apt
 
     - name: IPv6
       when: ansible_facts.default_ipv6.address is defined

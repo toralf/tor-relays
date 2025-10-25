@@ -51,17 +51,17 @@
         - tor
         - tor-dist
 
+    - name: Tools
+      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      ansible.builtin.import_tasks: tools.yaml
+      tags:
+        - tools
+
     - name: Build from source
       tags:
         - tor
       when: tor_build_from_source
       block:
-        - name: Tools
-          when: ansible_facts.distribution in ('Debian', 'Ubuntu')
-          ansible.builtin.import_tasks: tools-src.yaml
-          tags:
-            - tools-src
-
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
