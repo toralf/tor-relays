@@ -43,23 +43,6 @@
       - rsync
       - sysstat
 
-- name: Configure Git for tiny systems
-  when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
-  changed_when: false
-  ansible.builtin.command:
-    cmd: >-
-      git config --global {{ item }}
-  loop:
-    - gc.autoDetach false
-    - pack.packSizeLimit 200m
-    - pack.threads "{{ ansible_facts.processor_vcpus }}"
-    - pack.windowMemory 100m
-
-- name: Enable and start systat
-  ansible.builtin.systemd_service:
-    name: sysstat
-    state: started
-
 - name: Install/Update additional software
   when: additional_software | length > 0
   ansible.builtin.apt:
