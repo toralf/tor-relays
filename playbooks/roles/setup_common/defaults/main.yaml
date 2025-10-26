@@ -19,8 +19,8 @@ desired_debian_release: ""
 kernel_debian_backports: false
 kernel_debian_cloud: false
 
-# build Linux kernel from sources ("nowait")
-kernel_git_build: "{{ (kernel_git_repo_url | length > 0) | ternary('yes', 'no') }}"
+# compile Linux kernel from sources
+kernel_git_build: "no"
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []

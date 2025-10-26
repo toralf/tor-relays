@@ -5,6 +5,8 @@ snowflake_metrics: "{{ snowflake_proxies |
   selectattr('proxy_metrics_port', 'gt', 0) |
   length > 0 }}"
 
+kernel_git_build: "{{ (kernel_git_repo_url | length > 0) | ternary('yes', 'no') }}"
+
 # set_fact or vars: works for tasks/blocks but handlers do not know those values, therefore define them here
 
 # Firewall Tor :
