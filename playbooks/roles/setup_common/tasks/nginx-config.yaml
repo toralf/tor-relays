@@ -1,18 +1,26 @@
 ---
-- name: Create nginx site directories
-  ansible.builtin.file:
-    path: /var/www/{{ item.dir }}
-    state: directory
-    mode: "0755"
-  loop: "{{ nginx_site_directories }}"
+- name: Test for an Nginx installation
+  ansible.builtin.stat:
+    path: /etc/nginx/conf.d/
+  register: _nginx_is_installed
 
-- name: Configure nginx
-  ansible.builtin.template:
-    src: nginx.conf.j2
-    dest: /etc/nginx/conf.d/tor-relays.conf
-  notify: Reload nginx
+- name: Nginx config
+  when: _nginx_is_installed.stat.exists
+  block:
+    - name: Create nginx site directories
+      ansible.builtin.file:
+        path: /var/www/{{ item.dir }}
+        state: directory
+        mode: "0755"
+      loop: "{{ nginx_site_directories }}"
 
-- name: Verify nginx config
-  changed_when: false
-  ansible.builtin.command:
-    cmd: nginx -t
+    - name: Configure nginx
+      ansible.builtin.template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/conf.d/tor-relays.conf
+      notify: Reload nginx
+
+    - name: Verify nginx config
+      changed_when: false
+      ansible.builtin.command:
+        cmd: nginx -t

@@ -141,7 +141,6 @@ server {
     access_log off;
   }
 {% endif %}
-{% if snowflake_metrics %}
 {% for _proxy in snowflake_proxies | selectattr('state', 'eq', 'present') | selectattr('proxy_metrics_port', 'defined')  | selectattr('proxy_metrics_port', 'gt', 0) %}
 
   location = /metrics-{{ _proxy.name }} {
@@ -149,6 +148,5 @@ server {
     access_log off;
   }
 {% endfor %}
-{% endif %}
 }
 {% endif %}

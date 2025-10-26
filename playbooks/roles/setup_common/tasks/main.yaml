@@ -141,16 +141,14 @@
       when:
         nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
         ddos_metrics or node_metrics or snowflake_metrics or tor_metrics
-      block:
-        - name: Nginx
-          ansible.builtin.import_tasks: nginx.yaml
-          tags:
-            - nginx
+      ansible.builtin.import_tasks: nginx.yaml
+      tags:
+        - nginx
 
-        - name: Nginx config
-          ansible.builtin.import_tasks: nginx-config.yaml
-          tags:
-            - nginx-config
+    - name: Nginx config
+      ansible.builtin.import_tasks: nginx-config.yaml
+      tags:
+        - nginx-config
 
     - name: Create Prometheus config files
       ansible.builtin.import_tasks: targets.yaml
