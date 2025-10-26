@@ -1,5 +1,5 @@
 ---
-- name: Setup common
+- name: Setup all common
   hosts: all
   roles:
     - role: poweron
@@ -18,7 +18,7 @@
   roles:
     - role: setup_tor
 
-- name: Setup autoupdate
+- name: Setup all autoupdate
   hosts: all
   roles:
     - role: setup_autoupdate

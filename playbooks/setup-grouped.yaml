@@ -1,10 +1,10 @@
 ---
 # "de-normalize" plays to
-#   - avoid reboot races if a linux kernel is compiled in background ("nowait")
-#     by having later steps being applied already
-#   - use all available forks by having 1 single play per host type
+#   - if a linux kernel is compiled in background:
+#     avoid reboot races by having all following steps already being applied (optimistic approach)
+#   - saturize all forks by having 1 single play per host type
 
-- name: Setup all
+- name: Setup nonTor common
   hosts: "!snowflake:!tor"
   roles:
     - role: poweron
