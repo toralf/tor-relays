@@ -28,12 +28,18 @@
       tags:
         - issue
 
-    - name: Minicoredumper
-      ansible.builtin.import_tasks: minicoredumper.yaml
+    - name: Get kernel config
+      ansible.builtin.import_tasks: _kernel-config.yaml
       tags:
-        - minicoredumper
+        - kernel-config
+        - never
 
     - name: Kernel trace
       ansible.builtin.import_tasks: trace.yaml
       tags:
         - trace
+
+    - name: Minicoredumper
+      ansible.builtin.import_tasks: minicoredumper.yaml
+      tags:
+        - minicoredumper
