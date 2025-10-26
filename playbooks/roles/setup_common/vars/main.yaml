@@ -33,10 +33,11 @@ add_remote_services_v6: >-
   {{ (metrics_port > 0 and prometheus_server6 != '' ) |
     ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
 
+# ipv4 for relays and bridges
 configured_relays_v4: >-
-  {{ (tor_bridge_distribution == '') |
-    ternary('CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"', '') }}
+  {{ 'CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
 
+# no ipv6 for bridges
 configured_relays_v6: >-
   {{ (tor_bridge_distribution == '') |
     ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
