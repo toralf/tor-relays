@@ -57,9 +57,9 @@
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Allow low port for Tor
-  when: tor_port | int < 1024
+  when: tor_port < 1024
   vars:
-    _exe: "{{ (bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+    _exe: "{{ (tor_bridge_distribution != '') | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
   ansible.builtin.lineinfile:
     line: >-
       'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
@@ -74,7 +74,7 @@
   notify: Restart Tor
 
 - name: Install/Update PT
-  when: bridge_distribution | length > 0
+  when: tor_bridge_distribution != ''
   ansible.builtin.apt:
     name:
       - obfs4proxy

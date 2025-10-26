@@ -5,6 +5,20 @@
       - ipset
       - jq
 
+- name: Remove package iptables-persistent
+  ansible.builtin.apt:
+    name:
+      - iptables-persistent
+    state: absent
+
+- name: Remove iptables state
+  ansible.builtin.file:
+    path: "/etc/iptables/rules.{{ item }}"
+    state: absent
+  with_items:
+    - v4
+    - v6
+
 - name: Download DDoS solution
   throttle: 16
   ansible.builtin.get_url:
@@ -13,27 +27,17 @@
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh
-  notify: Restart DDoS
+  register: _ddos_script
 
-- name: Ensure that DDoS will be up and running
-  changed_when: _ddos_is_up.rc != 0
-  failed_when: _ddos_is_up.rc in (23, 24)
+- name: Ensure that DDoS is in place
+  changed_when: true
+  when: _ddos_script.changed
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      if ! /root/ipv4-rules.sh >/tmp/ipv4; then
-        exit 23
-      fi
-
-      if ! /root/ipv6-rules.sh >/tmp/ipv6; then
-        exit 24
-      fi
-
-      grep -q "DDoS IPv4" /tmp/ipv4
-      grep -q "DDoS IPv6" /tmp/ipv6
-  register: _ddos_is_up
-  notify: Restart DDoS
+      {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start
+      {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
 
 - name: Create DDoS cron job for reboot
   ansible.builtin.cron:
@@ -42,7 +46,6 @@
     job: >-
       {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start;
       {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
-  notify: Restart DDoS
 
 - name: Create DDoS cron job to regularly save ipsets
   ansible.builtin.cron:
@@ -55,25 +58,3 @@
     name: Tor authority ip addresses update
     special_time: daily
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
-
-- name: Remove base firewall script
-  ansible.builtin.file:
-    path: "/root/firewall-ip{{ item }}.sh"
-    state: absent
-  with_items:
-    - v4
-    - v6
-
-- name: Remove iptables state
-  ansible.builtin.file:
-    path: "/etc/iptables/rules.{{ item }}"
-    state: absent
-  with_items:
-    - v4
-    - v6
-
-- name: Remove package iptables-persistent
-  ansible.builtin.apt:
-    name:
-      - iptables-persistent
-    state: absent

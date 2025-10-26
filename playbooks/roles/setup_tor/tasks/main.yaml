@@ -38,12 +38,6 @@
       group: root
       mode: "0644"
   block:
-    - name: DDoS firewall
-      ansible.builtin.import_tasks: ddos-firewall.yaml
-      tags:
-        - firewall
-        - ddos-firewall
-
     - name: Distribution
       when: not tor_build_from_source and ansible_facts.distribution in ('Debian')
       ansible.builtin.import_tasks: tor-dist.yaml
@@ -68,7 +62,7 @@
             - tor-src
 
         - name: Lyrebird
-          when: bridge_distribution | length > 0
+          when: tor_bridge_distribution != ''
           ansible.builtin.import_tasks: lyrebird.yaml
           tags:
             - lyrebird

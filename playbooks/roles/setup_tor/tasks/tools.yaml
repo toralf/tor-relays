@@ -11,7 +11,7 @@
       - zlib1g-dev
 
 - name: Install/Update toolchain for Tor server build
-  when: bridge_distribution | length == 0
+  when: tor_bridge_distribution == ''
   ansible.builtin.apt:
     name:
       - libseccomp-dev
@@ -23,7 +23,7 @@
       - autotools-dev
 
 - name: Install/Update Go for Tor PT build
-  when: bridge_distribution | length > 0
+  when: tor_bridge_distribution != ''
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:

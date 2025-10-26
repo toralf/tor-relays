@@ -11,27 +11,17 @@ lyrebird_git_patches: []
 torrc_config_group: []
 torrc_config_hosts: []
 
-# the ORPort
-tor_port: ""
+# the ORPort or PT port
+tor_port: 0
 
 # safe default: Tor private bridge, empty string for a Tor server
-bridge_distribution: none
+tor_bridge_distribution: none
 
 # CPU consuming
 ddos_metrics: false
 tor_metrics: false
 
-# DDoS environment variables
-add_local_services_v4: ""
-add_local_services_v6: ""
-add_remote_services_v4: ""
-add_remote_services_v6: ""
-configured_relays_v4: ""
-configured_relays_v6: ""
-
 # file containing the private FamilyId key
 tor_secret_family_key_file: ""
 
 nickname: ""
-
-additional_ports: []

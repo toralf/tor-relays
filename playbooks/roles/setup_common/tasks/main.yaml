@@ -38,6 +38,9 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.get_url:
+      mode: "0744"
+      force: true
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
@@ -98,9 +101,31 @@
               - "ansible_facts.default_ipv6.address is not search('::1$')"
 
     - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
+      block:
+        - name: Firewall tools
+          ansible.builtin.import_tasks: firewall-tools.yaml
+          tags:
+            - firewall-tools
+
+        - name: Firewall base
+          when: tor_port == 0
+          ansible.builtin.import_tasks: firewall-base.yaml
+          tags:
+            - firewall-base
+
+        - name: Firewall Snowflake
+          when: snowflake_proxies | length > 0
+          ansible.builtin.import_tasks: firewall-snowflake.yaml
+          tags:
+            - firewall-snowflake
+
+        - name: Firewall Tor
+          when: tor_port > 0
+          ansible.builtin.import_tasks: firewall-tor.yaml
+          tags:
+            - firewall-tor
 
     - name: System config
       ansible.builtin.import_tasks: system-config.yaml
@@ -115,7 +140,7 @@
     - name: Nginx
       when:
         nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
-        ddos_metrics | default(false) or node_metrics or snowflake_metrics | default(false) or tor_metrics | default(false)
+        ddos_metrics or node_metrics or snowflake_metrics or tor_metrics
       block:
         - name: Nginx
           ansible.builtin.import_tasks: nginx.yaml

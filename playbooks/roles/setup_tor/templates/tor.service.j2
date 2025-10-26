@@ -21,7 +21,7 @@ KillSignal=SIGINT
 
 # Hardening
 CapabilityBoundingSet=CAP_SETUID CAP_SETGID CAP_NET_BIND_SERVICE CAP_DAC_READ_SEARCH CAP_KILL
-NoNewPrivileges={{ (bridge_distribution | length > 0) | ternary('no', 'yes') }}
+NoNewPrivileges={{ (tor_bridge_distribution != '') | ternary('no', 'yes') }}
 PrivateDevices=no
 PrivateTmp=yes
 ProtectHome=yes

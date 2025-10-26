@@ -1,7 +1,7 @@
 ---
 log_lines: 10
 
-bridge_distribution: ""
+tor_bridge_distribution: ""
 
 # defined here to allow --check
 _fingerprint: ""

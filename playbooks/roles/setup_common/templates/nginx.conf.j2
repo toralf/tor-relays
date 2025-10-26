@@ -76,7 +76,7 @@ server {
   stub_status on;
 }
 {% endif %}
-{% if ddos_metrics | default(false) %}
+{% if ddos_metrics %}
 
 server {
   listen 127.0.0.1:3305;
@@ -113,7 +113,7 @@ server {
   server_name _{{ metrics_port }};
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
-{% if ddos_metrics | default(false)  %}
+{% if ddos_metrics %}
 
   location = /metrics-ddos {
     proxy_pass http://127.0.0.1:3305/;
@@ -134,22 +134,20 @@ server {
     access_log off;
   }
 {% endif %}
-{% if tor_metrics | default(false) %}
+{% if tor_metrics %}
 
   location = /metrics-tor {
     proxy_pass http://127.0.0.1:9052/metrics;
     access_log off;
   }
 {% endif %}
-{% if snowflake_metrics | default(false) %}
-{% for _proxy in snowflake_proxies | selectattr('state', 'eq', 'present') %}
-{% if _proxy.proxy_metrics_port is defined %}
+{% if snowflake_metrics %}
+{% for _proxy in snowflake_proxies | selectattr('state', 'eq', 'present') | selectattr('proxy_metrics_port', 'defined')  | selectattr('proxy_metrics_port', 'gt', 0) %}
 
   location = /metrics-{{ _proxy.name }} {
     proxy_pass http://127.0.0.1:{{ _proxy.proxy_metrics_port }}/internal/metrics;
     access_log off;
   }
-{% endif %}
 {% endfor %}
 {% endif %}
 }

@@ -42,9 +42,6 @@
 
               before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
-              # force loading of modules (maybe not yet loaded), e.g. for the firewall/DDoS solution
-              conntrack -C || true
-
               yes '' | make localmodconfig >/dev/null
 
               cat <<EOF >>.config

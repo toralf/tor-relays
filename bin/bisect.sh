@@ -21,7 +21,7 @@ bisect_id=$(<.git/BISECT_HEAD) || exit 254
 cd $(dirname $0)/..
 
 # maybe dead from previous run
-if ! ping -q -c 3 ${name} 1>/dev/null; then
+if ! ping -q -c 3 ${name} >/dev/null; then
   ./bin/rebuild-server.sh ${name} || exit 255
 fi
 

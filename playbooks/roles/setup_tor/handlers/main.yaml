@@ -1,17 +1,4 @@
 ---
-- name: Restart DDoS
-  changed_when: true
-  listen: Restart DDoS
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      /root/ipv4-rules.sh save
-      /root/ipv6-rules.sh save
-
-      {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start
-      {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
-
 - name: Reload systemd
   listen: Reload systemd
   ansible.builtin.systemd_service:

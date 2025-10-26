@@ -41,7 +41,7 @@
 - name: Reboot system
   listen: Reboot system
   vars:
-    _additional_timeout_tor: "{{ tor_port is defined | ternary(60, 0) }}"
+    _additional_timeout_tor: "{{ tor_port > 0 | ternary(60, 0) }}"
   ansible.builtin.reboot:
     connect_timeout: 2
     reboot_timeout: "{{ 60 + _additional_timeout_tor | int }}"

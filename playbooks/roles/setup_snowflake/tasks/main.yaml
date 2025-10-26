@@ -25,11 +25,6 @@
       enabled: true
       no_block: true
   block:
-    - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
-      tags:
-        - firewall
-
     - name: Tools
       ansible.builtin.import_tasks: tools.yaml
       tags:

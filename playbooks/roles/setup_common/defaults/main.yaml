@@ -4,6 +4,14 @@ additional_software: []
 
 custom_command_file: ""
 
+# firewall DDoS
+add_local_services_v4: ""
+add_local_services_v6: ""
+add_remote_services_v4: ""
+add_remote_services_v6: ""
+configured_relays_v4: ""
+configured_relays_v6: ""
+
 # e.g.:  -e desired_debian_release=trixie
 desired_debian_release: ""
 
@@ -11,18 +19,26 @@ desired_debian_release: ""
 kernel_debian_backports: false
 kernel_debian_cloud: false
 
-# build Linux kernel from sources
+# build Linux kernel from sources ("nowait")
 kernel_git_build: "{{ (kernel_git_repo_url | length > 0) | ternary('yes', 'no') }}"
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []
 
 # metrics
+ddos_metrics: false
 metrics_port: 0
 nginx_metrics: false
 node_metrics: false
 prometheus_server: ""
 prometheus_server6: ""
+snowflake_metrics: false
+tor_metrics: false
+
+# Tor / Snowflake
+tor_bridge_distribution: ""
+snowflake_proxies: []
+tor_port: 0
 
 # nginx
 nginx_public_site: false
@@ -111,44 +127,6 @@ kernel_git_config: |-
   CONFIG_GCC_PLUGIN_STRUCTLEAK=y
   CONFIG_GCC_PLUGIN_STRUCTLEAK_BYREF_ALL=y
   CONFIG_GCC_PLUGIN_STACKLEAK=y
-
-  # DDoS firewall
-
-  CONFIG_NETFILTER_EGRESS=n
-  CONFIG_NETFILTER_INGRESS=n
-  CONFIG_NF_CT_PROTO_DCCP=n
-  CONFIG_NF_CT_PROTO_SCTP=n
-  CONFIG_NF_CT_PROTO_UDPLITE=n
-  CONFIG_NF_TABLES_ARP=n
-  CONFIG_NF_TABLES_NETDEV=n
-
-  CONFIG_IP_NF_FILTER=m
-  CONFIG_IP_NF_IPTABLES=m
-  CONFIG_IP_NF_NAT=m
-  CONFIG_IP_SET=m
-  CONFIG_IP_SET_HASH_IP=m'
-  CONFIG_IP6_NF_FILTER=m
-  CONFIG_IP6_NF_IPTABLES=m
-  CONFIG_IP6_NF_NAT=m
-  CONFIG_NETFILTER_XT_MATCH_COMMENT=m
-  CONFIG_NETFILTER_XT_MATCH_CONNLIMIT=m
-  CONFIG_NETFILTER_XT_MATCH_CONNTRACK=m
-  CONFIG_NETFILTER_XT_MATCH_HASHLIMIT=m
-  CONFIG_NETFILTER_XT_MATCH_LIMIT=m
-  CONFIG_NETFILTER_XT_MATCH_MULTIPORT=m
-  CONFIG_NETFILTER_XT_MATCH_STATE=m
-  CONFIG_NETFILTER_XT_NAT=m
-  CONFIG_NETFILTER_XT_SET=m
-  CONFIG_NETFILTER_XTABLES_LEGACY=y
-  CONFIG_NF_CONNTRACK=m
-  CONFIG_NF_CT_NETLINK=m
-  CONFIG_NF_NAT=m
-  CONFIG_NF_TABLES=m
-  CONFIG_NF_TABLES_INET=y
-  CONFIG_NF_TABLES_IPV4=y
-  CONFIG_NF_TABLES_IPV6=y
-  CONFIG_NFT_LIMIT=m
-  CONFIG_NFT_NAT=m
 
   # Ubuntu
 

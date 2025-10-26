@@ -1,11 +1,15 @@
 ---
 # "de-normalize" plays to
-#   - avoid reboot races if kernel build run in background ("nowait")
-#   - speed up deployment by having only 1 play (no wait for other plays to be finished)
+#   - avoid reboot races if a linux kernel is compiled in background ("nowait")
+#     by having later steps being applied already
+#   - use all available forks by having 1 single play per host type
 
 - name: Setup all
   hosts: "!snowflake:!tor"
   roles:
+    - role: poweron
+      tags:
+        - never
     - role: setup_common
     - role: info_healthy
     - role: setup_autoupdate

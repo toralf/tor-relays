@@ -31,7 +31,6 @@ snowflake:
           -nat-retest-interval 1h -summary-interval 0h0m15s -metrics -metrics-port 9999
         git_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
         proxy_metrics_port: 9999
-    snowflake_metrics: true
   children:
     snowflake_ionos:
     snowflake_test:
@@ -83,13 +82,13 @@ tor:
 #
 private:
   vars:
-    bridge_distribution: none
+    tor_bridge_distribution: none
   children:
     private_test:
 
 public:
   vars:
-    bridge_distribution: any
+    tor_bridge_distribution: any
   children:
     public_hetzner:
     public_ionos:
@@ -100,7 +99,7 @@ public:
 #     - unbound
 server:
   vars:
-    bridge_distribution: ""
+    tor_bridge_distribution: ""
     node_metrics: true
   children:
     server_ionos:

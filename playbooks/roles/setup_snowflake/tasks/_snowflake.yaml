@@ -1,8 +1,12 @@
 ---
+- name: Add the group {{ item.name }}
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+
 - name: Add the user {{ item.name }}
   ansible.builtin.user:
-    name: "{{ item.name }}"
     group: "{{ item.name }}"
+    name: "{{ item.name }}"
 
 - name: Git {{ item.name }}
   vars:

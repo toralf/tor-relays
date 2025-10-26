@@ -30,7 +30,7 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: Stop and disable Debian services
+- name: Stop and disable fstrim
   when: ansible_facts.distribution in ('Debian', 'Ubuntu')
   ansible.builtin.systemd_service:
     name: "{{ item }}"
@@ -49,13 +49,8 @@
     - multipathd
     - rsyslog
 
-- name: Configure Apt
-  ansible.builtin.copy:
-    src: 99local-apt-conf
-    dest: /etc/apt/apt.conf.d/
-
 - name: Create swapfile for systems with small RAM
-  when: ansible_facts.memtotal_mb < 2048 and (kernel_git_repo_url | length > 0 or tor_port is defined)
+  when: ansible_facts.memtotal_mb < 2048 and (kernel_git_repo_url | length > 0 or tor_port > 0)
   ansible.builtin.shell:
     cmd: |-
       set -euf

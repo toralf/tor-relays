@@ -60,12 +60,12 @@ set -euf
 ipt="iptables"
 
 # jump out if this fails
-$ipt -nv -L INPUT 1>/dev/null
+$ipt -nv -L INPUT >/dev/null
 
 modprobe nf_conntrack
 {% set _max = (ansible_facts.memtotal_mb < 1024) | ternary(2**16, 2**18) %}
-sysctl -w net.netfilter.nf_conntrack_buckets={{ _max }}
-sysctl -w net.netfilter.nf_conntrack_max={{ _max }}
+sysctl -w net.netfilter.nf_conntrack_buckets={{ _max }} >/dev/null
+sysctl -w net.netfilter.nf_conntrack_max={{ _max }} >/dev/null
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

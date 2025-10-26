@@ -1,7 +1,4 @@
 ---
-# metrics could expose potential sensitive information
-snowflake_metrics: false
-
 # if country-specific metrics are wanted
 use_tor_geoip_data: false
 

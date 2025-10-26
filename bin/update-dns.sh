@@ -42,7 +42,7 @@ hcloud --quiet server list --output noheader --output columns=name,ipv4 |
   done |
   sudo tee -a ${hconf}.new >/dev/null
 
-if ! sudo diff -q ${hconf} ${hconf}.new 1>/dev/null; then
+if ! sudo diff -q ${hconf} ${hconf}.new >/dev/null; then
   sudo cp ${hconf}.new ${hconf}
   echo " reloading DNS resolver"
   sudo rc-service unbound reload

@@ -64,7 +64,7 @@ set -euf
 ipt="ip6tables"
 
 # jump out if this fails
-$ipt -nv -L INPUT 1>/dev/null
+$ipt -nv -L INPUT >/dev/null
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

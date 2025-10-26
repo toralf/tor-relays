@@ -31,7 +31,7 @@
   changed_when: _sysctl.changed or _result.stderr | length > 0
   failed_when: false # Ubuntu: sysctl: setting key "kernel.yama.ptrace_scope": Invalid argument
   ansible.builtin.command:
-    cmd: sysctl --system 1>/dev/null
+    cmd: sysctl --system >/dev/null
   register: _result
 
 - name: Set crontab vars

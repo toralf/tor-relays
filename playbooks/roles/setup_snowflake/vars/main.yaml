@@ -1,2 +1,0 @@
----
-snowflake_metrics: "{{ snowflake_proxies | selectattr('metrics_port') | length > 0 }}"

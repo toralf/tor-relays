@@ -26,10 +26,3 @@
     quiet: true
     that:
       - "nickname | length >= 1 and nickname | length <= 19"
-
-- name: Validate additional_ports
-  when: additional_ports | length > 0
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "additional_ports | unique | length == additional_ports | length"

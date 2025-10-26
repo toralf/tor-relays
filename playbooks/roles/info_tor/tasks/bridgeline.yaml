@@ -1,6 +1,6 @@
 ---
 - name: Get certificate
-  when: bridge_distribution | length > 0
+  when: tor_bridge_distribution != ''
   changed_when: false
   ansible.builtin.command:
     cmd: >-

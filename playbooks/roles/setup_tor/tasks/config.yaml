@@ -13,11 +13,12 @@
     dest: /etc/tor/torrc
     backup: true
   notify:
-    - Restart DDoS
     - Reload Tor
 
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
+  vars:
+    tor_user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
     src: "{{ tor_secret_family_key_file }}"
     dest: /var/lib/tor/keys/

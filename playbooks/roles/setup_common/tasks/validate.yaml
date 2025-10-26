@@ -13,12 +13,19 @@
       - "ansible_facts.default_ipv6.address | length > 0"
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
+- name: Validate additional_ports
+  when: additional_ports | length > 0
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "additional_ports | unique | length == additional_ports | length"
+
 - name: Validate metrics_port
   when: metrics_port > 0
   ansible.builtin.assert:
     quiet: true
     that:
-      - "metrics_port | int > 0 and metrics_port | int < 2**16"
+      - "metrics_port > 0 and metrics_port < 2**16"
 
 - name: Validate prometheus_server
   when: prometheus_server | length > 0
@@ -67,3 +74,10 @@
       - "nginx_site_directories | selectattr('port', 'gt', 65535) | length == 0"
       - "nginx_site_directories | selectattr('dir') | length > 0"
       - "nginx_site_directories | selectattr('dir') | length == nginx_site_directories | selectattr('port') | length"
+
+- name: Validate snowflake_proxies
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "snowflake_proxies | selectattr('state', 'eq', 'present') | selectattr('proxy_metrics_port', 'defined') |
+        selectattr('proxy_metrics_port', 'lt', 1) | length == 0"

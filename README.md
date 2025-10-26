@@ -85,8 +85,7 @@ The Root CA key has to be put into the Prometheus config to enable scraping metr
 snowflake:
   vars:
     metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
-    snowflake_metrics: true
-    prometheus_server: "1.2.3.4
+    prometheus_server: "1.2.3.4"
 ```
 
 A _Prometheus node exporter_ is deployed if `node_metrics: true` is set.
@@ -174,7 +173,7 @@ git bisect reset
 
 ## Resources
 
-If you have a big inventory then increase your ulimits, e.g.
+If you have a bigger inventory then increase your ulimits, e.g.
 
 ```bash
 ulimit -S -n 4096

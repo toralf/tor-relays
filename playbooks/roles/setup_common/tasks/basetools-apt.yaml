@@ -1,4 +1,9 @@
 ---
+- name: Configure Apt
+  ansible.builtin.copy:
+    src: 99local-apt-conf
+    dest: /etc/apt/apt.conf.d/
+
 - name: Disable unattended upgrades
   ansible.builtin.systemd_service:
     name: unattended-upgrades
@@ -15,7 +20,7 @@
 - name: Update apt cache
   changed_when: _result.cache_updated
   ansible.builtin.apt:
-    cache_valid_time: 600
+    cache_valid_time: 3600
     update_cache: true
   register: _result
 

@@ -24,7 +24,7 @@
     _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
 
 - name: Hashed fingerprint
-  when: bridge_distribution | length > 0
+  when: tor_bridge_distribution != ''
   block:
     - name: Get hashed fingerprint of a bridge
       changed_when: false

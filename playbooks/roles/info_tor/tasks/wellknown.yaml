@@ -2,7 +2,7 @@
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 
 - name: Wellknown for bridges
-  when: bridge_distribution
+  when: tor_bridge_distribution
   block:
     - name: Ensure hostname is in wellknown file
       delegate_to: localhost
@@ -20,7 +20,7 @@
         insertafter: "^# {{ inventory_hostname }}\n"
 
 - name: Wellknown for server
-  when: not bridge_distribution | length > 0
+  when: not tor_bridge_distribution != ''
   block:
     - name: Ensure hostname is in wellknown files
       delegate_to: localhost

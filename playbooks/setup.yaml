@@ -1,24 +1,24 @@
 ---
-# "de-normalize" plays, otherwise a reboot by a kernel build script could yield to (temporary) unreachable systems
-- name: Setup all
-  hosts: "!snowflake:!tor"
+- name: Setup common
+  hosts: all
   roles:
+    - role: poweron
+      tags:
+        - never
     - role: setup_common
     - role: info_healthy
-    - role: setup_autoupdate
 
 - name: Setup snowflake
   hosts: snowflake
   roles:
-    - role: setup_common
-    - role: info_healthy
     - role: setup_snowflake
-    - role: setup_autoupdate
 
 - name: Setup tor
   hosts: tor
   roles:
-    - role: setup_common
-    - role: info_healthy
     - role: setup_tor
+
+- name: Setup autoupdate
+  hosts: all
+  roles:
     - role: setup_autoupdate

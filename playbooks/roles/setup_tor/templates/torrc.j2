@@ -4,12 +4,12 @@
 
 DataDirectory /var/lib/tor
 {% endif %}
-{% if bridge_distribution | length > 0 %}
+{% if tor_bridge_distribution != '' %}
 {# Tor bridge #}
 
 BridgeRelay 1
-BridgeDistribution {{ bridge_distribution }}
-{% if bridge_distribution == 'none' %}
+BridgeDistribution {{ tor_bridge_distribution }}
+{% if tor_bridge_distribution == 'none' %}
 
 PublishServerDescriptor 0
 {% endif %}
