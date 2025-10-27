@@ -103,3 +103,33 @@
     name: Tor authority ip addresses update
     special_time: daily
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
+
+- name: Egress
+  when: tor_bridge_distribution == ''
+  block:
+    - name: Download egress solution
+      throttle: 16
+      ansible.builtin.get_url:
+        url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
+        dest: "/root/{{ item }}"
+      with_items:
+        - ipv4-rules-egress.sh
+      register: _egress_script
+
+    - name: Create egress fw cron job for reboot
+      vars:
+      ansible.builtin.cron:
+        name: start firewall egress
+        special_time: reboot
+        job: >-
+          {{ tor_egress_drop }} {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
+      register: _egress_cron
+
+    - name: Ensure that egress fw is up to date and active
+      changed_when: true
+      when: _egress_script.changed or _egress_cron.changed
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          {{ tor_egress_drop }} {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start

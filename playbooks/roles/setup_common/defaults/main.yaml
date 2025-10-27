@@ -30,6 +30,9 @@ tor_metrics: false
 tor_bridge_distribution: ""
 snowflake_proxies: []
 tor_port: 0
+# egress firewall
+tor_egress_drop: ""
+tor_egress_slew: ""
 
 # nginx
 nginx_public_site: false
