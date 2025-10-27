@@ -5,6 +5,79 @@
       - ipset
       - jq
 
+- name: Download DDoS solution
+  throttle: 16
+  ansible.builtin.get_url:
+    url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
+    dest: "/root/{{ item }}"
+  with_items:
+    - ipv4-rules.sh
+    - ipv6-rules.sh
+  register: _ddos_script
+
+- name: Basic test that DDoS works
+  when: _ddos_script.changed
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      /root/ipv4-rules.sh
+      /root/ipv6-rules.sh
+
+- name: DDoS
+  vars:
+    _additional_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}"
+    _additional_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}"
+    _add_local_services_v4: >-
+      {{ (_additional_ports_v4 | length > 0) | ternary('ADD_LOCAL_SERVICES="' + _additional_ports_v4 | join(' ') + '"', '') }}
+    _add_local_services_v6: >-
+      {{ (_additional_ports_v6 | length > 0) | ternary('ADD_LOCAL_SERVICES6="' + _additional_ports_v6 | join(' ') + '"', '') }}
+    # Prometheus server
+    _add_remote_services_v4: >-
+      {{ (metrics_port > 0 and prometheus_server != '') |
+        ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
+    _add_remote_services_v6: >-
+      {{ (metrics_port > 0 and prometheus_server6 != '' ) |
+        ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
+    # ipv4 for all
+    _configured_relays_v4: >-
+      {{ 'CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
+    # no ipv6 for bridges
+    _configured_relays_v6: >-
+      {{ (tor_bridge_distribution == '') |
+        ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
+  block:
+    - name: Create DDoS cron job for reboot
+      ansible.builtin.cron:
+        name: start firewall
+        special_time: reboot
+        job: >-
+          {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start;
+          {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
+      register: _ddos_cron
+
+    - name: Check if DDoS is in place
+      failed_when: _ddos_in_place.rc not in (0, 1)
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          iptables  -nvL INPUT | grep -F '/* DDoS IPv4'
+          ip6tables -nvL INPUT | grep -F '/* DDoS IPv6'
+      register: _ddos_in_place
+
+    - name: Ensure that DDoS is up to date and active
+      changed_when: true
+      when: _ddos_script.changed or _ddos_cron.changed or _ddos_in_place.rc == 1
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start
+          {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
+
 - name: Remove package iptables-persistent
   ansible.builtin.apt:
     name:
@@ -18,34 +91,6 @@
   with_items:
     - v4
     - v6
-
-- name: Download DDoS solution
-  throttle: 16
-  ansible.builtin.get_url:
-    url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
-    dest: "/root/{{ item }}"
-  with_items:
-    - ipv4-rules.sh
-    - ipv6-rules.sh
-  register: _ddos_script
-
-- name: Ensure that DDoS is in place
-  changed_when: true
-  when: _ddos_script.changed
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start
-      {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
-
-- name: Create DDoS cron job for reboot
-  ansible.builtin.cron:
-    name: start firewall
-    special_time: reboot
-    job: >-
-      {{ add_local_services_v4 }} {{ add_remote_services_v4 }} {{ configured_relays_v4 }} /root/ipv4-rules.sh start;
-      {{ add_local_services_v6 }} {{ add_remote_services_v6 }} {{ configured_relays_v6 }} /root/ipv6-rules.sh start
 
 - name: Create DDoS cron job to regularly save ipsets
   ansible.builtin.cron:

@@ -140,7 +140,13 @@
     - name: Nginx
       when:
         nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
-        ddos_metrics or node_metrics or snowflake_metrics or tor_metrics
+        ddos_metrics or node_metrics or _snowflake_metrics or tor_metrics
+      vars:
+        _snowflake_metrics: "{{ snowflake_proxies |
+          selectattr('state', 'eq', 'present') |
+          selectattr('proxy_metrics_port', 'defined') |
+          selectattr('proxy_metrics_port', 'gt', 0) |
+          length > 0 }}"
       ansible.builtin.import_tasks: nginx.yaml
       tags:
         - nginx

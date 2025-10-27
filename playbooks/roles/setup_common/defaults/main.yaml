@@ -4,14 +4,6 @@ additional_software: []
 
 custom_command_file: ""
 
-# firewall DDoS
-add_local_services_v4: ""
-add_local_services_v6: ""
-add_remote_services_v4: ""
-add_remote_services_v6: ""
-configured_relays_v4: ""
-configured_relays_v6: ""
-
 # e.g.:  -e desired_debian_release=trixie
 desired_debian_release: ""
 
@@ -32,7 +24,6 @@ nginx_metrics: false
 node_metrics: false
 prometheus_server: ""
 prometheus_server6: ""
-snowflake_metrics: false
 tor_metrics: false
 
 # Tor / Snowflake
