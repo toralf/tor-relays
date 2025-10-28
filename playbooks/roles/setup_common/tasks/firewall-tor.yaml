@@ -122,7 +122,7 @@
         name: start firewall egress
         special_time: reboot
         job: >-
-          {{ tor_egress_drop }} {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
+          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
       register: _egress_cron
 
     - name: Ensure that egress fw is up to date and active
@@ -132,4 +132,4 @@
         cmd: |-
           set -euf
 
-          {{ tor_egress_drop }} {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
+          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
