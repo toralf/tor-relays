@@ -1,11 +1,11 @@
 ---
 tor_build_from_source: true
 
-tor_git_version: main
 tor_git_patches: []
+tor_git_version: main
 
-lyrebird_git_version: main
 lyrebird_git_patches: []
+lyrebird_git_version: main
 
 # 2 lists for additional torrc values
 torrc_config_group: []
@@ -14,7 +14,7 @@ torrc_config_hosts: []
 # the ORPort or PT port
 tor_port: 0
 
-# safe default: Tor private bridge, empty string for a Tor server
+# safe default: Tor private bridge, an empty string indicates a Tor server
 tor_bridge_distribution: none
 
 # CPU consuming

@@ -14,8 +14,8 @@
     loop_var: inside_item
   loop:
     - "/etc/systemd/system/{{ item.name }}.service"
-    - "/usr/bin/{{ item.name }}"
     - "/root/{{ item.name }}"
+    - "/usr/bin/{{ item.name }}"
 
 - name: Remove the user {{ item.name }}
   ansible.builtin.user:
