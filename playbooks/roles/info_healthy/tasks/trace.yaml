@@ -12,7 +12,7 @@
 
 - name: Results of trace
   vars:
-    _codeline: "{{ _result.stdout_lines | join('\n') | split(' ') | select('match', '.*/.*\\.c:[0-9]+$') | first }}"
+    _codeline: "{{ _result.stdout_lines | join('\n') | split(' ') | select('match', '.*/.*\\.[ch]:[0-9]+') | first }}"
     _headline: "{{ _result.stdout[0] }}"
   ansible.builtin.include_tasks: _trace.yaml
   loop: "{{ _result.stdout_lines }}"
