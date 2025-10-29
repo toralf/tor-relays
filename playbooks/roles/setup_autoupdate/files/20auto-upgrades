@@ -1,3 +1,3 @@
-APT::Periodic::Update-Package-Lists "10m";
-APT::Periodic::Unattended-Upgrade "10m";
+APT::Periodic::Update-Package-Lists "60m";
+APT::Periodic::Unattended-Upgrade "60m";
 APT::Periodic::AutocleanInterval "1";
