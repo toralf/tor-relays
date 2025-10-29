@@ -3,9 +3,9 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ _codeline }}"
+    line: "{{ item }}"
     path: "{{ tmp_dir }}/trace-codeline.txt"
-    regexp: "^{{ _codeline }}$"
+    regexp: "^{{ item }}$"
   register: _known
 
 - name: Work on new trace
@@ -18,7 +18,7 @@
           set -o pipefail
 
           journalctl --since "{{ trace_since }}" --quiet |
-            awk "/{{ _headline | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
+            awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/ kernel: ---\[ end trace /" |
             head -n 999
         executable: /bin/bash
       register: _full
@@ -31,7 +31,7 @@
           #    {{ inventory_hostname }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}    {{ ansible_facts.lsb.description }}
           {{ _full.stdout }}
         path: "{{ tmp_dir }}/trace-full.txt"
-        marker: "# {mark} {{ _codeline }} "
+        marker: "# {mark} {{ item }} "
         marker_begin: "TRACE BEGIN"
         marker_end: "TRACE END"
 
