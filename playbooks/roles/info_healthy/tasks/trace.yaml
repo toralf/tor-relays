@@ -1,15 +1,16 @@
 ---
 - name: Get trace from system log
   changed_when: false
-  failed_when: false
   ansible.builtin.shell:
     cmd: |-
       journalctl --since "{{ trace_since }}" --quiet |
-        grep -F -B 1 -A 1 -e ' kernel: ------------[ cut here ]------------' |
-        grep -E ' .*/.*\.[ch]:[0-9]+'
-  register: _code_lines
+        cut -f 5- -d' ' |
+        grep -F -B 1 -A 1 'kernel: ------------[ cut here ]------------' |
+        grep -E ' .*/.*\.[ch]:[0-9]+' |
+        sort -u
+  register: _result
   notify: Not Healthy
 
 - name: Results of trace
   ansible.builtin.include_tasks: _trace.yaml
-  loop: "{{ _code_lines.stdout_lines }}"
+  loop: "{{ _result.stdout_lines }}"
