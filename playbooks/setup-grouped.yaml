@@ -4,7 +4,7 @@
 #     avoid reboot races by having all following steps already being applied (optimistic approach)
 #   - saturize all forks by having 1 single play per host type
 
-- name: Setup nonTor common
+- name: Setup non
   hosts: "!snowflake:!tor"
   roles:
     - role: poweron
@@ -18,14 +18,14 @@
   hosts: snowflake
   roles:
     - role: setup_common
-    - role: info_healthy
     - role: setup_snowflake
+    - role: info_healthy
     - role: setup_autoupdate
 
 - name: Setup tor
   hosts: tor
   roles:
     - role: setup_common
-    - role: info_healthy
     - role: setup_tor
+    - role: info_healthy
     - role: setup_autoupdate

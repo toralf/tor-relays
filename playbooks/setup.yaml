@@ -1,12 +1,11 @@
 ---
-- name: Setup all common
+- name: Setup all (i)
   hosts: all
   roles:
     - role: poweron
       tags:
         - never
     - role: setup_common
-    - role: info_healthy
 
 - name: Setup snowflake
   hosts: snowflake
@@ -18,7 +17,8 @@
   roles:
     - role: setup_tor
 
-- name: Setup all autoupdate
+- name: Setup all (ii)
   hosts: all
   roles:
+    - role: info_healthy
     - role: setup_autoupdate
