@@ -128,8 +128,6 @@
     - name: Update egress firewall
       changed_when: true
       when: _egress_script.changed or _egress_cron.changed
-      ansible.builtin.shell:
+      ansible.builtin.command:
         cmd: |-
-          set -euf
-
           {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
