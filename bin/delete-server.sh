@@ -8,7 +8,9 @@
 set -u # no -ef here
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
-source $(dirname $0)/lib.sh
+
+cd $(dirname $0)/..
+source ./bin//lib.sh
 
 hash -r hcloud rc-service
 
@@ -30,7 +32,7 @@ done <<<${names}
 echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
 
-$(dirname $0)/distrust-host-ssh-key.sh ${names}
+./bin/distrust-host-ssh-key.sh ${names}
 
 echo -e " deleting $(wc -w <<<${names}) system/s ..."
 

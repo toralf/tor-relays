@@ -5,7 +5,9 @@
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
-source $(dirname $0)/lib.sh
+
+cd $(dirname $0)/..
+source ./bin/lib.sh
 
 hash -r hcloud rc-service
 

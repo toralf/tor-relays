@@ -10,7 +10,9 @@
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
-source $(dirname $0)/lib.sh
+
+cd $(dirname $0)/..
+source ./bin/lib.sh
 
 hash -r hcloud jq
 
@@ -92,8 +94,8 @@ if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
   exit ${rc}
 fi
 
-$(dirname $0)/update-dns.sh
-if ! $(dirname $0)/trust-host-ssh-key.sh ${names}; then
+./bin/update-dns.sh
+if ! ./bin/trust-host-ssh-key.sh ${names}; then
   if [[ ${rc} -ne 123 ]]; then
     exit 1
   else

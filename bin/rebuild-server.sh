@@ -8,7 +8,9 @@
 set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
-source $(dirname $0)/lib.sh
+
+cd $(dirname $0)/..
+source ./bin/lib.sh
 
 hash -r hcloud jq
 
@@ -31,5 +33,5 @@ done <<<${names} |
   xargs -r -P ${jobs} -L 1 hcloud --quiet
 
 cleanLocalDataEntries ${names}
-$(dirname $0)/distrust-host-ssh-key.sh ${names}
-$(dirname $0)/trust-host-ssh-key.sh ${names}
+./bin/distrust-host-ssh-key.sh ${names}
+./bin/trust-host-ssh-key.sh ${names}

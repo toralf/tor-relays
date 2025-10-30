@@ -11,7 +11,7 @@ function cleanLocalDataEntries() {
   while read -r name; do
     [[ -n ${name} ]] || continue
     # Ansible facts
-    rm -f $(dirname $0)/../.ansible_facts/{,s1_}${name}
+    rm -f ./.ansible_facts/{,s1_}${name}
     # line in files under {{ tmp_dir }}
     sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" -e "/ ${name} /d" -e "/ ${name}$/d" ${files} 2>/dev/null
     # private Tor bridge lines
@@ -28,7 +28,7 @@ function cleanLocalDataFiles() {
     # certain files in {{ tmp_dir }} subdirs
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig}/${name}{,.*}
     # client certs
-    rm -f $(dirname $0)/../secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
+    rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)
   set -e
 }

@@ -8,7 +8,8 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-secrets=$(dirname $0)/../secrets/local.yaml
+cd $(dirname $0)/..
+secrets=./secrets/local.yaml
 
 if [[ ! -s ${secrets} ]]; then
   cat <<EOF >${secrets}
@@ -23,7 +24,7 @@ EOF
   chmod 400 ${secrets}
 fi
 
-local_inventory=$(dirname $0)/../inventory/all.yaml
+local_inventory=./inventory/all.yaml
 if [[ ! -s ${local_inventory} ]]; then
   cat <<EOF >${local_inventory}
 ---
