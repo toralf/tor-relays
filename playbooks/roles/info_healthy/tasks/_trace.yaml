@@ -3,7 +3,7 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ item[4:] }}"
+    line: "{{ (item | split(' '))[4:] | join(' ') }}"
     path: "{{ tmp_dir }}/trace-codeline.txt"
   register: _known
 
@@ -27,7 +27,7 @@
       throttle: 1
       vars:
         _codeline:
-          "{{ (item | join('\n') | regex_replace('!', ' ') | split(' ') | select('match', '.*/.*\\.[ch]:[0-9]+') |
+          "{{ (item | regex_replace('!', ' ') | split(' ') | select('match', '.*/.*\\.[ch]:[0-9]+') |
           first) }}"
       ansible.builtin.blockinfile:
         block: |

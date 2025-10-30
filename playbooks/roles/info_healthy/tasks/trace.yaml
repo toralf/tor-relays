@@ -6,8 +6,7 @@
     cmd: |-
       journalctl --since "{{ trace_since }}" --quiet |
         grep -F -B 1 -A 1 -e ' kernel: ------------[ cut here ]------------' |
-        grep -e ' .*/.*\\.[ch]:[0-9]+'
-    executable: /bin/bash
+        grep -E ' .*/.*\.[ch]:[0-9]+'
   register: _code_lines
   notify: Not Healthy
 
