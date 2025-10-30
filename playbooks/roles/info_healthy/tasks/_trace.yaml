@@ -3,9 +3,8 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ item }}"
+    line: "{{ item[4:] }}"
     path: "{{ tmp_dir }}/trace-codeline.txt"
-    regexp: "^{{ item }}$"
   register: _known
 
 - name: Work on new trace
@@ -26,12 +25,16 @@
     - name: File full trace
       delegate_to: localhost
       throttle: 1
+      vars:
+        _codeline:
+          "{{ (item | join('\n') | regex_replace('!', ' ') | split(' ') | select('match', '.*/.*\\.[ch]:[0-9]+') |
+          first) }}"
       ansible.builtin.blockinfile:
         block: |
           #    {{ inventory_hostname }}    {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}    {{ ansible_facts.lsb.description }}
           {{ _full.stdout }}
         path: "{{ tmp_dir }}/trace-full.txt"
-        marker: "# {mark} {{ item }} "
+        marker: "# {mark} {{ _codeline }} "
         marker_begin: "TRACE BEGIN"
         marker_end: "TRACE END"
 
