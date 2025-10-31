@@ -17,11 +17,11 @@
     - name: Handle new Debian kernel
       when: _kernel_dist.changed
       block:
-        - name: Reboot into new Debian kernel
+        - name: Flush handler (new Debian kernel flavour)
           ansible.builtin.meta: flush_handlers
 
         - name: Upgrade for new Debian kernel
           ansible.builtin.import_tasks: upgrade.yaml
 
-        - name: Reboot after upgrade for new Debian kernel
+        - name: Flush handler (upgrade after new Debian kernel flavour)
           ansible.builtin.meta: flush_handlers
