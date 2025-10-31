@@ -100,7 +100,7 @@
     - Reload systemd
 
 - name: Disable apport service
-  when: ansible_facts.distribution in ('Ubuntu')
+  when: ansible_facts.distribution == 'Ubuntu'
   ansible.builtin.systemd_service:
     name: apport
     state: stopped

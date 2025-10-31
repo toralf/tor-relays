@@ -12,7 +12,7 @@
     no_block: false
 
 - name: Allow phased updates in Ubuntu
-  when: ansible_facts.distribution in ('Ubuntu')
+  when: ansible_facts.distribution == 'Ubuntu'
   ansible.builtin.copy:
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/

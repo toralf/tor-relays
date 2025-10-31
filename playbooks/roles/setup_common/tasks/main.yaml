@@ -72,7 +72,7 @@
         - base
 
     - name: Tools
-      when: ansible_facts.distribution in ('Debian', 'Ubuntu')
+      when: ansible_facts.os_family == 'Debian'
       ansible.builtin.import_tasks: basetools-apt.yaml
       tags:
         - basetools
@@ -171,7 +171,7 @@
       ansible.builtin.meta: flush_handlers
 
     - name: Debian kernel flavour
-      when: ansible_facts.distribution in ('Debian')
+      when: ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: kernel-deb.yaml
       tags:
         - kernel
