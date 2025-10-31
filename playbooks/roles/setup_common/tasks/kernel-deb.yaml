@@ -2,7 +2,7 @@
 - name: Desired Debian kernel
   when: kernel_debian_backports or kernel_debian_cloud
   block:
-    - name: Install Debian kernel
+    - name: Change Debian kernel
       vars:
         _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
         _backports: "{{ kernel_debian_backports | ternary('-backports', '') }}"
@@ -14,14 +14,11 @@
       register: _kernel_dist
       notify: Reboot system
 
-    - name: Handle new Debian kernel
+    - name: Handle changed Debian kernel
       when: _kernel_dist.changed
       block:
-        - name: Flush handler (new Debian kernel flavour)
-          ansible.builtin.meta: flush_handlers
+        - name: Reboot (after changed Debian kernel)
+          ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Upgrade for new Debian kernel
+        - name: Upgrade after changed Debian kernel
           ansible.builtin.import_tasks: upgrade.yaml
-
-        - name: Flush handler (upgrade after new Debian kernel flavour)
-          ansible.builtin.meta: flush_handlers

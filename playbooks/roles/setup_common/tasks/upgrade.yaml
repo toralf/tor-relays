@@ -8,7 +8,7 @@
       ansible.builtin.apt:
         upgrade: full
 
-    - name: Reboot
+    - name: Reboot (after upgrade)
       ansible.builtin.import_tasks: reboot.yaml
 
     - name: New Debian release
@@ -26,7 +26,7 @@
               apt update
               apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
 
-        - name: Reboot
+        - name: Reboot (after new Debian release)
           ansible.builtin.import_tasks: reboot.yaml
 
         - name: Finish new Debian release
