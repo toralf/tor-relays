@@ -31,7 +31,6 @@
       ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
     - name: Kernel
-      when: kernel_git_build in ('nowait', 'yes')
       block:
         - name: Configure kernel
           changed_when: _kernel_configured.rc == 123
@@ -75,7 +74,7 @@
         - name: Build kernel
           when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
           changed_when: true
-          async: "{{ (65 * 60) | int }}"
+          async: "{{ (55 * 60) | int }}"
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
@@ -83,7 +82,7 @@
             _j: "{{ (_max < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ (kernel_git_build == "nowait") |
+              {{ (kernel_git_build == "background") |
               ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
           register: _kernel_build
 
@@ -91,8 +90,8 @@
           when: _kernel_build.changed
           block:
             - name: Wait till kernel build finished
-              when: kernel_git_build == "yes"
-              retries: 65
+              when: kernel_git_build == "wait"
+              retries: 55
               delay: 60
               until: _job_result.finished
               ansible.builtin.async_status:

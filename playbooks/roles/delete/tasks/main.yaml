@@ -1,0 +1,5 @@
+---
+- name: Delete
+  ansible.builtin.import_tasks: delete.yaml
+  tags:
+    - delete

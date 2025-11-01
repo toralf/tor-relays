@@ -1,21 +1,29 @@
 ---
-- name: Setup common
+- name: Test common
   hosts: all
   roles:
+    - role: poweron
     - role: setup_common
 
-- name: Setup snowflake
+- name: Test snowflake
   hosts: snowflake
   roles:
     - role: setup_snowflake
 
-- name: Setup tor
+- name: Test tor
   hosts: tor
   roles:
     - role: setup_tor
 
-- name: Setup autoupdate
+- name: Test final
   hosts: all
   roles:
     - role: setup_autoupdate
     - role: info_healthy
+
+- name: Test end
+  hosts: all
+  roles:
+    - role: shutdown
+    - role: snapshot
+    - role: delete

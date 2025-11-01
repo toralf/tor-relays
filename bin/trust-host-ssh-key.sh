@@ -22,7 +22,7 @@ while ((attempts)); do
     break
   fi
 
-  echo -en "\n $(wc -w <<<${unknowns}) system/s ..."
+  echo -en "\n trusting $(wc -w <<<${unknowns}) system/s ..."
   if ssh-keyscan -4 -t ed25519 ${unknowns} >~/.ssh/known_hosts_tmp; then
     grep -v '#' ~/.ssh/known_hosts_tmp >>~/.ssh/known_hosts
     rm ~/.ssh/known_hosts_tmp

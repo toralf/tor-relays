@@ -188,3 +188,6 @@
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot
+
+    - name: Flush handlers (common)
+      ansible.builtin.meta: flush_handlers

@@ -1,18 +1,5 @@
 ---
-- name: Flush handlers (before shutdown)
-  ansible.builtin.meta: flush_handlers
-
-- name: Shutdown
-  ansible.builtin.import_tasks: shutdown.yaml
-  tags:
-    - shutdown
-
 - name: Snapshot
   ansible.builtin.import_tasks: snapshot.yaml
   tags:
     - snapshot
-
-- name: Delete
-  ansible.builtin.import_tasks: delete-instance.yaml
-  tags:
-    - delete-instance

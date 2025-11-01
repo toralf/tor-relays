@@ -95,10 +95,5 @@ if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
 fi
 
 ./bin/update-dns.sh
-if ! ./bin/trust-host-ssh-key.sh ${names}; then
-  if [[ ${rc} -ne 123 ]]; then
-    exit 1
-  else
-    echo " ^^ ignoring due to rc=${rc} at server creation" >&2
-  fi
-fi
+./bin/distrust-host-ssh-key.sh ${names}
+./bin/trust-host-ssh-key.sh ${names}

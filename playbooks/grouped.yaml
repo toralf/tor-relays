@@ -1,20 +1,16 @@
 ---
 # "de-normalize" plays to
-#   - if a linux kernel is compiled in background:
-#     avoid reboot races by having all following steps already being applied (optimistic approach)
-#   - saturize all forks by having 1 single play per host type
+#   - avoid reboot races if a linux kernel is compiled in background
+#   - saturize all ansible forks by having 1 single play
 
-- name: Setup non
+- name: Setup-grouped special
   hosts: "!snowflake:!tor"
   roles:
-    - role: poweron
-      tags:
-        - never
     - role: setup_common
     - role: info_healthy
     - role: setup_autoupdate
 
-- name: Setup snowflake
+- name: Setup-grouped snowflake
   hosts: snowflake
   roles:
     - role: setup_common
@@ -22,7 +18,7 @@
     - role: info_healthy
     - role: setup_autoupdate
 
-- name: Setup tor
+- name: Setup-grouped tor
   hosts: tor
   roles:
     - role: setup_common

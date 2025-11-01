@@ -60,7 +60,7 @@
   ansible.builtin.assert:
     quiet: true
     that:
-      - "kernel_git_build in ('no', 'nowait', 'yes')"
+      - "kernel_git_build in ('wait', 'background')"
 
 - name: Validate Nginx site directories
   when: nginx_site_directories | length > 0

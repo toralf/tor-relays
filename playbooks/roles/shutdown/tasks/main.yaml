@@ -1,0 +1,5 @@
+---
+- name: Shutdown
+  ansible.builtin.import_tasks: shutdown.yaml
+  tags:
+    - shutdown

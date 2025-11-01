@@ -12,7 +12,7 @@ kernel_debian_backports: false
 kernel_debian_cloud: false
 
 # compile Linux kernel from sources
-kernel_git_build: "no"
+kernel_git_build: "wait"
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []

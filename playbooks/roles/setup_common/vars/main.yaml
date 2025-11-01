@@ -1,2 +1,0 @@
----
-kernel_git_build: "{{ (kernel_git_repo_url | length > 0) | ternary('yes', 'no') }}"
