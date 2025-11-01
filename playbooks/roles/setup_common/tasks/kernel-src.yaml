@@ -79,8 +79,8 @@
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
-            _max: "{{ 1 + (ansible_facts.memtotal_mb / 1576) | int }}"
-            _j: "{{ (_max | int < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
+            _max: "{{ (1 + (ansible_facts.memtotal_mb / 1576)) | int }}"
+            _j: "{{ (_max < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
               {{ (kernel_git_build == "nowait") |
