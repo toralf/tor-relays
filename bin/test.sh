@@ -15,13 +15,13 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${1-} == "app" ]]; then
   names=$(eval echo h{n,s,t}a-{db,dt}-{amd,arm}-{ltsrc,master}-{,no}bp-{,no}cl-42 h{n,s,t}a-un-{amd,arm}-{ltsrc,master}-x-x-42)
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "hna-*-42,hsa-*-42,hta-*-42" --skip-tags shutdown,snapshot
+  time ./site-test.yaml --limit "h?a-*-42" --skip-tags shutdown,snapshot
 
 elif [[ ${1-} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-{arm,x86}-{ltsrc,master,stablerc})
   time ./bin/create-server.sh ${names}
   time ./site-test.yaml --limit "hi-*" --skip-tags autoupdate,kernel-src
-  # remove outdated snapshots
+  # remove superseeded snapshots
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
     awk 'x[$2]++ { print $1 }' |

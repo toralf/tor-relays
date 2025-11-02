@@ -92,10 +92,19 @@ set +e
 xargs -r -P ${jobs} -L 1 timeout 10m hcloud --quiet <<<${commands}
 rc=$?
 set -e
-if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
-  echo " NOT ok"
-  exit ${rc}
+
+if [[ ${rc} -eq 0 ]]; then
+  echo " OK"
+else
+  echo " NOT ok, rc=${rc}"
+  if [[ ${rc} -eq 123 || ${rc} -eq 124 ]]; then
+    echo " but continuing ..."
+  else
+    exit ${rc}
+  fi
 fi
 
 ./bin/update-dns.sh
 ./bin/trust-host-ssh-key.sh ${names}
+
+exit ${rc}

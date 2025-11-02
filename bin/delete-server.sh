@@ -41,10 +41,9 @@ xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 5s server de
 rc=$?
 set -e
 
-if [[ ${rc} == 0 || ${rc} == 123 ]]; then
+if [[ ${rc} -eq 0 ]]; then
   echo " OK"
-  exit 0
 else
-  echo " NOT ok"
+  echo " NOT ok, rc=${rc}"
   exit ${rc}
 fi
