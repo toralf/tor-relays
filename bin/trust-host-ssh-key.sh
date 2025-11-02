@@ -11,11 +11,13 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 names=$(xargs -n 1 <<<$*)
 echo -en "\n trusting $(wc -w <<<${names}) system/s ..."
 
-attempts=8
-while ((attempts)); do
+attempts=3
+while ((attempts--)); do
   unknowns=$(
     while read -r name; do
-      grep -q -m 1 "^${name} " ~/.ssh/known_hosts || echo ${name}
+      if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
+        echo ${name}
+      fi
     done <<<${names}
   )
   if [[ -z ${unknowns} ]]; then
@@ -27,8 +29,8 @@ while ((attempts)); do
   if ssh-keyscan -4 -t ed25519 ${unknowns} >~/.ssh/known_hosts_tmp; then
     grep -v '#' ~/.ssh/known_hosts_tmp >>~/.ssh/known_hosts
     rm ~/.ssh/known_hosts_tmp
-  else
-    echo -n "  $((--attempts)) attempts left, wait 5s ... "
+  elif ((attempts)); then
+    echo -n " wait 5s ... "
     sleep 5
   fi
 done
