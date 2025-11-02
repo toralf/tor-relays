@@ -15,15 +15,11 @@
   roles:
     - role: setup_tor
 
-- name: Test final
+- name: Test all
   hosts: all
   roles:
     - role: setup_autoupdate
     - role: info_healthy
-
-- name: Test end
-  hosts: all
-  roles:
     - role: shutdown
     - role: snapshot
     - role: delete
