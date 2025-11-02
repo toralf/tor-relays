@@ -74,7 +74,7 @@
         - name: Build kernel
           when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
           changed_when: true
-          async: "{{ (55 * 60) | int }}"
+          async: "{{ (50 * 60) | int }}"
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
@@ -91,7 +91,7 @@
           block:
             - name: Wait till kernel build finished
               when: kernel_git_build == "wait"
-              retries: 55
+              retries: 50
               delay: 60
               until: _job_result.finished
               ansible.builtin.async_status:
