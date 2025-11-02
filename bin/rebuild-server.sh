@@ -17,7 +17,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=48
+jobs=24
 
 names=$(xargs -n 1 <<<$*)
 

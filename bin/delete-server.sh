@@ -17,7 +17,7 @@ hash -r hcloud rc-service
 [[ $# -ne 0 ]] || exit 1
 setProject
 
-jobs=32
+jobs=24
 
 names=$(xargs -n 1 <<<$*)
 
@@ -37,7 +37,14 @@ sudo rc-service unbound reload
 echo -e " deleting $(wc -w <<<${names}) system/s ..."
 
 set +e
-xargs -r -P ${jobs} -n 10 hcloud --quiet --poll-interval 5s server delete <<<${names} 2>/dev/null
+xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 5s server delete <<<${names} 2>/dev/null
 rc=$?
 set -e
-[[ ${rc} == 123 ]] && exit 0 || exit ${rc}
+
+if [[ ${rc} == 0 || ${rc} == 123 ]]; then
+  echo " OK"
+  exit 0
+else
+  echo " NOT ok"
+  exit ${rc}
+fi

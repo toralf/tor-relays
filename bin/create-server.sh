@@ -19,7 +19,7 @@ hash -r hcloud jq
 [[ $# -ne 0 ]]
 setProject
 
-jobs=32
+jobs=24
 
 names=$(xargs -n 1 <<<$*)
 
@@ -55,45 +55,47 @@ ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
 
 echo -e " creating $(wc -w <<<${names}) system/s ..."
 
-set +e
-while read -r name; do
-  # set htype based on hostname
-  case ${name} in
-  *-amd | *-amd-*) htype="cpx11" ;;
-  *-arm | *-arm-*) htype="cax11" ;;
-  *-intel | *-intel-*) htype="cx22" ;;
-  *-x86 | *-x86-*) htype=$(xargs -n 1 <<<"cpx11 cx22" | shuf -n 1) ;;
-  *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1) ;;
-  esac
-
-  # no preferences for the location
-  loc=""
-  if [[ -n ${HCLOUD_LOCATION-} ]]; then
-    loc="--location ${HCLOUD_LOCATION}"
-  elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
-    case ${htype} in
-    cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-    cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-    cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+commands=$(
+  while read -r name; do
+    # set htype based on hostname
+    case ${name} in
+    *-amd | *-amd-*) htype="cpx11" ;;
+    *-arm | *-arm-*) htype="cax11" ;;
+    *-intel | *-intel-*) htype="cx22" ;;
+    *-x86 | *-x86-*) htype=$(xargs -n 1 <<<"cpx11 cx22" | shuf -n 1) ;;
+    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1) ;;
     esac
-  fi
 
-  image=$(getImage)
-  if [[ -z ${image} ]]; then
-    echo " ERROR: empty image for ${name}" >&2
-    exit 1
-  fi
+    # no preferences for the location
+    loc=""
+    if [[ -n ${HCLOUD_LOCATION-} ]]; then
+      loc="--location ${HCLOUD_LOCATION}"
+    elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
+      case ${htype} in
+      cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
+      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
+      cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+      esac
+    fi
 
-  echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
-done <<<${names} |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet
+    image=$(getImage)
+    if [[ -z ${image} ]]; then
+      echo " ERROR: empty image for ${name}" >&2
+      exit 1
+    fi
+
+    echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+  done <<<${names}
+)
+
+set +e
+xargs -r -P ${jobs} -L 1 timeout 10m hcloud --quiet <<<${commands}
 rc=$?
 set -e
-
 if [[ ${rc} -ne 0 && ${rc} -ne 123 ]]; then
+  echo " NOT ok"
   exit ${rc}
 fi
 
 ./bin/update-dns.sh
-./bin/distrust-host-ssh-key.sh ${names}
 ./bin/trust-host-ssh-key.sh ${names}
