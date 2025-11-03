@@ -65,6 +65,12 @@
     creates: /swapfile
 
 - name: Suppress motd
-  ansible.builtin.file:
-    path: /root/.hushlogin
-    state: touch
+  ansible.builtin.copy:
+    content: ""
+    dest: /root/.hushlogin
+
+- name: Disable motd
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      chmod -x /etc/update-motd.d/*
