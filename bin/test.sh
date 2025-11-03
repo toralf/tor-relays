@@ -12,10 +12,12 @@ cd $(dirname $0)/..
 
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
-while getopts a:b:t: opt; do
+number=42
+while getopts a:b:n:t: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
   b) branch=${OPTARG} ;;
+  n) number=${OPTARG} ;;
   t)
     type=${OPTARG}
     case ${type} in
@@ -47,14 +49,14 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-42 h{n,s,t}a-un-${arch}-${branch}-x-x-42)
+  names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} h{n,s,t}a-un-${arch}-${branch}-x-x-${number})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "h?a-*-42" --skip-tags shutdown,snapshot
+  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot -e 'kernel_git_build="background"'
 
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "hi-*" --skip-tags autoupdate,kernel-src
+  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,kernel-src
   # remove superseeded snapshots
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
@@ -62,9 +64,9 @@ elif [[ ${type} == "image" ]]; then
     xargs -r hcloud --poll-interval 5s image delete 1>/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
-  names=$(eval echo hik-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-42 hik-un-${arch}-${branch}-x-x-42)
+  names=$(eval echo hik-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} hik-un-${arch}-${branch}-x-x-${number})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "hik-*-42" --skip-tags autoupdate,shutdown,snapshot
+  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,shutdown,snapshot
 
 else
   echo "unknown type ${type}" >&2
