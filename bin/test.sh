@@ -10,15 +10,49 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 cd $(dirname $0)/..
 
+[[ ${1-} == "-t" && $# -ge 2 ]]
+
+while getopts a:b:t: opt; do
+  case ${opt} in
+  a) arch=${OPTARG} ;;
+  b) branch=${OPTARG} ;;
+  t)
+    type=${OPTARG}
+    case ${type} in
+    app)
+      arch='{amd,arm}'
+      branch='{ltsrc,master}'
+      ;;
+    kernel)
+      arch='{amd,arm,intel}'
+      branch='{ltsrc,master,stablerc}'
+      ;;
+    image)
+      arch='{arm,x86}'
+      branch='{ltsrc,master,stablerc}'
+      ;;
+    *)
+      echo "unknown type ${type}" >&2
+      exit 1
+      ;;
+    esac
+    ;;
+  *)
+    echo "unknown opt ${opt}" >&2
+    exit 1
+    ;;
+  esac
+done
+
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
-if [[ ${1-} == "app" ]]; then
-  names=$(eval echo h{n,s,t}a-{db,dt}-{amd,arm}-{ltsrc,master}-{,no}bp-{,no}cl-42 h{n,s,t}a-un-{amd,arm}-{ltsrc,master}-x-x-42)
+if [[ ${type} == "app" ]]; then
+  names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-42 h{n,s,t}a-un-${arch}-${branch}-x-x-42)
   time ./bin/create-server.sh ${names}
   time ./site-test.yaml --limit "h?a-*-42" --skip-tags shutdown,snapshot
 
-elif [[ ${1-} == "image" ]]; then
-  names=$(eval echo hi-{db,dt,un}-{arm,x86}-{ltsrc,master,stablerc})
+elif [[ ${type} == "image" ]]; then
+  names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
   time ./bin/create-server.sh ${names}
   time ./site-test.yaml --limit "hi-*" --skip-tags autoupdate,kernel-src
   # remove superseeded snapshots
@@ -27,12 +61,13 @@ elif [[ ${1-} == "image" ]]; then
     awk 'x[$2]++ { print $1 }' |
     xargs -r hcloud --poll-interval 5s image delete 1>/dev/null
 
-elif [[ ${1-} == "kernel" ]]; then
-  names=$(eval echo hik-{db,dt}-{amd,arm,intel}-{ltsrc,master,stablerc}-{,no}bp-{,no}cl-42 hik-un-{amd,arm,intel}-{ltsrc,master,stablerc}-x-x-42)
+elif [[ ${type} == "kernel" ]]; then
+  names=$(eval echo hik-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-42 hik-un-${arch}-${branch}-x-x-42)
   time ./bin/create-server.sh ${names}
   time ./site-test.yaml --limit "hik-*-42" --skip-tags autoupdate,shutdown,snapshot
 
 else
+  echo "unknown type ${type}" >&2
   exit 1
 fi
 
