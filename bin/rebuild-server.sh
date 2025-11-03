@@ -26,12 +26,16 @@ if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
 fi
 
 echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
-while read -r name; do
-  image=$(getImage)
-  echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
-done <<<${names} |
-  xargs -r -P ${jobs} -L 1 hcloud --quiet
+names=$(
+  while read -r name; do
+    image=$(getImage)
+    echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
+  done
+)
 
 cleanLocalDataEntries ${names}
 ./bin/distrust-host-ssh-key.sh ${names}
+
+xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${names}
+
 ./bin/trust-host-ssh-key.sh ${names}
