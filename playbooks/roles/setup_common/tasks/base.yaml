@@ -63,3 +63,8 @@
       fi
       swapon /swapfile
     creates: /swapfile
+
+- name: Suppress motd
+  ansible.builtin.file:
+    path: /root/.hushlogin
+    state: touch
