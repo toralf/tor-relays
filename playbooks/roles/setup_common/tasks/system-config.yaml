@@ -124,7 +124,7 @@
     name: sysstat
     state: started
 
-- name: Stop and disable Debian services
+- name: Stop and disable services
   when: ansible_facts.os_family == 'Debian'
   failed_when: false
   ansible.builtin.systemd_service:
@@ -132,15 +132,12 @@
     state: stopped
     enabled: false
   loop:
-    - exim4
     - fstrim.timer
 
-- name: Stop and disable Ubuntu services
-  when: ansible_facts.distribution == 'Ubuntu'
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop:
-    - multipathd
-    - rsyslog
+- name: De-install packages
+  when: ansible_facts.os_family == 'Debian'
+  ansible.builtin.apt:
+    name:
+      - exim4
+      - multipathd
+    state: absent
