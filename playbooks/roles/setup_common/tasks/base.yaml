@@ -30,25 +30,6 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: Stop and disable fstrim
-  when: ansible_facts.os_family == 'Debian'
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop:
-    - fstrim.timer
-
-- name: Stop and disable Ubuntu services
-  when: ansible_facts.distribution == 'Ubuntu'
-  ansible.builtin.systemd_service:
-    name: "{{ item }}"
-    state: stopped
-    enabled: false
-  loop:
-    - multipathd
-    - rsyslog
-
 - name: Create swapfile for systems with small RAM
   when: ansible_facts.memtotal_mb < 2048 and (kernel_git_repo_url | length > 0 or tor_port > 0)
   ansible.builtin.shell:
