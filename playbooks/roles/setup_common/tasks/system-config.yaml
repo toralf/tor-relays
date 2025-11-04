@@ -138,6 +138,6 @@
   when: ansible_facts.os_family == 'Debian'
   ansible.builtin.apt:
     name:
-      - exim4
+      - exim4-daemon-light
       - multipathd
     state: absent
