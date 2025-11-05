@@ -89,7 +89,7 @@ commands=$(
 )
 
 set +e
-xargs -r -P ${jobs} -L 1 timeout 10m hcloud --quiet <<<${commands}
+xargs -r -P ${jobs} -L 1 timeout 20m hcloud --quiet <<<${commands}
 rc=$?
 set -e
 
