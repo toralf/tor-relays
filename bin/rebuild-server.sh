@@ -30,7 +30,7 @@ names=$(
   while read -r name; do
     image=$(getImage)
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
-  done
+  done <<<${names}
 )
 
 cleanLocalDataEntries ${names}
