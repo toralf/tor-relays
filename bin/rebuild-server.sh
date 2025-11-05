@@ -28,7 +28,7 @@ fi
 echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
 names=$(
   while read -r name; do
-    image=$(getImage)
+    image=$(setImage)
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
   done <<<${names}
 )

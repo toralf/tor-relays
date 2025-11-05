@@ -44,13 +44,13 @@ function getSnapshots() {
     sort -r -n
 }
 
-function getImage() {
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" || -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
-    _getImageByHostname ${name}
+function setImage() {
+  if [[ ${LOOKUP_SNAPSHOT-} == "n" || -z ${snapshots} ]] || ! _setImageBySnapshot ${name}; then
+    _setImageByHostname ${name}
   fi
 }
 
-function _getImageByHostname() {
+function _setImageByHostname() {
   local name
 
   name=${1?NAME NOT GIVEN}
@@ -66,7 +66,7 @@ function _getImageByHostname() {
   fi
 }
 
-function _getImageBySnapshot() {
+function _setImageBySnapshot() {
   local name description id
 
   name=${1?NAME NOT GIVEN}

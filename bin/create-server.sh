@@ -78,7 +78,7 @@ commands=$(
       esac
     fi
 
-    image=$(getImage)
+    image=$(setImage)
     if [[ -z ${image} ]]; then
       echo " ERROR: empty image for ${name}" >&2
       exit 1
