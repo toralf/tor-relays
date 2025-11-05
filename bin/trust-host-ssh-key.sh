@@ -11,7 +11,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 names=$(xargs -n 1 <<<$*)
 echo -n " trusting $(wc -w <<<${names}) system/s ..."
 
-attempts=8
+attempts=5
 while ((attempts--)); do
   unknowns=$(
     while read -r name; do
@@ -38,6 +38,6 @@ echo
 if [[ -z ${unknowns} ]]; then
   echo " OK"
 else
-  echo " NOT ok"
+  echo -e "\n NOT ok,  unknowns:     ${unknowns}\n"
   exit 1
 fi
