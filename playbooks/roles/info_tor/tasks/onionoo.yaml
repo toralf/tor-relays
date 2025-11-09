@@ -22,4 +22,4 @@
       running: {{ _bridges.running | default('-') }}
     path: "{{ tmp_dir }}/tor_onionoo"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_content| length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (_content | length > 0) | ternary('present', 'absent') }}"
