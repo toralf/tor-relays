@@ -21,6 +21,10 @@ jobs=24
 
 names=$(xargs -n 1 <<<$*)
 
+echo -e " deleting $(wc -w <<<${names}) system/s ..."
+
+./bin/distrust-host-ssh-key.sh ${names}
+
 cleanLocalDataFiles ${names}
 cleanLocalDataEntries ${names}
 
@@ -31,10 +35,6 @@ done <<<${names}
 
 echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
-
-./bin/distrust-host-ssh-key.sh ${names}
-
-echo -e " deleting $(wc -w <<<${names}) system/s ..."
 
 set +e
 xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 5s server delete <<<${names} 2>/dev/null

@@ -21,21 +21,22 @@ jobs=24
 
 names=$(xargs -n 1 <<<$*)
 
+echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
+
+./bin/distrust-host-ssh-key.sh ${names}
+cleanLocalDataEntries ${names}
+
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
   snapshots=$(getSnapshots)
 fi
 
-echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
-names=$(
+commands=$(
   while read -r name; do
     image=$(setImage)
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
   done <<<${names}
 )
 
-cleanLocalDataEntries ${names}
-./bin/distrust-host-ssh-key.sh ${names}
-
-xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${names}
+xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${commands}
 
 ./bin/trust-host-ssh-key.sh ${names}
