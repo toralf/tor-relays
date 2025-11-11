@@ -42,7 +42,6 @@
       when: not tor_build_from_source and ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: tor-dist.yaml
       tags:
-        - tor
         - tor-dist
 
     - name: Tools
@@ -52,8 +51,6 @@
         - tools
 
     - name: Build from source
-      tags:
-        - tor
       when: tor_build_from_source
       block:
         - name: Tor

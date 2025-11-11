@@ -50,3 +50,4 @@
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
+        - geoip
