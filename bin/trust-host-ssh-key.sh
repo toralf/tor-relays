@@ -38,6 +38,6 @@ echo
 if [[ -z ${unknowns} ]]; then
   echo " OK"
 else
-  echo -e "\n NOT ok,  unknowns:     ${unknowns}\n"
+  echo -e "\n NOT ok,  unknowns:     $(xargs <<<${unknowns})\n"
   exit 1
 fi
