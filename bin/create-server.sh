@@ -89,7 +89,7 @@ commands=$(
 )
 
 set +e
-xargs -r -P ${jobs} -L 1 timeout 20m hcloud --quiet <<<${commands}
+xargs -r -P ${jobs} -L 1 timeout 30m hcloud --quiet <<<${commands}
 rc=$?
 set -e
 
@@ -97,6 +97,7 @@ if [[ ${rc} -eq 0 || ${rc} -eq 123 ]]; then
   echo " OK"
   ./bin/update-dns.sh
   ./bin/trust-host-ssh-key.sh ${names}
+  sleep 20
 else
   echo " NOT ok, rc=${rc}"
   exit ${rc}
