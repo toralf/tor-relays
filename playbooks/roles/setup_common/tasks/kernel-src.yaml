@@ -30,7 +30,9 @@
         _repo_dir: /root/linux
       ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-    - name: Kernel
+    - name: Kernel build
+      tags:
+        - kernel-build
       block:
         - name: Configure kernel
           changed_when: _kernel_configured.rc == 123

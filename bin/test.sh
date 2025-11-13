@@ -56,7 +56,7 @@ if [[ ${type} == "app" ]]; then
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,kernel-src
+  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,kernel-build
   # remove superseeded snapshots
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
