@@ -61,7 +61,7 @@ elif [[ ${type} == "image" ]]; then
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
     awk 'x[$2]++ { print $1 }' |
-    xargs -r hcloud --poll-interval 5s image delete 1>/dev/null
+    xargs -r hcloud --poll-interval 5s image delete >/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
   names=$(eval echo hik-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} hik-un-${arch}-${branch}-x-x-${number})

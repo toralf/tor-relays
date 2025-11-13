@@ -4,7 +4,7 @@
     name: build-kernel.sh
   register: _build_is_running
 
-- name: Self-compiled kernel
+- name: Compile kernel from sources
   when: _build_is_running.pids | default([]) | length == 0
   block:
     - name: Install/Update toolchain
@@ -76,7 +76,7 @@
         - name: Build kernel
           when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
           changed_when: true
-          async: "{{ (50 * 60) | int }}"
+          async: "{{ (55 * 60) | int }}"
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
@@ -93,7 +93,7 @@
           block:
             - name: Wait till kernel build finished
               when: kernel_git_build == "wait"
-              retries: 50
+              retries: 55
               delay: 60
               until: _job_result.finished
               ansible.builtin.async_status:
