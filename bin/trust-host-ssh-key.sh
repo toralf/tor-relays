@@ -20,24 +20,19 @@ while ((attempts--)); do
       fi
     done <<<${names}
   )
+
   echo -en "\n  $(wc -w <<<${unknowns}) unknown/s left ..."
   if [[ -z ${unknowns} ]]; then
     break
-  fi
-
-  if ssh-keyscan -4 -t ed25519 ${unknowns} >~/.ssh/known_hosts_tmp; then
-    grep -v '#' ~/.ssh/known_hosts_tmp >>~/.ssh/known_hosts
-    rm ~/.ssh/known_hosts_tmp
-  elif ((attempts)); then
-    echo -n "  waiting 5s ... "
+  else
+    ssh-keyscan -q -4 -t ed25519 ${unknowns} | sort | tee -a ~/.ssh/known_hosts >/dev/null
     sleep 5
   fi
 done
 
-echo
 if [[ -z ${unknowns} ]]; then
   echo " OK"
 else
-  echo -e "\n NOT ok,  unknowns:     $(xargs <<<${unknowns})\n"
+  echo -e " NOT ok,  unknowns:     $(xargs <<<${unknowns})\n"
   exit 1
 fi
