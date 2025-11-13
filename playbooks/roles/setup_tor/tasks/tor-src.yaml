@@ -30,12 +30,14 @@
       rm -f configure Makefile
       ./autogen.sh 1>>make.log
 
-      ./configure --prefix=/usr \
+      ./configure \
+        --prefix=/usr \
         --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc \
         --localstatedir=/var --datarootdir=/usr/share \
         --disable-systemd --disable-asciidoc --disable-html-manual --disable-unittests \
         --enable-module-relay --disable-module-dirauth \
         --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
+        --disable-zstd \
         1>>make.log
       make clean 1>>make.log
       make -j {{ _j }} 1>>make.log
