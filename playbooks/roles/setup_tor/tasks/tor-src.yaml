@@ -28,7 +28,7 @@
       truncate -s 0 make.log
 
       rm -f configure Makefile
-      ./autogen.sh 1>>make.log
+      ./autogen.sh >>make.log
 
       ./configure \
         --prefix=/usr \
@@ -38,9 +38,9 @@
         --enable-module-relay --disable-module-dirauth \
         --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
         --disable-zstd \
-        1>>make.log
-      make clean 1>>make.log
-      make -j {{ _j }} 1>>make.log
+        >>make.log
+      make clean >>make.log
+      make -j {{ _j }} >>make.log
     chdir: /root/tor
 
 - name: Create directories
