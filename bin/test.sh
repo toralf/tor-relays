@@ -51,7 +51,7 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} h{n,s,t}a-un-${arch}-${branch}-x-x-${number})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot -e 'kernel_git_build="background"'
+  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot -e 'kernel_git_build="background"'
 
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
