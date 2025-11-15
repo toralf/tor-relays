@@ -127,6 +127,6 @@
     - name: Update egress firewall
       changed_when: true
       when: _egress_script.changed or _egress_cron.changed
-      ansible.builtin.shell:
+      ansible.builtin.shell: # noqa: command-instead-of-shell
         cmd: |-
           {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
