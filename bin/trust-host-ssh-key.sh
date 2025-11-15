@@ -11,7 +11,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 names=$(xargs -n 1 <<<$*)
 echo -n " trusting $(wc -w <<<${names}) system/s ..."
 
-attempts=5
+attempts=8
 while ((attempts--)); do
   unknowns=$(
     while read -r name; do
