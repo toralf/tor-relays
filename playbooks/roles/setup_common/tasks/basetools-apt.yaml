@@ -4,12 +4,16 @@
     src: 99local-apt-conf
     dest: /etc/apt/apt.conf.d/
 
-- name: Disable unattended upgrades
+- name: Disable unattended apt
   ansible.builtin.systemd_service:
-    name: unattended-upgrades
+    name: "{{ item }}"
     state: stopped
     enabled: false
     no_block: false
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+    - unattended-upgrades
 
 - name: Allow phased updates in Ubuntu
   when: ansible_facts.distribution == 'Ubuntu'
