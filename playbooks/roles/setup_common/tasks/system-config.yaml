@@ -8,6 +8,13 @@
       - logrotate
       - minicoredumper
 
+- name: Remove apport
+  when: ansible_facts.distribution == 'Ubuntu'
+  ansible.builtin.apt:
+    name:
+      - apport
+    state: absent
+
 - name: Tweak readline
   ansible.builtin.lineinfile:
     line: set enable-bracketed-paste off
@@ -98,14 +105,6 @@
     dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
   notify:
     - Reload systemd
-
-- name: Disable apport service
-  when: ansible_facts.distribution == 'Ubuntu'
-  ansible.builtin.systemd_service:
-    name: apport
-    state: stopped
-    enabled: false
-    no_block: true
 
 - name: Configure Git for tiny systems
   when: ansible_facts.memtotal_mb < 4096 or ansible_facts.processor_vcpus < 4
