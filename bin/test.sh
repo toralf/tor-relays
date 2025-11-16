@@ -31,7 +31,7 @@ while getopts a:b:n:t: opt; do
       ;;
     image)
       arch='{arm,x86}'
-      branch='{ltsrc,master,stablerc}'
+      branch='{lts,ltsrc,master,stable,stablerc}'
       ;;
     *)
       echo "unknown type ${type}" >&2
