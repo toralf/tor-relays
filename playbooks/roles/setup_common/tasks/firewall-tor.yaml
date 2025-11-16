@@ -107,7 +107,7 @@
 - name: Egress
   when: tor_bridge_distribution == ''
   block:
-    - name: Download egress firewall solution
+    - name: Download egress firewall
       throttle: 16
       ansible.builtin.get_url:
         url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
