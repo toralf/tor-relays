@@ -97,7 +97,6 @@ if [[ ${rc} -eq 0 || ${rc} -eq 123 ]]; then
   echo " OK"
   ./bin/update-dns.sh
   ./bin/trust-host-ssh-key.sh ${names}
-  sleep 20
 else
   echo " NOT ok, rc=${rc}"
   exit ${rc}
