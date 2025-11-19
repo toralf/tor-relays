@@ -4,7 +4,7 @@
     src: 99local-apt-conf
     dest: /etc/apt/apt.conf.d/
 
-- name: Disable unattended apt
+- name: Disable unattended upgrade
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: stopped
