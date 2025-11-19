@@ -34,8 +34,12 @@ trap 'sudo rm -f ${hconf}.new' INT QUIT TERM EXIT
 hcloud --quiet server list --output noheader --output columns=name,ipv4 |
   sort |
   while read -r name ipv4; do
+    if [[ -z ${ipv4} ]]; then
+      continue
+    fi
     printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
     printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
+
     ipv6=$(awk '/^'"${name}"' / { print $2 }' ~/tmp/tor-relays/ipv6)
     if [[ -n ${ipv6} ]]; then
       printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6}
