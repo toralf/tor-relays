@@ -9,7 +9,11 @@
     - 50unattended-upgrades
   notify: Reload systemd
 
-- name: Enable unattended-upgrades
+- name: Enable unattended upgrade
   ansible.builtin.systemd_service:
-    name: unattended-upgrades
+    name: "{{ item }}"
     state: started
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+    - unattended-upgrades
