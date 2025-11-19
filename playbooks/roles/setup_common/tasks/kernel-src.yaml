@@ -43,12 +43,13 @@
 
               before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
-              yes '' | make localmodconfig >/dev/null
+              # force module loading
+              ss >/dev/null
 
+              yes '' | make localmodconfig >/dev/null
               cat <<EOF >>.config
               {{ kernel_git_config }}
               EOF
-
               yes '' | make oldconfig >/dev/null
 
               after=$(grep -v '^#' .config | md5sum)
@@ -76,7 +77,7 @@
         - name: Build kernel
           when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
           changed_when: true
-          async: "{{ (55 * 60) | int }}"
+          async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
@@ -91,10 +92,10 @@
         - name: Kernel build
           when: _kernel_build.changed
           block:
-            - name: Wait till kernel build finished
+            - name: Kernel build finished
               when: kernel_git_build == "wait"
-              retries: 55
-              delay: 60
+              retries: "{{ kernel_git_build_wait_retries }}"
+              delay: "{{ kernel_git_build_wait_delay }}"
               until: _job_result.finished
               ansible.builtin.async_status:
                 jid: "{{ _kernel_build.ansible_job_id }}"
