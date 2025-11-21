@@ -28,7 +28,7 @@ if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   exit 2
 fi
 
-if [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
+if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   # US and Singapore are more expensive and do have less traffic incl.
   data_centers=$(
     hcloud --quiet datacenter list --output json |
@@ -70,7 +70,7 @@ commands=$(
     loc=""
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
       loc="--location ${HCLOUD_LOCATION}"
-    elif [[ ${HCLOUD_DICE_LOCATIONS-} == "y" ]]; then
+    elif [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
       case ${htype} in
       cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
       cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
