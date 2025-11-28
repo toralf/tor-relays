@@ -48,6 +48,8 @@ done
 
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
+export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-y}
+
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} h{n,s,t}a-un-${arch}-${branch}-x-x-${number})
   time ./bin/create-server.sh ${names}
