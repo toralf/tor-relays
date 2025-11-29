@@ -86,7 +86,7 @@
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
               {{ (kernel_git_build_wait | bool) |
-                ternary('/root/build-kernel.sh ' ~ _j), 'nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &' }}
+                ternary('/root/build-kernel.sh ' ~ _j, 'nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &') }}
           register: _kernel_build
 
         - name: Kernel build

@@ -53,7 +53,7 @@ export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-y}
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${number} h{n,s,t}a-un-${arch}-${branch}-x-x-${number})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot -e 'kernel_git_build_wait="false"'
+  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot -e 'kernel_git_build_wait=false'
 
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
