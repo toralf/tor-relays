@@ -12,9 +12,9 @@ kernel_debian_backports: false
 kernel_debian_cloud: false
 
 # compile Linux kernel from sources
-kernel_git_build: "wait"
+kernel_git_build_wait: true
 kernel_git_build_wait_retries: 90 # count
-kernel_git_build_wait_delay: 60 # seconds
+kernel_git_build_wait_delay: 60 # seconds in between
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []

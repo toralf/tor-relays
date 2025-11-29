@@ -85,15 +85,15 @@
             _j: "{{ (_max < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ (kernel_git_build == "background") |
-              ternary('nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &', '/root/build-kernel.sh ' ~ _j) }}
+              {{ (kernel_git_build_wait | bool) |
+                ternary('/root/build-kernel.sh ' ~ _j), 'nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &' }}
           register: _kernel_build
 
         - name: Kernel build
           when: _kernel_build.changed
           block:
             - name: Kernel build finished
-              when: kernel_git_build == "wait"
+              when: kernel_git_build_wait | bool
               retries: "{{ kernel_git_build_wait_retries }}"
               delay: "{{ kernel_git_build_wait_delay }}"
               until: _job_result.finished
