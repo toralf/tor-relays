@@ -1,5 +1,5 @@
 ---
-- name: Test at pseudo-random ipv6 address
+- name: Test at a pseudo-randomly choosen ipv6 address
   vars:
     _a: "0"
     _b: "{{ '%x' % (range(0, 65535) |
