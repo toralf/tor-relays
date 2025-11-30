@@ -2,29 +2,28 @@
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 
 - name: Wellknown for bridges
-  when: tor_bridge_distribution
+  throttle: 1
+  when: tor_bridge_distribution != ''
   block:
     - name: Ensure hostname is in wellknown file
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.lineinfile:
         line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
     - name: Ensure fingerprint is in wellknown file
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_hashed }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
 - name: Wellknown for server
-  when: not tor_bridge_distribution != ''
+  throttle: 1
+  when: tor_bridge_distribution == ''
   block:
     - name: Ensure hostname is in wellknown files
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.lineinfile:
         line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/{{ item }}"
@@ -34,7 +33,6 @@
 
     - name: Ensure RSA fingerprint is in wellknown file
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint }}"
         path: "{{ tmp_dir }}/rsa-fingerprint.txt"
@@ -42,7 +40,6 @@
 
     - name: Ensure ED25519 fingerprint is in wellknown file
       delegate_to: localhost
-      throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_ed25519 }}"
         path: "{{ tmp_dir }}/ed25519-master-pubkey.txt"
