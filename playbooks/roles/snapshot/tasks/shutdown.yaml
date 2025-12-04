@@ -1,8 +1,0 @@
----
-- name: Shutdown the instance
-  community.general.shutdown:
-
-- name: Additional wait after Shutdown
-  delegate_to: localhost
-  ansible.builtin.wait_for:
-    timeout: 15
