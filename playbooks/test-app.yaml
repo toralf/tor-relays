@@ -20,6 +20,4 @@
   roles:
     - role: setup_autoupdate
     - role: info_healthy
-    - role: shutdown
-    - role: snapshot
     - role: delete

@@ -51,9 +51,9 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-y}
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{n,s,t}a-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{n,s,t}a-un-${arch}-${branch}-x-x-nowt-${uid})
+  names=$(eval echo h{m,s,t}-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{m,s,t}-un-${arch}-${branch}-x-x-nowt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags shutdown,snapshot
+  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')"
 
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
@@ -66,7 +66,7 @@ elif [[ ${type} == "image" ]]; then
     xargs -r hcloud --poll-interval 5s image delete >/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
-  names=$(eval echo hik-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hik-un-${arch}-${branch}-x-x-wt-${uid})
+  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,shutdown,snapshot
 
