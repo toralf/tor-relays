@@ -1,0 +1,8 @@
+---
+- name: Test
+  hosts: all
+  roles:
+    - role: poweron
+    - role: setup_common
+    - role: info_healthy
+    - role: delete

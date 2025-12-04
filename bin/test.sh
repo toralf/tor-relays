@@ -58,7 +58,7 @@ if [[ ${type} == "app" ]]; then
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,kernel-build
+  time ./site-test-image.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags kernel-build
   # remove superseeded snapshots
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
@@ -68,7 +68,7 @@ elif [[ ${type} == "image" ]]; then
 elif [[ ${type} == "kernel" ]]; then
   names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags autoupdate,shutdown,snapshot
+  time ./site-test-kernel.yaml --limit "$(xargs <<<${names} | tr ' ' ',')"
 
 else
   echo "unknown type ${type}" >&2
