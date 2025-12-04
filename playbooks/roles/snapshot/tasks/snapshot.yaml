@@ -1,0 +1,11 @@
+---
+- name: Create snapshot
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  changed_when: true
+  vars:
+    _description: "{{ inventory_hostname | regex_replace('^hi-', '') }}"
+  ansible.builtin.command:
+    cmd: >-
+      hcloud --quiet --poll-interval 10s server create-image --type snapshot --description='{{ _description }}'
+      {{ inventory_hostname }}
