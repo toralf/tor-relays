@@ -1,5 +1,14 @@
 ---
-- name: Poweron
-  ansible.builtin.import_tasks: poweron.yaml
-  tags:
-    - poweron
+- name: Main
+  module_defaults:
+    ansible.builtin.lineinfile:
+      create: true
+      firstmatch: true
+      owner: root
+      group: root
+      mode: "0644"
+  block:
+    - name: Poweron
+      ansible.builtin.import_tasks: poweron.yaml
+      tags:
+        - poweron

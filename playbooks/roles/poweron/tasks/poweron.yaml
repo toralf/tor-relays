@@ -1,12 +1,21 @@
 ---
-- name: SSH ping
+- name: Check if it is down
   ignore_errors: true
   ignore_unreachable: true
+  changed_when: _is_down
   ansible.builtin.ping:
   register: _result
 
-- name: System is off
-  when: _result.unreachable is defined or _result.ping is not defined or _result.ping != "pong"
+- name: File _is_down value
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ tmp_dir }}/is_down"
+    state: "{{ _is_down | ternary('present', 'absent') }}"
+
+- name: Power on the system
+  when: _is_down
   block:
     - name: Poweron
       delegate_to: localhost
