@@ -51,12 +51,12 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{m,s,t}-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{m,s,t}-un-${arch}-${branch}-x-x-nowt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(xargs <<<${names} | tr ' ' ',')"
+  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} == "image" ]]; then
   names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
   time ./bin/create-server.sh ${names}
-  time ./site-test-image.yaml --limit "$(xargs <<<${names} | tr ' ' ',')" --skip-tags kernel-build
+  time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
   # remove superseeded snapshots
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
@@ -66,7 +66,7 @@ elif [[ ${type} == "image" ]]; then
 elif [[ ${type} == "kernel" ]]; then
   names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "$(xargs <<<${names} | tr ' ' ',')"
+  time ./site-test-kernel.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 else
   echo "unknown type ${type}" >&2
