@@ -6,7 +6,7 @@
       set -euf
 
       diff=$(( EPOCHSECONDS - $(stat -c %Z {{ log_notice }}) ))
-      if ((diff > 2 * 3600)); then
+      if ((diff > 6 * 3600)); then
         echo "{{ log_notice }} is older than $diff seconds" >&2
       fi
 
