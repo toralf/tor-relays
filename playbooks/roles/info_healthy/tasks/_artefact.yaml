@@ -10,7 +10,7 @@
 - name: Work on new artefact
   when: _known.changed
   vars:
-    _tmp_filename: "{{ tmp_dir }}/artefact/{{ item.checksum }}"
+    _tmp_fname: "{{ tmp_dir }}/artefact/{{ item.path | basename }}"
   block:
     - name: Log artefact history
       delegate_to: localhost
@@ -23,21 +23,7 @@
       throttle: 1
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ _tmp_filename }}"
-
-    - name: Inspect artefact file type
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      changed_when: false
-      ansible.builtin.command:
-        cmd: >-
-          file {{ _tmp_filename }}
-      register: _filetype
-
-    - name: Print out artefact file type
-      changed_when: true
-      ansible.builtin.debug:
-        var: _filetype.stdout_lines
+        dest: "{{ _tmp_fname }}"
 
     - name: Hook
       when: artefact_hook | length > 0
@@ -48,7 +34,7 @@
           changed_when: false
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ artefact_hook }} {{ _tmp_filename }}
+              {{ artefact_hook }} {{ _tmp_fname }} {{ item.checksum }}
           register: _hook
 
       always:
