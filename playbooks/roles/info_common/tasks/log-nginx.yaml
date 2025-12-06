@@ -4,9 +4,9 @@
   failed_when: false
   ansible.builtin.shell:
     cmd: >-
-      tail -q -n 20 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
+      tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
         sort |
-        tail -n 20
+        tail -n 10
     executable: /bin/bash
   register: _result
 
