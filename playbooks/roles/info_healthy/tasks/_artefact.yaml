@@ -23,7 +23,7 @@
       throttle: 1
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ _tmp_fname }}"
+        dest: "{{ item.checksum }}"
 
     - name: Hook
       when: artefact_hook | length > 0
@@ -34,7 +34,7 @@
           changed_when: false
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ artefact_hook }} {{ _tmp_fname }} {{ item.checksum }}
+              {{ artefact_hook }} {{ item.checksum }} {{ _tmp_fname }}
           register: _hook
 
       always:
