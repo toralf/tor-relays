@@ -35,7 +35,7 @@
         - snowflake
       block:
         - name: Add
-          ansible.builtin.include_tasks: _snowflake.yaml
+          ansible.builtin.include_tasks: _snowflake-setup.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
