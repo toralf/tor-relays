@@ -6,7 +6,7 @@
 function cleanLocalDataEntries() {
   echo -e " deleting local entries and facts ..."
   local files
-  files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
+  files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f | grep -v -e 'trace-.*.txt')
   set +e
   while read -r name; do
     [[ -n ${name} ]] || continue
