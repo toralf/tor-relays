@@ -43,8 +43,8 @@
   vars:
     _additional_timeout_tor: "{{ tor_port > 0 | ternary(60, 0) }}"
   ansible.builtin.reboot:
-    reboot_timeout: "{{ 80 + _additional_timeout_tor | int }}"
-    post_reboot_delay: 20
+    reboot_timeout: "{{ 60 + _additional_timeout_tor | int }}"
+    post_reboot_delay: 30
     test_command: "iptables -nvL"
 
 - name: Gather new kernel version after reboot
