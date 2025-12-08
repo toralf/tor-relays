@@ -21,8 +21,9 @@ while ((attempts--)); do
     done <<<${names}
   )
 
-  echo -en "\n  $(wc -w <<<${unknowns}) unknown/s left ..."
+  echo -en "\n    $(wc -w <<<${unknowns}) unknown/s left ..."
   if [[ -z ${unknowns} ]]; then
+    echo
     break
   else
     ssh-keyscan -q -4 -t ed25519 ${unknowns} | sort | tee -a ~/.ssh/known_hosts >/dev/null
