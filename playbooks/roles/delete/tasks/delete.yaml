@@ -3,7 +3,6 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
-  when: not do_not_delete
   ansible.builtin.command:
     cmd: >-
       hcloud --quiet --poll-interval 10s server delete {{ inventory_hostname }}
