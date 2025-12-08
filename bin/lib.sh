@@ -4,8 +4,9 @@
 # hint: ./.wellknown entries will not cleaned here
 
 function cleanLocalDataEntries() {
-  echo -e " deleting local entries and facts ..."
   local files
+
+  echo -e " deleting local entries and facts ..."
   files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f | grep -v -e 'trace-.*.txt')
   set +e
   while read -r name; do
@@ -33,6 +34,7 @@ function cleanLocalDataFiles() {
   set -e
 }
 
+# project is a global variable
 function setProject() {
   project=$(hcloud context active)
   echo -e "\n >>> using Hetzner project \"${project?NO PROJECT FOUND}\""
@@ -66,18 +68,22 @@ function _setImageByHostname() {
   fi
 }
 
+# examples for match ordering e.g. for hi-dt-intel-stablerc or hs0-dt-intel-stablerc-bp-cl-89
+#   dt-intel-stablerc
+#   dt-intel-stable
+#   dt-x86-stablerc
+#   dt-x86-stable
 function _setImageBySnapshot() {
-  local name description id
+  local name altname description id
 
   name=${1?NAME NOT GIVEN}
+  altname=$(sed -e 's,-amd,-x86,' -e 's,-intel,-x86,' <<<${name})
 
-  # example for a match order for e.g. hi-dt-intel-stablerc or hs0-dt-intel-stablerc-bp-cl-89
-  #   dt-intel-stablerc
-  #   dt-intel-stable
-  #   dt-x86-stablerc
-  #   dt-x86-stable
-  for n in $(echo ${name} $(sed -e 's,-amd,-x86,' -e 's,-intel,-x86,' <<<${name}) | xargs -n 1 | sort -u | xargs); do
+  for n in $(echo ${name} ${altname} | xargs -n 1 | sort -u | xargs); do
     while read -r description id; do
+      if [[ -z ${description} ]]; then
+        continue
+      fi
       if [[ ${n} =~ -${description}$ || ${n} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
         echo ${id}
         return 0
@@ -85,6 +91,9 @@ function _setImageBySnapshot() {
     done <<<${snapshots}
 
     while read -r description id; do
+      if [[ -z ${description} ]]; then
+        continue
+      fi
       if [[ ${n} =~ -${description} ]]; then
         echo ${id}
         return 0
