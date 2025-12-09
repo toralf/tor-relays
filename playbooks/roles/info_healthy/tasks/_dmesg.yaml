@@ -9,5 +9,5 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.copy:
-    dest: "{{ tmp_dir }}/dmesg/{{ inventory_hostname }}.log"
+    dest: "{{ tmp_dir }}/dmesg/{{ inventory_hostname }}.txt"
     content: "{{ _result.stdout }}"

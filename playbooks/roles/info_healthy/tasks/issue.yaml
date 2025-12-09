@@ -15,8 +15,8 @@
           -e 'No space left on device' \
           -e 'Oops:' \
           -e 'rebooting.' \
-          -e 'status=9/KILL' \
           -e '.service: Control process exited' \
+          -e 'status=9/KILL' \
           -e 'WARNING:' |
         head -n 500
   register: _result
@@ -26,6 +26,6 @@
   throttle: 1
   ansible.builtin.blockinfile:
     block: "{{ _result.stdout }}"
-    path: "{{ tmp_dir }}/issue-current.log"
+    path: "{{ tmp_dir }}/issue.txt"
     marker: "# {mark} {{ inventory_hostname }} "
     state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

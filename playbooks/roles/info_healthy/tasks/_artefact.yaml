@@ -4,57 +4,36 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ item.checksum }}"
-    path: "{{ tmp_dir }}/artefact.log"
+    path: "{{ tmp_dir }}/artefact/_known.txt"
   register: _known
 
 - name: Work on new artefact
   when: _known.changed
-  vars:
-    _tmp_fname: "{{ tmp_dir }}/artefact/{{ item.path | basename }}"
   block:
-    - name: Log artefact history
-      delegate_to: localhost
-      throttle: 1
-      ansible.builtin.lineinfile:
-        line: "{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }} {{ inventory_hostname }} {{ item.checksum }} {{ item.path }}"
-        path: "{{ tmp_dir }}/artefact-history.log"
+    - name: Archive artefact
+      changed_when: false
+      ansible.builtin.command:
+        cmd: >-
+          tar -cvzpf /tmp/{{ item.checksum }}.tar.gz {{ item.path }}
 
-    - name: Fetch
+    - name: Fetch artefact
       throttle: 1
       ansible.builtin.fetch:
-        src: "{{ item.path }}"
-        dest: "{{ item.checksum }}"
-
-    - name: Hook
-      when: artefact_hook | length > 0
-      block:
-        - name: Hook for artefact
-          delegate_to: localhost
-          throttle: "{{ concurrent_local_jobs }}"
-          changed_when: false
-          ansible.builtin.shell: # noqa: command-instead-of-shell
-            cmd: >-
-              {{ artefact_hook }} {{ item.checksum }} {{ _tmp_fname }}
-          register: _hook
-
-      always:
-        - name: Hook stdout for artefact
-          when: _hook.stdout | length > 0
-          changed_when: true
-          ansible.builtin.debug:
-            var: _hook.stdout_lines
-
-        - name: Hook stderr for artefact
-          when: _hook.stderr | length > 0
-          changed_when: true
-          ansible.builtin.debug:
-            var: _hook.stderr_lines
+        src: "/tmp/{{ item.checksum }}.tar.gz"
+        dest: "{{ tmp_dir }}/artefact/"
 
   rescue:
-    - name: Reset known state of artefact
+    - name: Reset known state for artefact
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
-        path: "{{ tmp_dir }}/artefact.log"
+        path: "{{ tmp_dir }}/artefact/_known.txt"
         state: absent
+
+  always:
+    - name: Get dmesg for artefact
+      ansible.builtin.include_tasks: _dmesg.yaml
+
+    - name: Get kernel config for artefact
+      ansible.builtin.include_tasks: _kernel-config.yaml

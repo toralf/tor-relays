@@ -1,16 +1,16 @@
 ---
-- name: Check for a known core dump
+- name: Check for a known coredump
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _unique_id }}"
-    path: "{{ tmp_dir }}/coredump.log"
+    path: "{{ tmp_dir }}/coredump/_known.txt"
   register: _known
 
-- name: Work on new core dump
+- name: Work on new coredump
   when: _known.changed
   block:
-    - name: Get core dump info
+    - name: Get coredump info
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
@@ -25,9 +25,25 @@
           rm /tmp/core
       register: _result
 
-    - name: File core dump info
+    - name: File coredump info
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         content: "{{ _result.stdout }}"
         dest: "{{ tmp_dir }}/coredump/{{ _unique_id }}.txt"
+
+  rescue:
+    - name: Reset known state for coredump
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ _unique_id }}"
+        path: "{{ tmp_dir }}/coredump/_known.txt"
+        state: absent
+
+  always:
+    - name: Get dmesg for coredump
+      ansible.builtin.include_tasks: _dmesg.yaml
+
+    - name: Get kernel config for coredump
+      ansible.builtin.include_tasks: _kernel-config.yaml

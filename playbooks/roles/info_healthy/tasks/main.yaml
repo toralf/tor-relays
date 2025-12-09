@@ -18,6 +18,12 @@
       tags:
         - artefact
 
+    - name: Get dmesg
+      ansible.builtin.import_tasks: _dmesg.yaml
+      tags:
+        - dmesg
+        - never
+
     - name: IPv6
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
@@ -34,12 +40,12 @@
         - kernel-config
         - never
 
-    - name: Kernel trace
-      ansible.builtin.import_tasks: trace.yaml
-      tags:
-        - trace
-
     - name: Minicoredumper
       ansible.builtin.import_tasks: minicoredumper.yaml
       tags:
         - minicoredumper
+
+    - name: Kernel trace
+      ansible.builtin.import_tasks: trace.yaml
+      tags:
+        - trace
