@@ -7,15 +7,18 @@ function cleanLocalDataEntries() {
   local files
 
   echo -e " deleting local entries and facts ..."
-  files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f | grep -v -e 'trace-.*.txt')
+  files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
   set +e
   while read -r name; do
     [[ -n ${name} ]] || continue
-    # Ansible facts
     rm -f ./.ansible_facts/{,s1_}${name}
-    # line in files under {{ tmp_dir }}
-    sed -i -e "/^${name} /d" -e "/^${name}$/d" -e "/\[\"${name}:[0-9]*\"\]/d" -e "/ ${name} /d" -e "/ ${name}$/d" ${files} 2>/dev/null
-    # private Tor bridge lines
+    sed -i \
+      -e "/^${name}$/d" \
+      -e "/^${name} /d" \
+      -e "/ ${name}$/d" \
+      -e "/ ${name} /d" \
+      -e "/\[\"${name}:[0-9]*\"\]/d" \
+      ${files} 2>/dev/null
     sed -i -e "/ # ${name}$/d" /tmp/tor-relays/*_bridgeline 2>/dev/null
   done < <(xargs -n 1 <<<$*)
   set -e
@@ -27,7 +30,7 @@ function cleanLocalDataFiles() {
   while read -r name; do
     [[ -n ${name} ]] || continue
     # certain files in {{ tmp_dir }} subdirs
-    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig}/${name}{,.*}
+    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,trace}/${name}{,.*}
     # client certs
     rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)
