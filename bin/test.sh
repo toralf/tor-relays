@@ -21,7 +21,7 @@ while getopts a:b:t:u: opt; do
     type=${OPTARG}
     case ${type} in
     app)
-      arch='{amd,arm}'
+      arch='{amd,arm,intel}'
       branch='{ltsrc,master}'
       ;;
     kernel)
