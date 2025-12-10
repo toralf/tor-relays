@@ -1,11 +1,4 @@
 ---
-- name: Internal error
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "_git_repo_url | length > 0"
-      - "_repo_dir | length > 0"
-
 - name: Git
   environment: "{{ git_environment | default({}) }}"
   module_defaults:
@@ -69,4 +62,5 @@
   ansible.builtin.set_fact:
     _git_repo_changed: "{{ __repo.changed or __repo.before == None or
       __updated.changed or __cleaned.changed or __patched.changed or
+      __repo.before != _git_head.before or
       force_rebuild is defined and force_rebuild | bool }}"
