@@ -10,7 +10,7 @@
         - connections
       block:
         - name: Connections
-          ansible.builtin.include_tasks: connections.yaml
+          ansible.builtin.include_tasks: _connections.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
@@ -20,7 +20,7 @@
         - log-nat
       block:
         - name: Log NAT
-          ansible.builtin.include_tasks: log-nat.yaml
+          ansible.builtin.include_tasks: _log-nat.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
@@ -30,7 +30,7 @@
         - log-proxy
       block:
         - name: Log proxy
-          ansible.builtin.include_tasks: log-proxy.yaml
+          ansible.builtin.include_tasks: _log-proxy.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
@@ -40,7 +40,7 @@
         - process-runtime
       block:
         - name: Process runtime
-          ansible.builtin.include_tasks: process-runtime.yaml
+          ansible.builtin.include_tasks: _process-runtime.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
@@ -50,7 +50,7 @@
         - systemd-time
       block:
         - name: Systemd time
-          ansible.builtin.include_tasks: systemd-time.yaml
+          ansible.builtin.include_tasks: _systemd-time.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
@@ -60,7 +60,7 @@
         - version
       block:
         - name: Version of Snowflake
-          ansible.builtin.include_tasks: version.yaml
+          ansible.builtin.include_tasks: _version.yaml
           loop_control:
             label: "{{ item.name }}"
           loop: "{{ snowflake_proxies }}"
