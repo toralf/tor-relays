@@ -1,9 +1,9 @@
 ---
-- name: Get NAT type
+- name: Get current NAT type
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u {{ item.name }} --since "{{ log_proxy_since }}" -g "NAT type:" --quiet |
+      journalctl -u {{ item.name }} --since "{{ log_proxy_since }}" -b -g "NAT type:" --quiet |
         tail -n 1 |
         cut -f 10 -d ' '
   register: _result
@@ -12,9 +12,9 @@
 - name: File NAT type
   delegate_to: localhost
   throttle: 1
-  when: _result.stdout | length > 0 or _result.stderr | length > 0
+  when: _result.stdout | length > 0
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
     path: "{{ tmp_dir }}/{{ item.name }}_nat"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (item.state == 'present' and _result.stderr | length == 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present') | ternary('present', 'absent') }}"
