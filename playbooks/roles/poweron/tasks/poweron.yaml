@@ -1,33 +1,47 @@
 ---
-- name: Check if it is down
-  ignore_errors: true
-  ignore_unreachable: true
-  changed_when: _is_down
-  ansible.builtin.ping:
-  register: _result
-
-- name: File _is_down value
-  delegate_to: localhost
-  throttle: 1
-  ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }}"
-    path: "{{ tmp_dir }}/is_down"
-    state: "{{ _is_down | ternary('present', 'absent') }}"
-
-- name: Power on the system
-  when: _is_down
+- name: Block
+  vars:
+    _is_down: "{{ _result.unreachable is defined or _result.ping is not defined or _result.ping != 'pong' }}"
   block:
-    - name: Poweron
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      changed_when: true
-      ansible.builtin.command:
-        cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
-
-    - name: Additional wait after Poweron
-      delegate_to: localhost
-      ansible.builtin.wait_for:
-        timeout: 45
-
-    - name: SSH ping after poweron
+    - name: Check if it is down
+      ignore_errors: true
+      ignore_unreachable: true
+      changed_when: _is_down
       ansible.builtin.ping:
+      register: _result
+
+    - name: File _is_down state
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ inventory_hostname }}"
+        path: "{{ tmp_dir }}/is_down"
+        state: "{{ _is_down | ternary('present', 'absent') }}"
+
+    - name: Power on the system
+      when: _is_down
+      block:
+        - name: Poweron
+          delegate_to: localhost
+          throttle: "{{ concurrent_local_jobs }}"
+          changed_when: true
+          ansible.builtin.command:
+            cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+
+        - name: Additional wait after Poweron
+          delegate_to: localhost
+          ansible.builtin.wait_for:
+            timeout: 25
+
+        - name: SSH ping after poweron
+          retries: 3
+          delay: 10
+          ansible.builtin.ping:
+
+        - name: Update _is_down state
+          delegate_to: localhost
+          throttle: 1
+          ansible.builtin.lineinfile:
+            line: "{{ inventory_hostname }}"
+            path: "{{ tmp_dir }}/is_down"
+            state: absent

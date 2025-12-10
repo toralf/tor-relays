@@ -1,2 +1,0 @@
----
-_is_down: "{{ _result.unreachable is defined or _result.ping is not defined or _result.ping != 'pong' }}"
