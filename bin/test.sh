@@ -24,13 +24,13 @@ while getopts a:b:t:u: opt; do
       arch='{amd,arm,intel}'
       branch='{ltsrc,master}'
       ;;
-    kernel)
-      arch='{amd,arm,intel}'
-      branch='{ltsrc,master,stablerc}'
-      ;;
     image)
       arch='{arm,x86}'
       branch='{lts,ltsrc,master,stable,stablerc}'
+      ;;
+    kernel)
+      arch='{amd,arm,intel}'
+      branch='{ltsrc,master,stablerc}'
       ;;
     *)
       echo "unknown type ${type}" >&2
