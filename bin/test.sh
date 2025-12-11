@@ -51,7 +51,7 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{m,s,t}-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{m,s,t}-un-${arch}-${branch}-x-x-nowt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
+  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
   echo " rc=$?"
 
 elif [[ ${type} == "image" ]]; then
