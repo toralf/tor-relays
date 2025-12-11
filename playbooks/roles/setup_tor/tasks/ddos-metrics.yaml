@@ -1,6 +1,7 @@
 ---
 - name: Download DDoS metrics script
   throttle: 16
+  retries: 3
   ansible.builtin.get_url:
     url: https://github.com/toralf/torutils/raw/main/metrics.sh
     dest: /root/metrics.sh
