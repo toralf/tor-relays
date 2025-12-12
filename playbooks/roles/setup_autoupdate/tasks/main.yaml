@@ -1,6 +1,5 @@
 ---
 - name: Main
-  when: autoupdate_skip | bool
   module_defaults:
     ansible.builtin.apt:
       allow_change_held_packages: true
