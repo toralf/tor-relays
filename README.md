@@ -34,7 +34,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
 1. deploy it
 
    ```bash
-   ./site.yaml --limit my_bridge
+   ./site-setup.yaml --limit my_bridge
    ```
 
 1. inspect it:
@@ -161,6 +161,7 @@ bad=HEAD
 
 cd ~/devel/tor-relays
 ./bin/create-server.sh ${name}
+./site-test-kernel.yaml --limit ${name} --skip-tags kernel-build,delete
 
 cd ~/devel/linux
 git bisect start --no-checkout

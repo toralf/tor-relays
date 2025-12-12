@@ -8,8 +8,6 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-cd $(dirname $0)/..
-
 if [[ $# -ne 1 ]]; then
   exit 255
 fi
@@ -17,16 +15,14 @@ fi
 # target system
 name=${1}
 
-# we're called from git bisect run ...
-bisect_id=$(<.git/BISECT_HEAD) || exit 254
-
 # maybe dead from previous run
 if ! ping -q -c 3 ${name} >/dev/null; then
-  ./bin/rebuild-server.sh ${name} || exit 255
+  $(dirname $0)/bin/rebuild-server.sh ${name} || exit 255
+  $(dirname $0)/site-test-kernel.yaml --limit ${name} --skip-tags kernel-build,delete
 fi
 
-# deploy w/o kernel build
-./site.yaml --limit ${name} --skip-tags kernel-src,auto-update || exit 253
+# we're called from "git bisect run" which was started in a local kernel git repo
+bisect_id=$(<.git/BISECT_HEAD) || exit 254
 
-# bisect: test kernel build and succesful reboot
-./site.yaml --limit \'${name}\' -e kernel_git_version=${bisect_id} --tags kernel-src --skip-tags auto-update
+# bisect: test kernel build + reboot
+$(dirname $0)/site-test-kernel.yaml --limit ${name} -e kernel_git_version=${bisect_id} --tags kernel-build --skip-tags delete
