@@ -76,6 +76,9 @@
         cmd: |-
           set -euf
 
+          /root/ipv4-rules.sh save
+          /root/ipv6-rules.sh save
+
           {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start
           {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
 
