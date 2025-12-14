@@ -8,7 +8,6 @@
         cut -f 10 -d ' '
   register: _result
 
-# Keep last state if nothing newer was found
 - name: File NAT type
   delegate_to: localhost
   throttle: 1
