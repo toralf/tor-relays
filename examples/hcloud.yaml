@@ -3,12 +3,9 @@ plugin: hetzner.hcloud.hcloud
 api_token: "{{ hcloud_creds_test }}"
 connect_with: hostname
 groups:
-  hi: "inventory_hostname is match('hi')"
-  hn: "inventory_hostname is match('hn')"
-  hs: "inventory_hostname is match('hs')"
-  ht: "inventory_hostname is match('ht')"
-keyed_groups:
-  - key: status # e.g. "running"
-    prefix: hcloud_status
-  # - key: image_os_flavor # e.g. "debian"
-  #   prefix: hcloud_os
+  hb: "inventory_hostname is match('hb')" # Tor public bridge
+  hi: "inventory_hostname is match('hi')" # image
+  hm: "inventory_hostname is match('hm')" # misc
+  hp: "inventory_hostname is match('hp')" # Tor private bridge
+  hr: "inventory_hostname is match('hr')" # Tor relay
+  hs: "inventory_hostname is match('hs')" # Tor snowflake

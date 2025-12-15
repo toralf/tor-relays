@@ -43,9 +43,10 @@ function setProject() {
   echo -e "\n >>> using Hetzner project \"${project?NO PROJECT FOUND}\""
 }
 
+# revert sort order enforces a "best match" if possible
 function getSnapshots() {
-  hcloud --quiet image list --type snapshot --output noheader --output columns=description,id |
-    awk '{ if (NF == 2) { print } }' |
+  hcloud --quiet image list --type snapshot --output noheader --output columns=description,id,image_size |
+    awk '{ if (NF == 3 && $3 != "-") { print $1, $2} }' |
     sort -r -n
 }
 
@@ -59,50 +60,36 @@ function _setImageByHostname() {
   local name
 
   name=${1?NAME NOT GIVEN}
-  # name example: hi-u-amd-master
-  if [[ ${name} =~ "-db-" ]]; then
-    echo "debian-12"
-  elif [[ ${name} =~ "-dt-" ]]; then
-    echo "debian-13"
-  elif [[ ${name} =~ "-un-" ]]; then
+  # name example: hi-un-arm-master
+  if [[ ${name} =~ "-un-" ]]; then
     echo "ubuntu-24.04"
   else
     echo ${HCLOUD_FALLBACK_IMAGE:-"debian-13"}
   fi
 }
 
-# examples for match ordering e.g. for hi-dt-intel-stablerc or hs0-dt-intel-stablerc-bp-cl-89
-#   dt-intel-stablerc
-#   dt-intel-stable
-#   dt-x86-stablerc
-#   dt-x86-stable
+# examples for match ordering e.g. for hs0-dt-arm-stablerc-bp-cl-nowt-89
+#   dt-arm-stablerc
+#   dt-arm-stable
+#   dt-arm
 function _setImageBySnapshot() {
-  local name altname description id
+  local name description id
 
   name=${1?NAME NOT GIVEN}
-  altname=$(sed -e 's,-amd,-x86,' -e 's,-intel,-x86,' <<<${name})
 
-  for n in $(echo ${name} ${altname} | xargs -n 1 | sort -u | xargs); do
-    while read -r description id; do
-      if [[ -z ${description} ]]; then
-        continue
-      fi
-      if [[ ${n} =~ -${description}$ || ${n} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
-        echo ${id}
-        return 0
-      fi
-    done <<<${snapshots}
+  while read -r description id; do
+    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
+      echo ${id}
+      return 0
+    fi
+  done <<<${snapshots}
 
-    while read -r description id; do
-      if [[ -z ${description} ]]; then
-        continue
-      fi
-      if [[ ${n} =~ -${description} ]]; then
-        echo ${id}
-        return 0
-      fi
-    done <<<${snapshots}
-  done
+  while read -r description id; do
+    if [[ ${name} =~ -${description} ]]; then
+      echo ${id}
+      return 0
+    fi
+  done <<<${snapshots}
 
   return 1
 }

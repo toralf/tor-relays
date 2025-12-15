@@ -155,7 +155,7 @@ The scripts under [./bin](./bin) work for the Hetzner Cloud API.
 With the inventory given in the [examples](./examples/) a _git bisect_ to identify e.g. a linux kernel issue is done basically by something like:
 
 ```bash
-name=hn0d-intel-main-bp-cl-0
+name=foo
 good=v6.16-rc2
 bad=HEAD
 

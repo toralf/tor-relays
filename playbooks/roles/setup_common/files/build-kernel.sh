@@ -13,7 +13,7 @@ ln -sf ~/make.${suffix}.log ~/make.log
 
 # shellcheck disable=SC2129
 # make clean &>>~/make.log
-make -j ${1:-1} &>>~/make.log
+make -j $(nproc) &>>~/make.log
 make modules_install &>>~/make.log
 make install &>>~/make.log
 

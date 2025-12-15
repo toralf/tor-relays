@@ -9,11 +9,6 @@ hnx:
     additional_ports:
       - 80
       - 443
-      # - 2049
-    # additional_software:
-    #   - nfs-kernel-server
-    #   - nfs-common
-    #   - rpcbind
     nginx_metrics: true
     nginx_public_site: true
     nginx_site_directories:
@@ -32,18 +27,14 @@ hsx:
 htx:
   vars:
     nickname: "xxxxxxxxx{{ ((seed_address + seed_host) | md5)[0:10] }}"
-    # tor_secret_family_key_file: "{{ role_path }}/../../../secrets/keys/xxxxxxxxx.secret_family_key"
     tor_build_from_source: false
     torrc_config_hosts:
       - name: MaxAdvertisedBandwidth
         value: 16MBytes
-      # - name: FamilyId
-      #   value: ...
-      # - name: MyFamily
-      #   value: "{{ (lookup('ansible.builtin.file', role_path + '/../../../secrets/gxxxxxxxxx-MyFamily.txt', errors='ignore') |
-      #     regex_replace('#.*\n', '') | split('\n') | sort)[0:359] | join(',') }}"
   children:
-    ht:
+    hb:
+    hp:
+    hr:
 
 h_common:
   vars:

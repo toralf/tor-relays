@@ -12,32 +12,15 @@ cd $(dirname $0)/..
 
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
-uid=42
+arch='{arm,x86}'
+branch='{ltsrc,master,stablerc}'
+uid=$(printf "%02i" $((RANDOM % 100)))
+
 while getopts a:b:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
   b) branch=${OPTARG} ;;
-  t)
-    type=${OPTARG}
-    case ${type} in
-    app)
-      arch='{amd,arm,intel}'
-      branch='{ltsrc,master}'
-      ;;
-    image)
-      arch='{arm,x86}'
-      branch='{lts,ltsrc,master,stable,stablerc}'
-      ;;
-    kernel)
-      arch='{amd,arm,intel}'
-      branch='{ltsrc,master,stablerc}'
-      ;;
-    *)
-      echo "unknown type ${type}" >&2
-      exit 1
-      ;;
-    esac
-    ;;
+  t) type=${OPTARG} ;;
   u) uid=${OPTARG} ;;
   *)
     echo "unknown opt ${opt}" >&2
@@ -49,27 +32,33 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{m,s,t}-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{m,s,t}-un-${arch}-${branch}-x-x-nowt-${uid})
+  names=$(eval echo h{b,m,s}-dt-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{b,m,s}-un-${arch}-${branch}-x-x-nowt-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
-  echo " rc=$?"
 
-elif [[ ${type} == "image" ]]; then
-  names=$(eval echo hi-{db,dt,un}-${arch}-${branch})
-  time ./bin/create-server.sh ${names}
-  time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
-  echo " rc=$?"
-  # remove superseeded snapshots
+elif [[ ${type} =~ "image" ]]; then
+  if [[ ${type} == "image_build" ]]; then
+    # compile kernel
+    names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+    time ./bin/create-server.sh ${names}
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"
+  else
+    # clone kernel repo only
+    names=$(eval echo hi-{dt,un}-${arch}-${branch}-${uid})
+    time ./bin/create-server.sh ${names}
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
+  fi
+
+  # remove superseeded snapshots (== same description, old id)
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
     sort -r |
     awk 'x[$2]++ { print $1 }' |
     xargs -r hcloud --poll-interval 5s image delete >/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
-  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
+  names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-kernel.yaml --limit "$(tr ' ' ',' <<<${names})"
-  echo " rc=$?"
 
 else
   echo "unknown type ${type}" >&2

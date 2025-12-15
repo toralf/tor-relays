@@ -81,12 +81,9 @@
           poll: 0
           vars:
             _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
-            _max: "{{ (1 + (ansible_facts.memtotal_mb / 1576)) | int }}"
-            _j: "{{ (_max < ansible_facts.processor_vcpus) | ternary(_max, ansible_facts.processor_vcpus) }}"
           ansible.builtin.shell: # noqa: command-instead-of-shell
             cmd: >-
-              {{ (kernel_git_build_wait | bool) |
-                ternary('/root/build-kernel.sh ' ~ _j, 'nohup /root/build-kernel.sh ' ~ _j ~ ' reboot &') }}
+              {{ (kernel_git_build_wait | bool) | ternary('/root/build-kernel.sh', 'nohup /root/build-kernel.sh reboot &') }}
           register: _kernel_build
 
         - name: Kernel build

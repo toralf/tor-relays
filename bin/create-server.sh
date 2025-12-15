@@ -34,18 +34,16 @@ if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   # US and Singapore are more expensive and do have less traffic incl.
   data_centers=$(
     hcloud --quiet datacenter list --output json |
-      jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS-fsn1 hel1 nbg1})'"))'
+      jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS:-fsn1 hel1 nbg1})'"))'
   )
 
   # US has only AMD
   server_types=$(hcloud --quiet server-type list --output json)
-  cax_id=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
-  cpx_id=$(jq -r '.[] | select(.name=="cpx11") | .id' <<<${server_types}) # AMD
-  cx_id=$(jq -r '.[] | select(.name=="cx22") | .id' <<<${server_types})   # Intel
+  id_arm=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
+  id_x86=$(jq -r '.[] | select(.name=="cx23") | .id' <<<${server_types})  # AMD/Intel
 
-  cax_locations=$(jq -r 'select(.server_types.available | contains(['${cax_id}'])) | .location.name' <<<${data_centers})
-  cpx_locations=$(jq -r 'select(.server_types.available | contains(['${cpx_id}'])) | .location.name' <<<${data_centers})
-  cx_locations=$(jq -r 'select(.server_types.available | contains(['${cx_id}'])) | .location.name' <<<${data_centers})
+  locations_arm=$(jq -r 'select(.server_types.available | contains(['${id_arm}'])) | .location.name' <<<${data_centers})
+  locations_x86=$(jq -r 'select(.server_types.available | contains(['${id_x86}'])) | .location.name' <<<${data_centers})
 fi
 
 if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
@@ -61,23 +59,21 @@ commands=$(
   while read -r name; do
     # set htype based on hostname
     case ${name} in
-    *-amd | *-amd-*) htype="cpx11" ;;
     *-arm | *-arm-*) htype="cax11" ;;
-    *-intel | *-intel-*) htype="cx22" ;;
-    *-x86 | *-x86-*) htype=$(xargs -n 1 <<<"cpx11 cx22" | shuf -n 1) ;;
-    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cpx11 cx22} | shuf -n 1) ;;
+    *-x86 | *-x86-*) htype="cx23" ;;
+    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cx23} | xargs -n 1 | shuf -n 1) ;;
     esac
 
-    # no preferences for the location
-    loc=""
+    # location
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
       loc="--location ${HCLOUD_LOCATION}"
     elif [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
       case ${htype} in
-      cax*) loc="--location "$(xargs -n 1 <<<${cax_locations} | shuf -n 1) ;;
-      cpx*) loc="--location "$(xargs -n 1 <<<${cpx_locations} | shuf -n 1) ;;
-      cx*) loc="--location "$(xargs -n 1 <<<${cx_locations} | shuf -n 1) ;;
+      cax*) loc="--location "$(xargs -n 1 <<<${locations_arm} | shuf -n 1) ;;
+      cx*) loc="--location "$(xargs -n 1 <<<${locations_x86} | shuf -n 1) ;;
       esac
+    else
+      loc=""
     fi
 
     image=$(setImage)
