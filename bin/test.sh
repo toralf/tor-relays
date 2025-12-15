@@ -34,7 +34,7 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{b,m,s}-dt-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{b,m,s}-un-${arch}-${branch}-x-x-nowt-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
+  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} =~ "image" ]]; then
   if [[ ${type} == "image_build" ]]; then

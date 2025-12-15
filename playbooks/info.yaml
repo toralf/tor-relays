@@ -1,5 +1,5 @@
 ---
-- name: Info all
+- name: Info common
   hosts: all
   roles:
     - role: info_common

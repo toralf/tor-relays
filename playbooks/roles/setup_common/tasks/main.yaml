@@ -52,7 +52,6 @@
       get_checksum: false
       get_mime: false
     ansible.builtin.systemd_service:
-      daemon_reload: true
       enabled: true
       no_block: true
     ansible.builtin.template:
@@ -133,6 +132,7 @@
         - system-config
 
     - name: Upgrade
+      when: ansible_facts.os_family == 'Debian'
       ansible.builtin.import_tasks: upgrade.yaml
       tags:
         - upgrade
@@ -167,27 +167,11 @@
       tags:
         - node-exporter
 
-    - name: Flush handlers (Nginx, metrics)
-      ansible.builtin.meta: flush_handlers
-
     - name: Debian kernel flavour
       when: ansible_facts.distribution == 'Debian'
-      ansible.builtin.import_tasks: kernel-deb.yaml
+      ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
-        - kernel
-        - kernel-deb
-
-    - name: Self-compiled kernel
-      when: kernel_git_repo_url | length > 0
-      ansible.builtin.import_tasks: kernel-src.yaml
-      tags:
-        - kernel
-        - kernel-src
-
-    - name: Check if a reboot is needed
-      ansible.builtin.import_tasks: reboot.yaml
-      tags:
-        - reboot
+        - kernel-debian
 
     - name: Flush handlers (common)
       ansible.builtin.meta: flush_handlers

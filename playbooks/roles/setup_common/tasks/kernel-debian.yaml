@@ -14,11 +14,11 @@
       register: _kernel_dist
       notify: Reboot system
 
-    - name: Handle changed Debian kernel
+    - name: Changed Debian kernel
       when: _kernel_dist.changed
       block:
-        - name: Reboot (after changed Debian kernel)
+        - name: Reboot (changed Debian kernel)
           ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Upgrade after changed Debian kernel
+        - name: Upgrade deps of changed Debian kernel
           ansible.builtin.import_tasks: upgrade.yaml

@@ -1,6 +1,5 @@
 ---
 - name: Upgrade system
-  when: ansible_facts.os_family == 'Debian'
   environment:
     DEBIAN_FRONTEND: noninteractive
   block:

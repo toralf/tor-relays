@@ -43,24 +43,24 @@ function setProject() {
   echo -e "\n >>> using Hetzner project \"${project?NO PROJECT FOUND}\""
 }
 
-# revert sort order enforces a "best match" if possible
+# revert sort order helps later for the first match being the best match
 function getSnapshots() {
   hcloud --quiet image list --type snapshot --output noheader --output columns=description,id,image_size |
-    awk '{ if (NF == 3 && $3 != "-") { print $1, $2} }' |
+    awk '{ if (NF == 4 && $3 != "-") { print $1, $2} }' |
     sort -r -n
 }
 
 function setImage() {
+  local name=${1?NAME NOT GIVEN}
+
   if [[ ${LOOKUP_SNAPSHOT-} == "n" || -z ${snapshots} ]] || ! _setImageBySnapshot ${name}; then
     _setImageByHostname ${name}
   fi
 }
 
 function _setImageByHostname() {
-  local name
+  local name=${1?NAME NOT GIVEN}
 
-  name=${1?NAME NOT GIVEN}
-  # name example: hi-un-arm-master
   if [[ ${name} =~ "-un-" ]]; then
     echo "ubuntu-24.04"
   else
@@ -73,10 +73,9 @@ function _setImageByHostname() {
 #   dt-arm-stable
 #   dt-arm
 function _setImageBySnapshot() {
-  local name description id
+  local name=${1?NAME NOT GIVEN}
 
-  name=${1?NAME NOT GIVEN}
-
+  local description id
   while read -r description id; do
     if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
       echo ${id}

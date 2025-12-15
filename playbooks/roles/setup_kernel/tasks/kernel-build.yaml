@@ -1,0 +1,80 @@
+---
+- name: Stop unattended upgrade (kernel build)
+  when: kernel_git_build_wait | bool
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+    - unattended-upgrades
+
+- name: Configure kernel
+  changed_when: _kernel_configured.rc == 123
+  failed_when: _kernel_configured.rc not in (0, 123)
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      before=$(grep -v '^#' .config 2>/dev/null | md5sum)
+
+      # force module loading
+      ss >/dev/null
+
+      yes '' | make localmodconfig >/dev/null
+      cat <<EOF >>.config
+      {{ kernel_git_config }}
+      EOF
+      yes '' | make oldconfig >/dev/null
+
+      after=$(grep -v '^#' .config | md5sum)
+      if [[ $before != $after ]]; then
+        exit 123 # marks Ansible task as "changed"
+      fi
+
+      exit 0
+    chdir: /root/linux
+    executable: /bin/bash
+  register: _kernel_configured
+
+- name: Copy kernel build script
+  ansible.builtin.copy:
+    src: build-kernel.sh
+    dest: /root/
+    mode: "0744"
+  register: _kernel_build_script
+
+- name: Gather facts - current running kernel
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+
+- name: Build kernel
+  when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
+  changed_when: true
+  async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
+  poll: 0
+  vars:
+    _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
+  ansible.builtin.shell: # noqa: command-instead-of-shell
+    cmd: >-
+      {{ (kernel_git_build_wait | bool) | ternary('/root/build-kernel.sh', 'nohup /root/build-kernel.sh reboot &') }}
+  register: _kernel_build
+
+- name: Kernel build
+  when: _kernel_build.changed
+  block:
+    - name: Kernel build finished
+      when: kernel_git_build_wait | bool
+      retries: "{{ kernel_git_build_wait_retries }}"
+      delay: "{{ kernel_git_build_wait_delay }}"
+      until: _job_result.finished
+      ansible.builtin.async_status:
+        jid: "{{ _kernel_build.ansible_job_id }}"
+      register: _job_result
+      notify: Reboot system
+
+    - name: Cleanup kernel build job
+      ansible.builtin.async_status:
+        jid: "{{ _kernel_build.ansible_job_id }}"
+        mode: cleanup

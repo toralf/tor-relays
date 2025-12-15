@@ -1,0 +1,38 @@
+---
+- name: Main
+  when: kernel_git_repo_url | length > 0
+  module_defaults:
+    ansible.builtin.apt:
+      allow_change_held_packages: true
+      autoclean: true
+      autoremove: true
+      purge: true
+      state: latest
+    ansible.builtin.copy:
+      owner: root
+      group: root
+      mode: "0644"
+    ansible.builtin.systemd_service:
+      enabled: true
+      no_block: true
+  block:
+    - name: Tools
+      ansible.builtin.import_tasks: tools.yaml
+      tags:
+        - tools
+
+    - name: Repo
+      ansible.builtin.import_tasks: repo.yaml
+      tags:
+        - repo
+
+    - name: Check for running kernel build process
+      community.general.pids:
+        name: build-kernel.sh
+      register: _build_is_running
+
+    - name: Build kernel
+      when: _build_is_running.pids | default([]) | length == 0
+      ansible.builtin.import_tasks: kernel-build.yaml
+      tags:
+        - kernel-build

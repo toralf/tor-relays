@@ -32,7 +32,7 @@ fi
 
 commands=$(
   while read -r name; do
-    image=$(setImage)
+    image=$(setImage ${image})
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
   done <<<${names}
 )

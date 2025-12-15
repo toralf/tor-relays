@@ -4,5 +4,6 @@
   roles:
     - role: poweron
     - role: setup_common
+    - role: setup_kernel
     - role: info_healthy
     - role: delete

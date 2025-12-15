@@ -1,0 +1,15 @@
+---
+- name: Install/Update toolchain
+  ansible.builtin.apt:
+    name:
+      - bc
+      - bison
+      - build-essential
+      - cpio
+      - dwarves
+      - flex
+      - kmod
+      - libelf-dev
+      - libncurses5-dev
+      - libssl-dev
+      - lz4

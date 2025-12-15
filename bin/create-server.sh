@@ -76,7 +76,7 @@ commands=$(
       loc=""
     fi
 
-    image=$(setImage)
+    image=$(setImage ${name})
     if [[ -z ${image} ]]; then
       echo " ERROR: empty image for ${name}" >&2
       exit 1
