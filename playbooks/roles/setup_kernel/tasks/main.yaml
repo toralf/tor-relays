@@ -21,11 +21,6 @@
       tags:
         - tools
 
-    - name: Repo
-      ansible.builtin.import_tasks: repo.yaml
-      tags:
-        - repo
-
     - name: Check for running kernel build process
       community.general.pids:
         name: build-kernel.sh
