@@ -3,7 +3,10 @@ log_lines: 10
 
 tor_bridge_distribution: ""
 
-# defined here to allow --check
 _fingerprint: ""
 _fingerprint_ed25519: ""
 _fingerprint_hashed: ""
+
+log_err: /var/log/tor/err.log
+log_notice: /var/log/tor/notice.log
+log_warn: /var/log/tor/warn.log
