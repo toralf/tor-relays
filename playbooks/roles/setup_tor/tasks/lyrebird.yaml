@@ -7,23 +7,14 @@
     _repo_dir: /root/lyrebird
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Build
+- name: Build Lyrebird
   throttle: 24
-  block:
-    - name: Build Lyrebird
-      changed_when: false
-      ansible.builtin.command:
-        cmd: make build
-        chdir: /root/lyrebird
-  rescue:
-    - name: Build Lyrebird using io proxy
-      changed_when: false
-      # 403 responses for https://proxy.golang.org/github.com/klauspost/compress/@v/v1.17.11.zip
-      environment:
-        GOPROXY: "https://goproxy.io,direct"
-      ansible.builtin.command:
-        cmd: make build
-        chdir: /root/lyrebird
+  changed_when: false
+  environment:
+    GOPROXY: "https://goproxy.io,direct"
+  ansible.builtin.command:
+    cmd: make build
+    chdir: /root/lyrebird
 
 - name: Copy Lyrebird
   ansible.builtin.copy:

@@ -19,6 +19,8 @@
 - name: Build {{ item.name }}
   throttle: 24
   changed_when: false
+  environment:
+    GOPROXY: "https://goproxy.io,direct"
   ansible.builtin.command:
     cmd: go build -v
     chdir: "/root/{{ item.name }}/proxy"
