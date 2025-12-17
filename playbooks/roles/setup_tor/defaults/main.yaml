@@ -25,3 +25,6 @@ tor_metrics: false
 tor_secret_family_key_file: ""
 
 nickname: ""
+
+# <name, value> elements
+torrc_config: []

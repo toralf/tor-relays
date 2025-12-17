@@ -50,6 +50,6 @@ Log notice file /var/log/tor/notice.log
 Log warn file /var/log/tor/warn.log
 Log err file /var/log/tor/err.log
 
-{% for item in torrc_config_group + torrc_config_hosts %}
+{% for item in torrc_config %}
 {{ item.name }} {{ item.value }}
 {% endfor %}
