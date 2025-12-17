@@ -25,11 +25,3 @@ tor_metrics: false
 tor_secret_family_key_file: ""
 
 nickname: ""
-
-torrc_config_log:
-  - name: Log notice file
-    value: /var/log/tor/notice.log
-  - name: Log warn file
-    value: /var/log/tor/warn.log
-  - name: Log err file
-    value: /var/log/tor/err.log
