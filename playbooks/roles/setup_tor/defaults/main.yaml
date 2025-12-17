@@ -24,7 +24,5 @@ tor_metrics: false
 # file containing the private FamilyId key
 tor_secret_family_key_file: ""
 
-nickname: ""
-
 # <name, value> elements
 torrc_config: []
