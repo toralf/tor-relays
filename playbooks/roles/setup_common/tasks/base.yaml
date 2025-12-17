@@ -30,8 +30,8 @@
     cmd: wc -l </root/.ssh/authorized_keys
   register: _result
 
-- name: Create swapfile for tiny systems (IONOS)
-  when: ansible_facts.memtotal_mb < 2048 and (kernel_git_repo_url | length > 0 or tor_port > 0)
+- name: Create swapfile for tiny systems (e.g. IONOS)
+  when: ansible_facts.memtotal_mb < 2048 and tor_port > 0
   ansible.builtin.shell:
     cmd: |-
       set -euf

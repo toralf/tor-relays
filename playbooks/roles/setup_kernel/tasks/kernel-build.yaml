@@ -85,12 +85,12 @@
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
-
-    - name: Restart unattended upgrade (kernel build)
-      ansible.builtin.systemd_service:
-        name: "{{ item }}"
-        state: started
-      loop:
-        - apt-daily.timer
-        - apt-daily-upgrade.timer
-        - unattended-upgrades
+      rescue:
+        - name: Restart unattended upgrade (failed kernel build)
+          ansible.builtin.systemd_service:
+            name: "{{ item }}"
+            state: started
+          loop:
+            - apt-daily.timer
+            - apt-daily-upgrade.timer
+            - unattended-upgrades

@@ -1,4 +1,9 @@
 ---
+- name: Validate
+  ansible.builtin.import_tasks: validate.yaml
+  tags:
+    - validate
+
 - name: Main
   when: kernel_git_repo_url | length > 0
   module_defaults:
