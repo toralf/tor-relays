@@ -2,7 +2,7 @@
 
 ## Quick start
 
-To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
+Setup a new Tor private bridge (i.e. with the hostname _my_bridge_):
 
 1. clone this repo
 
@@ -18,9 +18,9 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
    ansible-playbook playbooks/ca.yaml -e @secrets/local.yaml --tags ca
    ```
 
-   to create seeds, local dirs _~/tmp_ and _./secrets_ and a self-signed Root CA
+   to create seeds, local dirs (e.g. _~/tmp_ and _./secrets_() and a self-signed Root CA.
 
-1. add your bridge to the Ansible group _tor_:
+1. add your bridge to the Ansible inventory:
 
    ```yaml
    ---
@@ -29,7 +29,7 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
        my_bridge:
    ```
 
-   Take a look into [examples](./examples/) for an Ansible inventory using the Hetzner cloud.
+   Take a look into [examples](./examples/) for an Ansible inventory leveraging the Hetzner cloud API.
 
 1. deploy it
 
@@ -51,8 +51,8 @@ To setup a new Tor public bridge (i.e. with the hostname _my_bridge_), do
 The deployment is made by _Ansible_.
 The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system
 to a reliable randomized one (at IONOS a proposed one is displayed, but not set).
-For Tor relays the DDoS solution of [torutils](https://github.com/toralf/torutils) used.
-For Snowflake and NGinx instances a lightweight version of that ruleset is deployed.
+For Tor relays the DDoS solution of [torutils](https://github.com/toralf/torutils) is used.
+For Snowflake and NGinx instances a lightweight version of that iptables ruleset is deployed.
 
 ### Additional software
 
@@ -62,9 +62,9 @@ To deploy additional software, configure it (i.e. for a _Quassel_ server) like:
 hosts:
   my_system:
     additional_ports:
-      - "4242"
+      - 4242
     additional_software:
-      - "quassel-core"
+      - quassel-core
 ```
 
 ### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
@@ -75,7 +75,7 @@ The variable _<...>\_patches_ might contain list of URIs to apply additional pat
 ### Metrics
 
 If a Prometheus server is configured (`prometheus_server`) then the inbound traffic from its ip to the
-local metrics port is passed by a firewall allow rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+metrics port is passed by a firewall allow rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
 The metrics port is pseudo-randomly choosen using _seed_metrics_.
 Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
 using the certificate of the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
@@ -128,11 +128,11 @@ A static prometheus config could look like this:
       replacement: "${1}"
 ```
 
-The _targets_ lines for the Prometheus config are put into _~/tmp/tor-relays/\*\-targets.yaml_.
+The _targets_ lines for the Prometheus config are in _~/tmp/tor-relays/\*\-targets.yaml_.
 
 ### Misc
 
-To create at Hetzner cloud a new VPS with the hostname _my_bridge_ under the project _my_project_, do:
+To create a new VPS with the hostname _my_bridge_ at Hetzner cloud in the project _my_project_, do:
 
 ```bash
 hcloud context use my_project
@@ -148,7 +148,7 @@ include: "/etc/unbound/hetzner-<project>.conf"
 
 (_hcloud_ uses the term _"context"_ for a project)
 
-The scripts under [./bin](./bin) work for the Hetzner Cloud API.
+The scripts under [./bin](./bin) work for the Hetzner Cloud API only.
 
 ### Bisect a Linux kernel boot issue
 
