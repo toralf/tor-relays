@@ -3,7 +3,7 @@
   block:
     - name: Run a custom command
       changed_when: false
-      ansible.builtin.shell: # noqa: command-instead-of-shell
+      ansible.builtin.shell:
         cmd: |-
           {{ lookup('ansible.builtin.file', custom_command_file) }}
         executable: /bin/bash

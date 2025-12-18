@@ -65,7 +65,7 @@
       changed_when: true
       async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
       poll: 0
-      ansible.builtin.shell: # noqa: command-instead-of-shell
+      ansible.builtin.shell:
         cmd: >-
           {{ (kernel_git_build_wait | bool) | ternary('/root/build-kernel.sh', 'nohup /root/build-kernel.sh reboot &') }}
 
