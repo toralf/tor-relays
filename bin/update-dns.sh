@@ -4,12 +4,12 @@
 
 set -euf
 export LANG=C.utf8
-export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
+export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
 cd $(dirname $0)/..
 source ./bin/lib.sh
 
-hash -r hcloud rc-service
+type hcloud rc-service
 
 [[ $# -eq 0 ]]
 setProject

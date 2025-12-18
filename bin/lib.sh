@@ -68,7 +68,7 @@ function _setImageByHostname() {
   fi
 }
 
-# examples for match ordering e.g. for hs0-dt-arm-stablerc-bp-cl-nowt-89
+# examples for match ordering e.g. for hs0-dt-arm-stablerc-bp-cl-89
 #   dt-arm-stablerc
 #   dt-arm-stable
 #   dt-arm
