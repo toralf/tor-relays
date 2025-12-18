@@ -32,7 +32,7 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{b,m,s}-dt-${arch}-${branch}-{,no}bp-{,no}cl-nowt-${uid} h{b,m,s}-un-${arch}-${branch}-x-x-nowt-${uid})
+  names=$(eval echo h{m,p,s}-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} h{m,p,s}-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
 
@@ -56,7 +56,7 @@ elif [[ ${type} =~ "image" ]]; then
     xargs -r hcloud --poll-interval 5s image delete >/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
-  names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-wt-${uid} hi-un-${arch}-${branch}-x-x-wt-${uid})
+  names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-kernel.yaml --limit "$(tr ' ' ',' <<<${names})"
 
