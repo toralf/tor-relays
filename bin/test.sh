@@ -13,7 +13,7 @@ cd $(dirname $0)/..
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
 arch='{arm,x86}'
-branch='{ltsrc,master,stablerc}'
+branch='{ltsrc,mainline,stablerc}'
 uid=$(printf "%02i" $((RANDOM % 100)))
 
 while getopts a:b:t:u: opt; do
