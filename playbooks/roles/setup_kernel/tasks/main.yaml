@@ -36,3 +36,6 @@
       ansible.builtin.import_tasks: kernel-build.yaml
       tags:
         - kernel-build
+
+    - name: Flush handlers (kernel-build)
+      ansible.builtin.meta: flush_handlers
