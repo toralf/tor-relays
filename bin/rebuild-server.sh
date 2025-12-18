@@ -12,7 +12,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 cd $(dirname $0)/..
 source ./bin/lib.sh
 
-type hcloud jq
+type hcloud jq >/dev/null
 
 [[ $# -ne 0 ]]
 setProject

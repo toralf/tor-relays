@@ -38,7 +38,7 @@ if [[ ${type} == "app" ]]; then
 
 elif [[ ${type} =~ "image" ]]; then
   if [[ ${type} == "image_build" ]]; then
-    # compile kernel
+    # build kernel
     names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"

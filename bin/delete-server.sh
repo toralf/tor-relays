@@ -12,7 +12,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 cd $(dirname $0)/..
 source ./bin//lib.sh
 
-type hcloud rc-service
+type hcloud rc-service >/dev/null
 
 [[ $# -ne 0 ]] || exit 1
 setProject
