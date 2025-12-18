@@ -1,4 +1,7 @@
 ---
+- name: Flush handlers (delete)
+  ansible.builtin.meta: flush_handlers
+
 - name: Delete instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
