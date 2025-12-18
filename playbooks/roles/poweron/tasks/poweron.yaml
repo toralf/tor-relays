@@ -25,7 +25,7 @@
           delegate_to: localhost
           throttle: "{{ concurrent_local_jobs }}"
           changed_when: true
-          ansible.builtin.command:
+          ansible.builtin.shell:
             cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
         - name: Additional wait after Poweron

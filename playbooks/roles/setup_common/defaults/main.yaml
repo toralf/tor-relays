@@ -21,11 +21,10 @@ prometheus_server6: ""
 tor_metrics: false
 
 # Tor / Snowflake
-tor_bridge_distribution: ""
+tor_bridge_distribution: "none"
 snowflake_proxies: []
 tor_port: 0
-# egress firewall
-tor_egress_drop: ""
+# egress firewall, e.g. EGRESS_SUBNET_SLEW="1.2.3.4"
 tor_egress_slew: ""
 
 # nginx

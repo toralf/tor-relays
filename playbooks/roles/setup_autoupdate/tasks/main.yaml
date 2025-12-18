@@ -42,6 +42,3 @@
       ansible.builtin.import_tasks: autoupdate-apt.yaml
       tags:
         - autoupdate
-
-    - name: Flush handlers (autoupdate)
-      ansible.builtin.meta: flush_handlers

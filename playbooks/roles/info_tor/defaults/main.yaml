@@ -1,7 +1,7 @@
 ---
 log_lines: 10
 
-tor_bridge_distribution: ""
+tor_bridge_distribution: "none"
 
 _fingerprint: ""
 _fingerprint_ed25519: ""

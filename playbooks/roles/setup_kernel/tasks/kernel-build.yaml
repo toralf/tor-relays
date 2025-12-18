@@ -68,6 +68,7 @@
       ansible.builtin.shell:
         cmd: >-
           {{ (kernel_git_build_wait | bool) | ternary('/root/build-kernel.sh', 'nohup /root/build-kernel.sh reboot &') }}
+      register: _kernel_build
 
     - name: Kernel build job
       block:
@@ -85,12 +86,3 @@
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
-      rescue:
-        - name: Restart unattended upgrade (failed kernel build)
-          ansible.builtin.systemd_service:
-            name: "{{ item }}"
-            state: started
-          loop:
-            - apt-daily.timer
-            - apt-daily-upgrade.timer
-            - unattended-upgrades

@@ -3,7 +3,7 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: >-
       hcloud --quiet --poll-interval 10s server create-image --type snapshot --description='{{ snapshot_description }}'
       {{ inventory_hostname }}

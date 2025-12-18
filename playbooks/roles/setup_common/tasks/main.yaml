@@ -173,5 +173,11 @@
       tags:
         - kernel-debian
 
-    - name: Flush handlers (common)
-      ansible.builtin.meta: flush_handlers
+    - name: Manual reboot
+      changed_when: true
+      ansible.builtin.debug:
+        msg: Reboot was triggered manually.
+      notify: Reboot system
+      tags:
+        - never
+        - reboot
