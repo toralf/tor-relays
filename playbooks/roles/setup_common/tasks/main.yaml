@@ -108,6 +108,7 @@
           tags:
             - firewall-tools
 
+        # all non-Tor
         - name: Firewall base
           when: tor_port == 0
           ansible.builtin.import_tasks: firewall-base.yaml
