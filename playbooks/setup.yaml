@@ -2,6 +2,7 @@
 - name: Setup common
   hosts: all
   roles:
+    - role: poweron
     - role: setup_common
 
 - name: Setup snowflake
