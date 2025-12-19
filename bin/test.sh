@@ -32,7 +32,7 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{m,p,s}-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} h{m,p,s}-un-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
 
