@@ -72,4 +72,4 @@
 - name: Enable nginx
   ansible.builtin.systemd_service:
     name: nginx
-  notify: Restart nginx
+    state: started

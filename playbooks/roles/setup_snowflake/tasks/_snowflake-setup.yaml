@@ -42,4 +42,4 @@
 - name: Enable {{ item.name }}
   ansible.builtin.systemd_service:
     name: "{{ item.name }}"
-  notify: Restart Snowflake
+    state: started

@@ -4,16 +4,16 @@
   ansible.builtin.systemd_service:
     daemon_reload: true
 
-- name: Reload Tor
-  listen: Reload Tor
-  ansible.builtin.systemd_service:
-    name: tor
-    state: reloaded
-    no_block: true
-
 - name: Restart Tor
   listen: Restart Tor
   ansible.builtin.systemd_service:
     name: tor
     state: restarted
+    no_block: true
+
+- name: Reload Tor
+  listen: Reload Tor
+  ansible.builtin.systemd_service:
+    name: tor
+    state: reloaded
     no_block: true
