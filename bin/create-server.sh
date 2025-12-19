@@ -61,7 +61,7 @@ commands=$(
     case ${name} in
     *-arm | *-arm-*) htype="cax11" ;;
     *-x86 | *-x86-*) htype="cx23" ;;
-    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-cax11 cx23} | xargs -n 1 | shuf -n 1) ;;
+    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-"cax11 cx23"} | shuf -n 1) ;;
     esac
 
     # location
