@@ -36,6 +36,11 @@ if [[ ${type} == "app" ]]; then
   time ./bin/create-server.sh ${names}
   time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
 
+elif [[ ${type} == "full" ]]; then
+  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-{dist,mainline}-x-x-${uid})
+  time ./bin/create-server.sh ${names}
+  time ./site-test-full.yaml --limit "$(tr ' ' ',' <<<${names})"
+
 elif [[ ${type} =~ "image" ]]; then
   if [[ ${type} == "image_build" ]]; then
     # build kernel
