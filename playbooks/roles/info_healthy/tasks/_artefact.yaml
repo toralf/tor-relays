@@ -9,18 +9,25 @@
 
 - name: Work on new artefact
   when: _known.changed
+  vars:
+    _fname: "{{ inventory_hostname }}.{{ item.checksum }}.tar.gz"
   block:
-    - name: Archive artefact
+    - name: Pack artefact
       changed_when: false
       ansible.builtin.command:
         cmd: >-
-          tar -cvzpf /tmp/{{ item.checksum }}.tar.gz {{ item.path }}
+          tar -czpf /tmp/{{ _fname }} {{ item.path }}
 
     - name: Fetch artefact
       throttle: 1
       ansible.builtin.fetch:
-        src: "/tmp/{{ item.checksum }}.tar.gz"
-        dest: "{{ tmp_dir }}/artefact/"
+        src: "/tmp/{{ _fname }}"
+        dest: "{{ tmp_dir }}/artefact/{{ _fname }}"
+
+    - name: Delete artefact
+      ansible.builtin.file:
+        path: "/tmp/{{ _fname }}"
+        state: absent
 
   rescue:
     - name: Reset known state for artefact
