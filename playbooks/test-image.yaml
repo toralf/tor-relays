@@ -1,5 +1,5 @@
 ---
-- name: Test
+- name: Test image
   hosts: all
   roles:
     - role: poweron

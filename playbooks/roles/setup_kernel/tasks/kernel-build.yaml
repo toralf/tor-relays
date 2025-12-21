@@ -47,7 +47,9 @@
     gather_subset:
       - hardware
 
-- name: Build
+- name: Make
+  tags:
+    - kernel-make
   when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
   vars:
     _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"

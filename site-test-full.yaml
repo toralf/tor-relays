@@ -1,5 +1,0 @@
-#!/usr/bin/env -S ansible-playbook -e @secrets/local.yaml
-# SPDX-License-Identifier: GPL-3.0-or-later
-
----
-- ansible.builtin.import_playbook: playbooks/test-full.yaml

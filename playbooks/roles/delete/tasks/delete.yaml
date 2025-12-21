@@ -1,21 +1,23 @@
 ---
-- name: Flush handlers (delete)
+- name: Flush handlers (before delete)
   ansible.builtin.meta: flush_handlers
 
 - name: Delete instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  changed_when: true
+  changed_when: _hcloud.rc == 0
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
   ansible.builtin.command:
     cmd: >-
       hcloud --quiet --poll-interval 10s server delete {{ inventory_hostname }}
+  register: _hcloud
 
 - name: Delete ssh key
   delegate_to: localhost
   throttle: 1
-  changed_when: true
+  changed_when: _result.stdout is not search('not found in')
   ansible.builtin.command:
     cmd: >-
       ssh-keygen -R {{ inventory_hostname }}
+  register: _result

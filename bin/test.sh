@@ -14,7 +14,7 @@ cd $(dirname $0)/..
 
 arch='{arm,x86}'
 branch='{ltsrc,mainline,stablerc}'
-uid=$(printf "%02i" $((RANDOM % 100)))
+uid=$((RANDOM % 10))
 
 while getopts a:b:t:u: opt; do
   case ${opt} in
@@ -32,26 +32,28 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-dist-x-x-${uid})
+  branch='dist'
+  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-app.yaml --limit "$(tr ' ' ',' <<<${names})"
+  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
 
 elif [[ ${type} == "full" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-{dist,mainline}-x-x-${uid})
+  branch='{dist,ltsrc,mainline}'
+  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-full.yaml --limit "$(tr ' ' ',' <<<${names})"
+  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} =~ "image" ]]; then
   if [[ ${type} == "image_build" ]]; then
-    # build kernel
+    # clone + build kernel
     names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate
   else
-    # clone kernel repo only
+    # clone kernel
     names=$(eval echo hi-{dt,un}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate,kernel-make
   fi
 
   # remove superseeded snapshots (== same description, old id)
@@ -63,7 +65,7 @@ elif [[ ${type} =~ "image" ]]; then
 elif [[ ${type} == "kernel" ]]; then
   names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "$(tr ' ' ',' <<<${names})"
+  time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags shutdown,snapshot
 
 else
   echo "unknown type ${type}" >&2
