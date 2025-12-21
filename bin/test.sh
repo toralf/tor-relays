@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# build + deploy tests
+# goals:
+#   - test
+#   - create golden image
 
 set -euf
 export LANG=C.utf8
