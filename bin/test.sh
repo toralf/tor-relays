@@ -43,15 +43,14 @@ elif [[ ${type} == "full" ]]; then
   time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} =~ "image" ]]; then
+  branch=${branch:-'{ltsrc,mainline,stablerc}'}
   if [[ ${type} == "image_build" ]]; then
     # clone + build kernel
-    branch=${branch:-'{ltsrc,mainline,stablerc}'}
     names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate
   else
     # clone kernel
-    branch=${branch:-'{ltsrc,mainline,stablerc}'}
     names=$(eval echo hi-{dt,un}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate,kernel-make
