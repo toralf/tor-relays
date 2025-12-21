@@ -62,11 +62,13 @@ function _setImageByHostname() {
   local name=${1?NAME NOT GIVEN}
 
   if [[ ${name} =~ "-un-" ]]; then
-    echo "ubuntu-24.04"
+    echo 'ubuntu-24.04'
   elif [[ ${name} =~ "-dt-" ]]; then
-    echo "debian-13"
+    echo 'debian-13'
+  elif [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
+    echo ${HCLOUD_FALLBACK_IMAGE}
   else
-    echo $(xargs -n 1 <<<${HCLOUD_FALLBACK_IMAGE:-"debian-13 ubuntu-24.04"} | shuf -n 1)
+    xargs -n 1 <<<'debian-13 ubuntu-24.04' | shuf -n 1
   fi
 }
 
