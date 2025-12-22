@@ -15,7 +15,7 @@ cd $(dirname $0)/..
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
 arch='{arm,x86}'
-uid=$((RANDOM % 100))
+uid=$$
 
 while getopts a:b:t:u: opt; do
   case ${opt} in
