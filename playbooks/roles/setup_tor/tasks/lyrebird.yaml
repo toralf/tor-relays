@@ -1,7 +1,7 @@
 ---
 - name: Work on "{{ _repo_dir }}"
   vars:
-    _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird
+    _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
     _git_version: "{{ lyrebird_git_version }}"
     _git_patches: "{{ lyrebird_git_patches }}"
     _repo_dir: /root/lyrebird
