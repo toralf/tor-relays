@@ -1,7 +1,14 @@
 ---
 artefact_paths: []
 artefact_patterns: []
-artefact_size: "0k"
+artefact_limit: 20
+artefact_size: "-20m"
+
+coredump_paths:
+  - /var/crash/minicoredumper
+coredump_patterns:
+  - core.tar.gz
+coredump_limit: 200
 
 issue_since: "1 day ago"
 

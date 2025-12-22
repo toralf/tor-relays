@@ -4,11 +4,12 @@
   ansible.builtin.find:
     paths: "{{ artefact_paths }}"
     patterns: "{{ artefact_patterns }}"
+    limit: "{{ artefact_limit }}"
+    size: "{{ artefact_size }}"
+    get_checksum: true
     recurse: true
     hidden: true
     follow: true
-    size: "{{ artefact_size }}"
-    get_checksum: true
   register: _result
 
 - name: Work on found artefact

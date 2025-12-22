@@ -1,4 +1,9 @@
 ---
+- name: Gather facts - current running kernel
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+
 - name: Fetch Linux kernel boot config
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:

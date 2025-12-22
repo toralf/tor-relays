@@ -1,10 +1,10 @@
 ---
 - name: Minicoredumper
   ansible.builtin.find:
-    paths:
-      - /var/crash/minicoredumper
-    patterns:
-      - core.tar.gz
+    paths: "{{ coredump_paths }}"
+    patterns: "{{ coredump_patterns }}"
+    limit: "{{ coredump_limit }}"
+    get_checksum: true
     recurse: true
   register: _result
 
