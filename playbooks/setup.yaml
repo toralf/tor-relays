@@ -15,7 +15,7 @@
   roles:
     - role: setup_tor
 
-- name: Setup autoupdate
+- name: Setup finish
   hosts: all
   roles:
     - role: setup_kernel

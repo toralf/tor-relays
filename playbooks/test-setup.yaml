@@ -15,7 +15,7 @@
   roles:
     - role: setup_tor
 
-- name: Test kernel + autoupdate
+- name: Test finish
   hosts: all
   roles:
     - role: setup_kernel
