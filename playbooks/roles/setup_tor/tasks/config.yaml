@@ -37,3 +37,8 @@
   ansible.builtin.template:
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
+
+- name: Enable Tor
+  ansible.builtin.systemd_service:
+    name: tor
+    state: started
