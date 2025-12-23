@@ -40,7 +40,7 @@
         --disable-zstd \
         >>make.log
       make clean >>make.log
-      make -j {{ _j }} >>make.log
+      make -j {{ _j }} -O2 -g -ggdb >>make.log
     chdir: /root/tor
 
 - name: Create directories
