@@ -19,7 +19,7 @@ setProject
 
 jobs=32
 
-names=$(xargs -n 1 <<<$*)
+names=$(xargs -r -n 1 <<<$*)
 
 echo -e " deleting $(wc -w <<<${names}) system/s ..."
 

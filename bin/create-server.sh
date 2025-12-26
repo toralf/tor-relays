@@ -21,7 +21,7 @@ setProject
 
 jobs=16
 
-names=$(xargs -n 1 <<<$*)
+names=$(xargs -r -n 1 <<<$*)
 
 if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   echo " ^^ invalid hostname/s" >&2
@@ -61,7 +61,7 @@ commands=$(
     case ${name} in
     *-arm | *-arm-*) htype="cax11" ;;
     *-x86 | *-x86-*) htype="cx23" ;;
-    *) htype=$(xargs -n 1 <<<${HCLOUD_TYPES:-"cax11 cx23"} | shuf -n 1) ;;
+    *) htype=$(xargs -r -n 1 <<<${HCLOUD_TYPES:-"cax11 cx23"} | shuf -n 1) ;;
     esac
 
     # location
@@ -69,8 +69,8 @@ commands=$(
       loc="--location ${HCLOUD_LOCATION}"
     elif [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
       case ${htype} in
-      cax*) loc="--location "$(xargs -n 1 <<<${locations_arm} | shuf -n 1) ;;
-      cx*) loc="--location "$(xargs -n 1 <<<${locations_x86} | shuf -n 1) ;;
+      cax*) loc="--location "$(xargs -r -n 1 <<<${locations_arm} | shuf -n 1) ;;
+      cx*) loc="--location "$(xargs -r -n 1 <<<${locations_x86} | shuf -n 1) ;;
       esac
     else
       loc=""

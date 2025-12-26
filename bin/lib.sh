@@ -10,7 +10,6 @@ function cleanLocalDataEntries() {
   files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
   set +e
   while read -r name; do
-    [[ -n ${name} ]] || continue
     rm -f ./.ansible_facts/{,s1_}${name}
     sed -i \
       -e "/^${name}$/d" \
@@ -20,7 +19,7 @@ function cleanLocalDataEntries() {
       -e "/\[\"${name}:[0-9]*\"\]/d" \
       ${files} 2>/dev/null
     sed -i -e "/ # ${name}$/d" /tmp/tor-relays/*_bridgeline 2>/dev/null
-  done < <(xargs -n 1 <<<$*)
+  done < <(xargs -r -n 1 <<<$*)
   set -e
 }
 
@@ -28,12 +27,11 @@ function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   set +e
   while read -r name; do
-    [[ -n ${name} ]] || continue
     # certain files in {{ tmp_dir }} subdirs
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,tor-keys,trace}/${name}{,.*}
     # client certs
     rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
-  done < <(xargs -n 1 <<<$*)
+  done < <(xargs -r -n 1 <<<$*)
   set -e
 }
 
