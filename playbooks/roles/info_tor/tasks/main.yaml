@@ -4,6 +4,10 @@
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
+    ansible.builtin.stat:
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
   block:
     - name: Get fingerprints
       ansible.builtin.import_tasks: fingerprints.yaml
@@ -78,6 +82,12 @@
       ansible.builtin.import_tasks: systemd-time.yaml
       tags:
         - systemd-time
+
+    - name: Tor keys
+      ansible.builtin.import_tasks: tor-keys.yaml
+      tags:
+        - never
+        - tor-keys
 
     - name: Version
       ansible.builtin.import_tasks: version.yaml

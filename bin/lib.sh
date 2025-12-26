@@ -30,7 +30,7 @@ function cleanLocalDataFiles() {
   while read -r name; do
     [[ -n ${name} ]] || continue
     # certain files in {{ tmp_dir }} subdirs
-    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,trace}/${name}{,.*}
+    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,tor-keys,trace}/${name}{,.*}
     # client certs
     rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
   done < <(xargs -n 1 <<<$*)

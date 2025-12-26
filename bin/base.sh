@@ -41,4 +41,4 @@ EOF
 fi
 
 # Root CA and certificates are stored under ./secrets
-mkdir -p ${HOME}/tmp/tor-relays/{artefact,coredump,ddos,ddos6,dmesg,kconfig,trace}
+mkdir -p ${HOME}/tmp/tor-relays/{artefact,coredump,ddos,ddos6,dmesg,kconfig,tor-keys,trace}
