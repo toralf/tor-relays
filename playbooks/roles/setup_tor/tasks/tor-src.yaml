@@ -16,8 +16,13 @@
     _repo_dir: /root/tor
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
+- name: Test whether Tor binary is there
+  ansible.builtin.stat:
+    path: /root/tor/src/app/tor
+  register: _binary
+
 - name: Build
-  when: _git_repo_changed
+  when: _git_repo_changed or not _binary.stat.exists
   changed_when: true
   vars:
     _j: "{{ (ansible_facts.processor_vcpus == 1) | ternary(1, ansible_facts.processor_vcpus - 1) }}"
@@ -40,7 +45,7 @@
         --disable-zstd \
         >>make.log
       make clean >>make.log
-      make -j {{ _j }} -O2 -g -ggdb >>make.log
+      CFLAGS="-O2 -g -ggdb" make -j{{ _j }} >>make.log
     chdir: /root/tor
 
 - name: Create directories
