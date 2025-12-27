@@ -17,6 +17,8 @@
       before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
       # force module loading
+      ipset list &>/dev/null || true
+      modprobe xt_multiport
       ss >/dev/null
 
       yes '' | make localmodconfig >/dev/null
@@ -41,6 +43,9 @@
     dest: /root/
     mode: "0744"
   register: _kernel_build_script
+
+- name: Flush handlers (before kernel build)
+  ansible.builtin.meta: flush_handlers
 
 - name: Gather facts - current running kernel
   ansible.builtin.setup:
