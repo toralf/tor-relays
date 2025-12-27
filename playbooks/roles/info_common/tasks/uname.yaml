@@ -1,14 +1,17 @@
 ---
-- name: Uname
-  changed_when: false
-  ansible.builtin.command:
-    cmd: uname -rm
-  register: _result
+- name: Gather facts - current running kernel
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
 
 - name: File uname
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: >-
+      {{ inventory_hostname }}
+      {{ ansible_facts.kernel }}
+      {{ ansible_facts.distribution }}
+      {{ ansible_facts.distribution_release }}
     path: "{{ tmp_dir }}/uname"
     regexp: "^{{ inventory_hostname }} "
