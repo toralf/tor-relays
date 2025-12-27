@@ -11,11 +11,14 @@ suffix=$(date +%Y%m%d-%H%M%S)
 truncate -s 0 ~/make.${suffix}.log
 ln -sf ~/make.${suffix}.log ~/make.log
 
+exec 1>~/make.log
+exec 2>&1
+
 # shellcheck disable=SC2129
-# make clean &>>~/make.log
-make -j $(nproc) &>>~/make.log
-make modules_install &>>~/make.log
-make install &>>~/make.log
+# make clean
+make -j $(nproc)
+make modules_install
+make install
 
 kver=$(make kernelversion)
 lver=$(KERNELVERSION=${kver} ./scripts/setlocalversion)
@@ -31,7 +34,7 @@ grep -E '^\s+initrd\s+/boot/initrd.img-6\..*-g[0-9a-f]{12}$' /boot/grub/grub.cfg
     rm /boot/*-${i}
   done
 rm -f /boot/*-6.*-g[0-9a-f]*.old /boot/vmlinuz.old
-update-grub &>>~/make.log
+update-grub
 
 touch /var/run/reboot-required
 ln -snf ${PWD} /usr/src/linux
