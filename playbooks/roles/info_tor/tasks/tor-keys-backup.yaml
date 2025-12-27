@@ -1,12 +1,12 @@
 ---
-- name: Test whether keys are here
+- name: Test whether backup was already made
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
     path: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}"
   register: _keys
 
-- name: Sync Tor keys
+- name: Backup Tor keys
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   when: not _keys.stat.exists

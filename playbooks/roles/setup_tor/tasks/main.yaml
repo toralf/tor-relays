@@ -29,6 +29,10 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.stat:
+      get_attributes: false
+      get_checksum: false
+      get_mime: false
     ansible.builtin.systemd_service:
       enabled: true
       no_block: true
@@ -73,3 +77,9 @@
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
+
+    - name: Tor keys restore
+      ansible.builtin.import_tasks: tor-keys-restore.yaml
+      tags:
+        - never
+        - tor-keys-restore

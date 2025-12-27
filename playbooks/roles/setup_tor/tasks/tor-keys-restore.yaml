@@ -1,0 +1,17 @@
+---
+- name: Restore Tor keys
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.posix.synchronize:
+    mode: push
+    src: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
+    dest: "/var/lib/tor/keys/"
+    use_ssh_args: true
+    verify_host: true
+  loop:
+    - ed25519_master_id_public_key
+    - ed25519_master_id_secret_key
+    - ed25519_signing_cert
+    - ed25519_signing_secret_key
+    - secret_id_key
+  notify: Restart Tor
