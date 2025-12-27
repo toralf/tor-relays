@@ -26,7 +26,7 @@ hsx:
 
 htx:
   vars:
-    nickname: "xxxxxxxxx{{ ((seed_address + seed_host) | md5)[0:10] }}"
+    nickname: "x{{ ((seed_address + seed_host) | md5)[0:10] }}"
     tor_build_from_source: false
     torrc_config_hosts:
       - name: MaxAdvertisedBandwidth
