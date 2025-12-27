@@ -18,10 +18,10 @@
         path: "{{ tmp_dir }}/is_down"
         state: "{{ _is_down | ternary('present', 'absent') }}"
 
-    - name: Power on the system
+    - name: Poweron
       when: _is_down
       block:
-        - name: Poweron
+        - name: System
           delegate_to: localhost
           throttle: "{{ concurrent_local_jobs }}"
           changed_when: true
@@ -30,12 +30,12 @@
           ansible.builtin.command:
             cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-        - name: Additional wait after Poweron
+        - name: Additional wait
           delegate_to: localhost
           ansible.builtin.wait_for:
             timeout: 25
 
-        - name: SSH ping after poweron
+        - name: SSH ping
           retries: 3
           delay: 10
           ansible.builtin.ping:

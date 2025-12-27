@@ -24,13 +24,13 @@
   notify:
     - Reload systemd
 
-- name: Generate host key
+- name: Generate OpenSSL host key
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_privatekey:
     path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
 
-- name: Generate host CSR
+- name: Generate OpenSSL host CSR
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_csr:
@@ -43,7 +43,7 @@
       - "IP:{{ ansible_facts.default_ipv4.address }}"
       - "IP:{{ ansible_facts.default_ipv6.address }}"
 
-- name: Generate host certificate
+- name: Generate OpenSSL host certificate
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.x509_certificate:
@@ -53,14 +53,14 @@
     ownca_privatekey_path: "{{ ca_dir }}/{{ ca_name }}/{{ ca_name }}.key"
     provider: ownca
 
-- name: Copy host key
+- name: Copy OpenSSL host key
   ansible.builtin.copy:
     src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/
     mode: "0600"
   notify: Reload nginx
 
-- name: Compile nginx certificate
+- name: Compile OpenSSL certificate
   ansible.builtin.copy:
     content: |
       {{ lookup("file", ca_dir + "/" + ca_name + "/clients/crts/" + inventory_hostname + ".crt") }}
