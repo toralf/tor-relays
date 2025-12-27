@@ -1,0 +1,22 @@
+---
+- name: Check if firewall Tor is in place
+  changed_when: false
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      iptables  -nvL INPUT | grep -F '/* DDoS IPv4'
+      ip6tables -nvL INPUT | grep -F '/* DDoS IPv6'
+      iptables  -nvL INPUT | grep 'match-set .* src'
+      ip6tables -nvL INPUT | grep 'match-set .* src'
+  register: _firewall_tor
+
+- name: File firewall bTor result
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ tmp_dir }}/firewall_tor_is_down"
+    regexp: "^{{ inventory_hostname }}$"
+    state: "{{ (_firewall_tor.rc != 0) | ternary('present', 'absent') }}"

@@ -1,0 +1,20 @@
+---
+- name: Check if firewall base is in place
+  changed_when: false
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      iptables  -nvL INPUT | grep -F 'tcp flags:!0x17/0x02'
+      ip6tables -nvL INPUT | grep -F 'tcp flags:!0x17/0x02'
+  register: _firewall_base
+
+- name: File firewall base result
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ tmp_dir }}/firewall_base_is_down"
+    regexp: "^{{ inventory_hostname }}$"
+    state: "{{ (_firewall_base.rc != 0) | ternary('present', 'absent') }}"

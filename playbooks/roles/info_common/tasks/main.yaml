@@ -6,15 +6,27 @@
       firstmatch: true
       mode: "0644"
   block:
+    - name: Conntrack
+      ansible.builtin.import_tasks: conntrack.yaml
+      tags:
+        - conntrack
+
     - name: Dryrun of unattended-upgrade
       ansible.builtin.import_tasks: dry-update.yaml
       tags:
         - dry-update
 
-    - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
+    - name: Firewall base
+      when: tor_port == 0
+      ansible.builtin.import_tasks: firewall-base.yaml
       tags:
-        - firewall
+        - firewall-base
+
+    - name: Firewall Tor
+      when: tor_port > 0
+      ansible.builtin.import_tasks: firewall-tor.yaml
+      tags:
+        - firewall-tor
 
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
