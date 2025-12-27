@@ -67,9 +67,11 @@
 
           iptables  -nvL INPUT | grep -F '/* DDoS IPv4'
           ip6tables -nvL INPUT | grep -F '/* DDoS IPv6'
+          iptables  -nvL INPUT | grep 'match-set .* src'
+          ip6tables -nvL INPUT | grep 'match-set .* src'
       register: _ddos_in_place
 
-    - name: Ensure that DDoS is up to date and active
+    - name: Ensure that DDoS is up
       changed_when: true
       when: _ddos_script.changed or _ddos_cron.changed or _ddos_in_place.rc == 1
       ansible.builtin.shell:
