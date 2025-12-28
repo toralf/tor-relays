@@ -24,16 +24,17 @@
 - name: Build
   when: _git_repo_changed or not _binary.stat.exists
   changed_when: true
-  vars:
-    _j: "{{ (ansible_facts.processor_vcpus == 1) | ternary(1, ansible_facts.processor_vcpus - 1) }}"
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
       truncate -s 0 make.log
 
+      exec 1>make.log
+      exec 2>&1
+
       rm -f configure Makefile
-      ./autogen.sh >>make.log
+      ./autogen.sh
 
       ./configure \
         --prefix=/usr \
@@ -42,10 +43,9 @@
         --disable-systemd --disable-asciidoc --disable-html-manual --disable-unittests \
         --enable-module-relay --disable-module-dirauth \
         --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
-        --disable-zstd \
-        >>make.log
-      make clean >>make.log
-      CFLAGS="-O2 -g -ggdb" make -j{{ _j }} >>make.log
+        --disable-zstd
+      make clean
+      CFLAGS="-O2 -g -ggdb" make -j$(nproc)
     chdir: /root/tor
 
 - name: Create directories
