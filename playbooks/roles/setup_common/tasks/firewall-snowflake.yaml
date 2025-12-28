@@ -13,7 +13,8 @@
     - v6
   register: _firewall
 
-- name: Save iptables state
+- name: Save Snowflake iptables state
+  when: _firewall.changed
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
@@ -21,4 +22,3 @@
   with_items:
     - v4
     - v6
-  when: _firewall.changed

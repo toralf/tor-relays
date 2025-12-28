@@ -26,7 +26,7 @@
     - v6
   register: _fw_scripts
 
-- name: Save iptables state before setup
+- name: Save base iptables state before setup
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
@@ -48,7 +48,7 @@
         - v4
         - v6
 
-    - name: Save iptables state after setup
+    - name: Save base iptables state after setup
       community.general.iptables_state:
         ip_version: "ip{{ item }}"
         state: saved
