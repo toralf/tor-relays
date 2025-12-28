@@ -1,12 +1,11 @@
 ---
 kernel_git_build_wait: true
-kernel_git_build_wait_retries: 75 # count
+kernel_git_build_wait_retries: 90 # count
 kernel_git_build_wait_delay: 60 # seconds
 kernel_git_repo_url: ""
 kernel_git_version: ""
 kernel_git_patches: []
 
-# for reboot handler
 tor_port: 0
 
 kernel_git_config: |-
@@ -79,4 +78,3 @@ kernel_git_config: |-
   CONFIG_DEBUG_INFO_BTF=n
   CONFIG_DEBUG_INFO_BTF_MODULES=n
   CONFIG_PAHOLE_HAS_BTF_TAG=n
-  CONFIG_SYSTEM_REVOCATION_KEYS=""

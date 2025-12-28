@@ -7,29 +7,31 @@
     _repo_dir: /root/linux
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Configure kernel
+- name: Configure
   changed_when: _kernel_configured.rc == 123
   failed_when: _kernel_configured.rc not in (0, 123)
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      before=$(grep -v '^#' .config 2>/dev/null | md5sum)
+      before=$(grep -v '^#' .config | md5sum)
 
+      cp /boot/config-{{ ansible_facts.kernel }} .config
       # force module loading
-      ipset list &>/dev/null || true
-      modprobe xt_multiport
       ss >/dev/null
-
       yes '' | make localmodconfig >/dev/null
       cat <<EOF >>.config
       {{ kernel_git_config }}
       EOF
       yes '' | make oldconfig >/dev/null
+      if [[ {{ ansible_facts.distribution }} == 'Ubuntu' ]]; then
+        scripts/config --disable SYSTEM_REVOCATION_KEYS
+        scripts/config --disable SYSTEM_TRUSTED_KEYS
+      fi
 
       after=$(grep -v '^#' .config | md5sum)
       if [[ $before != $after ]]; then
-        exit 123 # marks Ansible task as "changed"
+        exit 123 # to mark this Ansible task as "changed"
       fi
 
       exit 0
@@ -55,11 +57,13 @@
 - name: Make
   tags:
     - kernel-make
-  when: _git_repo_changed or _kernel_configured.changed or _kernel_build_script.changed or not _latest_is_running
+  when: ('kernel-make' in ansible_run_tags) or
+    _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running
   vars:
-    _latest_is_running: "{{ ansible_facts.kernel is search(_git_head.before[:12]) }}"
+    _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
+    _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
   block:
-    - name: Stop unattended upgrade (kernel build)
+    - name: Stop unattended upgrade
       ansible.builtin.systemd_service:
         name: "{{ item }}"
         state: stopped
