@@ -17,7 +17,7 @@ type hcloud jq >/dev/null
 [[ $# -ne 0 ]]
 setProject
 
-jobs=32
+jobs=24
 
 names=$(xargs -r -n 1 <<<$*)
 
@@ -37,6 +37,7 @@ commands=$(
   done <<<${names}
 )
 
+echo -e " rebuilding ..."
 xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${commands}
 
 ./bin/trust-host-ssh-key.sh ${names}

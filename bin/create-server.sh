@@ -19,7 +19,7 @@ type hcloud jq >/dev/null
 [[ $# -ne 0 ]]
 setProject
 
-jobs=16
+jobs=24
 
 names=$(xargs -r -n 1 <<<$*)
 
