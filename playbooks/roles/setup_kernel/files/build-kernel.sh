@@ -40,9 +40,9 @@ touch /var/run/reboot-required
 ln -snf ${PWD} /usr/src/linux
 
 if [[ ${2-} == "reboot" ]]; then
-  # wait till no ssh connection is open
-  while pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
-    sleep 10
-  done
+  if pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; then
+    service ssh stop
+    sleep 180
+  fi
   reboot
 fi
