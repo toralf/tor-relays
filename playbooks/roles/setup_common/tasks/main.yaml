@@ -106,6 +106,7 @@
         - name: Firewall tools
           ansible.builtin.import_tasks: firewall-tools.yaml
           tags:
+            - firewall
             - firewall-tools
 
         # all non-Tor
@@ -113,18 +114,21 @@
           when: tor_port == 0
           ansible.builtin.import_tasks: firewall-base.yaml
           tags:
+            - firewall
             - firewall-base
 
         - name: Firewall Snowflake
           when: snowflake_proxies | length > 0
           ansible.builtin.import_tasks: firewall-snowflake.yaml
           tags:
+            - firewall
             - firewall-snowflake
 
         - name: Firewall Tor
           when: tor_port > 0
           ansible.builtin.import_tasks: firewall-tor.yaml
           tags:
+            - firewall
             - firewall-tor
 
     - name: System config
