@@ -93,3 +93,6 @@
           ansible.builtin.async_status:
             jid: "{{ _kernel_build.ansible_job_id }}"
             mode: cleanup
+
+    - name: Flush handlers (kernel-build)
+      ansible.builtin.meta: flush_handlers
