@@ -24,6 +24,11 @@
         - dmesg
         - never
 
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall
+
     - name: IPv6
       ansible.builtin.import_tasks: ipv6.yaml
       tags:

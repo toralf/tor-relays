@@ -16,18 +16,6 @@
       tags:
         - dry-update
 
-    - name: Firewall base
-      when: tor_port == 0
-      ansible.builtin.import_tasks: firewall-base.yaml
-      tags:
-        - firewall-base
-
-    - name: Firewall Tor
-      when: tor_port > 0
-      ansible.builtin.import_tasks: firewall-tor.yaml
-      tags:
-        - firewall-tor
-
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
       tags:

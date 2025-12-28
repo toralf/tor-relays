@@ -1,0 +1,52 @@
+---
+- name: Base
+  when: tor_port == 0
+  tags:
+    - firewall-base
+  block:
+    - name: Check if firewall base is in place
+      changed_when: false
+      failed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          iptables  -nvL INPUT | grep -F '/* Firewall IPv4'
+          ip6tables -nvL INPUT | grep -F '/* Firewall IPv6'
+      register: _firewall_base
+
+    - name: File firewall base
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ inventory_hostname }}"
+        path: "{{ tmp_dir }}/firewall_base_is_down"
+        regexp: "^{{ inventory_hostname }}$"
+        state: "{{ (_firewall_base.rc != 0) | ternary('present', 'absent') }}"
+
+- name: Tor
+  when: tor_port > 0
+  tags:
+    - firewall-tor
+  block:
+    - name: Check if firewall Tor is in place
+      changed_when: false
+      failed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
+
+          iptables  -nvL INPUT | grep -F '/* DDoS IPv4'
+          ip6tables -nvL INPUT | grep -F '/* DDoS IPv6'
+          iptables  -nvL INPUT | grep 'match-set .* src'
+          ip6tables -nvL INPUT | grep 'match-set .* src'
+      register: _firewall_tor
+
+    - name: File firewall Tor
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ inventory_hostname }}"
+        path: "{{ tmp_dir }}/firewall_tor_is_down"
+        regexp: "^{{ inventory_hostname }}$"
+        state: "{{ (_firewall_tor.rc != 0) | ternary('present', 'absent') }}"
