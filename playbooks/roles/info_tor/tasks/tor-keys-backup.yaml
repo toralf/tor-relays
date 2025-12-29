@@ -1,21 +1,17 @@
 ---
-- name: Test whether backup was already made
+- name: Test Tor keys
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
     path: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}"
-  register: _keys
+  register: _keys_backup
 
 - name: Backup Tor keys
-  delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  when: not _keys.stat.exists
-  ansible.posix.synchronize:
-    mode: pull
+  when: not _keys_backup.stat.exists
+  ansible.builtin.fetch:
     src: "/var/lib/tor/keys/{{ item }}"
     dest: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/"
-    use_ssh_args: true
-    verify_host: true
   loop:
     - ed25519_master_id_public_key
     - ed25519_master_id_secret_key

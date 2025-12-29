@@ -84,9 +84,9 @@
         - systemd-time
 
     - name: Tor keys backup
+      when: tor_keys_backup | bool
       ansible.builtin.import_tasks: tor-keys-backup.yaml
       tags:
-        - never
         - tor-keys-backup
 
     - name: Version

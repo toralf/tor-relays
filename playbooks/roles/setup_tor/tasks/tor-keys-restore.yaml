@@ -1,17 +1,34 @@
 ---
-- name: Restore Tor keys
+- name: Test Tor keys
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  ansible.posix.synchronize:
-    mode: push
-    src: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
-    dest: "/var/lib/tor/keys/"
-    use_ssh_args: true
-    verify_host: true
-  loop:
-    - ed25519_master_id_public_key
-    - ed25519_master_id_secret_key
-    - ed25519_signing_cert
-    - ed25519_signing_secret_key
-    - secret_id_key
-  notify: Restart Tor
+  ansible.builtin.stat:
+    path: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}"
+  register: _keys_backup
+
+- name: Restore
+  when: _keys_backup.stat.exists and not _keys.stat.exists
+  block:
+    - name: Create Tor keys dir
+      ansible.builtin.file:
+        state: directory
+        path: /var/lib/tor/keys/
+        mode: "u=rwx,g=s,o="
+        owner: tor
+        group: tor
+
+    - name: Restore Tor keys
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.copy:
+        src: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
+        dest: "/var/lib/tor/keys/{{ item }}"
+        mode: "0600"
+        owner: tor
+        group: tor
+      loop:
+        - ed25519_master_id_public_key
+        - ed25519_master_id_secret_key
+        - ed25519_signing_cert
+        - ed25519_signing_secret_key
+        - secret_id_key
+      notify: Restart Tor

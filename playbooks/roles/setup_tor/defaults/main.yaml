@@ -26,3 +26,5 @@ tor_secret_family_key_file: ""
 
 # <name, value> elements
 torrc_config: []
+
+tor_keys_restore: false

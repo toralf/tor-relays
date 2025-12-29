@@ -45,7 +45,7 @@
         --enable-pic --enable-gcc-hardening --enable-linker-hardening --disable-all-bugs-are-fatal --enable-seccomp \
         --disable-zstd
       make clean
-      CFLAGS="-O2 -g -ggdb" make -j$(nproc)
+      CFLAGS="-O2 -pipe -march=native -ftrivial-auto-var-init=zero -g -ggdb" make -j$(nproc)
     chdir: /root/tor
 
 - name: Create directories

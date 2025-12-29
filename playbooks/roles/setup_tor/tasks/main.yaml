@@ -41,21 +41,28 @@
       group: root
       mode: "0644"
   block:
+    - name: Test keys
+      ansible.builtin.stat:
+        path: /var/lib/tor/keys/
+      register: _keys
+      tags:
+        - tor-keys-restore
+
     - name: Distribution
       when: not tor_build_from_source and ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: tor-dist.yaml
       tags:
         - tor-dist
 
-    - name: Tools
-      when: tor_build_from_source and ansible_facts.os_family == 'Debian'
-      ansible.builtin.import_tasks: tools.yaml
-      tags:
-        - tools
-
     - name: Build from source
       when: tor_build_from_source
       block:
+        - name: Tools
+          when: ansible_facts.os_family == 'Debian'
+          ansible.builtin.import_tasks: tools.yaml
+          tags:
+            - tools
+
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
@@ -67,6 +74,12 @@
           tags:
             - lyrebird
 
+    - name: Tor keys restore
+      when: tor_keys_restore | bool
+      ansible.builtin.import_tasks: tor-keys-restore.yaml
+      tags:
+        - tor-keys-restore
+
     - name: DDoS metrics
       when: ddos_metrics
       ansible.builtin.import_tasks: ddos-metrics.yaml
@@ -77,9 +90,3 @@
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
-
-    - name: Tor keys restore
-      ansible.builtin.import_tasks: tor-keys-restore.yaml
-      tags:
-        - never
-        - tor-keys-restore
