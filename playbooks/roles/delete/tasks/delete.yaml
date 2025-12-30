@@ -10,7 +10,7 @@
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
   ansible.builtin.command:
     cmd: >-
-      hcloud --quiet --poll-interval 10s server delete {{ inventory_hostname }}
+      hcloud --quiet --poll-interval 5s server delete {{ inventory_hostname }}
   register: _hcloud
 
 - name: SSH key
