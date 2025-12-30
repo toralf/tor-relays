@@ -36,7 +36,7 @@ if [[ ${type} == "app" ]]; then
   branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
+  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline}'}
@@ -50,12 +50,12 @@ elif [[ ${type} =~ "image" ]]; then
     # clone + build kernel
     names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"
   else
     # clone kernel
     names=$(eval echo hi-{dt,un}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags autoupdate,kernel-make
+    time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-make
   fi
 
   # remove superseeded snapshots (based on same description)
