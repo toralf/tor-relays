@@ -9,11 +9,11 @@
   ansible.builtin.systemd_service:
     name: tor
     state: restarted
-    no_block: true
+    enabled: true
 
 - name: Reload Tor
   listen: Reload Tor
   ansible.builtin.systemd_service:
     name: tor
     state: reloaded
-    no_block: true
+    enabled: true

@@ -27,17 +27,14 @@
       owner: root
       group: root
       mode: "0644"
-    ansible.builtin.systemd_service:
-      enabled: true
-      no_block: true
   block:
-    - name: Configure unattended update of Debian
+    - name: Configure Debian
       when: ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: autoupdate-debian.yaml
       tags:
         - autoupdate
 
-    - name: Enable unattended update
+    - name: Configure apt
       when: ansible_facts.os_family == 'Debian'
       ansible.builtin.import_tasks: autoupdate-apt.yaml
       tags:

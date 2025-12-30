@@ -9,7 +9,6 @@
   ansible.builtin.systemd_service:
     name: "{{ item.name }}"
     state: restarted
-    no_block: true
   loop_control:
     label: "{{ item.name }}"
   loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"

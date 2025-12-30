@@ -32,13 +32,10 @@
   ansible.builtin.command:
     cmd: >-
       su {{ tor_build_from_source | ternary('tor', 'root') }} -c "tor --verify-config"
+  notify:
+    - Reload Tor
 
 - name: Configure Tor logrotate
   ansible.builtin.template:
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
-
-- name: Enable Tor
-  ansible.builtin.systemd_service:
-    name: tor
-    state: started

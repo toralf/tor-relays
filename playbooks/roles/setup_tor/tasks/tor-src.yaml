@@ -82,6 +82,12 @@
     dest: /etc/systemd/system/tor.service
   notify: Restart Tor
 
+- name: Enable
+  ansible.builtin.systemd_service:
+    name: tor
+    enabled: true
+  notify: Restart Tor
+
 # for bridges the PT needs the capability
 - name: Allow low port
   changed_when: false

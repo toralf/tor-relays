@@ -51,9 +51,6 @@
       get_attributes: false
       get_checksum: false
       get_mime: false
-    ansible.builtin.systemd_service:
-      enabled: true
-      no_block: true
     ansible.builtin.template:
       owner: root
       group: root

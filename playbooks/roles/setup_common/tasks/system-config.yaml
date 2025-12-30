@@ -118,7 +118,7 @@
     - pack.threads "{{ ansible_facts.processor_vcpus }}"
     - pack.windowMemory 100m
 
-- name: Enable and start systat
+- name: Start sysstat
   ansible.builtin.systemd_service:
     name: sysstat
     state: started

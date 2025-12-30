@@ -8,6 +8,7 @@
   when: _nginx_is_installed.stat.exists
   block:
     - name: Create nginx site directories
+      no_log: true
       ansible.builtin.file:
         path: /var/www/{{ item.dir }}
         state: directory

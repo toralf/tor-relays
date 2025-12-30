@@ -8,7 +8,6 @@
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: stopped
-    no_block: false
   loop:
     - apt-daily.timer
     - apt-daily-upgrade.timer
@@ -32,7 +31,7 @@
     name:
       - python3-psutil
 
-- name: Ensure no package manager is running
+- name: Ensure apt is not running
   failed_when: _processes.pids | default([]) | length > 0
   retries: 3
   delay: 60

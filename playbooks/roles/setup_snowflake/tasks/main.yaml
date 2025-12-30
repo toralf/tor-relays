@@ -20,9 +20,6 @@
       owner: root
       group: root
       mode: "0644"
-    ansible.builtin.systemd_service:
-      enabled: true
-      no_block: true
   block:
     - name: Tools
       ansible.builtin.import_tasks: tools.yaml

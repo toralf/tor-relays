@@ -1,6 +1,6 @@
 ---
 # https://unix.stackexchange.com/questions/178626/how-to-run-unattended-upgrades-not-daily-but-every-few-hours
-- name: Configure unattended upgrade
+- name: Configure
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/apt/apt.conf.d/
@@ -9,10 +9,11 @@
     - 50unattended-upgrades
   notify: Reload systemd
 
-- name: Enable unattended upgrade
+- name: Enable and start
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: started
+    enabled: true
   loop:
     - apt-daily.timer
     - apt-daily-upgrade.timer
