@@ -36,7 +36,7 @@
   retries: 3
   delay: 60
   community.general.pids:
-    pattern: apt.*|dpkg.*
+    pattern: apt|dpkg
   register: _processes
 
 - name: Install/Update tools
