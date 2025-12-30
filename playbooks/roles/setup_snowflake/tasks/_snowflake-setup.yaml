@@ -39,7 +39,7 @@
     dest: "/etc/systemd/system/{{ item.name }}.service"
   notify: Restart Snowflake
 
-- name: Enable and start {{ item.name }}
+- name: Enable {{ item.name }}
   ansible.builtin.systemd_service:
     name: "{{ item.name }}"
     enabled: true
