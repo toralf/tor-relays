@@ -80,7 +80,9 @@
   ansible.builtin.template:
     src: tor.service.j2
     dest: /etc/systemd/system/tor.service
-  notify: Restart Tor
+  notify:
+    - Reload systemd
+    - Restart Tor
 
 - name: Enable
   ansible.builtin.systemd_service:

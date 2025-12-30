@@ -1,15 +1,11 @@
 ---
-- name: Reload systemd
-  listen: Reload systemd
-  ansible.builtin.systemd_service:
-    daemon_reload: true
-
 - name: Restart Snowflake
   listen: Restart Snowflake
   ansible.builtin.systemd_service:
     name: "{{ item.name }}"
     state: restarted
     enabled: true
+    daemon_reload: true
   loop_control:
     label: "{{ item.name }}"
   loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"

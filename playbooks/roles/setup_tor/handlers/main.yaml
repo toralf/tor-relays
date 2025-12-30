@@ -17,3 +17,11 @@
     name: tor
     state: reloaded
     enabled: true
+
+- name: Weird x86 issue
+  listen: Restart Tor
+  retries: 3
+  ansible.builtin.systemd_service:
+    name: tor
+    state: started
+    enabled: true
