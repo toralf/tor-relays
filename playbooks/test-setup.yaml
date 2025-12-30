@@ -4,16 +4,27 @@
   roles:
     - role: poweron
     - role: setup_common
+    - role: info_common
 
-- name: Test snowflake
+- name: Test Snowflake
   hosts: snowflake
   roles:
     - role: setup_snowflake
 
-- name: Test tor
+- name: Test Snowflake info
+  hosts: snowflake
+  roles:
+    - role: info_snowflake
+
+- name: Test Tor
   hosts: tor
   roles:
     - role: setup_tor
+
+- name: Test Tor info
+  hosts: tor
+  roles:
+    - role: info_tor
 
 - name: Test finish
   hosts: all
