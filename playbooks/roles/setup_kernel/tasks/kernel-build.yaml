@@ -84,7 +84,6 @@
     - name: Job
       block:
         - name: Poll job
-          when: kernel_git_build_wait | bool
           retries: "{{ kernel_git_build_wait_retries }}"
           delay: "{{ kernel_git_build_wait_delay }}"
           until: _job_result.finished
