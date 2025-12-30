@@ -1,6 +1,7 @@
 ---
 - name: Test common
   hosts: all
+  order: shuffle
   roles:
     - role: poweron
     - role: setup_common
@@ -8,26 +9,31 @@
 
 - name: Test Snowflake
   hosts: snowflake
+  order: shuffle
   roles:
     - role: setup_snowflake
 
 - name: Test Snowflake info
   hosts: snowflake
+  order: shuffle
   roles:
     - role: info_snowflake
 
 - name: Test Tor
   hosts: tor
+  order: shuffle
   roles:
     - role: setup_tor
 
 - name: Test Tor info
   hosts: tor
+  order: shuffle
   roles:
     - role: info_tor
 
 - name: Test finish
   hosts: all
+  order: shuffle
   roles:
     - role: setup_kernel
     - role: setup_autoupdate

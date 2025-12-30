@@ -1,22 +1,26 @@
 ---
 - name: Setup common
   hosts: all
+  order: shuffle
   roles:
     - role: poweron
     - role: setup_common
 
 - name: Setup snowflake
   hosts: snowflake
+  order: shuffle
   roles:
     - role: setup_snowflake
 
 - name: Setup tor
   hosts: tor
+  order: shuffle
   roles:
     - role: setup_tor
 
 - name: Setup finish
   hosts: all
+  order: shuffle
   roles:
     - role: setup_kernel
     - role: setup_autoupdate

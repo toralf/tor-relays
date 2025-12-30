@@ -1,6 +1,7 @@
 ---
 - name: Test image
   hosts: all
+  order: shuffle
   roles:
     - role: poweron
     - role: setup_common
