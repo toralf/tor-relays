@@ -11,3 +11,15 @@
   ansible.builtin.copy:
     dest: "{{ tmp_dir }}/dmesg/{{ inventory_hostname }}.txt"
     content: "{{ _result.stdout }}"
+
+- name: File dmesg info
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.copy:
+    content: |
+      {{ ansible_facts.distribution }}
+      {{ ansible_facts.distribution_release }}
+      {{ ansible_facts.architecture }}
+      {{ ansible_facts.processor[1] }}
+
+    dest: "{{ tmp_dir }}/dmesg/{{ inventory_hostname }}.info.txt"

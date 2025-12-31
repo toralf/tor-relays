@@ -9,3 +9,15 @@
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
     dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.config"
+
+- name: File kconfig info
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.copy:
+    content: |
+      {{ ansible_facts.distribution }}
+      {{ ansible_facts.distribution_release }}
+      {{ ansible_facts.architecture }}
+      {{ ansible_facts.processor[1] }}
+
+    dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.info.txt"
