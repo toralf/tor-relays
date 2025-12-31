@@ -1,14 +1,27 @@
 ---
 - name: Block
   vars:
-    _is_down: "{{ _result.unreachable is defined or _result.ping is not defined or _result.ping != 'pong' }}"
+    _is_down:
+      "{{ (_ssh_ping.unreachable is defined or _ssh_ping.ping is not defined or _ssh_ping.ping != 'pong') and
+      _net_ping.rc == 0 }}"
   block:
     - name: Check if it is down
       ignore_errors: true
       ignore_unreachable: true
-      changed_when: _is_down
+      changed_when: false
       ansible.builtin.ping:
-      register: _result
+      register: _ssh_ping
+
+    - name: Check local network
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      ignore_errors: true
+      ignore_unreachable: true
+      changed_when: _net_ping.rc != 0
+      ansible.builtin.command:
+        cmd: >-
+          ping -c 3 hetzner.de
+      register: _net_ping
 
     - name: File _is_down state
       delegate_to: localhost
