@@ -18,8 +18,11 @@
     state: reloaded
     enabled: true
 
-- name: Weird x86 issue
-  listen: Restart Tor
+# https://gitlab.torproject.org/tpo/core/tor/-/issues/41189
+- name: Catch a race
+  listen:
+    - Reload Tor
+    - Restart Tor
   retries: 3
   ansible.builtin.systemd_service:
     name: tor
