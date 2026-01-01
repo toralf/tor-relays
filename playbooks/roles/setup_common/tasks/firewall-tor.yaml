@@ -111,7 +111,7 @@
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
 - name: Egress
-  when: tor_bridge_distribution == ''
+  when: tor_egress_slew | length > 0
   block:
     - name: Download egress firewall
       throttle: 16
