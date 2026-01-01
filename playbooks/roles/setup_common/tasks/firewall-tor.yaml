@@ -111,9 +111,9 @@
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
 - name: Egress
-  when: tor_egress_slew | length > 0
   block:
     - name: Download egress firewall
+      when: tor_egress_slew | length > 0
       throttle: 16
       retries: 3
       ansible.builtin.get_url:
@@ -129,11 +129,12 @@
         special_time: reboot
         job: >-
           {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
+        state: "{{ (tor_egress_slew | length > 0) | ternary('present', 'absent') }}"
       register: _egress_cron
 
-    - name: Update egress firewall
+    - name: Ensure egress is updated
       changed_when: true
       when: _egress_script.changed or _egress_cron.changed
       ansible.builtin.shell:
         cmd: |-
-          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
+          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh {{ (tor_egress_slew | length > 0) | ternary('start', '') }}
