@@ -1,7 +1,6 @@
 ---
 - name: Get nginx log
   changed_when: false
-  failed_when: false
   ansible.builtin.shell:
     cmd: >-
       tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
@@ -15,9 +14,3 @@
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
-
-- name: Results of nginx log stderr
-  when: _result.stderr | length > 0
-  changed_when: true
-  ansible.builtin.debug:
-    var: _result.stderr_lines
