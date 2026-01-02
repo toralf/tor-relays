@@ -127,7 +127,8 @@ while :; do
   for i in ltsrc mainline stablerc; do
     if git_changed $i; then
       info "  kernel update: $i"
-      ./bin/test.sh -t image -b $i &>${log}.image.$i.log &
+      ./bin/hx-test.sh -t image -b $i &>${log}.image.$i.log &
+      ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
       ./site-setup.yaml --limit "h*-$i-*:!hix" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log || true
       pit_stop
     fi
