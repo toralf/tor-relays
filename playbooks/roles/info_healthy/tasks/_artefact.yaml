@@ -43,4 +43,4 @@
       ansible.builtin.include_tasks: _dmesg.yaml
 
     - name: Get kernel config for artefact
-      ansible.builtin.include_tasks: _kernel-config.yaml
+      ansible.builtin.include_tasks: _kconfig.yaml

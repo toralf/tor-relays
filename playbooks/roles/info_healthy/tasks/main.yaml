@@ -40,9 +40,9 @@
         - issue
 
     - name: Get kernel config
-      ansible.builtin.import_tasks: _kernel-config.yaml
+      ansible.builtin.import_tasks: _kconfig.yaml
       tags:
-        - kernel-config
+        - kconfig
         - never
 
     - name: Minicoredumper
