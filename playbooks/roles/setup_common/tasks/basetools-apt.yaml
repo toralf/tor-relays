@@ -1,5 +1,5 @@
 ---
-- name: Configure Apt
+- name: Configure apt
   ansible.builtin.copy:
     src: 99local-apt-conf
     dest: /etc/apt/apt.conf.d/

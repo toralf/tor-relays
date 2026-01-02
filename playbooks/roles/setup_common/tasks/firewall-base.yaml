@@ -4,7 +4,7 @@
     name:
       - iptables-persistent
 
-- name: Set certain sysctl values for firewall
+- name: Sysctl values for base firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**16) | int, (2**18) | int) }}"
   ansible.posix.sysctl:
@@ -16,7 +16,7 @@
     - { name: net.core.somaxconn, value: "{{ _max }}" }
     - { name: net.ipv4.tcp_max_syn_backlog, value: "{{ _max }}" }
 
-- name: Create firewall script
+- name: Create base firewall script
   ansible.builtin.template:
     src: "firewall-ip{{ item }}.sh.j2"
     dest: "/root/firewall-ip{{ item }}.sh"
@@ -26,7 +26,7 @@
     - v6
   register: _fw_scripts
 
-- name: Save base iptables state before setup
+- name: Save iptables before base firewall setup
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
@@ -36,10 +36,10 @@
     - v6
   register: _fw_old
 
-- name: Reset firewall
+- name: Reset base firewall
   when: _fw_scripts.changed or _fw_old.changed
   block:
-    - name: Start firewall
+    - name: Start base firewall
       changed_when: true
       ansible.builtin.command:
         cmd: >-
@@ -48,7 +48,7 @@
         - v4
         - v6
 
-    - name: Save base iptables state after setup
+    - name: Save iptables after base firewall setup
       community.general.iptables_state:
         ip_version: "ip{{ item }}"
         state: saved

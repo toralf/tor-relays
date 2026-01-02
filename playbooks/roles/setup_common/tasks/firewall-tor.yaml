@@ -1,11 +1,11 @@
 ---
-- name: Install/Update software for DDoS solution
+- name: Install/Update tools for DDoS
   ansible.builtin.apt:
     name:
       - ipset
       - jq
 
-- name: Download DDoS solution
+- name: Download DDoS scripts
   throttle: 16
   retries: 3
   ansible.builtin.get_url:
@@ -84,13 +84,13 @@
           {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start
           {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
 
-- name: Remove package iptables-persistent
+- name: Remove iptables-persistent
   ansible.builtin.apt:
     name:
       - iptables-persistent
     state: absent
 
-- name: Remove iptables state
+- name: Remove iptables state after DDosS setup
   ansible.builtin.file:
     path: "/etc/iptables/rules.{{ item }}"
     state: absent
@@ -98,7 +98,7 @@
     - v4
     - v6
 
-- name: Create DDoS cron job to regularly save ipsets
+- name: Create DDoS cron job to save ipsets
   ansible.builtin.cron:
     name: save ipset
     special_time: hourly
