@@ -1,14 +1,14 @@
 ---
-- name: Gather facts - current running kernel
+- name: Gather facts - kconfig
   ansible.builtin.setup:
     gather_subset:
       - hardware
 
-- name: Fetch Linux kernel boot config
+- name: Fetch kconfig
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
-    dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.config"
+    dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}.config"
 
 - name: File kconfig info
   delegate_to: localhost
@@ -20,4 +20,4 @@
       {{ ansible_facts.architecture }}
       {{ ansible_facts.processor[1] }}
 
-    dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.info.txt"
+    dest: "{{ tmp_dir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}.info.txt"
