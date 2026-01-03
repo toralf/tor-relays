@@ -10,9 +10,8 @@ function info() {
 
 #######################################################################
 set -euf
-set -m
 export LANG=C.utf8
-export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
+export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 cd $(dirname $0)/..
 
