@@ -7,7 +7,7 @@
         grep -v ' insert_failed=0 drop=0 ' |
         awk '{ print $1, $5, $6 }' |
         cut -f 2- -d ':' |
-        xargs
+        xargs -r
   register: _result
 
 - name: File conntrack drop value

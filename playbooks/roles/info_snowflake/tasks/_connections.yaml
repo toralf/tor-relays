@@ -17,7 +17,7 @@
         journalctl -u {{ item.name }} --since "{{ log_connections_seconds_ago }} second ago" \
           -g ', there were .* connections' --quiet |
         awk '{ print $14 }' |
-        xargs |
+        xargs -r |
         tr ' ' '+'
       )
       echo $(( equatation ))

@@ -9,7 +9,7 @@
         cut -f 2- -d ',' |
         grep -Po ' \d+ ' |
         tac |
-        xargs
+        xargs -r
   register: _result
 
 - name: File clients
