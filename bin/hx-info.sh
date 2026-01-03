@@ -20,7 +20,7 @@ log=/tmp/$(basename $0)
 
 while :; do
   info "info"
-  ./site-info.yaml --limit 'hx:!hi-*' --tags artefact,issue,minicoredumper,trace &>${log}.info.log || true
+  ./site-info.yaml --limit 'hx:!hi-*' --tags artefact,issue,coredump,trace &>${log}.info.log || true
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     info "rsync"

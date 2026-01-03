@@ -39,16 +39,16 @@
       tags:
         - issue
 
-    - name: Get kernel config
+    - name: Kernel config
       ansible.builtin.import_tasks: _kconfig.yaml
       tags:
         - kconfig
         - never
 
-    - name: Minicoredumper
-      ansible.builtin.import_tasks: minicoredumper.yaml
+    - name: Core dump
+      ansible.builtin.import_tasks: coredump.yaml
       tags:
-        - minicoredumper
+        - coredump
 
     - name: Kernel trace
       ansible.builtin.import_tasks: trace.yaml
