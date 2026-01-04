@@ -11,7 +11,7 @@
         line: "# {{ inventory_hostname }}"
         path: "{{ tmp_dir }}/hashed-bridge-rsa-fingerprint.txt"
 
-    - name: Ensure fingerprint is in wellknown file
+    - name: Ensure hashed fingerprint is in wellknown file
       delegate_to: localhost
       ansible.builtin.lineinfile:
         line: "{{ _fingerprint_hashed }}"
