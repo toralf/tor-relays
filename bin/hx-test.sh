@@ -33,10 +33,9 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  branch=${branch:-'dist'}
-  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-build
+  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
