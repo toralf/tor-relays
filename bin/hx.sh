@@ -33,33 +33,33 @@ function pit_stop() {
 function git_ls_remote() {
   local name=${1?NAME MUST BE GIVEN}
 
-  local url tag
+  local url ver
   case ${name} in
   # Tor project
   lyrebird)
     url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
-    tag="main"
+    ver="main"
     ;;
   snowflake)
     url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
-    tag="main"
+    ver="main"
     ;;
   tor)
     url=gitlab.torproject.org/tpo/core/tor.git
-    tag="main"
+    ver="main"
     ;;
   # kernel
   ltsrc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    tag=linux-6.12.y
+    ver=linux-6.12.y
     ;;
   mainline)
     url=git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-    tag=master
+    ver=master
     ;;
   stablerc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    tag=linux-6.18.y
+    ver=linux-6.18.y
     ;;
   *)
     echo " ${name} is not implemented"
@@ -67,7 +67,7 @@ function git_ls_remote() {
     ;;
   esac
 
-  git ls-remote --quiet https://${url} ${tag} |
+  git ls-remote --quiet https://${url} ${ver} |
     awk '{ print $1 }'
 }
 
@@ -115,7 +115,7 @@ while :; do
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log || true
+      ./site-setup.yaml --limit "${limit}" --tags $i,tools &>${log}.$i.log || true
       pit_stop
     fi
   done
@@ -126,7 +126,7 @@ while :; do
       info "  kernel update: $i"
       ./bin/hx-test.sh -t image -b $i &>${log}.image.$i.log &
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "h*-$i-*:!hix" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log || true
+      ./site-setup.yaml --limit "h*-$i-*:!hix" --tags kernel-build,tools -e kernel_git_build_wait=false &>${log}.$i.log || true
       pit_stop
     fi
   done
