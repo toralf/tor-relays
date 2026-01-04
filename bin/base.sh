@@ -36,6 +36,11 @@ all:
     concurrent_local_jobs: $(nproc)
     # seed for various system-specific pseudo-randomized settings
     seed_host: "{{ inventory_hostname + ansible_facts.default_ipv4.address }}"
+
+    # where to store certificate materials
+    ca_dir: "{{ role_path }}/../../../secrets/ca"
+    # local directory for site-info files
+    tmp_dir: "{{ lookup('env', 'HOME') }}/tmp/tor-relays"
 EOF
   chmod 600 ${local_inventory}
 fi
