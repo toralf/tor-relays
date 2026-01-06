@@ -35,7 +35,7 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
+  time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" -e kernel_git_build_wait=false
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
