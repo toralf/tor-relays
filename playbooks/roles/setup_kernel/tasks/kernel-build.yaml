@@ -7,6 +7,14 @@
     _repo_dir: /root/linux
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
+- name: Flush handlers (before kernel build)
+  ansible.builtin.meta: flush_handlers
+
+- name: Gather facts (before kernel build)
+  ansible.builtin.setup:
+    gather_subset:
+      - hardware
+
 - name: Configure
   changed_when: _kernel_configured.rc == 123
   failed_when: _kernel_configured.rc not in (0, 123)
@@ -14,7 +22,7 @@
     cmd: |-
       set -euf
 
-      before=$(grep -v '^#' .config | md5sum)
+      before=$(grep -v '^#' .config 2>/dev/null | md5sum)
 
       cp /boot/config-{{ ansible_facts.kernel }} .config
       # force module loading
@@ -46,14 +54,6 @@
     mode: "0744"
   register: _kernel_make_script
 
-- name: Flush handlers (before kernel make)
-  ansible.builtin.meta: flush_handlers
-
-- name: Gather facts (before kernel make)
-  ansible.builtin.setup:
-    gather_subset:
-      - hardware
-
 - name: Make
   tags:
     - kernel-make
@@ -72,30 +72,40 @@
         - apt-daily-upgrade.timer
         - unattended-upgrades
 
-    - name: Make
+    - name: Make nowait
+      when: not (kernel_git_build_wait | bool)
       changed_when: true
-      async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
-      poll: 0
       ansible.builtin.shell:
         cmd: >-
-          {{ (kernel_git_build_wait | bool) | ternary('/root/build-kernel.sh', 'nohup /root/build-kernel.sh reboot &') }}
-      register: _kernel_make
+          nohup /root/build-kernel.sh reboot &
 
-    - name: Job
+    - name: Make wait
+      when: kernel_git_build_wait | bool
       block:
-        - name: Poll job
-          retries: "{{ kernel_git_build_wait_retries }}"
-          delay: "{{ kernel_git_build_wait_delay }}"
-          until: _job_result.finished
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_make.ansible_job_id }}"
-          register: _job_result
-          notify: Reboot system
+        - name: Make
+          changed_when: true
+          async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
+          poll: 0
+          ansible.builtin.shell:
+            cmd: >-
+              /root/build-kernel.sh
+          register: _kernel_make
 
-        - name: Cleanup job
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_make.ansible_job_id }}"
-            mode: cleanup
+        - name: Job
+          block:
+            - name: Poll job
+              retries: "{{ kernel_git_build_wait_retries }}"
+              delay: "{{ kernel_git_build_wait_delay }}"
+              until: _job_result.finished
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_make.ansible_job_id }}"
+              register: _job_result
+              notify: Reboot system
 
-    - name: Flush handlers (kernel-build)
-      ansible.builtin.meta: flush_handlers
+            - name: Cleanup job
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_make.ansible_job_id }}"
+                mode: cleanup
+
+        - name: Flush handlers (kernel-build)
+          ansible.builtin.meta: flush_handlers
