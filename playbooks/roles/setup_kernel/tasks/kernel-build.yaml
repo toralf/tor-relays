@@ -77,7 +77,7 @@
       changed_when: true
       ansible.builtin.shell:
         cmd: >-
-          nohup /root/build-kernel.sh reboot &
+          echo /root/build-kernel.sh reboot | at now
 
     - name: Make wait
       when: kernel_git_build_wait | bool
