@@ -13,7 +13,7 @@ echo -n " trusting $(wc -w <<<${names}) system/s ..."
 
 attempts=7
 while ((attempts--)); do
-  unknowns=$(
+  left=$(
     while read -r name; do
       if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
         echo ${name}
@@ -21,19 +21,16 @@ while ((attempts--)); do
     done <<<${names}
   )
 
-  echo -en "\n    $(wc -w <<<${unknowns}) unknown/s left ..."
-  if [[ -z ${unknowns} ]]; then
-    echo
-    break
-  else
-    ssh-keyscan -q -4 -t ed25519 ${unknowns} | sort | tee -a ~/.ssh/known_hosts >/dev/null
-    sleep 8
+  # jump out here if work is done
+  if [[ -z ${left} ]]; then
+    echo -e "\n OK"
+    exit 0
   fi
+
+  echo -en "\n    $(wc -w <<<${left}) left ..."
+  ssh-keyscan -q -4 -t ed25519 ${left} | sort | tee -a ~/.ssh/known_hosts >/dev/null
+  sleep 8
 done
 
-if [[ -z ${unknowns} ]]; then
-  echo " OK"
-else
-  echo -e " NOT ok,  unknowns:     $(xargs <<<${unknowns})\n"
-  exit 1
-fi
+echo -e " NOT ok,  left:     $(xargs <<<${left})\n"
+exit 1
