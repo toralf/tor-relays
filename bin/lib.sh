@@ -27,7 +27,7 @@ function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   set +e
   while read -r name; do
-    # certain files in {{ tmp_dir }} subdirs
+    # certain files in {{ infodir }} subdirs
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,trace}/${name}{,.*}
     rm -rf ~/tmp/tor-relays/tor-keys/${name}/
     # client certs

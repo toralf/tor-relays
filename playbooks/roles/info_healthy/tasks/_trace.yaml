@@ -4,7 +4,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ item }}"
-    path: "{{ tmp_dir }}/trace/_known.txt"
+    path: "{{ infodir }}/trace/_known.txt"
   register: _known
 
 - name: Work on new trace
@@ -26,7 +26,7 @@
         block: |
           # {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}    {{ ansible_facts.lsb.description }}
           {{ _full.stdout }}
-        path: "{{ tmp_dir }}/trace/{{ inventory_hostname }}.txt"
+        path: "{{ infodir }}/trace/{{ inventory_hostname }}.txt"
         marker: "# {mark} {{ item }} "
         marker_begin: "TRACE BEGIN"
         marker_end: "TRACE END"
@@ -37,7 +37,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item }}"
-        path: "{{ tmp_dir }}/trace/_known.txt"
+        path: "{{ infodir }}/trace/_known.txt"
         state: absent
 
   always:

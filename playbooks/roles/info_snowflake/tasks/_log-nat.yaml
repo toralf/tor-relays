@@ -14,6 +14,6 @@
   when: _result.stdout | length > 0
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/{{ item.name }}_nat"
+    path: "{{ infodir }}/{{ item.name }}_nat"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (item.state == 'present') | ternary('present', 'absent') }}"

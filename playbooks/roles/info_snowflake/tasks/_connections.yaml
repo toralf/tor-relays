@@ -29,6 +29,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result.stdout | default('n/a') }}"
-    path: "{{ tmp_dir }}/{{ item.name }}_connections"
+    path: "{{ infodir }}/{{ item.name }}_connections"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (item.state == 'present' and _result.stderr | length == 0) | ternary('present', 'absent') }}"

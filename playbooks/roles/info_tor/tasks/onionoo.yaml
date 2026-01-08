@@ -20,6 +20,6 @@
       {{ _bridges.advertised_bandwidth | default('-') }}
       {{ _bridges.transports | default(['n/a']) | join(',') }}
       running: {{ _bridges.running | default('-') }}
-    path: "{{ tmp_dir }}/tor_onionoo"
+    path: "{{ infodir }}/tor_onionoo"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (_content | length > 0) | ternary('present', 'absent') }}"

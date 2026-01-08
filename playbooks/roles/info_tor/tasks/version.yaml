@@ -34,5 +34,5 @@
     _pt: "{{ _proxy_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} tor {{ _tor }} {{ _pt }} {{ _pkg_tor }} {{ _pkg_pt }}"
-    path: "{{ tmp_dir }}/tor_version"
+    path: "{{ infodir }}/tor_version"
     regexp: "^{{ inventory_hostname }} "

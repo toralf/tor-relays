@@ -4,7 +4,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ _unique_id }}"
-    path: "{{ tmp_dir }}/coredump/_known.txt"
+    path: "{{ infodir }}/coredump/_known.txt"
   register: _known
 
 - name: Work on new coredump
@@ -30,7 +30,7 @@
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         content: "{{ _result.stdout }}"
-        dest: "{{ tmp_dir }}/coredump/{{ _unique_id }}.txt"
+        dest: "{{ infodir }}/coredump/{{ _unique_id }}.txt"
 
   rescue:
     - name: Reset known state for coredump
@@ -38,7 +38,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ _unique_id }}"
-        path: "{{ tmp_dir }}/coredump/_known.txt"
+        path: "{{ infodir }}/coredump/_known.txt"
         state: absent
 
   always:

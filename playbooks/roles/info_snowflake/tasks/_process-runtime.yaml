@@ -14,6 +14,6 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} etimes {{ _result.stdout | default('-') }}"
-    path: "{{ tmp_dir }}/{{ item.name }}_process_runtime"
+    path: "{{ infodir }}/{{ item.name }}_process_runtime"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (item.state == 'present' and _result.stdout | length > 0) | ternary('present', 'absent') }}"

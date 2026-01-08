@@ -26,6 +26,6 @@
   throttle: 1
   ansible.builtin.blockinfile:
     block: "{{ _result.stdout }}"
-    path: "{{ tmp_dir }}/issue.txt"
+    path: "{{ infodir }}/issue.txt"
     marker: "# {mark} {{ inventory_hostname }} "
     state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"

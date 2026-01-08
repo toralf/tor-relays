@@ -14,5 +14,5 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} etimes {{ _process.stdout | default('-') }}"
-    path: "{{ tmp_dir }}/tor_process_runtime"
+    path: "{{ infodir }}/tor_process_runtime"
     regexp: "^{{ inventory_hostname }} "

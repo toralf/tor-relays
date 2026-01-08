@@ -12,21 +12,21 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/targets_tor-ddos.yaml"
+        path: "{{ infodir }}/targets_tor-ddos.yaml"
         state: "{{ ddos_metrics | ternary('present', 'absent') }}"
 
     - name: Node targets
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/targets_node.yaml"
+        path: "{{ infodir }}/targets_node.yaml"
         state: "{{ node_metrics | ternary('present', 'absent') }}"
 
     - name: Snowflake targets
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/targets_{{ item.name }}.yaml"
+        path: "{{ infodir }}/targets_{{ item.name }}.yaml"
         state: "{{ item.state }}"
       loop_control:
         label: "{{ item.name }}"
@@ -36,7 +36,7 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/targets_tor-bridge.yaml"
+        path: "{{ infodir }}/targets_tor-bridge.yaml"
         state: "{{ (tor_metrics and tor_bridge_distribution != '') |
           ternary('present', 'absent') }}"
 
@@ -44,6 +44,6 @@
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ tmp_dir }}/targets_tor-server.yaml"
+        path: "{{ infodir }}/targets_tor-server.yaml"
         state: "{{ (tor_metrics and tor_bridge_distribution == '') |
           ternary('present', 'absent') }}"

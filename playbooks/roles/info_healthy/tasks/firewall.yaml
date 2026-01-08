@@ -20,7 +20,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
-        path: "{{ tmp_dir }}/firewall_base_is_down"
+        path: "{{ infodir }}/firewall_base_is_down"
         regexp: "^{{ inventory_hostname }}$"
         state: "{{ (_firewall_base.rc != 0) | ternary('present', 'absent') }}"
 
@@ -47,6 +47,6 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
-        path: "{{ tmp_dir }}/firewall_tor_is_down"
+        path: "{{ infodir }}/firewall_tor_is_down"
         regexp: "^{{ inventory_hostname }}$"
         state: "{{ (_firewall_tor.rc != 0) | ternary('present', 'absent') }}"

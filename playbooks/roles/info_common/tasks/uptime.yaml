@@ -10,5 +10,5 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
-    path: "{{ tmp_dir }}/uptime"
+    path: "{{ infodir }}/uptime"
     regexp: "^{{ inventory_hostname }} "

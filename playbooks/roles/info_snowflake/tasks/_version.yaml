@@ -16,6 +16,6 @@
     _version: "{{ _result.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} sf {{ _version }}"
-    path: "{{ tmp_dir }}/{{ item.name }}_version"
+    path: "{{ infodir }}/{{ item.name }}_version"
     regexp: "^{{ inventory_hostname }} "
     state: "{{ (item.state == 'present' and _result.stdout | length > 0) | ternary('present', 'absent') }}"

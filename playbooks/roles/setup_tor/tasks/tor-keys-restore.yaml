@@ -3,7 +3,7 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
-    path: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}"
+    path: "{{ infodir }}/tor-keys/{{ inventory_hostname }}"
   register: _keys_backup
 
 - name: Restore
@@ -20,7 +20,7 @@
     - name: Restore Tor keys
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
-        src: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
+        src: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
         dest: "/var/lib/tor/keys/{{ item }}"
         mode: "0600"
         owner: tor

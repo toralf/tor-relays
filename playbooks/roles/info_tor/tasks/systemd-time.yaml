@@ -12,5 +12,5 @@
     _changetime: "{{ _service.status.StateChangeTimestamp | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} Start {{ _starttime }} Change {{ _changetime }}"
-    path: "{{ tmp_dir }}/tor_systemd_time"
+    path: "{{ infodir }}/tor_systemd_time"
     regexp: "^{{ inventory_hostname }} "

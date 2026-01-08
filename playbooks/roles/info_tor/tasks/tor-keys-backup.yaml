@@ -3,7 +3,7 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
-    path: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}"
+    path: "{{ infodir }}/tor-keys/{{ inventory_hostname }}"
   register: _keys_backup
 
 - name: Backup Tor keys
@@ -11,7 +11,7 @@
   when: not _keys_backup.stat.exists
   ansible.builtin.fetch:
     src: "/var/lib/tor/keys/{{ item }}"
-    dest: "{{ tmp_dir }}/tor-keys/{{ inventory_hostname }}/"
+    dest: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/"
   loop:
     - ed25519_master_id_public_key
     - ed25519_master_id_secret_key

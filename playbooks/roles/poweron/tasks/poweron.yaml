@@ -28,7 +28,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
-        path: "{{ tmp_dir }}/is_down"
+        path: "{{ infodir }}/is_down"
         state: "{{ _is_down | ternary('present', 'absent') }}"
 
     - name: Poweron
@@ -58,5 +58,5 @@
           throttle: 1
           ansible.builtin.lineinfile:
             line: "{{ inventory_hostname }}"
-            path: "{{ tmp_dir }}/is_down"
+            path: "{{ infodir }}/is_down"
             state: absent

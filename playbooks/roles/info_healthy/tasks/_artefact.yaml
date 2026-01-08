@@ -4,7 +4,7 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ item.checksum }}"
-    path: "{{ tmp_dir }}/artefact/_known.txt"
+    path: "{{ infodir }}/artefact/_known.txt"
   register: _known
 
 - name: Work on new artefact
@@ -22,7 +22,7 @@
       throttle: 1
       ansible.builtin.fetch:
         src: "/tmp/{{ _fname }}"
-        dest: "{{ tmp_dir }}/artefact/{{ _fname }}"
+        dest: "{{ infodir }}/artefact/{{ _fname }}"
 
     - name: Delete artefact
       ansible.builtin.file:
@@ -35,7 +35,7 @@
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ item.checksum }}"
-        path: "{{ tmp_dir }}/artefact/_known.txt"
+        path: "{{ infodir }}/artefact/_known.txt"
         state: absent
 
   always:

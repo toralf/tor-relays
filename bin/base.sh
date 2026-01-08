@@ -40,7 +40,7 @@ all:
     # where to store certificate materials
     ca_dir: "{{ role_path }}/../../../secrets/ca"
     # local directory for site-info files
-    tmp_dir: "{{ lookup('env', 'HOME') }}/tmp/tor-relays"
+    infodir: "{{ lookup('env', 'HOME') }}/tmp/tor-relays"
 
 EOF
   chmod 600 ${local_inventory}
