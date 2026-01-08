@@ -11,6 +11,7 @@
     line: >-
       {{ inventory_hostname }}
       {{ ansible_facts.kernel }}
+      {{ ansible_facts.processor[1] }}
       {{ ansible_facts.distribution }}
       {{ ansible_facts.distribution_release }}
     path: "{{ tmp_dir }}/uname"
