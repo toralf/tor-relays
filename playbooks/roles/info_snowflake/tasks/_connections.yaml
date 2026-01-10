@@ -1,9 +1,4 @@
 ---
-- name: Gather facts - uptime
-  ansible.builtin.setup:
-    gather_subset:
-      - hardware
-
 - name: Sum connections
   changed_when: false
   failed_when: false

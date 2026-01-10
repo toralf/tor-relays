@@ -14,6 +14,7 @@
   ansible.builtin.setup:
     gather_subset:
       - hardware
+      - kernel
 
 - name: Configure
   changed_when: _kernel_configured.rc == 123

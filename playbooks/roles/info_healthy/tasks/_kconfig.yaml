@@ -2,7 +2,10 @@
 - name: Gather facts - kconfig
   ansible.builtin.setup:
     gather_subset:
+      - architecture
+      - distribution
       - hardware
+      - processor
 
 - name: Fetch kconfig
   throttle: "{{ concurrent_local_jobs }}"

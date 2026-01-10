@@ -1,6 +1,7 @@
 ---
 - name: Reboot system
   listen: Reboot system
+  retries: 1
   ansible.builtin.reboot:
     reboot_timeout: 180
     post_reboot_delay: 30
