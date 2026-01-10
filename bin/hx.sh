@@ -155,6 +155,7 @@ while :; do
       pit_stop
     fi
 
+    # rebuild broken systems
     ./site-setup.yaml --limit "$(xargs -r </tmp/is_down.after | tr ' ' ',')" --tags poweron &>${log}.rebuild.log || true
     sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after_2
     down=$(comm -12 /tmp/is_down.after{,_2} | grep "^h" | xargs -r)
@@ -168,7 +169,7 @@ while :; do
     fi
   fi
 
-  # catch up image build jobs
+  # catch up background jobs
   wait_for_jobs
 
   pit_stop
