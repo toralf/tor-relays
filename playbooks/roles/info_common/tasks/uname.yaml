@@ -10,11 +10,13 @@
 - name: File uname
   delegate_to: localhost
   throttle: 1
+  vars:
+    _proc: "{{ (ansible_facts.processor[1] != '1') | ternary(ansible_facts.processor[1], ansible_facts.machine) }}"
   ansible.builtin.lineinfile:
     line: >-
       {{ inventory_hostname }}
       {{ ansible_facts.kernel }}
-      {{ ansible_facts.processor[1] }}
+      {{ _proc }}
       {{ ansible_facts.distribution }}
       {{ ansible_facts.distribution_release }}
     path: "{{ infodir }}/uname"
