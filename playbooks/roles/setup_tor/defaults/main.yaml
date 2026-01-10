@@ -28,3 +28,6 @@ tor_secret_family_key_file: ""
 torrc_config: []
 
 tor_keys_restore: false
+
+# https://www.1aeo.com/blog/tor-memory-optizations-what-actually-works.html
+tor_use_mimalloc: false

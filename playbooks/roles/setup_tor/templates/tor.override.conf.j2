@@ -4,4 +4,11 @@
 StartLimitInterval=0
 
 [Service]
-NoNewPrivileges=no
+NoNewPrivileges={{ (tor_bridge_distribution == '') | ternary('yes', 'no') }}
+{% if tor_use_mimalloc | bool %}
+{% if ansible_facts.distribution_release == 'trixie' %}
+Environment="LD_PRELOAD=/usr/lib/{{ ansible_facts.architecture }}-linux-gnu/libmimalloc.so.3"
+{% else %}
+Environment="LD_PRELOAD=/usr/lib/{{ ansible_facts.architecture }}-linux-gnu/libmimalloc.so.2"
+{% endif %}
+{% endif %}

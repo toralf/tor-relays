@@ -5,7 +5,7 @@
     _key: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
   block:
     - name: Torproject repository for bookworm
-      when: ansible_facts.distribution_major_version == '12'
+      when: ansible_facts.distribution_release == 'bookworm'
       block:
         - name: Install/Update GnuPG
           ansible.builtin.apt:
@@ -37,7 +37,7 @@
             - deb-src
 
     - name: Enable Torproject repository for trixie
-      when: ansible_facts.distribution_major_version == '13'
+      when: ansible_facts.distribution_release == 'trixie'
       ansible.builtin.deb822_repository:
         name: tor
         types:
@@ -49,7 +49,7 @@
         signed_by: "{{ _key }}"
       register: _new_tor_repo
 
-    - name: Update repositories cache
+    - name: Update apt cache
       when: _new_tor_repo.changed
       ansible.builtin.apt:
         cache_valid_time: 1
@@ -79,15 +79,3 @@
     name:
       - obfs4proxy
   notify: Restart Tor
-
-- name: Ensure that Tor systemd override dir exists
-  ansible.builtin.file:
-    path: /etc/systemd/system/tor@default.service.d/
-    state: directory
-    mode: "0755"
-
-- name: Add Tor systemd override
-  ansible.builtin.template:
-    src: tor.override.conf.j2
-    dest: /etc/systemd/system/tor@default.service.d/override.conf
-  notify: Reload systemd
