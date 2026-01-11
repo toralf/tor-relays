@@ -23,16 +23,14 @@ while :; do
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     info "rsync"
-    (
-      cd ~/tmp/tor-relays
-      for web in foo bar baz; do
-        if : rsync --compress --recursive artefact coredump dmesg issue.txt kconfig trace ${web}://var/www/html &>${log}.rsync.${web}.log; then
-          info "rsync ${web} ok"
-        else
-          info "rsync ${web} NOT ok"
-        fi
-      done
-    )
+    # shellcheck disable=SC2043
+    for web in foo; do
+      if ! rsync --compress --recursive --verbose \
+        ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ${web}://var/www/html \
+        &>${log}.rsync.${web}.log; then
+        info "rsync ${web} NOT ok"
+      fi
+    done
   fi
 
   info "sleep"

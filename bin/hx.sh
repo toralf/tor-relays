@@ -135,9 +135,8 @@ while :; do
   sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.before
   ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
   sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after
+  pit_stop
   if [[ -s /tmp/is_down.before || -s /tmp/is_down.after ]]; then
-    pit_stop
-
     # sshd may died
     poweroff=$(comm -12 /tmp/is_down.{before,after} | grep "^h" | xargs -r)
     if [[ -n ${poweroff} ]]; then
