@@ -11,11 +11,11 @@
     state: restarted
     enabled: true
 
-- name: Reload ssh
-  listen: Reload ssh
+- name: Restart ssh
+  listen: Restart ssh
   ansible.builtin.systemd_service:
     name: ssh
-    state: reloaded
+    state: restarted
     enabled: true
 
 - name: Restart nginx

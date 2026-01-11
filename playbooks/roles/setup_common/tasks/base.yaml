@@ -14,14 +14,14 @@
   ansible.builtin.copy:
     src: 00sshd.conf
     dest: /etc/ssh/sshd_config.d/
-  notify: Reload ssh
+  notify: Restart ssh
 
 - name: Remove cloud init config for sshd at IONOS
   when: ansible_facts.system_vendor == 'QEMU'
   ansible.builtin.file:
     path: /etc/ssh/sshd_config.d/50-cloud-init.conf
     state: absent
-  notify: Reload ssh
+  notify: Restart ssh
 
 - name: Have only 1 authorized key
   changed_when: false
