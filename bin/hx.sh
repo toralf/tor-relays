@@ -126,14 +126,14 @@ while :; do
       info "  kernel update: $i"
       ./bin/hx-test.sh -t image -b $i &>${log}.image.$i.log &
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "h*-$i-*:!hix" --tags kernel-build,tools -e kernel_git_build_wait=false &>${log}.$i.log || true
+      ./site-setup.yaml --limit "hx:!hi" --tags kernel-build,tools -e kernel_git_build_wait=false &>${log}.$i.log || true
       pit_stop
     fi
   done
 
   info "check for down systems"
   sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.before
-  ./site-setup.yaml --limit 'hx:!hix' --tags poweron &>${log}.poweron.log || true
+  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
   sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after
   if [[ -s /tmp/is_down.before || -s /tmp/is_down.after ]]; then
     pit_stop
