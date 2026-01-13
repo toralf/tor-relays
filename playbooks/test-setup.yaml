@@ -31,7 +31,7 @@
   roles:
     - role: info_tor
 
-- name: Test finish
+- name: Test kernel
   hosts: all
   order: shuffle
   roles:

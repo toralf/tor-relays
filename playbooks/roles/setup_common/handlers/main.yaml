@@ -39,8 +39,8 @@
     state: restarted
     enabled: true
 
-- name: Reboot system
-  listen: Reboot system
+- name: Reboot
+  listen: Reboot
   retries: 1
   ansible.builtin.reboot:
     reboot_timeout: 180
@@ -48,7 +48,7 @@
     test_command: "iptables -nvL"
 
 - name: Gather facts (after common reboot)
-  listen: Reboot system
+  listen: Reboot
   ansible.builtin.setup:
     gather_subset:
       - hardware

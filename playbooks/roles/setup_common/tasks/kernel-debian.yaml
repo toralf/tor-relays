@@ -12,7 +12,7 @@
         name:
           - "linux-image{{ _cloud }}-{{ _arch }}"
       register: _kernel_dist
-      notify: Reboot system
+      notify: Reboot
 
     - name: Changed Debian kernel
       when: _kernel_dist.changed

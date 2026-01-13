@@ -92,21 +92,22 @@
               /root/build-kernel.sh
           register: _kernel_make
 
-        - name: Job
-          block:
-            - name: Poll job
-              retries: "{{ kernel_git_build_wait_retries }}"
-              delay: "{{ kernel_git_build_wait_delay }}"
-              until: _job_result.finished
-              ansible.builtin.async_status:
-                jid: "{{ _kernel_make.ansible_job_id }}"
-              register: _job_result
-              notify: Reboot system
+        - name: Poll job
+          retries: "{{ kernel_git_build_wait_retries }}"
+          delay: "{{ kernel_git_build_wait_delay }}"
+          until: _job_result.finished
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_make.ansible_job_id }}"
+          register: _job_result
 
-            - name: Cleanup job
-              ansible.builtin.async_status:
-                jid: "{{ _kernel_make.ansible_job_id }}"
-                mode: cleanup
+        - name: Cleanup job
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_make.ansible_job_id }}"
+            mode: cleanup
 
-        - name: Flush handlers (kernel-build)
-          ansible.builtin.meta: flush_handlers
+        - name: Reboot
+          retries: 1
+          ansible.builtin.reboot:
+            reboot_timeout: 180
+            post_reboot_delay: 30
+            test_command: "iptables -nvL"

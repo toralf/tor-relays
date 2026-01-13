@@ -179,7 +179,7 @@
       changed_when: true
       ansible.builtin.debug:
         msg: Reboot was triggered manually.
-      notify: Reboot system
+      notify: Reboot
       tags:
         - never
         - reboot
