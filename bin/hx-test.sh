@@ -15,12 +15,14 @@ cd $(dirname $0)/..
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
 arch='{arm,x86}'
+os='{db,dt,un}'
 uid=$$
 
-while getopts a:b:t:u: opt; do
+while getopts a:b:o:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
   b) branch=${OPTARG} ;;
+  o) os=${OPTARG} ;;
   t) type=${OPTARG} ;;
   u) uid=${OPTARG} ;;
   *)
@@ -33,13 +35,13 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-{db,dt,un}-${arch}-dist-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" -e kernel_git_build_wait=false
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
-  names=$(eval echo h{b,m,p,r,s}-{db,dt,un}-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
@@ -52,7 +54,7 @@ elif [[ ${type} =~ "image" ]]; then
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"
   else
     # clone kernel
-    names=$(eval echo hi-{db,dt,un}-${arch}-${branch}-${uid})
+    names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-make
   fi
