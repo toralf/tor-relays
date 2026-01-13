@@ -9,22 +9,33 @@ function info() {
 }
 
 function wait_for_jobs() {
-  while fg 2>/dev/null; do
-    :
-  done
+  # shellcheck disable=SC2155
+  local jobs=$(jobs -p | xargs -r)
+  if [[ -n ${jobs} ]]; then
+    info "jobs: ${jobs}"
+    while fg 2>/dev/null; do
+      :
+    done
+  fi
 }
 
 function pit_stop() {
   local sec=${1:-240}
 
-  echo -en " $(date) sleeping ${sec}s\r"
+  echo -en " $(date) sleeping ${sec}s    \r"
   while ((sec--)); do
     if [[ -f /tmp/STOP ]]; then
+      trap - INT QUIT TERM EXIT
       info "caught /tmp/STOP"
+      rm /tmp/STOP
       wait_for_jobs
       info "exit\n"
-      trap - INT QUIT TERM EXIT
       exit 0
+    fi
+    if [[ -f /tmp/CONT ]]; then
+      rm /tmp/CONT
+      echo
+      break
     fi
     sleep 1
   done
@@ -76,13 +87,13 @@ function git_changed() {
 
   # shellcheck disable=SC2155
   local old=$(cat /tmp/git.${name} 2>/dev/null)
-  local new
-  if new=$(git_ls_remote ${name}); then
-    if [[ -n ${new} ]]; then
-      echo ${new} >/tmp/git.${name}
-      if [[ ${old} != "${new}" ]]; then
-        return 0
-      fi
+  # shellcheck disable=SC2155
+  local new=$(git_ls_remote ${name} 2>/dev/null)
+  if [[ -n ${new} ]]; then
+    echo ${new} >/tmp/git.${name}
+    if [[ -n ${old} && ${old} != "${new}" ]]; then
+      info "git ${name}: $(cut -c -12 <<<${old}) -> $(cut -c -12 <<<${new})"
+      return 0
     fi
   fi
   return 1
@@ -98,82 +109,80 @@ cd $(dirname $0)/..
 
 log=/tmp/$(basename $0)
 
-trap 'touch /tmp/STOP' INT QUIT TERM EXIT
+trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 
 while :; do
-  echo
-
   start=${EPOCHSECONDS}
 
   # app update
+  changed=0
   for i in lyrebird snowflake tor; do
     if git_changed $i; then
-      info "  app update: $i"
+      changed=1
+      info "app: $i"
       limit=""
       case $i in
       lyrebird) limit="hbx,hpx" ;;
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      ./site-setup.yaml --limit "${limit}" --tags $i,tools &>${log}.$i.log || true
-      pit_stop
+      ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log || true
     fi
   done
+  [[ ${changed} -eq 1 ]] && pit_stop
 
   # kernel update
+  changed=0
   for i in ltsrc mainline stablerc; do
     if git_changed $i; then
-      info "  kernel update: $i"
-      ./bin/hx-test.sh -t image -b $i &>${log}.image.$i.log &
+      info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "hx:!hi" --tags kernel-build,tools -e kernel_git_build_wait=false &>${log}.$i.log || true
-      pit_stop
+      ./site-setup.yaml --limit "hx:!hi" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log || true
     fi
   done
+  [[ ${changed} -eq 1 ]] && pit_stop
 
-  info "check for down systems"
-  sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.before
-  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
-  sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after
-  pit_stop
-  if [[ -s /tmp/is_down.before || -s /tmp/is_down.after ]]; then
+  if n=$(grep -c ^h ~/tmp/tor-relays/is_down); then
+    info "down systems: $n"
+    sort ~/tmp/tor-relays/is_down >/tmp/is_down.before
+    ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
+    sort ~/tmp/tor-relays/is_down >/tmp/is_down.after
+    pit_stop
     # sshd may died
     poweroff=$(comm -12 /tmp/is_down.{before,after} | grep "^h" | xargs -r)
     if [[ -n ${poweroff} ]]; then
-      info "  pwoer off/on: $(wc -w <<<${poweroff})"
+      info "  power off/on: $(wc -w <<<${poweroff})"
       xargs -r -n 1 -P 32 echo hcloud --quiet --poll-interval 10s server poweroff <<<${poweroff} &>${log}.poweroff.log || true
       xargs -r -n 1 -P 32 echo hcloud --quiet --poll-interval 10s server poweron <<<${poweroff} &>${log}.poweron.log || true
       pit_stop
     fi
 
     # trigger missed updates
-    catch_up=$(grep -h "^h" /tmp/is_down.{before,after} | sort -u | xargs -r)
-    if [[ -n ${catch_up} ]]; then
-      info "  catch up: $(wc -w <<<${catch_up})"
-      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${catch_up})" --tags kernel-build,lyrebird,snowflake,tor -e kernel_git_build_wait=false &>${log}.catch_up.log || true
+    update=$(grep -h "^h" /tmp/is_down.{before,after} | sort -u | xargs -r)
+    if [[ -n ${update} ]]; then
+      info "  update: $(wc -w <<<${update})"
+      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${update})" --tags kernel-build,lyrebird,snowflake,tor -e kernel_git_build_wait=false &>${log}.update.log || true
       pit_stop
     fi
 
-    # rebuild broken systems
+    # rebuild systems still being down
     ./site-setup.yaml --limit "$(xargs -r </tmp/is_down.after | tr ' ' ',')" --tags poweron &>${log}.rebuild.log || true
     sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after_2
-    down=$(comm -12 /tmp/is_down.after{,_2} | grep "^h" | xargs -r)
-    if [[ -n ${down} ]]; then
-      info "  down: $(wc -w <<<${down})"
+    rebuild=$(comm -12 /tmp/is_down.after{,_2} | grep "^h" | xargs -r)
+    if [[ -n ${rebuild} ]]; then
+      info "  rebuild: $(wc -w <<<${rebuild})"
       wait_for_jobs
-      rebuild=$(xargs -r -n 1 <<<${down} | shuf -n 96 | xargs -r)
       ./bin/rebuild-server.sh ${rebuild}
       ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log || true
       pit_stop
     fi
   fi
 
-  # catch up background jobs
   wait_for_jobs
 
   pit_stop
-  sleep=$((EPOCHSECONDS - start))
-  if [[ ${sleep} -lt 1800 ]]; then
-    pit_stop ${sleep}
+  diff=$((EPOCHSECONDS - start))
+  if [[ ${diff} -lt 1800 ]]; then
+    pit_stop $((1800 - diff))
   fi
 done

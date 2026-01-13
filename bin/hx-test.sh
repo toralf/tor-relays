@@ -33,13 +33,13 @@ done
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
 if [[ ${type} == "app" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-dist-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-{db,dt,un}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})" -e kernel_git_build_wait=false
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
-  names=$(eval echo h{b,m,p,r,s}-{dt,un}-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-{db,dt,un}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "$(tr ' ' ',' <<<${names})"
 
@@ -47,25 +47,26 @@ elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   if [[ ${type} == "image_build" ]]; then
     # clone + build kernel
-    names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+    names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})"
   else
     # clone kernel
-    names=$(eval echo hi-{dt,un}-${arch}-${branch}-${uid})
+    names=$(eval echo hi-{db,dt,un}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags kernel-make
   fi
 
   # remove superseeded snapshots (based on same description)
   hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
+    grep -v ' -$' |
     sort -r |
     awk 'x[$2]++ { print $1 }' |
     xargs -r hcloud --poll-interval 5s image delete >/dev/null
 
 elif [[ ${type} == "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
-  names=$(eval echo hi-dt-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags shutdown,snapshot
 
@@ -74,6 +75,8 @@ else
   exit 1
 fi
 
-time ./bin/delete-server.sh ${names}
+if [[ ${type} != "image_build" ]]; then
+  time ./bin/delete-server.sh ${names}
+fi
 
 trap - INT QUIT TERM EXIT
