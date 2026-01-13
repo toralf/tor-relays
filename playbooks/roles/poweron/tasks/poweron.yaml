@@ -32,7 +32,7 @@
         state: "{{ _is_down | ternary('present', 'absent') }}"
 
     - name: Poweron
-      when: _is_down
+      when: _is_down and do_power_on | bool
       block:
         - name: System
           delegate_to: localhost
