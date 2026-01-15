@@ -1,6 +1,6 @@
 ---
 - name: Query b.t.o.
-  throttle: 16
+  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.uri:
     url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
     return_content: true
