@@ -49,7 +49,7 @@
       when: not tor_build_from_source and ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: tor-debian.yaml
       tags:
-        - tor-debian
+        - tor
 
     - name: Build from source
       when: tor_build_from_source
@@ -63,7 +63,7 @@
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
-            - tor-src
+            - tor
 
         - name: Lyrebird
           when: tor_bridge_distribution != ''
