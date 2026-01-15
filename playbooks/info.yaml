@@ -3,7 +3,6 @@
   hosts: all
   order: shuffle
   roles:
-    - role: poweron
     - role: info_common
     - role: info_healthy
 
