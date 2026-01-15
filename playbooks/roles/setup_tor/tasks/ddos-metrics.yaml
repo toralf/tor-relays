@@ -1,5 +1,5 @@
 ---
-- name: Download DDoS metrics script
+- name: Get DDoS metrics script
   throttle: 16
   retries: 3
   ansible.builtin.get_url:

@@ -5,7 +5,7 @@
       - ipset
       - jq
 
-- name: Download DDoS scripts
+- name: Get DDoS scripts
   throttle: 16
   retries: 3
   ansible.builtin.get_url:
@@ -112,7 +112,7 @@
 
 - name: Egress
   block:
-    - name: Download egress firewall
+    - name: Get egress firewall
       when: tor_egress_slew | length > 0
       throttle: 16
       retries: 3

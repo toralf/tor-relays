@@ -9,9 +9,9 @@
 
 - name: GeoIP directory
   ansible.builtin.file:
-    state: "{{ (use_tor_geoip_data | bool) | ternary('directory', 'absent') }}"
     path: /usr/share/tor/
     mode: "0755"
+    state: "{{ (use_tor_geoip_data | bool) | ternary('directory', 'absent') }}"
   notify: Restart Snowflake
 
 - name: Get GeoIP data
