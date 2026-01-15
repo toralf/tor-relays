@@ -5,8 +5,17 @@
   changed_when: _result.rc == 0
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
-  ansible.builtin.command:
-    cmd: >-
+  ansible.builtin.shell:
+    cmd: |-
+      set -e
+
       hcloud --quiet --poll-interval 10s server create-image --type snapshot --description='{{ snapshot_description }}'
       {{ inventory_hostname }}
+
+      hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
+        grep -v ' {{ snapshot_description }}$' |
+        sort -r |
+        awk 'x[$2]++ { print $1 }' |
+        xargs -r hcloud --poll-interval 5s image delete >/dev/null
+    executable: /bin/bash
   register: _result
