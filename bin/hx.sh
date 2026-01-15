@@ -20,7 +20,7 @@ function wait_for_jobs() {
 }
 
 function pit_stop() {
-  local sec=${1:-240}
+  local sec=${1:-60}
 
   echo -en " $(date) sleeping ${sec}s    \r"
   while ((sec--)); do
@@ -112,13 +112,9 @@ log=/tmp/$(basename $0)
 trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 
 while :; do
-  start=${EPOCHSECONDS}
-
   # app update
-  changed=0
   for i in lyrebird snowflake tor; do
     if git_changed $i; then
-      changed=1
       info "app: $i"
       limit=""
       case $i in
@@ -127,27 +123,28 @@ while :; do
       tor) limit="htx" ;;
       esac
       ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log || true
+      pit_stop
     fi
   done
-  [[ ${changed} -eq 1 ]] && pit_stop
 
   # kernel update
-  changed=0
   for i in ltsrc mainline stablerc; do
     if git_changed $i; then
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
       ./site-setup.yaml --limit "hx:!hi" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log || true
+      pit_stop
     fi
   done
-  [[ ${changed} -eq 1 ]] && pit_stop
 
+  # unreachable systems
+  info "reachability"
+  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
+  pit_stop
   if n=$(grep -c ^h ~/tmp/tor-relays/is_down); then
-    info "down systems: $n"
+    info "down: $n"
     sort ~/tmp/tor-relays/is_down >/tmp/is_down.before
-    ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
     sort ~/tmp/tor-relays/is_down >/tmp/is_down.after
-    pit_stop
     # sshd may died
     poweroff=$(comm -12 /tmp/is_down.{before,after} | grep "^h" | xargs -r)
     if [[ -n ${poweroff} ]]; then
@@ -179,10 +176,5 @@ while :; do
   fi
 
   wait_for_jobs
-
-  pit_stop
-  diff=$((EPOCHSECONDS - start))
-  if [[ ${diff} -lt 1800 ]]; then
-    pit_stop $((1800 - diff))
-  fi
+  pit_stop 300
 done

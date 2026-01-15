@@ -18,8 +18,8 @@ cd $(dirname $0)/..
 log=/tmp/$(basename $0)
 
 while :; do
-  info "info"
-  ./site-info.yaml --limit 'hx:!hi' --tags artefact,issue,coredump,poweron,trace -e do_power_on=false &>${log}.info.log || true
+  info "healthy"
+  ./site-info.yaml --limit 'hx:!hi' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log || true
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     info "rsync"
