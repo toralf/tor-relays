@@ -9,8 +9,8 @@
     cmd: |-
       set -e
 
-      hcloud --quiet --poll-interval 10s server create-image --type snapshot --description='{{ snapshot_description }}'
-      {{ inventory_hostname }}
+      hcloud --quiet --poll-interval 10s server create-image \
+        --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
 
       hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
         grep -v ' {{ snapshot_description }}$' |
