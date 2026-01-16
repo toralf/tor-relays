@@ -63,7 +63,7 @@ elif [[ ${type} == "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-image.yaml --limit "$(tr ' ' ',' <<<${names})" --skip-tags shutdown,snapshot
+  time ./site-test-kernel.yaml --limit "$(tr ' ' ',' <<<${names})"
 
 else
   echo "unknown type ${type}" >&2
