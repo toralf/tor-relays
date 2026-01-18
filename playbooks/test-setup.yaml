@@ -12,17 +12,17 @@
   roles:
     - role: setup_snowflake
 
-- name: Test Snowflake info
-  hosts: snowflake
-  order: shuffle
-  roles:
-    - role: info_snowflake
-
 - name: Test Tor
   hosts: tor
   order: shuffle
   roles:
     - role: setup_tor
+
+- name: Test Snowflake info
+  hosts: snowflake
+  order: shuffle
+  roles:
+    - role: info_snowflake
 
 - name: Test Tor info
   hosts: tor
