@@ -6,7 +6,7 @@
       repo: "{{ _git_repo_url }}"
       dest: "{{ _repo_dir }}"
   block:
-    - name: Git stat "{{ _repo_dir }}"
+    - name: Git stat before "{{ _repo_dir }}"
       ansible.builtin.git:
         clone: false
         update: false
@@ -27,7 +27,7 @@
             force: true
           register: __updated
 
-    - name: Get commit id "{{ _repo_dir }}"
+    - name: Git stat after "{{ _repo_dir }}"
       ansible.builtin.git:
         clone: false
         update: false
