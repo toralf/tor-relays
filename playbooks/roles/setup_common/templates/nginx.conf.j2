@@ -9,6 +9,9 @@ server {
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
 
+  access_log off;
+  error_log /dev/null crit;
+
   location / {
     try_files $uri $uri/ =404;
   }
@@ -30,6 +33,9 @@ server {
   server_name _443;
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
+
+  access_log off;
+  error_log /dev/null crit;
 
   location / {
     try_files $uri $uri/ =404;
@@ -73,6 +79,9 @@ server {
   server_name _8080;
   root /var/www/html;
 
+  access_log off;
+  error_log /dev/null crit;
+
   stub_status on;
 }
 {% endif %}
@@ -86,6 +95,7 @@ server {
   index torutils.prom;
 
   access_log off;
+  error_log /dev/null crit;
 
   proxy_no_cache 1;
   proxy_cache_bypass 1;
@@ -113,39 +123,37 @@ server {
   server_name _{{ metrics_port }};
   root /var/www/html;
   index index.html index.htm index.nginx-debian.html;
+
+  access_log off;
+  error_log /dev/null crit;
 {% if ddos_metrics %}
 
   location = /metrics-ddos {
     proxy_pass http://127.0.0.1:3305/;
-    access_log off;
   }
 {% endif %}
 {% if nginx_metrics %}
 
   location = /metrics-nginx {
     proxy_pass http://127.0.0.1:8080/;
-    access_log off;
   }
 {% endif %}
 {% if node_metrics %}
 
   location = /metrics-node {
     proxy_pass http://127.0.0.1:9100/metrics;
-    access_log off;
   }
 {% endif %}
 {% if tor_metrics %}
 
   location = /metrics-tor {
     proxy_pass http://127.0.0.1:9052/metrics;
-    access_log off;
   }
 {% endif %}
 {% for _proxy in snowflake_proxies | selectattr('state', 'eq', 'present') | selectattr('proxy_metrics_port', 'defined')  | selectattr('proxy_metrics_port', 'gt', 0) %}
 
   location = /metrics-{{ _proxy.name }} {
     proxy_pass http://127.0.0.1:{{ _proxy.proxy_metrics_port }}/internal/metrics;
-    access_log off;
   }
 {% endfor %}
 }
