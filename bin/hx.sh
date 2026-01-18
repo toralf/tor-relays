@@ -100,12 +100,12 @@ function git_changed() {
 }
 
 #######################################################################
-set -euf
+set -uf # no -e
 set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
-cd $(dirname $0)/..
+cd $(dirname $0)/.. || exit
 
 log=/tmp/$(basename $0)
 
@@ -122,7 +122,7 @@ while :; do
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log || true
+      ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log
       pit_stop
     fi
   done
@@ -132,25 +132,24 @@ while :; do
     if git_changed $i; then
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "hx:!hi" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log || true
+      ./site-setup.yaml --limit "hx:!hi" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log
       pit_stop
     fi
   done
 
   # unreachable systems
   info "reachability"
-  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log || true
+  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.poweron.log
   pit_stop
   if n=$(grep -c ^h ~/tmp/tor-relays/is_down); then
     info "down: $n"
     sort ~/tmp/tor-relays/is_down >/tmp/is_down.before
     sort ~/tmp/tor-relays/is_down >/tmp/is_down.after
-    # sshd may died
-    poweroff=$(comm -12 /tmp/is_down.{before,after} | grep "^h" | xargs -r)
-    if [[ -n ${poweroff} ]]; then
-      info "  power off/on: $(wc -w <<<${poweroff})"
-      xargs -r -n 1 -P 32 echo hcloud --quiet --poll-interval 10s server poweroff <<<${poweroff} &>${log}.poweroff.log || true
-      xargs -r -n 1 -P 32 echo hcloud --quiet --poll-interval 10s server poweron <<<${poweroff} &>${log}.poweron.log || true
+    poweroffon=$(comm -12 /tmp/is_down.{before,after} | grep "^h" | xargs -r)
+    if [[ -n ${poweroffon} ]]; then
+      info "  power off/on: $(wc -w <<<${poweroffon})"
+      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweroff <<<${poweroffon} &>${log}.poweroff.log
+      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweron <<<${poweroffon} &>${log}.poweron.log
       pit_stop
     fi
 
@@ -158,19 +157,19 @@ while :; do
     update=$(grep -h "^h" /tmp/is_down.{before,after} | sort -u | xargs -r)
     if [[ -n ${update} ]]; then
       info "  update: $(wc -w <<<${update})"
-      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${update})" --tags kernel-build,lyrebird,snowflake,tor -e kernel_git_build_wait=false &>${log}.update.log || true
+      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${update})" --tags kernel-build,lyrebird,snowflake,tor -e kernel_git_build_wait=false &>${log}.update.log
       pit_stop
     fi
 
-    # rebuild systems still being down
-    ./site-setup.yaml --limit "$(xargs -r </tmp/is_down.after | tr ' ' ',')" --tags poweron &>${log}.rebuild.log || true
+    # rebuild systems
+    ./site-setup.yaml --limit "$(xargs -r </tmp/is_down.after | tr ' ' ',')" --tags poweron &>${log}.rebuild.log
     sort -u ~/tmp/tor-relays/is_down >/tmp/is_down.after_2
     rebuild=$(comm -12 /tmp/is_down.after{,_2} | grep "^h" | xargs -r)
     if [[ -n ${rebuild} ]]; then
       info "  rebuild: $(wc -w <<<${rebuild})"
       wait_for_jobs
       ./bin/rebuild-server.sh ${rebuild}
-      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log || true
+      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log
       pit_stop
     fi
   fi
