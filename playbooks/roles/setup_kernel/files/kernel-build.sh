@@ -14,12 +14,15 @@ ln -sf ~/make.${suffix}.log ~/make.log
 exec 1>~/make.log
 exec 2>&1
 
-# shellcheck disable=SC2129
+date
+echo
+
 # make clean
 make -j $(nproc)
 make modules_install
 make install
 
+echo -e "\ngrub ..."
 kver=$(make kernelversion)
 lver=$(KERNELVERSION=${kver} ./scripts/setlocalversion)
 grub_entry="Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux ${lver}"
@@ -36,13 +39,26 @@ grep -E '^\s+initrd\s+/boot/initrd.img-6\..*-g[0-9a-f]{12}$' /boot/grub/grub.cfg
 rm -f /boot/*-6.*-g[0-9a-f]*.old /boot/vmlinuz.old
 update-grub
 
-touch /var/run/reboot-required
 ln -snf ${PWD} /usr/src/linux
 
-if [[ ${2-} == "reboot" ]]; then
-  if pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; then
-    service ssh stop
-    sleep 180
+# plan B if the explicit reboot fails
+touch /var/run/reboot-required
+
+if [[ ${1-} == "reboot" ]]; then
+  echo
+  i=3
+  while ((i--)) && ! pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
+    echo "wait for sshd $i ..."
+    sleep 60
+  done
+
+  if ! service ssh stop; then
+    echo "sshd not stopped"
   fi
-  reboot
+
+  i=3
+  while ((i--)) && ! reboot; do
+    echo "reboot $i ..."
+    sleep 10
+  done
 fi

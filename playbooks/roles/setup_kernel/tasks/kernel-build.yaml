@@ -13,7 +13,6 @@
 - name: Gather facts (before kernel build)
   ansible.builtin.setup:
     gather_subset:
-      - hardware
       - kernel
 
 - name: Configure
@@ -42,15 +41,13 @@
       if [[ $before != $after ]]; then
         exit 123 # to mark this Ansible task as "changed"
       fi
-
-      exit 0
     chdir: /root/linux
     executable: /bin/bash
   register: _kernel_configured
 
 - name: Copy build script
   ansible.builtin.copy:
-    src: build-kernel.sh
+    src: kernel-build.sh
     dest: /root/
     mode: "0744"
   register: _kernel_make_script
@@ -78,7 +75,7 @@
       changed_when: true
       ansible.builtin.shell:
         cmd: >-
-          echo /root/build-kernel.sh reboot | at now
+          echo /root/kernel-build.sh reboot | at now
 
     - name: Make wait
       when: kernel_git_build_wait | bool
@@ -89,7 +86,7 @@
           poll: 0
           ansible.builtin.shell:
             cmd: >-
-              /root/build-kernel.sh
+              /root/kernel-build.sh
           register: _kernel_make
 
         - name: Poll job
