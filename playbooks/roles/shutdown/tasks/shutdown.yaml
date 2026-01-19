@@ -1,6 +1,6 @@
 ---
 - name: Instance
-  retries: 1
+  retries: 2
   community.general.shutdown:
 
 - name: Additional wait
