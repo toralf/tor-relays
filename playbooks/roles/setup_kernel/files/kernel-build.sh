@@ -47,13 +47,13 @@ touch /var/run/reboot-required
 if [[ ${1-} == "reboot" ]]; then
   echo
   i=3
-  while ((i--)) && ! pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
-    echo "wait for sshd $i ..."
+  while ((i--)) && pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd'; do
+    echo "wait for ssh connections being finished $i ..."
     sleep 60
   done
 
   if ! service ssh stop; then
-    echo "sshd not stopped"
+    echo "sshd could not stopped"
   fi
 
   i=3
