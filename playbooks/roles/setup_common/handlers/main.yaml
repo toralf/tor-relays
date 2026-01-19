@@ -51,5 +51,4 @@
   listen: Reboot
   ansible.builtin.setup:
     gather_subset:
-      - hardware
       - kernel

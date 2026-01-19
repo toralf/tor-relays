@@ -12,6 +12,7 @@
       - default_ipv6
       - distribution
       - hardware
+      - processor
   tags:
     - facts
 

@@ -3,9 +3,7 @@
   ansible.builtin.setup:
     gather_subset:
       - distribution
-      - hardware
       - kernel
-      - processor
 
 - name: File uname
   delegate_to: localhost
