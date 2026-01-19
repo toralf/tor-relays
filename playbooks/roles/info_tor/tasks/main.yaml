@@ -9,35 +9,45 @@
       get_checksum: false
       get_mime: false
   block:
-    - name: Get fingerprints
-      ansible.builtin.import_tasks: fingerprints.yaml
-      tags:
-        - bridgeline
-        - bto
-        - onionoo
-        - wellknown
+    - name: Server and public bridge
+      when: tor_bridge_distribution != '' and tor_bridge_distribution != 'none'
+      block:
+        - name: Get fingerprints
+          ansible.builtin.import_tasks: fingerprints.yaml
+          tags:
+            - bridgeline
+            - bto
+            - onionoo
+            - wellknown
 
-    - name: Bridge stats
-      when: tor_bridge_distribution != ''
-      ansible.builtin.import_tasks: bridge-stats.yaml
-      tags:
-        - bridge-stats
+        - name: Bridge stats
+          ansible.builtin.import_tasks: bridge-stats.yaml
+          tags:
+            - bridge-stats
 
-    - name: Bridge line
-      when: tor_bridge_distribution != ''
-      ansible.builtin.import_tasks: bridgeline.yaml
-      tags:
-        - never
-        - bridgeline
+        - name: Bridge line
+          ansible.builtin.import_tasks: bridgeline.yaml
+          tags:
+            - never
+            - bridgeline
 
-    - name: Bto
-      when: tor_bridge_distribution != ''
-      ansible.builtin.import_tasks: bto.yaml
-      tags:
-        - bto
+        - name: Bto
+          ansible.builtin.import_tasks: bto.yaml
+          tags:
+            - bto
+
+        - name: Onionoo
+          ansible.builtin.import_tasks: onionoo.yaml
+          tags:
+            - onionoo
+
+        - name: Wellknown
+          ansible.builtin.import_tasks: wellknown.yaml
+          tags:
+            - never
+            - wellknown
 
     - name: Clients
-      when: tor_bridge_distribution != ''
       ansible.builtin.import_tasks: clients.yaml
       tags:
         - clients
@@ -67,12 +77,6 @@
       tags:
         - log-warn
 
-    - name: Onionoo
-      when: tor_bridge_distribution != ''
-      ansible.builtin.import_tasks: onionoo.yaml
-      tags:
-        - onionoo
-
     - name: Process runtime
       ansible.builtin.import_tasks: process-runtime.yaml
       tags:
@@ -93,9 +97,3 @@
       ansible.builtin.import_tasks: version.yaml
       tags:
         - version
-
-    - name: Wellknown
-      ansible.builtin.import_tasks: wellknown.yaml
-      tags:
-        - never
-        - wellknown

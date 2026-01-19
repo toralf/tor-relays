@@ -3,7 +3,7 @@
 
 - name: Wellknown for bridges
   throttle: 1
-  when: tor_bridge_distribution != ''
+  when: tor_bridge_distribution != '' and tor_bridge_distribution != 'none'
   block:
     - name: Ensure hostname is in wellknown file
       delegate_to: localhost
