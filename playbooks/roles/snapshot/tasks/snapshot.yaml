@@ -1,21 +1,31 @@
 ---
-- name: Image
+- name: Snapshot
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  changed_when: _result.rc == 0
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
-  ansible.builtin.shell:
-    cmd: |-
-      set -e
+  block:
+    - name: Create
+      changed_when: true
+      ansible.builtin.command:
+        cmd: >-
+          hcloud --quiet --poll-interval 10s server create-image
+            --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
 
-      hcloud --quiet --poll-interval 10s server create-image \
-        --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
+    - name: Delete older
+      changed_when: _result.rc == 0
+      failed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
+            grep -v ' {{ snapshot_description }}$' |
+            sort -r |
+            awk 'x[$2]++ { print $1 }' |
+            xargs -r hcloud --poll-interval 5s image delete >/dev/null
+      register: _result
 
-      hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
-        grep -v ' {{ snapshot_description }}$' |
-        sort -r |
-        awk 'x[$2]++ { print $1 }' |
-        xargs -r hcloud --poll-interval 5s image delete >/dev/null
-    executable: /bin/bash
-  register: _result
+    - name: Debug deletion
+      when: _result.rc != 0
+      changed_when: true
+      ansible.builtin.debug:
+        var: _result
