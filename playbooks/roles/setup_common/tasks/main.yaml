@@ -175,11 +175,17 @@
       tags:
         - kernel-debian
 
-    - name: Manual reboot
+    - name: Force a reboot
       changed_when: true
       ansible.builtin.debug:
-        msg: Reboot was triggered manually.
+        msg: Reboot was triggered.
       notify: Reboot
+      tags:
+        - never
+        - force-reboot
+
+    - name: Check for a reboot
+      ansible.builtin.import_tasks: reboot.yaml
       tags:
         - never
         - reboot
