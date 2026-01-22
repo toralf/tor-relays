@@ -58,10 +58,10 @@
       mode: "0644"
   block:
     - name: Run a custom command
+      when: custom_command_file != ''
       ansible.builtin.import_tasks: custom-command.yaml
       tags:
         - custom-command
-        - never
 
     - name: Base
       ansible.builtin.import_tasks: base.yaml
