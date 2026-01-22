@@ -14,15 +14,16 @@ ln -sf ~/make.${suffix}.log ~/make.log
 exec 1>~/make.log
 exec 2>&1
 
-date
-echo
+echo -e "\n$(date) config ...\n"
+yes '' | make oldconfig # >/dev/null
 
+echo -e "\n$(date) make...\n"
 # make clean
 make -j $(nproc)
 make modules_install
 make install
 
-echo -e "\ngrub ..."
+echo -e "\n$(date) grub ...\n"
 kver=$(make kernelversion)
 lver=$(KERNELVERSION=${kver} ./scripts/setlocalversion)
 grub_entry="Advanced options for Debian GNU/Linux>Debian GNU/Linux, with Linux ${lver}"
@@ -38,27 +39,16 @@ grep -E '^\s+initrd\s+/boot/initrd.img-6\..*-g[0-9a-f]{12}$' /boot/grub/grub.cfg
   done
 rm -f /boot/*-6.*-g[0-9a-f]*.old /boot/vmlinuz.old
 update-grub
-
 ln -snf ${PWD} /usr/src/linux
 
-# plan B if the explicit reboot fails
-touch /var/run/reboot-required
-
+echo -e "\n$(date) reboot ...\n"
 if [[ ${1-} == "reboot" ]]; then
-  echo
   i=3
-  while ((i--)) && pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd'; do
-    echo "wait for ssh connections being finished $i ..."
+  while ((i--)) && pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
+    echo "finish ssh connections graceful ..."
     sleep 60
   done
-
-  if ! service ssh stop; then
-    echo "sshd could not stopped"
-  fi
-
-  i=3
-  while ((i--)) && ! reboot; do
-    echo "reboot $i ..."
-    sleep 10
-  done
+  systemctl reboot
+else
+  touch /var/run/reboot-required
 fi
