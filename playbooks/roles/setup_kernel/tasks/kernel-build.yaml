@@ -105,5 +105,4 @@
         - name: Reboot
           ansible.builtin.reboot:
             reboot_timeout: 180
-            post_reboot_delay: 30
             reboot_command: systemctl reboot
