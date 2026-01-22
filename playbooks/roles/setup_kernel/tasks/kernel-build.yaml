@@ -7,10 +7,10 @@
     _repo_dir: /root/linux
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Flush handlers (before kernel build)
+- name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Gather facts (before kernel build)
+- name: Gather facts
   ansible.builtin.setup:
     gather_subset:
       - kernel
@@ -103,8 +103,7 @@
             mode: cleanup
 
         - name: Reboot
-          retries: 1
           ansible.builtin.reboot:
             reboot_timeout: 180
             post_reboot_delay: 30
-            test_command: "iptables -nvL"
+            reboot_command: systemctl reboot

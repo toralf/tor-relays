@@ -183,13 +183,15 @@
       notify: Reboot
       tags:
         - never
-        - force-reboot
+        - force-a-reboot
 
-    - name: Check for a reboot
+    - name: Check for an adviced reboot
       ansible.builtin.import_tasks: reboot.yaml
       tags:
-        - never
         - reboot
 
+    # common is part of bigger plays
     - name: Flush handlers (common)
       ansible.builtin.meta: flush_handlers
+      tags:
+        - always
