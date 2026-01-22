@@ -4,15 +4,16 @@
     path: /etc/nginx/conf.d/
   register: _nginx_is_installed
 
-- name: Nginx config
+- name: Config
   when: _nginx_is_installed.stat.exists
   block:
     - name: Create nginx site directories
-      no_log: true
       ansible.builtin.file:
         path: /var/www/{{ item.dir }}
         state: directory
         mode: "0755"
+      loop_control:
+        label: "{{ item.dir }}"
       loop: "{{ nginx_site_directories }}"
 
     - name: Configure nginx
@@ -22,6 +23,6 @@
       notify: Reload nginx
 
     - name: Verify nginx config
-      changed_when: false
+      changed_when: false # either config is ok or test fails
       ansible.builtin.command:
         cmd: nginx -t

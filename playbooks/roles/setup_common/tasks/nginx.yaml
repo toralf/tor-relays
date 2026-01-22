@@ -56,7 +56,7 @@
 - name: Copy OpenSSL host key
   ansible.builtin.copy:
     src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
-    dest: /etc/nginx/conf.d/
+    dest: /etc/nginx/conf.d/client.key
     mode: "0600"
   notify: Reload nginx
 
@@ -66,7 +66,7 @@
       {{ lookup("file", ca_dir + "/" + ca_name + "/clients/crts/" + inventory_hostname + ".crt") }}
       {{ lookup("file", ca_dir + "/" + ca_name + "/" + ca_name + ".crt") }}
 
-    dest: "/etc/nginx/conf.d/{{ inventory_hostname }}.crt"
+    dest: /etc/nginx/conf.d/client.crt
   notify: Reload nginx
 
 - name: Start nginx

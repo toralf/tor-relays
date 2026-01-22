@@ -25,8 +25,8 @@ server {
 
   ssl_protocols TLSv1.3;
   ssl_ciphers HIGH:!aNULL:!MD5;
-  ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
-  ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
+  ssl_certificate /etc/nginx/conf.d/client.crt;
+  ssl_certificate_key /etc/nginx/conf.d/client.key;
   ssl_conf_command Options KTLS;
   add_header Strict-Transport-Security "max-age=63072000" always;
 
@@ -115,8 +115,8 @@ server {
 
   ssl_protocols TLSv1.3;
   ssl_ciphers HIGH:!aNULL:!MD5;
-  ssl_certificate /etc/nginx/conf.d/{{ inventory_hostname }}.crt;
-  ssl_certificate_key /etc/nginx/conf.d/{{ inventory_hostname }}.key;
+  ssl_certificate /etc/nginx/conf.d/client.crt;
+  ssl_certificate_key /etc/nginx/conf.d/client.key;
   ssl_conf_command Options KTLS;
   add_header Strict-Transport-Security "max-age=63072000" always;
 
