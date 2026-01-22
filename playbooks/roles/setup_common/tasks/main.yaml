@@ -190,7 +190,6 @@
       tags:
         - reboot
 
-    # common is part of bigger plays
     - name: Flush handlers (common)
       ansible.builtin.meta: flush_handlers
       tags:
