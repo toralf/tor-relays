@@ -1,37 +1,37 @@
 ---
 - name: Test common
-  hosts: all
+  hosts: hx
   order: shuffle
   roles:
     - role: setup_common
     - role: info_common
 
 - name: Test Snowflake
-  hosts: snowflake
+  hosts: hsx
   order: shuffle
   roles:
     - role: setup_snowflake
 
 - name: Test Tor
-  hosts: tor
+  hosts: htx
   order: shuffle
   roles:
     - role: setup_tor
 
 - name: Test Snowflake info
-  hosts: snowflake
+  hosts: hsx
   order: shuffle
   roles:
     - role: info_snowflake
 
 - name: Test Tor info
-  hosts: tor
+  hosts: htx
   order: shuffle
   roles:
     - role: info_tor
 
 - name: Test kernel
-  hosts: all
+  hosts: hx
   order: shuffle
   roles:
     - role: setup_kernel

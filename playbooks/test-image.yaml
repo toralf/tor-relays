@@ -1,6 +1,6 @@
 ---
 - name: Test image
-  hosts: all
+  hosts: hx
   order: shuffle
   roles:
     - role: setup_common
