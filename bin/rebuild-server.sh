@@ -32,7 +32,11 @@ fi
 
 commands=$(
   while read -r name; do
-    image=$(setImage ${name})
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      image=${HCLOUD_IMAGE}
+    else
+      image=$(setImage ${name})
+    fi
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
   done <<<${names}
 )

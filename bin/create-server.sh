@@ -50,9 +50,19 @@ if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
   snapshots=$(getSnapshots)
 fi
 
-# take the first one
-ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
-
+if [[ -n ${SSH_KEY-} ]]; then
+  ssh_key=${SSH_KEY}
+else
+  ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[] | select(.labels.hx == "true") | .name')
+  if [[ -z ${ssh_key} ]]; then
+    # take the first one
+    ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
+    if [[ -z ${ssh_key} ]]; then
+      echo "can't find an ssh key" >&2
+      exit 3
+    fi
+  fi
+fi
 echo -e " creating $(wc -w <<<${names}) system/s ..."
 
 commands=$(
@@ -76,7 +86,11 @@ commands=$(
       loc=""
     fi
 
-    image=$(setImage ${name})
+    if [[ -n ${HCLOUD_IMAGE-} ]]; then
+      image=${HCLOUD_IMAGE}
+    else
+      image=$(setImage ${name})
+    fi
     if [[ -z ${image} ]]; then
       echo " ERROR: empty image for ${name}" >&2
       exit 1
