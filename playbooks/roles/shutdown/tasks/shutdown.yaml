@@ -1,5 +1,6 @@
 ---
 - name: Instance
+  ignore_unreachable: true
   retries: 2
   community.general.shutdown:
 
