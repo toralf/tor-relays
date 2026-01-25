@@ -10,6 +10,9 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
+export RETRY_FILES_ENABLED="True"
+export RETRY_FILES_SAVE_PATH="/tmp"
+
 cd $(dirname $0)/..
 
 [[ ${1-} == "-t" && $# -ge 2 ]]
