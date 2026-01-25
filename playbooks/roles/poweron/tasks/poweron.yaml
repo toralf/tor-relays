@@ -26,6 +26,7 @@
     - name: File state
       delegate_to: localhost
       throttle: 1
+      failed_when: _is_down and not (do_power_on | bool)
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
         path: "{{ infodir }}/is_down"
