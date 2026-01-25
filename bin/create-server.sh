@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   LOOKUP_SNAPSHOT=n ./bin/create-server.sh foo-{{0..7},{a..f}}
+#   ./bin/create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
 #   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
 
@@ -46,9 +46,7 @@ if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   locations_x86=$(jq -r 'select(.server_types.available | contains(['${id_x86}'])) | .location.name' <<<${data_centers})
 fi
 
-if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-  snapshots=$(getSnapshots)
-fi
+snapshots=$(getSnapshots)
 
 if [[ -n ${SSH_KEY-} ]]; then
   ssh_key=${SSH_KEY}

@@ -3,7 +3,7 @@
 # set -x
 
 # e.g.:
-#   LOOKUP_SNAPSHOT=y ./bin/rebuild-server.sh foo bar
+#   ./bin/rebuild-server.sh foo bar
 
 set -euf
 export LANG=C.utf8
@@ -26,9 +26,7 @@ echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
 ./bin/distrust-host-ssh-key.sh ${names}
 cleanLocalDataEntries ${names}
 
-if [[ ${LOOKUP_SNAPSHOT-} != "n" ]]; then
-  snapshots=$(getSnapshots)
-fi
+snapshots=$(getSnapshots)
 
 commands=$(
   while read -r name; do

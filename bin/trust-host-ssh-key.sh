@@ -12,13 +12,14 @@ names=$(xargs -r -n 1 <<<$*)
 echo -n " trusting $(wc -w <<<${names}) system/s ..."
 
 attempts=7
+left=${names}
 while ((attempts--)); do
   left=$(
     while read -r name; do
       if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
         echo ${name}
       fi
-    done <<<${names}
+    done <<<${left}
   )
 
   # jump out here if work is done

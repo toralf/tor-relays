@@ -52,7 +52,7 @@ function getSnapshots() {
 function setImage() {
   local name=${1?NAME NOT GIVEN}
 
-  if [[ ${LOOKUP_SNAPSHOT-} == "n" || -z ${snapshots} ]] || ! _setImageBySnapshot ${name}; then
+  if [[ -z ${snapshots} ]] || ! _setImageBySnapshot ${name}; then
     _setImageByHostname ${name}
   fi
 }
