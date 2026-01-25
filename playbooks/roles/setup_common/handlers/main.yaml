@@ -45,7 +45,7 @@
     reboot_timeout: 180
     reboot_command: systemctl reboot
 
-- name: Gather facts (after common reboot)
+- name: Gather facts (last handler)
   listen: Reboot
   ansible.builtin.setup:
     gather_subset:

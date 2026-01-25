@@ -25,3 +25,7 @@
         grep 'NEEDRESTART-SVC:'
   register: _service_reboot_needed
   notify: Reboot
+
+# reboot *now*
+- name: Flush handlers (Reboot)
+  ansible.builtin.meta: flush_handlers

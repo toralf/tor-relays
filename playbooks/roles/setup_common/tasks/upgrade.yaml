@@ -12,7 +12,8 @@
 
     - name: New Debian release
       when: ansible_facts.distribution == 'Debian' and
-        desired_debian_release | length > 0 and desired_debian_release != ansible_facts.distribution_release
+        desired_debian_release | length > 0 and
+        desired_debian_release != ansible_facts.distribution_release
       block:
         - name: Upgrade to new Debian release
           changed_when: true
