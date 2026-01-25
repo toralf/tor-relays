@@ -22,15 +22,13 @@ while :; do
   ./site-info.yaml --limit 'hx:!hi' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log || true
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
-    info "rsync"
-    # shellcheck disable=SC2043
-    for dest in foo; do
-      if ! rsync --compress --recursive --verbose \
-        ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ${dest}:/var/www/site01 \
-        &>${log}.rsync.${dest}.log; then
-        info "rsync ${dest} NOT ok"
-      fi
-    done
+    dest="foo"
+    info "rsync to ${dest}"
+    if ! rsync --compress --recursive --verbose \
+      ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ${dest}:/var/www/site01 \
+      &>${log}.rsync.${dest}.log; then
+      info "rsync ${dest} NOT ok"
+    fi
   fi
 
   info "sleep"
