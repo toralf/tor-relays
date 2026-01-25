@@ -69,19 +69,21 @@ commands=$(
     case ${name} in
     *-arm | *-arm-*) htype="cax11" ;;
     *-x86 | *-x86-*) htype="cx23" ;;
-    *) htype=$(xargs -r -n 1 <<<${HCLOUD_TYPES:-cax11 cx23} | shuf -n 1) ;;
+    *) htype=$(shuf -n 1 -e ${HCLOUD_TYPES:-cax11 cx23}) ;;
     esac
 
     # location
+    loc=""
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
-      loc="--location ${HCLOUD_LOCATION}"
+      loc=${HCLOUD_LOCATION}
     elif [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
       case ${htype} in
-      cax*) loc="--location "$(xargs -r -n 1 <<<${locations_arm} | shuf -n 1) ;;
-      cx*) loc="--location "$(xargs -r -n 1 <<<${locations_x86} | shuf -n 1) ;;
+      cax*) loc=$(shuf -n 1 -e ${locations_arm}) ;;
+      cx*) loc=$(shuf -n 1 -e ${locations_x86}) ;;
       esac
-    else
-      loc=""
+    fi
+    if [[ -n ${loc} ]]; then
+      loc="--location ${loc}"
     fi
 
     if [[ -n ${HCLOUD_IMAGE-} ]]; then
