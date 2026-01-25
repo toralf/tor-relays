@@ -2,6 +2,8 @@
 - name: Gather facts
   ansible.builtin.setup:
     gather_subset:
+      - "!all"
+      - "!min"
       - distribution
       - kernel
 

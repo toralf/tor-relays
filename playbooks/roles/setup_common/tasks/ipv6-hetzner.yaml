@@ -2,6 +2,8 @@
 - name: Gather facts - IPv6
   ansible.builtin.setup:
     gather_subset:
+      - "!all"
+      - "!min"
       - default_ipv6
 
 - name: Ensure IPv6 address has valid prefix
@@ -69,4 +71,6 @@
     - name: Gather facts - IPv6
       ansible.builtin.setup:
         gather_subset:
+          - "!all"
+          - "!min"
           - default_ipv6

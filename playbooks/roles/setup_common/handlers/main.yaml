@@ -49,4 +49,6 @@
   listen: Reboot
   ansible.builtin.setup:
     gather_subset:
+      - "!all"
+      - "!min"
       - kernel
