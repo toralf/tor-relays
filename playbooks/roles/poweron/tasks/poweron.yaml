@@ -5,14 +5,14 @@
       "{{ (_ssh_ping.unreachable is defined or _ssh_ping.ping is not defined or _ssh_ping.ping != 'pong') and
       _net_ping.rc == 0 }}"
   block:
-    - name: Check if it is down
+    - name: Ping
       ignore_errors: true
       ignore_unreachable: true
       changed_when: false
       ansible.builtin.ping:
       register: _ssh_ping
 
-    - name: Check local network
+    - name: ICMP ping
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
       ignore_errors: true
@@ -23,7 +23,7 @@
           ping -c 3 hetzner.de
       register: _net_ping
 
-    - name: File _is_down state
+    - name: File state
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
@@ -43,7 +43,7 @@
           ansible.builtin.command:
             cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-        - name: Additional wait
+        - name: Wait
           delegate_to: localhost
           ansible.builtin.wait_for:
             timeout: 25
@@ -53,7 +53,7 @@
           delay: 10
           ansible.builtin.ping:
 
-        - name: Update _is_down state
+        - name: Update state
           delegate_to: localhost
           throttle: 1
           ansible.builtin.lineinfile:
