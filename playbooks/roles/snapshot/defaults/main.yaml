@@ -1,2 +1,2 @@
 ---
-snapshot_description: "{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }} {{ inventory_hostname }}"
+snapshot_description: "{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z {{ inventory_hostname }}"

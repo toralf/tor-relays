@@ -9,7 +9,7 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.copy:
-    dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}.txt"
+    dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z.txt"
     content: "{{ _result.stdout }}"
 
 - name: File dmesg info
@@ -22,4 +22,4 @@
       {{ ansible_facts.architecture }}
       {{ ansible_facts.processor[1] }}
 
-    dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}.info.txt"
+    dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z.info.txt"
