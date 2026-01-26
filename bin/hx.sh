@@ -137,13 +137,14 @@ while :; do
     fi
   done
 
-  # update/rebuild
-  info "down"
+  # check all systems
+  info "check"
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.before
   ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.down.log
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.after
   pit_stop
 
+  # update/rebuild
   if [[ -s /tmp/is_down.before || -s /tmp/is_down.after ]]; then
 
     # power off/on unreachable systems
@@ -171,7 +172,7 @@ while :; do
       truncate -s 0 ${HOME}/.retry
     fi
 
-    # rebuild broken systems
+    # rebuild failed systems
     retry=$(xargs -r <${HOME}/.retry)
     if [[ -n ${retry} ]]; then
       info "  retry: $(wc -w <<<${retry})"
