@@ -5,6 +5,7 @@
       - "!all"
       - "!min"
       - distribution
+      - kernel
 
 - name: Fetch kconfig
   throttle: "{{ concurrent_local_jobs }}"

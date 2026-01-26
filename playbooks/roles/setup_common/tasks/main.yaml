@@ -1,6 +1,6 @@
 ---
 # Hint: facts cache is not updated if "--tags" or "--limit" is used
-- name: Gather facts - subset
+- name: Gather facts - common
   ansible.builtin.setup:
     gather_subset:
       - "!all"
@@ -11,8 +11,6 @@
       - default_ipv4
       - default_ipv6
       - distribution
-      - hardware
-      - processor
   tags:
     - facts
 

@@ -10,12 +10,12 @@
     - name: Reboot (after upgrade)
       ansible.builtin.import_tasks: reboot.yaml
 
-    - name: New Debian release
+    - name: New release
       when: ansible_facts.distribution == 'Debian' and
         desired_debian_release | length > 0 and
         desired_debian_release != ansible_facts.distribution_release
       block:
-        - name: Upgrade to new Debian release
+        - name: Upgrade to new release
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
@@ -26,10 +26,10 @@
               apt update
               apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
 
-        - name: Reboot (after new Debian release)
+        - name: Reboot (after new release)
           ansible.builtin.import_tasks: reboot.yaml
 
-        - name: Finish new Debian release
+        - name: Finish new release
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
@@ -39,7 +39,7 @@
               apt clean
               apt -y modernize-sources
 
-        - name: Gather facts - distribution
+        - name: Gather facts - upgrade
           ansible.builtin.setup:
             gather_subset:
               - "!all"
