@@ -50,7 +50,7 @@ h_common:
       ltsrc: linux-6.12.y
       stable: linux-rolling-stable
       lts: linux-rolling-lts
-    # hostname examples:  hs0-dt-arm-mainline-bp-cl-89  or  hi-un-x86-stable
+    # hostname examples:  hs0-dt-arm-mainline-nobp-cl-89  or  hi-un-x86-ltsrc
     _parts: "{{ inventory_hostname.split('-') }}"
     kernel_git_repo_url: "{{ _repo_urls[_parts[3] | default('')] | default('') }}"
     kernel_git_version: "{{ _versions[_parts[3] | default('')] | default('') }}"
