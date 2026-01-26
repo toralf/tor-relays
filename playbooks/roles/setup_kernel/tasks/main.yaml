@@ -1,9 +1,4 @@
 ---
-- name: Validate
-  ansible.builtin.import_tasks: validate.yaml
-  tags:
-    - validate
-
 - name: Main
   when: kernel_git_repo_url | length > 0
   module_defaults:
@@ -18,6 +13,18 @@
       group: root
       mode: "0644"
   block:
+    - name: Gather facts
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "!min"
+          - kernel
+
+    - name: Validate
+      ansible.builtin.import_tasks: validate.yaml
+      tags:
+        - validate
+
     - name: Tools
       ansible.builtin.import_tasks: tools.yaml
       tags:

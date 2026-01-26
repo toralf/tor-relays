@@ -10,13 +10,6 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
-- name: Gather facts
-  ansible.builtin.setup:
-    gather_subset:
-      - "!all"
-      - "!min"
-      - kernel
-
 - name: Configure
   changed_when: _kernel_configured.rc == 123
   failed_when: _kernel_configured.rc not in (0, 123)
