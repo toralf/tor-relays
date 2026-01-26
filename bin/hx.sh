@@ -183,6 +183,6 @@ while :; do
     fi
   fi
 
-  wait_for_jobs
   pit_stop 300
+  wait_for_jobs
 done
