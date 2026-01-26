@@ -163,8 +163,8 @@ while :; do
       info "  update: $(wc -w <<<${update})"
       RETRY_FILES_ENABLED="True" RETRY_FILES_SAVE_PATH="${HOME}" ./site-setup.yaml \
         --limit "$(tr ' ' ',' <<<${update})" \
-        --tags poweron,kernel-build,lyrebird,snowflake,tor \
-        -e kernel_git_build_wait=false -e do_power_on=false \
+        --tags kernel-build,lyrebird,snowflake,tor \
+        -e kernel_git_build_wait=false \
         &>${log}.update.log
       pit_stop
     else
