@@ -16,11 +16,6 @@
     - ipv6-rules.sh
   register: _ddos_script
 
-- name: Foo
-  changed_when: true
-  debug:
-    var: _ddos_script
-
 - name: Basic test that DDoS works
   when: _ddos_script.changed
   changed_when: false
@@ -122,7 +117,7 @@
       throttle: 16
       retries: 3
       ansible.builtin.get_url:
-        url: "https://github.com/toralf/torutils/raw/dev/{{ item }}"
+        url: "https://github.com/toralf/torutils/raw/main/{{ item }}"
         dest: "/root/{{ item }}"
       with_items:
         - ipv4-rules-egress.sh
