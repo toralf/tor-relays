@@ -41,6 +41,8 @@
 
 - name: Reboot
   listen: Reboot
+  retries: 2
+  failed_when: not _reboot.rebooted and not (_reboot.msg is search('Action reboot already in progress'))
   ansible.builtin.reboot:
     reboot_timeout: 180
-    reboot_command: systemctl reboot
+  register: _reboot

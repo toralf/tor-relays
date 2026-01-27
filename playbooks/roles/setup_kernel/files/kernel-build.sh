@@ -48,7 +48,7 @@ if [[ ${1-} == "reboot" ]]; then
     echo "finish ssh connections graceful ..."
     sleep 60
   done
-  systemctl reboot
+  reboot
 else
   touch /var/run/reboot-required
 fi
