@@ -1,15 +1,11 @@
 ---
-- name: Reload systemd
-  listen: Reload systemd
-  ansible.builtin.systemd_service:
-    daemon_reload: true
-
 - name: Restart Tor
   listen: Restart Tor
   ansible.builtin.systemd_service:
     name: tor
     state: restarted
     enabled: true
+    daemon_reload: true
 
 - name: Reload Tor
   listen: Reload Tor
@@ -17,6 +13,7 @@
     name: tor
     state: reloaded
     enabled: true
+    daemon_reload: true
 
 # https://gitlab.torproject.org/tpo/core/tor/-/issues/41189
 - name: Catch a race
