@@ -41,11 +41,12 @@
         --mandir=/usr/share/man --infodir=/usr/share/info --datadir=/usr/share --sysconfdir=/etc \
         --localstatedir=/var --datarootdir=/usr/share \
         --disable-dependency-tracking --disable-silent-rules --disable-all-bugs-are-fatal --enable-system-torrc \
-        --disable-android --disable-coverage --disable-html-manual --disable-libfuzzer --enable-missing-doc-warnings \
+        --disable-android --disable-coverage --disable-html-manual --disable-libfuzzer --disable-missing-doc-warnings \
         --disable-module-dirauth --enable-pic --disable-restart-debugging --enable-gpl --enable-module-pow \
         --enable-gcc-hardening --enable-linker-hardening \
-        --enable-libscrypt --enable-seccomp --enable-module-relay --disable-unittests --disable-zstd  \
+        --enable-libscrypt --enable-seccomp --enable-module-relay --disable-unittests --disable-zstd \
         --disable-asciidoc --disable-manpage --disable-lzma
+
       make clean
       CFLAGS="-O2 -pipe -march=native -ftrivial-auto-var-init=zero -g -ggdb" make -j$(nproc)
     chdir: /root/tor
