@@ -22,16 +22,19 @@ while ((attempts--)); do
     done <<<${left}
   )
 
-  # jump out here if work is done
   if [[ -z ${left} ]]; then
     echo -e "\n OK"
-    exit 0
+    break
   fi
 
+  if ((attempts < 6)); then
+    sleep 8
+  fi
   echo -en "\n    $(wc -w <<<${left}) left ..."
   ssh-keyscan -q -4 -t ed25519 ${left} | sort | tee -a ~/.ssh/known_hosts >/dev/null
-  sleep 8
 done
 
-echo -e " NOT ok,  left:     $(xargs <<<${left})\n"
-exit 1
+if [[ -n ${left} ]]; then
+  echo -e " NOT ok,  left:     $(xargs <<<${left})\n"
+  exit 1
+fi
