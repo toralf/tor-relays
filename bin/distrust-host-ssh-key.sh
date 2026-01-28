@@ -6,7 +6,7 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
-names=$(xargs -r -n 1 <<<$*)
+names=$(xargs -r <<<$*)
 
 echo -e "\n dis-trusting $(wc -w <<<${names}) ssh host key/s ..."
 

@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
+# This is a wrapper of "hcloud server crrebuildeate ..."
+
 # e.g.:
 #   ./bin/rebuild-server.sh foo bar
 
@@ -39,6 +41,7 @@ commands=$(
   done <<<${names}
 )
 
+# the API call to Hetzner
 echo -e " rebuilding ..."
 xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${commands}
 

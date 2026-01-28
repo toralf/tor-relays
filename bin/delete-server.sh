@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
+# This is a wrapper of "hcloud server delete ..."
+
 # e.g.:
 #   ./bin/delete-server.sh foo bar
 
@@ -36,6 +38,7 @@ done <<<${names}
 echo " reloading DNS resolver ..."
 sudo rc-service unbound reload
 
+# the API call to Hetzner
 echo " deleting systems ..."
 set +e
 xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 5s server delete <<<${names} 2>/dev/null

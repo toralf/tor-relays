@@ -2,6 +2,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
+# This is a wrapper of "hcloud server create ..."
+
 # e.g.:
 #   ./bin/create-server.sh foo-{{0..7},{a..f}}
 #   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
@@ -100,6 +102,7 @@ commands=$(
   done <<<${names}
 )
 
+# the API call to Hetzner
 set +e
 xargs -r -P ${jobs} -L 1 timeout 30m hcloud --quiet <<<${commands}
 rc=$?
