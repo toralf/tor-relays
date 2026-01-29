@@ -7,6 +7,9 @@ tor_git_version: main
 lyrebird_git_patches: []
 lyrebird_git_version: main
 
+# DDoS solution
+torutils_git_version: main
+
 # 2 lists for additional torrc values
 torrc_config_group: []
 torrc_config_hosts: []

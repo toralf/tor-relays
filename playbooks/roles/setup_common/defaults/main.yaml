@@ -27,6 +27,9 @@ tor_port: 0
 # egress firewall, e.g. EGRESS_SUBNET_SLEW="1.2.3.4"
 tor_egress_slew: ""
 
+# DDoS solution
+torutils_git_version: main
+
 # nginx
 nginx_public_site: false
 nginx_site_directories: []

@@ -3,7 +3,7 @@
   throttle: 16
   retries: 3
   ansible.builtin.get_url:
-    url: https://github.com/toralf/torutils/raw/main/metrics.sh
+    url: "https://github.com/toralf/torutils/raw/{{ torutils_git_version }}/metrics.sh"
     dest: /root/metrics.sh
   register: _download
 
