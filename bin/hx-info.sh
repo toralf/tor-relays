@@ -19,7 +19,7 @@ log=/tmp/$(basename $0)
 
 while :; do
   info "healthy"
-  ./site-info.yaml --limit 'hx:!hi' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log || true
+  ./site-info.yaml --limit 'hx,!hi' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log || true
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     dest="foo"

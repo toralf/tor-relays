@@ -113,7 +113,7 @@ log=/tmp/$(basename $0)
 trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 
 while :; do
-  # app update
+  # Tor app update
   for i in lyrebird snowflake tor; do
     if git_changed $i; then
       info "app: $i"
@@ -133,7 +133,7 @@ while :; do
     if git_changed $i; then
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "hx:!hi:&h*-*-*-${i}*" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log
+      ./site-setup.yaml --limit "hx,!hi,&h*-*-*-${i}*" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log
       pit_stop
     fi
   done
@@ -141,7 +141,7 @@ while :; do
   # check all systems
   info "check"
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.before
-  ./site-setup.yaml --limit 'hx:!hi' --tags poweron &>${log}.down.log
+  ./site-setup.yaml --limit 'hx,!hi' --tags poweron &>${log}.down.log
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.after
   pit_stop
 
