@@ -44,7 +44,7 @@ function pit_stop() {
 function git_ls_remote() {
   local name=${1?NAME MUST BE GIVEN}
 
-  local url ver
+  local url ver env
   case ${name} in
   # Tor project
   lyrebird)
@@ -67,6 +67,7 @@ function git_ls_remote() {
   mainline)
     url=git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
     ver=master
+    # env="GITLAB_API_TOKEN=abcd"
     ;;
   stablerc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
@@ -78,7 +79,7 @@ function git_ls_remote() {
     ;;
   esac
 
-  git ls-remote --quiet https://${url} ${ver} |
+  ${env-} git ls-remote --quiet https://${url} ${ver} |
     awk '{ print $1 }'
 }
 
