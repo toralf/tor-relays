@@ -4,49 +4,13 @@
 
 # goal: CI/CD
 
-function info() {
-  echo -e " $(date) $*                            "
-}
-
-function wait_for_jobs() {
-  # shellcheck disable=SC2155
-  local jobs=$(jobs -p | xargs -r)
-  if [[ -n ${jobs} ]]; then
-    info "jobs: ${jobs}"
-    while fg 2>/dev/null; do
-      :
-    done
-  fi
-}
-
-function pit_stop() {
-  local sec=${1:-60}
-
-  echo -en " $(date) sleeping ${sec}s    \r"
-  while ((sec--)); do
-    if [[ -f /tmp/STOP ]]; then
-      trap - INT QUIT TERM EXIT
-      info "caught /tmp/STOP"
-      rm /tmp/STOP
-      wait_for_jobs
-      info "exit\n"
-      exit 0
-    fi
-    if [[ -f /tmp/CONT ]]; then
-      rm /tmp/CONT
-      echo
-      break
-    fi
-    sleep 1
-  done
-}
-
 function git_ls_remote() {
   local name=${1?NAME MUST BE GIVEN}
 
   local url ver env
   case ${name} in
   # Tor project
+  #
   lyrebird)
     url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
     ver="main"
@@ -60,6 +24,7 @@ function git_ls_remote() {
     ver="main"
     ;;
   # kernel
+  #
   ltsrc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
     ver=linux-6.12.y
@@ -73,6 +38,8 @@ function git_ls_remote() {
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
     ver=linux-6.18.y
     ;;
+  #
+  #
   *)
     echo " ${name} is not implemented"
     exit 2
@@ -101,16 +68,20 @@ function git_changed() {
 }
 
 #######################################################################
-set -uf # no -e
+set -euf
 set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
-cd $(dirname $0)/.. || exit
+cd $(dirname $0)/..
+source ./bin/hx-lib.sh
+trap 'echo stopping...; rm -f /tmp/CONT; touch /tmp/STOP' INT QUIT TERM EXIT
 
 log=/tmp/$(basename $0)
 
-trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
+type hcloud >/dev/null
+# too much grep and ansible calls otherwise to chain
+set +e
 
 while :; do
   # Tor app update

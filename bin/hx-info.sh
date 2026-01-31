@@ -4,16 +4,14 @@
 
 # goal: CI/CD
 
-function info() {
-  echo -e " $(date) $*                            "
-}
-
-#######################################################################
 set -euf
+set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 cd $(dirname $0)/..
+source ./bin/hx-lib.sh
+trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 
 log=/tmp/$(basename $0)
 
@@ -31,6 +29,5 @@ while :; do
     fi
   fi
 
-  info "sleep"
-  sleep 300
+  pit_stop 300
 done
