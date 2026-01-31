@@ -42,7 +42,11 @@
 - name: Reboot
   listen: Reboot
   retries: 2
-  failed_when: not _reboot.rebooted and not (_reboot.msg is search('Action reboot already in progress'))
+  failed_when: not (
+    _reboot.rebooted or
+    _reboot.msg is search('Action reboot already in progress') or
+    _reboot.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start' is included in transaction")
+    )
   ansible.builtin.reboot:
     reboot_timeout: 180
   register: _reboot
