@@ -18,7 +18,7 @@ cd $(dirname $0)/..
 arch='{arm,x86}'
 extra=''
 os='{db,dt,un}'
-uid=$$
+uid=$(printf "%06i" $$)
 while getopts a:b:o:t:u:x: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
@@ -45,7 +45,7 @@ elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid} | xargs -n 1 | shuf | xargs)
   time ./bin/create-server.sh ${names}
-  time /site-test-setup.yaml --limit "hx,&h?-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-setup.yaml --limit "hx,&h?-*-*-*-*-*-${uid}" ${extra}
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
