@@ -9,20 +9,31 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 [[ $# -ne 0 ]]
 
 names=$(xargs -r -n 1 <<<$*)
-echo -n " trusting $(wc -w <<<${names}) system/s ..."
+echo " trusting $(wc -w <<<${names}) system/s ..."
+
+todo=""
+while read -r name; do
+  if dig +short ${name} | grep -q .; then
+    todo+=" ${name}"
+  fi
+done <<<${names}
+echo -n "  $(wc -w <<<${todo}) found in DNS ..."
+if [[ ${todo} -eq 0 ]]; then
+  echo -e "\n NOT ok"
+  exit 1
+fi
 
 attempts=7
-left=${names}
 while ((attempts--)); do
-  left=$(
+  todo=$(
     while read -r name; do
       if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
         echo ${name}
       fi
-    done <<<${left}
+    done <<<${todo}
   )
 
-  if [[ -z ${left} ]]; then
+  if [[ -z ${todo} ]]; then
     echo -e "\n OK"
     break
   fi
@@ -30,11 +41,11 @@ while ((attempts--)); do
   if ((attempts < 6)); then
     sleep 8
   fi
-  echo -en "\n    $(wc -w <<<${left}) left ..."
-  ssh-keyscan -q -4 -t ed25519 ${left} | sort | tee -a ~/.ssh/known_hosts >/dev/null
+  echo -en "\n    $(wc -w <<<${todo}) to do ..."
+  ssh-keyscan -q -4 -t ed25519 ${todo} | sort | tee -a ~/.ssh/known_hosts >/dev/null
 done
 
-if [[ -n ${left} ]]; then
-  echo -e " NOT ok,  left:     $(xargs <<<${left})\n"
+if [[ -n ${todo} ]]; then
+  echo -e " NOT ok,  to do:     $(xargs <<<${todo})\n"
   exit 1
 fi
