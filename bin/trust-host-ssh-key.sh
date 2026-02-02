@@ -18,7 +18,7 @@ while read -r name; do
   fi
 done <<<${names}
 echo -n "  $(wc -w <<<${todo}) found in DNS ..."
-if [[ ${todo} -eq 0 ]]; then
+if [[ -z ${todo} ]]; then
   echo -e "\n NOT ok"
   exit 1
 fi
