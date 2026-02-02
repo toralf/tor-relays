@@ -16,8 +16,10 @@ trap 'echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 log=/tmp/$(basename $0)
 
 while :; do
-  info "healthy"
-  ./site-info.yaml --limit 'hx,!hi' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log || true
+  info "check"
+  if ! ./site-info.yaml --limit 'hx,!hix' --tags artefact,issue,coredump,trace &>${log}.info.healthy.log; then
+    info "  NOT ok"
+  fi
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     dest="foo"
@@ -25,7 +27,7 @@ while :; do
     if ! rsync --compress --recursive --verbose \
       ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ${dest}:/var/www/site01 \
       &>${log}.rsync.${dest}.log; then
-      info "rsync ${dest} NOT ok"
+      info "  NOT ok"
     fi
   fi
 

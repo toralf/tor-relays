@@ -39,33 +39,34 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} == "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "hx,&h?-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra}
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid} | xargs -n 1 | shuf | xargs)
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "hx,&h?-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra}
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
+  extra+=" --skip-tags nginx-config"
   if [[ ${type} == "image_build" ]]; then
     # clone + build kernel
     names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hx,&hi-*-*-*-*-*-${uid}" ${extra}
+    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra}
   else
     # clone kernel
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hx,&hi-*-*-*-${uid}" --skip-tags kernel-make ${extra}
+    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags kernel-make
   fi
 
 elif [[ ${type} == "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "hx,&hi-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-kernel.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra}
 
 else
   echo "unknown type ${type}" >&2

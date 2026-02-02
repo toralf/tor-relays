@@ -73,6 +73,9 @@ set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
+export RETRY_FILES_ENABLED="True"
+export RETRY_FILES_SAVE_PATH="${HOME}"
+
 cd $(dirname $0)/..
 source ./bin/hx-lib.sh
 trap 'echo stopping...; rm -f /tmp/CONT; touch /tmp/STOP' INT QUIT TERM EXIT
@@ -80,7 +83,8 @@ trap 'echo stopping...; rm -f /tmp/CONT; touch /tmp/STOP' INT QUIT TERM EXIT
 log=/tmp/$(basename $0)
 
 type hcloud >/dev/null
-# too much grep and ansible calls otherwise to chain
+
+# too much grep and other calls otherwise to chain
 set +e
 
 while :; do
@@ -94,7 +98,9 @@ while :; do
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log
+      if ! ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log; then
+        info "  NOT ok"
+      fi
       pit_stop
     fi
   done
@@ -104,7 +110,9 @@ while :; do
     if git_changed $i; then
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      ./site-setup.yaml --limit "hx,!hi,&h*-*-*-${i}*" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log
+      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log; then
+        info "  NOT ok"
+      fi
       pit_stop
     fi
   done
@@ -112,7 +120,9 @@ while :; do
   # check all systems
   info "check"
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.before
-  ./site-setup.yaml --limit 'hx,!hi' --tags poweron &>${log}.down.log
+  if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${log}.down.log; then
+    info "  NOT ok"
+  fi
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.after
   pit_stop
 
@@ -134,11 +144,13 @@ while :; do
     update=$(sort -u /tmp/is_down.{before,after} | xargs -r)
     if [[ -n ${update} ]]; then
       info "  update: $(wc -w <<<${update})"
-      RETRY_FILES_ENABLED="True" RETRY_FILES_SAVE_PATH="${HOME}" ./site-setup.yaml \
+      if ! ./site-setup.yaml \
         --limit "$(tr ' ' ',' <<<${update})" \
         --tags kernel-build,lyrebird,snowflake,tor \
         -e kernel_git_build_wait=false \
-        &>${log}.update.log
+        &>${log}.update.log; then
+        info "  NOT ok"
+      fi
       pit_stop
     else
       truncate -s 0 ${HOME}/.retry
@@ -149,9 +161,11 @@ while :; do
     if [[ -n ${retry} ]]; then
       info "  retry: $(wc -w <<<${retry})"
       wait_for_jobs
-      rebuild=$(shuf -n 32 -e ${retry} | xargs)
+      rebuild=$(shuf -n 64 -e ${retry} | xargs)
       ./bin/rebuild-server.sh ${rebuild}
-      ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log; then
+        info "  NOT ok"
+      fi
       pit_stop
     fi
   fi
