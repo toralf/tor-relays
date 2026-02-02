@@ -174,10 +174,10 @@
       tags:
         - kernel-debian
 
-    - name: Force a reboot
+    - name: Reboot is forced
       changed_when: true
       ansible.builtin.debug:
-        msg: Reboot was triggered.
+        msg: Reboot is triggered.
       notify: Reboot
       tags:
         - never
