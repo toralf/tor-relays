@@ -48,10 +48,11 @@ if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   locations_x86=$(jq -r 'select(.server_types.available | contains(['${id_x86}'])) | .location.name' <<<${data_centers})
 fi
 
-snapshots=$(getSnapshots)
+# an empty string forces snapshot creation from scratch
+snapshots=${HCLOUD_SNAPSHOTS-$(getSnapshots)}
 
-if [[ -n ${SSH_KEY-} ]]; then
-  ssh_key=${SSH_KEY}
+if [[ -n ${HCLOUD_SSH_KEY-} ]]; then
+  ssh_key=${HCLOUD_SSH_KEY}
 else
   ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[] | select(.labels.hx == "true") | .name')
   if [[ -z ${ssh_key} ]]; then
@@ -67,14 +68,14 @@ echo -e " creating $(wc -w <<<${names}) system/s ..."
 
 commands=$(
   while read -r name; do
-    # set htype based on hostname
+    # set htVPS type based on hostname
     case ${name} in
     *-arm | *-arm-*) htype="cax11" ;;
     *-x86 | *-x86-*) htype="cx23" ;;
     *) htype=$(shuf -n 1 -e ${HCLOUD_TYPES:-cax11 cx23}) ;;
     esac
 
-    # location
+    # Hetzner location
     loc=""
     if [[ -n ${HCLOUD_LOCATION-} ]]; then
       loc=${HCLOUD_LOCATION}
