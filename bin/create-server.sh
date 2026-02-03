@@ -68,12 +68,20 @@ echo -e " creating $(wc -w <<<${names}) system/s ..."
 
 commands=$(
   while read -r name; do
-    # set htVPS type based on hostname
-    case ${name} in
-    *-arm | *-arm-*) htype="cax11" ;;
-    *-x86 | *-x86-*) htype="cx23" ;;
-    *) htype=$(shuf -n 1 -e ${HCLOUD_TYPES:-cax11 cx23}) ;;
-    esac
+    if [[ -n ${HCLOUD_TYPE-} ]]; then
+      htype=${HCLOUD_TYPE}
+    else
+      # set htype based on hostname (e.g. hm1-db-x86)
+      if htype=$(cut -f 3 -d '-' -s <<<${name}); then
+        case ${htype} in
+        arm) htype="cax11" ;;
+        x86) htype="cx23" ;;
+        esac
+      fi
+      if [[ -z ${htype} ]]; then
+        htype=$(shuf -n 1 -e ${HCLOUD_TYPES-cax11 cx23})
+      fi
+    fi
 
     # Hetzner location
     loc=""
