@@ -17,7 +17,7 @@ while read -r name; do
     todo+=" ${name}"
   fi
 done <<<${names}
-echo -n "  $(wc -w <<<${todo}) found in DNS ..."
+echo -n "   $(wc -w <<<${todo}) found in DNS ..."
 if [[ -z ${todo} ]]; then
   echo -e "\n NOT ok"
   exit 1
@@ -30,9 +30,10 @@ while ((attempts--)); do
       if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
         echo ${name}
       fi
-    done <<<${todo}
+    done < <(xargs -n 1 <<<${todo})
   )
 
+  echo -en "\n   $(wc -w <<<${todo}) to do ..."
   if [[ -z ${todo} ]]; then
     echo -e "\n OK"
     break
@@ -41,7 +42,6 @@ while ((attempts--)); do
   if ((attempts < 6)); then
     sleep 8
   fi
-  echo -en "\n    $(wc -w <<<${todo}) to do ..."
   ssh-keyscan -q -4 -t ed25519 ${todo} | sort | tee -a ~/.ssh/known_hosts >/dev/null
 done
 
