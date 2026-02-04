@@ -26,7 +26,7 @@
     update_cache: true
   register: _result
 
-- name: Install/Update dep package for Ansible
+- name: Install/Update Ansible deps
   ansible.builtin.apt:
     name:
       - python3-psutil
