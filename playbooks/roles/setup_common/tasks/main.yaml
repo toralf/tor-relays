@@ -152,6 +152,11 @@
       tags:
         - nginx
 
+    - name: Nginx openssl
+      ansible.builtin.import_tasks: nginx-openssl.yaml
+      tags:
+        - nginx-openssl
+
     - name: Nginx config
       ansible.builtin.import_tasks: nginx-config.yaml
       tags:
