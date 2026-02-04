@@ -80,7 +80,10 @@ cd $(dirname $0)/..
 source ./bin/hx-lib.sh
 trap 'echo stopping...; rm -f /tmp/CONT; touch /tmp/STOP' INT QUIT TERM EXIT
 
-log=/tmp/$(basename $0)
+if [[ ! -d /tmp/hx ]]; then
+  mkdir /tmp/hx
+fi
+log=/tmp/hx/$(basename $0)
 
 type hcloud >/dev/null
 
