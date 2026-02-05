@@ -82,27 +82,40 @@
     - name: Make wait
       when: kernel_git_build_wait | bool
       block:
-        - name: Make
-          changed_when: true
-          async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
-          poll: 0
-          ansible.builtin.shell:
-            cmd: >-
-              /root/kernel-build.sh
-          register: _kernel_make
+        - name: Job
+          block:
+            - name: Start job
+              changed_when: true
+              async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
+              poll: 0
+              ansible.builtin.shell:
+                cmd: >-
+                  /root/kernel-build.sh
+              register: _kernel_make
 
-        - name: Poll job
-          retries: "{{ kernel_git_build_wait_retries }}"
-          delay: "{{ kernel_git_build_wait_delay }}"
-          until: _job_result.finished
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_make.ansible_job_id }}"
-          register: _job_result
+            - name: Poll job
+              retries: "{{ kernel_git_build_wait_retries }}"
+              delay: "{{ kernel_git_build_wait_delay }}"
+              until: _job_result.finished
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_make.ansible_job_id }}"
+              register: _job_result
 
-        - name: Cleanup job
-          ansible.builtin.async_status:
-            jid: "{{ _kernel_make.ansible_job_id }}"
-            mode: cleanup
+            - name: Cleanup job
+              ansible.builtin.async_status:
+                jid: "{{ _kernel_make.ansible_job_id }}"
+                mode: cleanup
+
+          rescue:
+            - name: Slurp make.log
+              ansible.builtin.slurp:
+                src: /root/make.log
+              register: _make_log
+
+            - name: Print last few lines of make.log
+              failed_when: true
+              ansible.builtin.debug:
+                msg: "{{ (_make_log['content'] | b64decode)[-10:] }}"
 
         - name: Reboot
           failed_when: not (
