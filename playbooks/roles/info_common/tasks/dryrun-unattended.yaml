@@ -1,5 +1,5 @@
 ---
-- name: Dry run of unattended-upgrade
+- name: Dry run unattended-upgrade
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -8,7 +8,7 @@
         sed -e '1d' -e '$d'
   register: _result
 
-- name: Output of unattended-upgrade dry-run
+- name: Output of dry run
   when: _result.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:

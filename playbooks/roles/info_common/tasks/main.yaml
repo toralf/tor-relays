@@ -11,10 +11,11 @@
       tags:
         - conntrack
 
-    - name: Dryrun of unattended-upgrade
-      ansible.builtin.import_tasks: dry-update.yaml
+    - name: Dry run
+      ansible.builtin.import_tasks: dryrun-unattended.yaml
       tags:
-        - dry-update
+        - dryrun-unattended
+        - never
 
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
