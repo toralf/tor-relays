@@ -4,10 +4,11 @@
     src: 99local-apt-conf
     dest: /etc/apt/apt.conf.d/
 
-- name: Stop unattended upgrade
+- name: Stop and disable unattended upgrade
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: stopped
+    enabled: false
   loop:
     - apt-daily.timer
     - apt-daily-upgrade.timer
