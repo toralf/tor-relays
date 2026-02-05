@@ -79,7 +79,7 @@
     cmd: make install
     chdir: /root/tor
 
-- name: Add systemd unit
+- name: Add/Change systemd unit
   ansible.builtin.template:
     src: tor.service.j2
     dest: /etc/systemd/system/tor.service
