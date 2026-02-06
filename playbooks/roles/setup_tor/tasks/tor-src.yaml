@@ -44,7 +44,7 @@
         --disable-android --disable-coverage --disable-html-manual --disable-libfuzzer --disable-missing-doc-warnings \
         --disable-module-dirauth --enable-pic --disable-restart-debugging --enable-gpl --enable-module-pow \
         --enable-gcc-hardening --enable-linker-hardening \
-        --enable-libscrypt --enable-seccomp --enable-module-relay --disable-unittests --disable-zstd \
+        --enable-libscrypt --enable-seccomp --enable-module-relay --disable-unittests --enable-zstd \
         --disable-asciidoc --disable-manpage --disable-lzma
 
       make clean
