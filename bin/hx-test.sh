@@ -49,17 +49,16 @@ elif [[ ${type} == "full" ]]; then
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
-  extra+=" --skip-tags nginx-config"
   if [[ ${type} == "image_build" ]]; then
-    # clone + build kernel
+    # clone kernel repo + build it
     names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra}
+    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra} --skip-tags nginx-config,nginx-openssl
   else
-    # clone kernel
+    # only clone kernel repo
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags kernel-make
+    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags nginx-config,nginx-openssl,kernel-make
   fi
 
 elif [[ ${type} == "kernel" ]]; then
