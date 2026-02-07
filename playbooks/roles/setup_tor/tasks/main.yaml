@@ -87,3 +87,6 @@
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
