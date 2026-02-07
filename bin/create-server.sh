@@ -113,7 +113,7 @@ commands=$(
 
 # the API call to Hetzner
 set +e
-xargs -r -P ${jobs} -L 1 timeout 30m hcloud --quiet <<<${commands}
+xargs -r -P ${jobs} -L 1 timeout 45m hcloud --quiet <<<${commands}
 rc=$?
 set -e
 
