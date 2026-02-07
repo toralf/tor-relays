@@ -126,4 +126,5 @@
           retries: 2
           ansible.builtin.reboot:
             reboot_timeout: 180
+            reboot_command: reboot
           register: _reboot
