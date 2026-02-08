@@ -11,7 +11,7 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
-    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z.kconfig.txt"
+    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d_%H:%M:%S') }}Z.kconfig.txt"
 
 - name: File kconfig info
   delegate_to: localhost
@@ -23,4 +23,4 @@
       {{ ansible_facts.architecture }}
       {{ ansible_facts.processor[1] }}
 
-    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z.info.txt"
+    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d_%H:%M:%S') }}Z.info.txt"

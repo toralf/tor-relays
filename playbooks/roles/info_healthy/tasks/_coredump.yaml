@@ -5,31 +5,31 @@
   ansible.builtin.lineinfile:
     line: "{{ _unique_id }}"
     path: "{{ infodir }}/coredump/_known.txt"
-  register: _known
+  register: __known
 
 - name: Work on new coredump
-  when: _known.changed
+  when: __known.changed
   block:
     - name: Get coredump info
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          set -eu
-
           tar -xf {{ _fname }} --to-stdout >/tmp/core
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
             -c /tmp/core
           echo
+          echo "-----------------------------------"
+          echo
           eu-stack --core /tmp/core
           rm /tmp/core
-      register: _result
+      register: __info
 
     - name: File coredump info
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
-        content: "{{ _result.stdout }}"
+        content: "{{ __info.stdout }}"
         dest: "{{ infodir }}/coredump/{{ _unique_id }}.txt"
 
   rescue:

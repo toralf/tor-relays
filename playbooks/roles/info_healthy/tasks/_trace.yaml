@@ -5,10 +5,10 @@
   ansible.builtin.lineinfile:
     line: "{{ item }}"
     path: "{{ infodir }}/trace/_known.txt"
-  register: _known
+  register: __known
 
 - name: Work on new trace
-  when: _known.changed
+  when: __known.changed
   block:
     - name: Get trace
       changed_when: false
@@ -17,7 +17,7 @@
           journalctl --since "{{ trace_since }}" --quiet |
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/kernel: ---\[ end trace /" |
             head -n 999
-      register: _full
+      register: __full
 
     - name: File trace
       delegate_to: localhost
@@ -25,7 +25,7 @@
       ansible.builtin.blockinfile:
         block: |
           # {{ now(utc=true, fmt='%Y-%m-%d %H:%M:%S') }}Z    {{ ansible_facts.lsb.description }}
-          {{ _full.stdout }}
+          {{ __full.stdout }}
         path: "{{ infodir }}/trace/{{ inventory_hostname }}.txt"
         marker: "# {mark} {{ item }} "
         marker_begin: "TRACE BEGIN"

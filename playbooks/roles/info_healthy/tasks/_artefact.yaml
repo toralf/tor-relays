@@ -5,10 +5,10 @@
   ansible.builtin.lineinfile:
     line: "{{ item.checksum }}"
     path: "{{ infodir }}/artefact/_known.txt"
-  register: _known
+  register: __known
 
 - name: Work on new artefact
-  when: _known.changed
+  when: __known.changed
   vars:
     _fname: "{{ inventory_hostname }}.{{ item.checksum }}.tar.gz"
   block:
