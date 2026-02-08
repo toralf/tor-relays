@@ -27,40 +27,40 @@
     dest: /etc/systemd/system/apt-daily.timer.d/override.conf
   notify: Reload systemd
 
-# 2x per day at :10
+# 2x per day at :15
 - name: Configure apt upgrade timer
   ansible.builtin.template:
     src: apt_upgrade.j2
     dest: /etc/systemd/system/apt-daily-upgrade.timer.d/override.conf
   notify: Reload systemd
 
-# 2x per day one hour later at :13
-- name: Ensure reaper cron job is present
-  ansible.builtin.cron:
-    name: Reap a hanging apt process
-    hour: "{{ [1 + timer_hour1 | int, (1 + timer_hour2 | int) % 24] | sort | join(',') }}"
-    minute: 13
-    job: >-
-      pkill -f "apt-get -qq -y update"
-
-# 2x per day between :30 and :39
+# 2x per day at :40
 - name: Ensure reboot-required cron job is present
   ansible.builtin.cron:
     name: Reboot if required
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
-    minute: "{{ 30 + 10 | random(seed=seed_host) }}"
+    minute: "{{ (40 + 5) | random(seed=seed_host) }}"
     job: >-
       if grep -q 'System restart required' /var/run/reboot-required 2>/dev/null; then
       pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot;
       fi
 
-# 2x per day between :40 and :49
+# 2x per day at :50
 - name: Ensure needrestart cron job is present
   ansible.builtin.cron:
     name: Reboot if needrestart adviced it
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
-    minute: "{{ 40 + 10 | random(seed=seed_host) }}"
+    minute: "{{ 50 + 5 | random(seed=seed_host) }}"
     job: >-
       if needrestart -r l -b | grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:'; then
       pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot;
       fi
+
+# 2x per day at :58
+- name: Ensure reaper cron job is present
+  ansible.builtin.cron:
+    name: Reap a hanging apt process
+    hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
+    minute: 58
+    job: >-
+      pkill -f "apt-get -qq -y update"
