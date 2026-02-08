@@ -12,6 +12,7 @@
   ansible.builtin.fetch:
     src: "/var/lib/tor/keys/{{ item }}"
     dest: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/"
+    flat: true
   loop:
     - ed25519_master_id_public_key
     - ed25519_master_id_secret_key
