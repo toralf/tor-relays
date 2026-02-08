@@ -1,5 +1,5 @@
 ---
-- name: Test Tor keys
+- name: Test for existance of backed up Tor keys
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
@@ -13,7 +13,7 @@
       ansible.builtin.file:
         state: directory
         path: /var/lib/tor/keys/
-        mode: "u=rwx,g=s,o="
+        mode: u=rwx,g=s,o=
         owner: tor
         group: tor
 
