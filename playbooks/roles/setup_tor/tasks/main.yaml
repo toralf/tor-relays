@@ -38,7 +38,7 @@
       group: root
       mode: "0644"
   block:
-    - name: Test keys
+    - name: Test for existance of Tor keys
       ansible.builtin.stat:
         path: /var/lib/tor/keys/
       register: _keys
