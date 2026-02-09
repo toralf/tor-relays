@@ -24,6 +24,7 @@
           eu-stack --core /tmp/core
           rm /tmp/core
       register: __info
+      notify: Not Healthy
 
     - name: File coredump info
       delegate_to: localhost

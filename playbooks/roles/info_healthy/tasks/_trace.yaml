@@ -18,6 +18,7 @@
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/kernel: ---\[ end trace /" |
             head -n 999
       register: __full
+      notify: Not Healthy
 
     - name: File trace
       delegate_to: localhost
