@@ -18,7 +18,7 @@
       ansible.builtin.shell:
         cmd: |-
           hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
-            grep -v ' {{ snapshot_description }}$' |
+            grep -e ' {{ snapshot_description }}$' |
             sort -r |
             awk 'x[$2]++ { print $1 }' |
             xargs -r hcloud --poll-interval 5s image delete >/dev/null
