@@ -20,15 +20,9 @@
     - name: Restore Tor keys
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
-        src: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/{{ item }}"
-        dest: "/var/lib/tor/keys/{{ item }}"
+        src: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/"
+        dest: "/var/lib/tor/keys/"
         mode: "0600"
         owner: tor
         group: tor
-      loop:
-        - ed25519_master_id_public_key
-        - ed25519_master_id_secret_key
-        - ed25519_signing_cert
-        - ed25519_signing_secret_key
-        - secret_id_key
       notify: Restart Tor
