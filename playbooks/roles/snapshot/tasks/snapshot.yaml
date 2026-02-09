@@ -12,7 +12,7 @@
           hcloud --quiet --poll-interval 10s server create-image
             --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
 
-    - name: Delete older
+    - name: Delete outdated
       changed_when: _result.rc == 0
       failed_when: false
       ansible.builtin.shell:
