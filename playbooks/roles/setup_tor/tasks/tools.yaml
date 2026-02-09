@@ -22,9 +22,9 @@
     name:
       - autotools-dev
 
-- name: Install/Update Go for Tor PT build
+- name: Install/Update toolchain for Tor bridges
   when: tor_bridge_distribution != ''
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
-      - golang-go
+      - golang
