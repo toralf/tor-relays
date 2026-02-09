@@ -27,7 +27,7 @@ while :; do
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.healthy.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
     # minimize races with house keeping
     info "rsync to ~/site01"
-    if rsync --recursive ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ~/site01 &>/dev/null
+    if rsync --recursive ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ~/site01 &>/dev/null; then
       dest="foo"
       info "rsync to remote ${dest}"
       if ! rsync --recursive ~/site01 ${dest}:/var/www/site01 &>/dev/null; then
