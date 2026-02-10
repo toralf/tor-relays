@@ -43,9 +43,9 @@ if [[ ${type} == "app" ]]; then
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
-  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid} | xargs -n 1 | shuf | xargs)
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra} -e kernel_git_build_wait=false
+  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra} -e "kernel_git_build_wait=false"
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
@@ -53,12 +53,12 @@ elif [[ ${type} =~ "image" ]]; then
     # clone kernel repo + build it
     names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra} --skip-tags nginx-config,nginx-openssl
+    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra} --skip-tags "nginx-config,nginx-openssl"
   else
     # only clone kernel repo
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags nginx-config,nginx-openssl,kernel-make
+    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags "nginx-config,nginx-openssl,kernel-make"
   fi
 
 elif [[ ${type} == "kernel" ]]; then
