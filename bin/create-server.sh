@@ -107,7 +107,7 @@ commands=$(
       exit 1
     fi
 
-    echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name} ${loc}
+    echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} ${loc} --name ${name}
   done <<<${names}
 )
 
