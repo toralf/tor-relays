@@ -16,17 +16,19 @@
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
   register: _cronjob
 
-- name: Getting process IDs of any running DDoS metrics script
+- name: Getting process IDs of running DDoS metrics script(s)
   community.general.pids:
     name: metrics.sh
   register: _ddos_metrics_pids_2_kill
 
 - name: Ensure no outdated DDoS metrics script is running
-  when: (_download.changed or not ddos_metrics or _cronjob.changed)
+  when: _download.changed or not ddos_metrics or _cronjob.changed
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
-      kill -0 "{{ item }}" && kill -9 "{{ item }}"
+      if kill -0 {{ item }}; then
+        kill -9 {{ item }}
+      fi
   with_items: "{{ _ddos_metrics_pids_2_kill.pids | default([]) }}"
 
 - name: Look if DDoS metrics script is running
