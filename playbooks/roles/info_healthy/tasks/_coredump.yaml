@@ -15,6 +15,7 @@
       ansible.builtin.shell:
         cmd: |-
           tar -xf {{ _fname }} --to-stdout >/tmp/core
+
           gdb -q -batch \
             -ex 'set logging enabled off' -ex 'set pagination off' -ex 'thread apply all bt' -ex 'quit' \
             -c /tmp/core
@@ -22,6 +23,7 @@
           echo "-----------------------------------"
           echo
           eu-stack --core /tmp/core
+
           rm /tmp/core
       register: __info
       notify: Not Healthy
@@ -29,11 +31,17 @@
     - name: File coredump info
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
+      when: __info.stdout | length > 0
       ansible.builtin.copy:
         content: "{{ __info.stdout }}"
         dest: "{{ infodir }}/coredump/{{ _unique_id }}.txt"
 
   rescue:
+    - name: Debug __info
+      changed_when: true
+      ansible.builtin.debug:
+        var: __info
+
     - name: Reset known state for coredump
       delegate_to: localhost
       throttle: 1

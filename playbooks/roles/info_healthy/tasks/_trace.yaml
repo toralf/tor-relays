@@ -33,6 +33,11 @@
         marker_end: "TRACE END"
 
   rescue:
+    - name: Debug __full
+      changed_when: true
+      ansible.builtin.debug:
+        var: __full
+
     - name: Reset known state for trace
       delegate_to: localhost
       throttle: 1

@@ -1,6 +1,8 @@
 ---
 - name: Check notice log
   changed_when: false
+  vars:
+    log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -15,7 +17,7 @@
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' {{ log_notice }}.1 {{ log_notice }} \
         -e 'Unrecognized BridgeDistribution value' \
         2>/dev/null |
-        tail -n {{ log_lines }}
+        tail -n 10
     executable: /bin/bash
   register: _result
 

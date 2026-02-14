@@ -11,7 +11,7 @@
 - name: Result
   when: _result.files | default([]) | length > 0
   block:
-    - name: Loop over core dump files
+    - name: Loop over coredumps
       when: _result.files | length < 50
       vars:
         _fname: "{{ item.path }}"

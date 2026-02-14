@@ -1,8 +1,11 @@
 ---
-- name: Get unique clients of the (up to) last 3 days (sorted from newest to oldest)
+- name: Get unique clients
   changed_when: false
+  vars:
+    log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
+      #  (up to) last 3 days (sorted from newest to oldest)
       zgrep -h -F ' unique clients.' {{ log_notice }}.4.gz {{ log_notice }}.3.gz {{ log_notice }}.2.gz \
         {{ log_notice }}.1 {{ log_notice }} 2>/dev/null |
         tail -n 12 |

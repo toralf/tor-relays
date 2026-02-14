@@ -115,7 +115,8 @@
             - name: Print last few lines of make.log
               failed_when: true
               ansible.builtin.debug:
-                msg: "{{ (_make_log['content'] | b64decode)[-10:] }}"
+                msg: >-
+                  {{ (_make_log['content'] | b64decode)[-10:] }}
 
         - name: Reboot
           failed_when: not (
