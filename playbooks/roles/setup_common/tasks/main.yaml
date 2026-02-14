@@ -70,7 +70,6 @@
       when: ansible_facts.os_family == 'Debian'
       ansible.builtin.import_tasks: basetools-apt.yaml
       tags:
-        - basetools
         - basetools-apt
 
     - name: IPv6
