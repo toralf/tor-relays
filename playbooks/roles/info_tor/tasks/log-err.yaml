@@ -1,10 +1,12 @@
 ---
 - name: Check error log
   changed_when: false
+  vars:
+    log_err: /var/log/tor/err.log
   ansible.builtin.shell:
     cmd: |-
       grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} 2>/dev/null |
-        tail -n {{ log_lines }}
+        tail -n 50
   register: _result
 
 - name: Results of error log
@@ -12,3 +14,4 @@
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
+  notify: Not Healthy

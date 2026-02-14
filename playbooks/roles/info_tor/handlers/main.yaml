@@ -1,0 +1,5 @@
+---
+- name: Not Healthy
+  listen: Not Healthy
+  ansible.builtin.fail:
+    msg: Something is odd.
