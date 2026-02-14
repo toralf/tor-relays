@@ -27,11 +27,13 @@ function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   set +e
   while read -r name; do
-    # certain files in {{ infodir }} subdirs
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos6,dmesg,kconfig,trace}/${name}{,.*}
-    rm -rf ~/tmp/tor-relays/tor-keys/${name}/
-    # client certs
-    rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
+    if [[ -z ${KEEP_TOR_KEYS-} ]]; then
+      rm -rf ~/tmp/tor-relays/tor-keys/${name}/
+    fi
+    if [[ -z ${KEEP_CLIENT_CERTS-} ]]; then
+      rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
+    fi
   done < <(xargs -r -n 1 <<<$*)
   set -e
 }
