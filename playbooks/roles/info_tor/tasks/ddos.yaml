@@ -2,7 +2,7 @@
 - name: Fetch DDoS ipset files
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  failed_when: false # might not be there immediately after bridge creation
+  failed_when: false # might not yet be created shortly after setup
   ansible.posix.synchronize:
     mode: pull
     src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"
@@ -12,3 +12,5 @@
   with_items:
     - ddos
     - ddos6
+    - manual
+    - manual6

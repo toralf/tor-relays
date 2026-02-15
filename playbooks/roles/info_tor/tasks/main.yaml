@@ -10,7 +10,7 @@
       get_mime: false
   block:
     - name: Server and public bridge
-      when: tor_bridge_distribution != '' and tor_bridge_distribution != 'none'
+      when: tor_bridge_distribution not in ('', 'none')
       block:
         - name: Get fingerprints
           ansible.builtin.import_tasks: fingerprints.yaml
