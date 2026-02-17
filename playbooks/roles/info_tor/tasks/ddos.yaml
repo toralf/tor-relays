@@ -1,5 +1,5 @@
 ---
-- name: Fetch DDoS ipset files
+- name: Fetch saved DDoS ipset files
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   failed_when: false # might not yet be created shortly after setup
@@ -11,6 +11,5 @@
     verify_host: true
   with_items:
     - ddos
-    - ddos6
-    - manual
-    - manual6
+    - ddos64
+    - ddos72
