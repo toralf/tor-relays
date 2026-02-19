@@ -12,4 +12,5 @@
   with_items:
     - ddos
     - ddos64
-    - ddos72
+    - ddos80
+    - ddos128

@@ -110,12 +110,6 @@
     special_time: daily
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
-- name: Create DDoS cron job to update IPv6 manual ipset
-  ansible.builtin.cron:
-    name: Tor manual ipset update
-    minute: "*/5"
-    job: /root/ipv6-rules.sh manual
-
 - name: Egress
   block:
     - name: Get egress firewall
