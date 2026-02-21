@@ -17,12 +17,17 @@
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
 - name: Build {{ item.name }}
-  throttle: 24
+  throttle: 16
   changed_when: false
-  environment:
-    GOPROXY: "https://goproxy.io,direct"
-  ansible.builtin.command:
-    cmd: go build -v
+  vars:
+    _cmd: "go build -v"
+  ansible.builtin.shell:
+    cmd: |-
+      if ! {{ _cmd }}; then
+        if ! GOPROXY="https://goproxy.io" {{ _cmd }}; then
+          GOPROXY="direct" {{ _cmd }}
+        fi
+      fi
     chdir: "/root/{{ item.name }}/proxy"
 
 - name: Copy {{ item.name }}

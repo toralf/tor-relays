@@ -1,6 +1,11 @@
 ---
+- name: Add PPA Go repo for Ubuntu
+  when: ansible_facts.distribution == 'Ubuntu'
+  ansible.builtin.apt_repository:
+    repo: ppa:longsleep/golang-backports
+
 - name: Install/Update toolchain
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"
     name:
-      - golang
+      - golang-go

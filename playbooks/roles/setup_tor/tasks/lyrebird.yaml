@@ -8,12 +8,17 @@
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
 - name: Build Lyrebird
-  throttle: 24
+  throttle: 16
   changed_when: false
-  environment:
-    GOPROXY: "https://goproxy.io,direct"
-  ansible.builtin.command:
-    cmd: make build
+  vars:
+    _cmd: "make build"
+  ansible.builtin.shell:
+    cmd: |-
+      if ! {{ _cmd }}; then
+        if ! GOPROXY="direct" {{ _cmd }}; then
+           GOPROXY="https://goproxy.io" {{ _cmd }}
+        fi
+      fi
     chdir: /root/lyrebird
 
 - name: Copy Lyrebird
