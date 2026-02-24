@@ -27,6 +27,12 @@
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   block:
+    - name: Change non-default IPv6
+      changed_when: true
+      when: ansible_facts.default_ipv6.address is not search('::1$')
+      ansible.builtin.debug:
+        var: ansible_facts.default_ipv6.address
+
     - name: Change IPv6 for Debian
       when: ansible_facts.distribution == 'Debian'
       block:
@@ -74,3 +80,8 @@
           - "!all"
           - "!min"
           - default_ipv6
+
+    - name: Current gathered IPv6
+      changed_when: true
+      ansible.builtin.debug:
+        var: ansible_facts.default_ipv6.address
