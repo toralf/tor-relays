@@ -47,6 +47,7 @@
       - curl
       - elfutils
       - git
+      - localepurge
       - needrestart
       - psmisc
       - rsync
@@ -56,3 +57,10 @@
   when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Purge locale
+  changed_when: _purged.stdout | length > 0
+  ansible.builtin.command:
+    cmd: >-
+      localepurge
+  register: _purged
