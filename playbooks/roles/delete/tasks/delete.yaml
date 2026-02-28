@@ -6,11 +6,19 @@
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   changed_when: true
+  failed_when: false
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
   ansible.builtin.command:
     cmd: >-
       hcloud --quiet --poll-interval 5s server delete {{ inventory_hostname }}
+  register: _deleted
+
+- name: Delete issue (non-fatal)
+  when: _deleted.rc != 0
+  changed_when: true
+  ansible.builtin.debug:
+    var: _deleted.stderr
 
 - name: SSH known key
   delegate_to: localhost
