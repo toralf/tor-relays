@@ -5,7 +5,7 @@
 - name: Instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  changed_when: true
+  changed_when: _deleted.rc == 0
   failed_when: false
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
