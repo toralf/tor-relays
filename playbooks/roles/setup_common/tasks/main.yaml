@@ -147,19 +147,21 @@
           selectattr('proxy_metrics_port', 'defined') |
           selectattr('proxy_metrics_port', 'gt', 0) |
           length > 0 }}"
-      ansible.builtin.import_tasks: nginx.yaml
-      tags:
-        - nginx
+      block:
+        - name: Setup
+          ansible.builtin.import_tasks: nginx-setup.yaml
+          tags:
+            - nginx-setup
 
-    - name: Nginx openssl
-      ansible.builtin.import_tasks: nginx-openssl.yaml
-      tags:
-        - nginx-openssl
+        - name: Openssl
+          ansible.builtin.import_tasks: nginx-openssl.yaml
+          tags:
+            - nginx-openssl
 
-    - name: Nginx config
-      ansible.builtin.import_tasks: nginx-config.yaml
-      tags:
-        - nginx-config
+        - name: Config
+          ansible.builtin.import_tasks: nginx-config.yaml
+          tags:
+            - nginx-config
 
     - name: Create Prometheus config files
       ansible.builtin.import_tasks: targets.yaml
