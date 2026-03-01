@@ -2,4 +2,4 @@
 - name: Not Healthy
   listen: Not Healthy
   ansible.builtin.fail:
-    msg: Something is odd.
+    msg: Something is odd with Tor.
