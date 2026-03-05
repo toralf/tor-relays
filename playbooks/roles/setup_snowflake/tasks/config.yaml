@@ -12,7 +12,7 @@
     path: /usr/share/tor/
     mode: "0755"
     state: "{{ (use_tor_geoip_data | bool) | ternary('directory', 'absent') }}"
-  notify: Restart Snowflake
+  notify: Restart snowflake
 
 - name: Get GeoIP data
   when: use_tor_geoip_data | bool
@@ -24,4 +24,4 @@
   with_items:
     - geoip
     - geoip6
-  notify: Restart Snowflake
+  notify: Restart snowflake
