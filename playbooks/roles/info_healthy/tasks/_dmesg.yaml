@@ -2,7 +2,8 @@
 - name: Get dmesg
   changed_when: false
   ansible.builtin.command:
-    cmd: dmesg
+    cmd: >-
+      dmesg
   register: __dmesg
 
 - name: File dmesg

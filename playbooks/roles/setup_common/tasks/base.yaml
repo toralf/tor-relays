@@ -27,7 +27,8 @@
   changed_when: false
   failed_when: _result.stdout_lines | length != 1
   ansible.builtin.shell:
-    cmd: wc -l </root/.ssh/authorized_keys
+    cmd: >-
+      wc -l </root/.ssh/authorized_keys
   register: _result
 
 - name: Create swapfile for tiny systems (e.g. IONOS)

@@ -17,7 +17,8 @@
 - name: Verify nginx config
   changed_when: false
   ansible.builtin.command:
-    cmd: nginx -t
+    cmd: >-
+      nginx -t
 
 - name: Ensure nginx is started
   ansible.builtin.systemd_service:

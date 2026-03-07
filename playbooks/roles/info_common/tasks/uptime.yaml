@@ -2,7 +2,8 @@
 - name: Uptime
   changed_when: false
   ansible.builtin.command:
-    cmd: uptime -ps
+    cmd: >-
+      uptime -ps
   register: _result
 
 - name: File uptime

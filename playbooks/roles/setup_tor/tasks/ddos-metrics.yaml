@@ -40,4 +40,5 @@
   when: ddos_metrics and _ddos_metrics_pids_running.pids | default([]) | length == 0
   changed_when: true
   ansible.builtin.shell:
-    cmd: nice /root/metrics.sh 15 /var/www/html/ &
+    cmd: >-
+      nice /root/metrics.sh 15 /var/www/html/ &

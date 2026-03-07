@@ -23,7 +23,8 @@
   changed_when: false
   failed_when: false
   ansible.builtin.command:
-    cmd: conntrack -C
+    cmd: >-
+      conntrack -C
   register: _result
 
 - name: File conntrack counter

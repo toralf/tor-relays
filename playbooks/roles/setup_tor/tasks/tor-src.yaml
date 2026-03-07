@@ -76,7 +76,8 @@
   when: _binary_tor.changed
   changed_when: true
   ansible.builtin.command:
-    cmd: make install
+    cmd: >-
+      make install
     chdir: /root/tor
 
 - name: Add/Change systemd unit
