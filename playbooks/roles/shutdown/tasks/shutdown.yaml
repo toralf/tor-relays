@@ -1,8 +1,9 @@
 ---
-- name: Instance
-  ignore_unreachable: true
-  retries: 2
-  community.general.shutdown:
+- name: Halt
+  changed_when: true
+  ansible.builtin.command:
+    cmd: >-
+      shutdown -h
 
 - name: Additional wait
   delegate_to: localhost
