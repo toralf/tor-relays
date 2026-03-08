@@ -23,6 +23,7 @@
           echo "-----------------------------------"
           echo
           eu-stack --core /tmp/core
+          echo
 
           rm /tmp/core
       register: __info
