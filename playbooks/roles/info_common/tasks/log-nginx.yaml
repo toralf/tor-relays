@@ -4,6 +4,7 @@
   ansible.builtin.shell:
     cmd: >-
       tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
+        grep -v ': using inherited sockets from '
         sort |
         tail -n 10
     executable: /bin/bash
