@@ -4,6 +4,9 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
     path: "{{ infodir }}/tor-keys/{{ inventory_hostname }}"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: _keys_backup
 
 - name: Backup Tor keys

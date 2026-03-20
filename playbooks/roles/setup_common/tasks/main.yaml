@@ -46,10 +46,6 @@
       owner: root
       group: root
       mode: "0644"
-    ansible.builtin.stat:
-      get_attributes: false
-      get_checksum: false
-      get_mime: false
     ansible.builtin.template:
       owner: root
       group: root

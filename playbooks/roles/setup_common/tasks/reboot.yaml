@@ -3,6 +3,9 @@
   changed_when: _reboot_required.stat.exists
   ansible.builtin.stat:
     path: /var/run/reboot-required
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
   register: _reboot_required
   notify: Reboot
 

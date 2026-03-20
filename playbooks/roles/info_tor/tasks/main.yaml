@@ -4,10 +4,6 @@
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
-    ansible.builtin.stat:
-      get_attributes: false
-      get_checksum: false
-      get_mime: false
   block:
     - name: Server and public bridge
       when: tor_bridge_distribution not in ('', 'none')
