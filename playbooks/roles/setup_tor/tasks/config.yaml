@@ -7,6 +7,14 @@
     sysctl_set: true
   notify: Restart Tor
 
+- name: Set sysctl TCP memory
+  when: ansible_facts.memtotal_mb < 1024
+  ansible.posix.sysctl:
+    name: net.ipv4.tcp_mem
+    value: "2000 3000 5000"
+    sysctl_file: /etc/sysctl.d/21tor-relay.conf
+    sysctl_set: true
+
 - name: Configure torrc
   ansible.builtin.template:
     src: torrc.j2
