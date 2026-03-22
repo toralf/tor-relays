@@ -46,7 +46,7 @@
       {{ 'CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
     # no ipv6 for bridges
     _configured_relays_v6: >-
-      {{ (tor_bridge_distribution == '') |
+      {{ (tor_bridge_distribution | length == 0) |
         ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
   block:
     - name: Create DDoS cron job for reboot

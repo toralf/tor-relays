@@ -4,7 +4,7 @@
 
 DataDirectory /var/lib/tor
 {% endif %}
-{% if tor_bridge_distribution != '' %}
+{% if tor_bridge_distribution | length > 0 %}
 {# Tor bridge #}
 
 BridgeRelay 1

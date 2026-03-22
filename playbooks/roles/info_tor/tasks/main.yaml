@@ -44,7 +44,7 @@
             - wellknown
 
     - name: Clients
-      when: tor_bridge_distribution != ''
+      when: tor_bridge_distribution | length > 0
       ansible.builtin.import_tasks: clients.yaml
       tags:
         - clients
