@@ -11,7 +11,7 @@
   when: ansible_facts.memtotal_mb < 1024
   ansible.posix.sysctl:
     name: net.ipv4.tcp_mem
-    value: "2000 3000 5000"
+    value: "1000 2000 4000"
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
 
