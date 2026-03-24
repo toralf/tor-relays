@@ -18,7 +18,7 @@ cd $(dirname $0)/..
 arch='{arm,x86}'
 extra=''
 os='{db,dt,un}'
-uid=$(printf "%06i" $$)
+uid=$(printf "%07i" $$)
 while getopts a:b:o:t:u:x: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
