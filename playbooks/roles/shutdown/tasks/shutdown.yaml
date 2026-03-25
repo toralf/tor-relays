@@ -1,11 +1,11 @@
 ---
 - name: Halt
   changed_when: true
-  ansible.builtin.command:
-    cmd: >-
-      shutdown -h
+  failed_when: not _halt.shutdown and _halt.msg is not search('Failed to connect to bus:')
+  community.general.shutdown:
+  register: _halt
 
 - name: Additional wait
   delegate_to: localhost
   ansible.builtin.wait_for:
-    timeout: 15
+    timeout: 20
