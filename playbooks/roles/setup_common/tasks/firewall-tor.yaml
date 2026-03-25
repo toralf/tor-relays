@@ -7,7 +7,6 @@
 
 - name: Get DDoS scripts
   throttle: 16
-  retries: 3
   ansible.builtin.get_url:
     url: "https://github.com/toralf/torutils/raw/{{ torutils_git_version }}/{{ item }}"
     dest: "/root/{{ item }}"
@@ -115,7 +114,6 @@
     - name: Get egress firewall
       when: tor_egress_slew | length > 0
       throttle: 16
-      retries: 3
       ansible.builtin.get_url:
         url: "https://github.com/toralf/torutils/raw/{{ torutils_git_version }}/{{ item }}"
         dest: "/root/{{ item }}"

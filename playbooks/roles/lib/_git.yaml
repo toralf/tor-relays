@@ -17,17 +17,17 @@
       block:
         - name: Git clone "{{ _repo_dir }}"
           throttle: 16
-          retries: 3
           when: __repo.before == None
           ansible.builtin.git:
+            update: false
             version: "{{ _git_version }}"
 
         - name: Git update "{{ _repo_dir }}"
-          retries: 3
           when: __repo.before != None
           ansible.builtin.git:
-            version: "{{ _git_version }}"
+            clone: false
             force: true
+            version: "{{ _git_version }}"
           register: __updated
 
     - name: Git stat after "{{ _repo_dir }}"
@@ -36,36 +36,34 @@
         update: false
       register: _git_head
 
-- name: Git clean "{{ _repo_dir }}"
-  changed_when: __cleaned.stdout | length > 0
-  ansible.builtin.command:
-    cmd: >-
-      git clean --force -d
-    chdir: "{{ _repo_dir }}"
-  register: __cleaned
+    - name: Git clean "{{ _repo_dir }}"
+      changed_when: __cleaned.stdout | length > 0
+      ansible.builtin.command:
+        cmd: >-
+          git clean --force -d
+        chdir: "{{ _repo_dir }}"
+      register: __cleaned
 
-# must be after git clean
-- name: Git patch "{{ _repo_dir }}"
-  throttle: 24
-  retries: 3
-  changed_when: __patched.stdout_lines is search('patching file ')
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+    # "git clean" must be made before
+    - name: Git patch "{{ _repo_dir }}"
+      throttle: 24
+      changed_when: __patched.stdout_lines is search('patching file ')
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
 
-      rm -f tmp.patch
-      curl -s {{ inside_item }} -o tmp.patch
-      patch -p 1 --forward -i tmp.patch
-      rm tmp.patch
-    chdir: "{{ _repo_dir }}"
-  loop_control:
-    loop_var: inside_item
-  loop: "{{ _git_patches | default([]) }}"
-  register: __patched
+          rm -f tmp.patch
+          curl -s {{ inside_item }} -o tmp.patch
+          patch -p 1 --forward -i tmp.patch
+          rm tmp.patch
+        chdir: "{{ _repo_dir }}"
+      loop_control:
+        loop_var: inside_item
+      loop: "{{ _git_patches | default([]) }}"
+      register: __patched
 
-- name: Git repo changed "{{ _repo_dir }}"
-  ansible.builtin.set_fact:
-    _git_repo_changed: "{{ __repo.changed or __repo.before == None or
-      __updated.changed or __cleaned.changed or __patched.changed or
-      __repo.before != _git_head.before or
-      force_rebuild is defined and force_rebuild | bool }}"
+    - name: Git repo changed "{{ _repo_dir }}"
+      ansible.builtin.set_fact:
+        _git_repo_changed: "{{ __repo.changed or __repo.before == None or
+          __updated.changed or __cleaned.changed or __patched.changed or
+          __repo.before != _git_head.before }}"
