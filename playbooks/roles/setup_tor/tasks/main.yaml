@@ -39,6 +39,7 @@
       mode: "0644"
   block:
     - name: Test for existance of Tor keys
+      when: tor_keys_restore | bool
       ansible.builtin.stat:
         path: /var/lib/tor/keys/
       register: _keys

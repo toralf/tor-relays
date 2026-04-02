@@ -15,14 +15,6 @@
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
 
-- name: Configure torrc
-  ansible.builtin.template:
-    src: torrc.j2
-    dest: /etc/tor/torrc
-    backup: true
-  notify:
-    - Reload Tor
-
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
   vars:
@@ -33,7 +25,14 @@
     mode: "0600"
     owner: "{{ tor_user }}"
     group: "{{ tor_user }}"
-  notify: Restart Tor
+  notify: Reload Tor
+
+- name: Configure torrc
+  ansible.builtin.template:
+    src: torrc.j2
+    dest: /etc/tor/torrc
+    backup: true
+  notify: Reload Tor
 
 - name: Verify torrc
   changed_when: false
@@ -48,9 +47,11 @@
 
 # https://www.1aeo.com/blog/tor-memory-optizations-what-actually-works.html
 - name: Install/Update memory optimization
+  vars:
+    _ver: "{{ (ansible_facts.distribution_release == 'trixie') | ternary('3', '2.0') }}"
   ansible.builtin.apt:
     name:
-      - "{{ (ansible_facts.distribution_release == 'trixie') | ternary('libmimalloc3', 'libmimalloc2.0') }}"
+      - "libmimalloc{{ _ver }}"
     state: "{{ (tor_use_mimalloc | bool) | ternary('present', 'absent') }}"
   notify: Restart Tor
 
