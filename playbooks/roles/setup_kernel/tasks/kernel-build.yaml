@@ -73,14 +73,14 @@
         - unattended-upgrades
 
     - name: Make nowait
-      when: not (kernel_git_build_wait | bool)
+      when: not kernel_git_build_wait
       changed_when: true
       ansible.builtin.shell:
         cmd: >-
           echo /root/kernel-build.sh reboot | at now
 
     - name: Make wait
-      when: kernel_git_build_wait | bool
+      when: kernel_git_build_wait
       block:
         - name: Job
           block:

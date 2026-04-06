@@ -11,11 +11,11 @@
   ansible.builtin.file:
     path: /usr/share/tor/
     mode: "0755"
-    state: "{{ (use_tor_geoip_data | bool) | ternary('directory', 'absent') }}"
+    state: "{{ use_tor_geoip_data | ternary('directory', 'absent') }}"
   notify: Restart snowflake
 
 - name: Get GeoIP data
-  when: use_tor_geoip_data | bool
+  when: use_tor_geoip_data
   throttle: 16
   ansible.builtin.get_url:
     url: "https://gitlab.torproject.org/tpo/core/tor/-/raw/main/src/config/{{ item }}"

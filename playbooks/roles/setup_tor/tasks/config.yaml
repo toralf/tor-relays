@@ -52,7 +52,7 @@
   ansible.builtin.apt:
     name:
       - "libmimalloc{{ _ver }}"
-    state: "{{ (tor_use_mimalloc | bool) | ternary('present', 'absent') }}"
+    state: "{{ tor_use_mimalloc | ternary('present', 'absent') }}"
   notify: Restart Tor
 
 - name: Ensure that Tor systemd override dir exists

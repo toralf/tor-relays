@@ -39,7 +39,7 @@
       mode: "0644"
   block:
     - name: Test for existance of Tor keys
-      when: tor_keys_restore | bool
+      when: tor_keys_restore
       ansible.builtin.stat:
         path: /var/lib/tor/keys/
       register: _keys
@@ -73,7 +73,7 @@
             - lyrebird
 
     - name: Tor keys restore
-      when: tor_keys_restore | bool
+      when: tor_keys_restore
       ansible.builtin.import_tasks: tor-keys-restore.yaml
       tags:
         - tor-keys-restore

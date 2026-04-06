@@ -45,7 +45,7 @@ elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra} -e "kernel_git_build_wait=false"
+  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra} -e '{ "kernel_git_build_wait": false }'
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
