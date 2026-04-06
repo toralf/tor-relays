@@ -1,69 +1,63 @@
 ---
 # https://support.torproject.org/apt/tor-deb-repo/
-- name: Torproject repository
+- name: Repo
   vars:
-    _key: https://deb.torproject.org/torproject.org/A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc
+    _key: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc # gitleaks:allow
+    _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
+    _uri: https://deb.torproject.org/torproject.org
   block:
-    - name: Torproject repository for bookworm
-      when: ansible_facts.distribution_release == 'bookworm'
-      block:
-        - name: Install/Update GnuPG
-          ansible.builtin.apt:
-            name:
-              - apt-transport-https
-              - gpg
-              - gpg-agent
-
-        - name: Get Torproject apt key
-          vars:
-            _dest: /usr/share/keyrings/deb.torproject.org-keyring.gpg
-          ansible.builtin.shell:
-            cmd: |-
-              if asc=$(curl -q {{ _key }} -o -); then
-                if gpg --dearmor <<<${asc} >{{ _dest }}.tmp; then
-                  cp {{ _dest }}.tmp {{ _dest }}
-                  rm {{ _dest }}.tmp
-                fi
-              fi
-            executable: /bin/bash
-            creates: "{{ _dest }}"
-
-        - name: Enable Tor project repository for bookworm
-          ansible.builtin.apt_repository:
-            filename: tor
-            repo: "{{ item }} https://deb.torproject.org/torproject.org {{ ansible_facts.distribution_release }} main"
-          loop:
-            - deb
-            - deb-src
-
-    - name: Enable Torproject repository for trixie
+    - name: Enable repository for trixie
       when: ansible_facts.distribution_release == 'trixie'
       ansible.builtin.deb822_repository:
         name: tor
         types:
           - deb
           - deb-src
-        uris: https://deb.torproject.org/torproject.org
+        uris: "{{ _uri }}"
         suites: "{{ ansible_facts.distribution_release }}"
         components: main
-        signed_by: "{{ _key }}"
-      register: _new_tor_repo
+        signed_by: "{{ _uri }}/{{ _key }}"
 
-    - name: Update apt cache
-      when: _new_tor_repo.changed
-      ansible.builtin.apt:
-        cache_valid_time: 1
-        update_cache: true
+    - name: Non-Trixie
+      when: ansible_facts.distribution_release != 'trixie'
+      block:
+        - name: Enable legacy repository - apt
+          ansible.builtin.apt:
+            name:
+              - apt-transport-https
+              - gnupg
 
-# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Allow low port for Tor
-  when: tor_port < 1024
-  vars:
-    _exe: "{{ (tor_bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
-  ansible.builtin.lineinfile:
-    line: >-
-      'DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };'
-    path: /etc/apt/apt.conf.d/99-tor-lowport
+        - name: Enable legacy repository - gpg key
+          ansible.builtin.shell:
+            cmd: >-
+              curl -q {{ _uri }}/{{ _key }} -o - |
+                gpg --dearmor >"{{ _keyring }}"
+            creates: "{{ _keyring }}"
+
+        - name: Enable legacy repository - sources bookworm
+          when: ansible_facts.distribution_release == 'bookworm'
+          ansible.builtin.deb822_repository:
+            name: tor
+            types:
+              - deb
+              - deb-src
+            uris: "{{ _uri }}"
+            suites: "{{ ansible_facts.distribution_release }}"
+            components: main
+            signed_by: "{{ _keyring }}"
+
+        - name: Enable legacy repository - sources Ubuntu
+          when: ansible_facts.distribution == 'Ubuntu'
+          ansible.builtin.apt_repository:
+            repo: "{{ item }} signed-by={{ _keyring }}] {{ _uri }} {{ ansible_facts.distribution_release }} main"
+          loop:
+            - deb
+            - deb-src
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    cache_valid_time: 1
+    update_cache: true
 
 - name: Install/Update Tor
   ansible.builtin.apt:
@@ -79,3 +73,13 @@
     name:
       - obfs4proxy
   notify: Restart Tor
+
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
+- name: Allow low port for Tor
+  when: tor_port < 1024
+  vars:
+    _exe: "{{ (tor_bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+  ansible.builtin.lineinfile:
+    line: >-
+      DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };
+    path: /etc/apt/apt.conf.d/99-tor-lowport

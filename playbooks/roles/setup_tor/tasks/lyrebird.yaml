@@ -11,7 +11,7 @@
   throttle: 16
   changed_when: false
   vars:
-    _cmd: "make build"
+    _cmd: make build
   ansible.builtin.shell:
     cmd: |-
       if ! {{ _cmd }}; then

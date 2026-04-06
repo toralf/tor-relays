@@ -20,7 +20,7 @@
   throttle: 16
   changed_when: false
   vars:
-    _cmd: "go build -v"
+    _cmd: go build -v
   ansible.builtin.shell:
     cmd: |-
       if ! {{ _cmd }}; then

@@ -8,21 +8,23 @@
 
 - name: Restore
   when: _keys_backup.stat.exists and not _keys.stat.exists
+  vars:
+    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   block:
     - name: Create Tor keys dir
       ansible.builtin.file:
         state: directory
         path: /var/lib/tor/keys/
         mode: u=rwx,g=s,o=
-        owner: tor
-        group: tor
+        owner: "{{ _user }}"
+        group: "{{ _user }}"
 
     - name: Restore Tor keys
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         src: "{{ infodir }}/tor-keys/{{ inventory_hostname }}/"
-        dest: "/var/lib/tor/keys/"
+        dest: /var/lib/tor/keys/
         mode: "0600"
-        owner: tor
-        group: tor
+        owner: "{{ _user }}"
+        group: "{{ _user }}"
       notify: Restart Tor

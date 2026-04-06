@@ -2,7 +2,7 @@
 - name: Set sysctl max user namespaces
   ansible.posix.sysctl:
     name: user.max_user_namespaces
-    value: "2" # debian bookworm default: 14886
+    value: 2 # debian bookworm default: 14886
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
   notify: Restart Tor
@@ -18,13 +18,13 @@
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
   vars:
-    tor_user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
+    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
     src: "{{ tor_secret_family_key_file }}"
     dest: /var/lib/tor/keys/
     mode: "0600"
-    owner: "{{ tor_user }}"
-    group: "{{ tor_user }}"
+    owner: "{{ _user }}"
+    group: "{{ _user }}"
   notify: Reload Tor
 
 - name: Configure torrc
@@ -55,14 +55,19 @@
     state: "{{ tor_use_mimalloc | ternary('present', 'absent') }}"
   notify: Restart Tor
 
-- name: Ensure that Tor systemd override dir exists
-  ansible.builtin.file:
-    path: /etc/systemd/system/tor.service.d/
-    state: directory
-    mode: "0755"
+- name: Override
+  vars:
+    _svcname: "{{ tor_build_from_source | ternary('tor', 'tor@default') }}"
+    _svcdir: "/etc/systemd/system/{{ _svcname }}.service.d"
+  block:
+    - name: Ensure that Tor systemd override dir exists
+      ansible.builtin.file:
+        path: "{{ _svcdir }}"
+        state: directory
+        mode: "0755"
 
-- name: Add Tor systemd override
-  ansible.builtin.template:
-    src: tor.override.conf.j2
-    dest: /etc/systemd/system/tor.service.d/override.conf
-  notify: Restart Tor
+    - name: Add Tor systemd override
+      ansible.builtin.template:
+        src: tor.override.conf.j2
+        dest: "{{ _svcdir }}/override.conf"
+      notify: Restart Tor

@@ -19,3 +19,10 @@
     quiet: true
     that:
       - "tor_port > 0 and tor_port < 2**16"
+
+- name: Validate install prereq
+  when: not tor_build_from_source
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.os_family == 'Debian'"
