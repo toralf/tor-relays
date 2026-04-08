@@ -30,7 +30,7 @@
       tags:
         - snowflake
       block:
-        - name: Add
+        - name: Setup
           ansible.builtin.include_tasks: _snowflake-setup.yaml
           loop_control:
             label: "{{ item.name }}"
