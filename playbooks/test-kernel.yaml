@@ -1,5 +1,5 @@
 ---
-- name: Test image
+- name: Test kernel
   hosts: hix
   order: shuffle
   roles:

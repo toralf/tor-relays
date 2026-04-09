@@ -1,5 +1,6 @@
 ---
 - name: Main
+  when: tor_port is defined and tor_port > 0
   module_defaults:
     ansible.builtin.lineinfile:
       create: true

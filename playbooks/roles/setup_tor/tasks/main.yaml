@@ -1,10 +1,6 @@
 ---
-- name: Validate
-  ansible.builtin.import_tasks: validate.yaml
-  tags:
-    - validate
-
 - name: Main
+  when: tor_port > 0
   module_defaults:
     ansible.builtin.apt:
       allow_change_held_packages: true
@@ -38,6 +34,11 @@
       group: root
       mode: "0644"
   block:
+    - name: Validate
+      ansible.builtin.import_tasks: validate.yaml
+      tags:
+        - validate
+
     - name: Test for existance of Tor keys
       when: tor_keys_restore
       ansible.builtin.stat:
