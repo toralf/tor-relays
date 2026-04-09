@@ -36,10 +36,15 @@ done
 
 trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 
-if [[ ${type} == "app" ]]; then
+if [[ ${type} =~ "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra}
+
+elif [[ ${type} =~ "dist" ]]; then
+  names=$(eval echo h{b,p,r}-${os}-${arch}-dist-x-x-${uid})
+  time ./bin/create-server.sh ${names}
+  time ./site-test-setup.yaml --limit "h[bpr]-*-*-*-*-*-${uid}" ${extra} -e '{ "tor_build_from_source": false }'
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
