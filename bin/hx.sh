@@ -113,7 +113,7 @@ while :; do
     if git_changed $i; then
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e kernel_git_build_wait=false &>${log}.$i.log; then
+      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e '{ "kernel_git_build_wait": false }' &>${log}.$i.log; then
         info "  NOT ok"
       fi
       pit_stop
@@ -150,7 +150,7 @@ while :; do
       if ! ./site-setup.yaml \
         --limit "$(tr ' ' ',' <<<${update})" \
         --tags kernel-build,lyrebird,snowflake,tor \
-        -e kernel_git_build_wait=false \
+        -e '{ "kernel_git_build_wait": false }' \
         &>${log}.update.log; then
         info "  NOT ok"
       fi
@@ -166,7 +166,7 @@ while :; do
       wait_for_jobs
       rebuild=$(shuf -n 64 -e ${retry} | xargs)
       ./bin/rebuild-server.sh ${rebuild}
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e kernel_git_build_wait=false &>${log}.rebuild.log; then
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e '{ "kernel_git_build_wait": false }' &>${log}.rebuild.log; then
         info "  NOT ok"
       fi
       pit_stop

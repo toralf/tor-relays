@@ -16,17 +16,15 @@ cd $(dirname $0)/..
 [[ ${1-} == "-t" && $# -ge 2 ]]
 
 arch='{arm,x86}'
-extra=''
 os='{db,dt,un}'
 uid=$(printf "%07i" $$)
-while getopts a:b:o:t:u:x: opt; do
+while getopts a:b:o:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
   b) branch=${OPTARG} ;;
   o) os=${OPTARG} ;;
   t) type=${OPTARG} ;;
   u) uid=${OPTARG} ;;
-  x) extra=${OPTARG} ;;
   *)
     echo "unknown opt ${opt}" >&2
     exit 1
@@ -39,38 +37,38 @@ trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
 if [[ ${type} =~ "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
 elif [[ ${type} =~ "dist" ]]; then
   names=$(eval echo h{b,p,r}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h[bpr]-*-*-*-*-*-${uid}" ${extra} -e '{ "tor_build_from_source": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": false }'
 
 elif [[ ${type} == "full" ]]; then
   branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h[bmprs]-*-*-*-*-*-${uid}" ${extra} -e '{ "kernel_git_build_wait": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "kernel_git_build_wait": false }'
 
 elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   if [[ ${type} == "image_build" ]]; then
     # clone kernel repo + build it
-    names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+    names=$(eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} | xargs -n 1 | grep -v "hi-un-.*bp")
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra} --skip-tags "nginx-config,nginx-openssl"
+    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl"
   else
     # only clone kernel repo
-    names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
+    names=$(eval echo hi-${os}-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "hi-*-*-*-${uid}" ${extra} --skip-tags "nginx-config,nginx-openssl,kernel-make"
+    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl,kernel-make"
   fi
 
 elif [[ ${type} == "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
-  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+  names=$(eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} | xargs -n 1 | grep -v "hi-un-.*bp")
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "hi-*-*-*-*-*-${uid}" ${extra}
+  time ./site-test-kernel.yaml --limit "h?-*-${uid}"
 
 else
   echo "unknown type ${type}" >&2
