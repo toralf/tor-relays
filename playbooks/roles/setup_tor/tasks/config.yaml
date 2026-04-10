@@ -46,7 +46,7 @@
     dest: /etc/logrotate.d/tor
 
 # https://www.1aeo.com/blog/tor-memory-optizations-what-actually-works.html
-- name: Install/Update memory optimization
+- name: Malloc alternative
   vars:
     _ver: "{{ (ansible_facts.distribution_release == 'trixie') | ternary('3', '2.0') }}"
   ansible.builtin.apt:
