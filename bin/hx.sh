@@ -73,6 +73,7 @@ set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
+# ansible settings
 export RETRY_FILES_ENABLED="True"
 export RETRY_FILES_SAVE_PATH="${HOME}"
 
