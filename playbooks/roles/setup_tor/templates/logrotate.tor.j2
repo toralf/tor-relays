@@ -7,7 +7,7 @@
   delaycompress
   missingok
   notifempty
-  create 0640 {{ tor_build_from_source | ternary('tor tor', 'debian-tor adm') }}
+  create 0640 {{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor adm', 'tor tor') }}"
   sharedscripts
   postrotate
     if invoke-rc.d tor status >/dev/null; then

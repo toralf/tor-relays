@@ -9,7 +9,7 @@
 - name: Restore
   when: _keys_backup.stat.exists and not _keys.stat.exists
   vars:
-    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
+    _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
   block:
     - name: Create Tor keys dir
       ansible.builtin.file:

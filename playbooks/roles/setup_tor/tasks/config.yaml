@@ -18,7 +18,7 @@
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
   vars:
-    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
+    _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
   ansible.builtin.copy:
     src: "{{ tor_secret_family_key_file }}"
     dest: /var/lib/tor/keys/
