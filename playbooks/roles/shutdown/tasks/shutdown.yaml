@@ -1,7 +1,9 @@
 ---
 - name: Halt
-  changed_when: true
-  failed_when: not _halt.shutdown and _halt.msg is not search('Failed to connect to bus:')
+  changed_when: _halt.shutdown | default(false)
+  ignore_unreachable: true
+  retries: 3
+  delay: 10
   community.general.shutdown:
   register: _halt
 

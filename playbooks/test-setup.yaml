@@ -12,4 +12,5 @@
     - role: setup_kernel
     - role: setup_autoupdate
     - role: info_healthy
+    - role: shutdown
     - role: delete
