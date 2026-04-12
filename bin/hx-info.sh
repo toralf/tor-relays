@@ -25,15 +25,18 @@ while :; do
   fi
 
   if awk '/^PLAY RECAP/,/^$/' ${log}.info.healthy.log | grep -v -e "^PLAY RECAP" -e " changed=0 " | grep -q .; then
-    # minimize races with house keeping
+    # have a local full backup
     info "rsync to ~/site01"
-    if rsync --recursive ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ~/site01 &>/dev/null; then
-      dest="foo"
+    if ! rsync --recursive ~/tmp/tor-relays/{artefact,coredump,dmesg,issue.txt,kconfig,trace} ~/site01 &>/dev/null; then
+      info "  NOT ok"
+    fi
+    # rsync to web site/s
+    for dest in foo bar; do
       info "rsync to remote ${dest}"
       if ! rsync --recursive ~/site01 ${dest}:/var/www/site01 &>/dev/null; then
         info "  NOT ok"
       fi
-    fi
+    done
   fi
 
   pit_stop 300
