@@ -54,19 +54,19 @@ elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   if [[ ${type} == "image_build" ]]; then
     # clone kernel repo + build it
-    names=$(eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} | xargs -n 1 | grep -v "hi-un-.*bp")
+    names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl"
   else
     # only clone kernel repo
-    names=$(eval echo hi-${os}-${arch}-${branch}-x-x-${uid})
+    names=$(eval echo hi-${os}-${arch}-${branch-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl,kernel-make"
   fi
 
 elif [[ ${type} == "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
-  names=$(eval echo hi-${os}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} | xargs -n 1 | grep -v "hi-un-.*bp")
+  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-kernel.yaml --limit "h?-*-${uid}"
 
