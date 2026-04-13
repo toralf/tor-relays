@@ -59,7 +59,7 @@ elif [[ ${type} =~ "image" ]]; then
     time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl"
   else
     # only clone kernel repo
-    names=$(eval echo hi-${os}-${arch}-${branch-${uid})
+    names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl,kernel-make"
   fi
