@@ -32,7 +32,7 @@ while getopts a:b:o:t:u: opt; do
   esac
 done
 
-trap 'echo "  ^^    systems:    ${names}"' INT QUIT TERM EXIT
+trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
 if [[ ${type} =~ "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})

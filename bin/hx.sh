@@ -103,7 +103,7 @@ while :; do
       tor) limit="htx" ;;
       esac
       if ! ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log; then
-        info "  NOT ok"
+        info "  NOT ok" >&2
       fi
       pit_stop
     fi
@@ -115,7 +115,7 @@ while :; do
       info "kernel: $i"
       ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
       if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e '{ "kernel_git_build_wait": false }' &>${log}.$i.log; then
-        info "  NOT ok"
+        info "  NOT ok" >&2
       fi
       pit_stop
     fi
@@ -125,7 +125,7 @@ while :; do
   info "check"
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.before
   if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${log}.down.log; then
-    info "  NOT ok"
+    info "  NOT ok" >&2
   fi
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.after
   pit_stop
@@ -153,7 +153,7 @@ while :; do
         --tags kernel-build,lyrebird,snowflake,tor \
         -e '{ "kernel_git_build_wait": false }' \
         &>${log}.update.log; then
-        info "  NOT ok"
+        info "  NOT ok" >&2
       fi
       pit_stop
     else
@@ -168,7 +168,7 @@ while :; do
       rebuild=$(shuf -n 64 -e ${retry} | xargs)
       ./bin/rebuild-server.sh ${rebuild}
       if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e '{ "kernel_git_build_wait": false }' &>${log}.rebuild.log; then
-        info "  NOT ok"
+        info "  NOT ok" >&2
       fi
       pit_stop
     fi
