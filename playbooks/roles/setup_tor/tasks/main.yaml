@@ -90,5 +90,7 @@
       tags:
         - config
 
-    - name: Flush handlers
+    - name: Flush handlers (tor)
       ansible.builtin.meta: flush_handlers
+      tags:
+        - flush

@@ -48,5 +48,7 @@
       tags:
         - config
 
-    - name: Flush handlers
+    - name: Flush handlers (snowflake)
       ansible.builtin.meta: flush_handlers
+      tags:
+        - flush

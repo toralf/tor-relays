@@ -193,4 +193,4 @@
     - name: Flush handlers (common)
       ansible.builtin.meta: flush_handlers
       tags:
-        - always
+        - flush
