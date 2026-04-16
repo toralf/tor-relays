@@ -20,7 +20,7 @@ function pit_stop() {
   local rc=$?
   local sec=${1:-60}
 
-  echo -en " $(date) sleeping ${sec}s    \r"
+  echo -en " $(date) sleeping up to ${sec}s    \r"
   while ((sec--)); do
     if [[ -f /tmp/STOP ]]; then
       set +euf
@@ -28,12 +28,7 @@ function pit_stop() {
       info "caught /tmp/STOP"
       wait_for_jobs
       info "exit\n"
-      rm -f /tmp/STOP /tmp/CONT
       exit ${rc}
-    elif [[ -f /tmp/CONT ]]; then
-      rm /tmp/CONT
-      echo
-      break
     fi
     sleep 1
   done

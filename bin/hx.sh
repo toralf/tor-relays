@@ -79,12 +79,11 @@ export RETRY_FILES_SAVE_PATH="${HOME}"
 
 cd $(dirname $0)/..
 source ./bin/hx-lib.sh
-trap 'echo stopping...; rm -f /tmp/CONT; touch /tmp/STOP' INT QUIT TERM EXIT
-
+trap 'echo; echo stopping...; touch /tmp/STOP' INT QUIT TERM EXIT
 if [[ ! -d ~/hx ]]; then
   mkdir ~/hx
 fi
-log=~/hx/$(basename $0)
+logprefix=~/hx/$(basename $0)
 
 type hcloud >/dev/null
 
@@ -92,6 +91,8 @@ type hcloud >/dev/null
 set +e
 
 while :; do
+  pit_stop 1
+
   # Tor app update
   for i in lyrebird snowflake tor; do
     if git_changed $i; then
@@ -102,7 +103,7 @@ while :; do
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      if ! ./site-setup.yaml --limit "${limit}" --tags $i &>${log}.$i.log; then
+      if ! ./site-setup.yaml --limit "${limit}" --tags $i &>${logprefix}.$i.log; then
         info "  NOT ok" >&2
       fi
       pit_stop
@@ -113,8 +114,8 @@ while :; do
   for i in ltsrc mainline stablerc; do
     if git_changed $i; then
       info "kernel: $i"
-      ./bin/hx-test.sh -t image_build -b $i &>${log}.image_build.$i.log &
-      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e '{ "kernel_git_build_wait": false }' &>${log}.$i.log; then
+      ./bin/hx-test.sh -t image_build -b $i &>${logprefix}.image_build.$i.log &
+      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build -e '{ "kernel_git_build_wait": false }' &>${logprefix}.$i.log; then
         info "  NOT ok" >&2
       fi
       pit_stop
@@ -124,7 +125,7 @@ while :; do
   # check all systems
   info "check"
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.before
-  if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${log}.down.log; then
+  if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${logprefix}.down.log; then
     info "  NOT ok" >&2
   fi
   grep "^h" ~/tmp/tor-relays/is_down >/tmp/is_down.after
@@ -138,9 +139,9 @@ while :; do
     if [[ -n ${power} ]]; then
       info "  power: $(wc -w <<<${power})"
       info "    power off"
-      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweroff <<<${power} &>${log}.poweroff.log
+      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweroff <<<${power} &>${logprefix}.poweroff.log
       info "    power on"
-      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweron <<<${power} &>${log}.poweron.log
+      xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweron <<<${power} &>${logprefix}.poweron.log
       pit_stop
     fi
 
@@ -152,7 +153,7 @@ while :; do
         --limit "$(tr ' ' ',' <<<${update})" \
         --tags kernel-build,lyrebird,snowflake,tor \
         -e '{ "kernel_git_build_wait": false }' \
-        &>${log}.update.log; then
+        &>${logprefix}.update.log; then
         info "  NOT ok" >&2
       fi
       pit_stop
@@ -167,7 +168,7 @@ while :; do
       wait_for_jobs
       rebuild=$(shuf -n 64 -e ${retry} | xargs)
       ./bin/rebuild-server.sh ${rebuild}
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e '{ "kernel_git_build_wait": false }' &>${log}.rebuild.log; then
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" -e '{ "kernel_git_build_wait": false }' &>${logprefix}.rebuild.log; then
         info "  NOT ok" >&2
       fi
       pit_stop
