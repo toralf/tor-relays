@@ -25,7 +25,8 @@ while :; do
   i="info01"
 
   info "$i"
-  if ! ./site-info.yaml --limit 'hx' --tags artefact,coredump,issue,trace -e '{ "infodir": "~/'$i'" }' -e '{ "issue_since": "2 days ago" }' &>${logprefix}.${i}.log; then
+  if ! ./site-info.yaml --limit 'hx' --tags artefact,coredump,issue,trace \
+    -e '{ "infodir": "~/'$i'" }' -e '{ "issue_since": "2 days ago" }' &>${logprefix}.${i}.log; then
     info "  NOT ok" >&2
   fi
 
