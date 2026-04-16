@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-{% if nginx_public_site %}
+{% if nginx_public_site and 80 in additional_ports %}
 
 server {
   listen {{ ansible_facts.default_ipv4.address }}:80 default_server;
