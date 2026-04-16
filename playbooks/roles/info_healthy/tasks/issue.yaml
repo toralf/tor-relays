@@ -1,12 +1,12 @@
 ---
-- name: Grep system log for an issue since boot
+- name: Grep system log for issue/s
   changed_when: false
-  failed_when: _result.stderr | length > 0 or _result.rc > 0
+  failed_when: _result.stderr | length > 0
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ issue_since }}" -b --quiet |
+      journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
         grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
-        grep -F \
+        grep -m 500 -F \
           -e 'BUG:' \
           -e 'BUG at' \
           -e 'Call Trace:' \
@@ -17,8 +17,7 @@
           -e 'rebooting.' \
           -e '.service: Control process exited' \
           -e 'status=9/KILL' \
-          -e 'WARNING:' |
-        head -n 500
+          -e 'WARNING:'
   register: _result
 
 - name: File issue

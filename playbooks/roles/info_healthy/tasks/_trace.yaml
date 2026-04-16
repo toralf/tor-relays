@@ -14,7 +14,7 @@
       changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          journalctl --since "{{ trace_since }}" --quiet |
+          journalctl {{ (trace_since | length > 0) | ternary('--since "' + trace_since + '"', '-b') }} --quiet |
             awk "/{{ item | regex_replace('\/', '\\/') | regex_replace('\[', '\\[') }}/,/kernel: ---\[ end trace /" |
             head -n 999
       register: __full

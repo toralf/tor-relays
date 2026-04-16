@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl --since "{{ trace_since }}" --quiet |
+      journalctl {{ (trace_since | length > 0) | ternary('--since "' + trace_since + '"', '-b') }} --quiet |
         cut -f 5- -d' ' |
         grep -F -B 1 -A 1 'kernel: ------------[ cut here ]------------' |
         grep -E ' .*/.*\.[ch]:[0-9]+' |
