@@ -1,63 +1,55 @@
 ---
-- name: Block
-  vars:
-    _is_down:
-      "{{ (_ssh_ping.unreachable is defined or _ssh_ping.ping is not defined or _ssh_ping.ping != 'pong') and
-      _net_ping.rc == 0 }}"
-  block:
-    - name: Ping
-      ignore_errors: true
-      ignore_unreachable: true
-      changed_when: false
-      ansible.builtin.ping:
-      register: _ssh_ping
+- name: SSH ping
+  ignore_errors: true
+  ignore_unreachable: true
+  changed_when: false
+  retries: 2
+  delay: 10
+  ansible.builtin.ping:
+  register: _ssh_ping
 
-    - name: ICMP ping
+- name: Block
+  when: _ssh_ping.unreachable is defined or _ssh_ping.ping is not defined or _ssh_ping.ping != 'pong'
+  block:
+    - name: Ensure that localhost network is ok
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
-      ignore_errors: true
-      ignore_unreachable: true
-      changed_when: _net_ping.rc != 0
+      changed_when: false
       ansible.builtin.command:
         cmd: >-
           ping -c 3 hetzner.de
-      register: _net_ping
 
-    - name: File state
+    - name: System is down
       delegate_to: localhost
       throttle: 1
-      failed_when: _is_down
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
         path: "{{ infodir }}/is_down"
-        state: "{{ _is_down | ternary('present', 'absent') }}"
 
     - name: Poweron
-      when: _is_down
-      block:
-        - name: System
-          delegate_to: localhost
-          throttle: "{{ concurrent_local_jobs }}"
-          changed_when: true
-          environment:
-            PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
-          ansible.builtin.command:
-            cmd: hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      changed_when: true
+      environment:
+        PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
+      ansible.builtin.command:
+        cmd: >-
+          hcloud --quiet --poll-interval 10s server poweron {{ inventory_hostname }}
 
-        - name: Wait
-          delegate_to: localhost
-          ansible.builtin.wait_for:
-            timeout: 25
+    - name: Wait for bootup
+      delegate_to: localhost
+      ansible.builtin.wait_for:
+        timeout: 25
 
-        - name: SSH ping
-          retries: 3
-          delay: 10
-          ansible.builtin.ping:
+    - name: SSH ping after poweron
+      retries: 2
+      delay: 10
+      ansible.builtin.ping:
 
-        - name: Update state
-          delegate_to: localhost
-          throttle: 1
-          ansible.builtin.lineinfile:
-            line: "{{ inventory_hostname }}"
-            path: "{{ infodir }}/is_down"
-            state: absent
+    - name: System is up
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        line: "{{ inventory_hostname }}"
+        path: "{{ infodir }}/is_down"
+        state: absent

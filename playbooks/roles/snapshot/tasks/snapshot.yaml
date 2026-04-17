@@ -24,7 +24,7 @@
             xargs -r hcloud --quiet --poll-interval 5s image delete
       register: _result
 
-    - name: Delete failure
+    - name: Failure
       when: _result.rc != 0
       changed_when: true
       ansible.builtin.debug:
