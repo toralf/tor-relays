@@ -26,14 +26,14 @@
     - name: File state
       delegate_to: localhost
       throttle: 1
-      failed_when: _is_down and not do_power_on
+      failed_when: _is_down
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
         path: "{{ infodir }}/is_down"
         state: "{{ _is_down | ternary('present', 'absent') }}"
 
     - name: Poweron
-      when: _is_down and do_power_on
+      when: _is_down
       block:
         - name: System
           delegate_to: localhost
