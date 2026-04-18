@@ -61,7 +61,7 @@
     update_cache: true
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
-- name: Allow low port for Tor
+- name: Allow low port for Tor apt
   when: tor_port < 1024
   vars:
     _exe: "{{ (tor_bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
