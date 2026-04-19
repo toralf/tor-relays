@@ -1,5 +1,5 @@
 ---
-- name: Install/Update toolchain for Tor build
+- name: Install/Update toolchain for Tor
   when: ansible_facts.os_family == 'Debian'
   ansible.builtin.apt:
     name:
@@ -10,19 +10,19 @@
       - logrotate
       - zlib1g-dev
 
-- name: Install/Update toolchain for Tor server build
+- name: Install/Update toolchain for Tor relay
   when: tor_bridge_distribution | length == 0
   ansible.builtin.apt:
     name:
       - libseccomp-dev
 
-- name: Install/Update toolchain for Tor build (Ubuntu)
+- name: Install/Update toolchain for Tor under Ubuntu
   when: ansible_facts.distribution == 'Ubuntu'
   ansible.builtin.apt:
     name:
       - autotools-dev
 
-- name: Install/Update toolchain for Tor bridges
+- name: Install/Update toolchain for Tor bridge
   when: tor_bridge_distribution | length > 0
   ansible.builtin.apt:
     default_release: "{{ ansible_facts.distribution_release }}-backports"

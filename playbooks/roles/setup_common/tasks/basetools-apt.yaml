@@ -34,7 +34,7 @@
 
 - name: Ensure apt is not running
   failed_when: _processes.pids | default([]) | length > 0
-  retries: 3
+  retries: 2
   delay: 60
   community.general.pids:
     pattern: apt|dpkg

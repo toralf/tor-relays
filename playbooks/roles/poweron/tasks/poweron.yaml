@@ -3,8 +3,6 @@
   ignore_errors: true
   ignore_unreachable: true
   changed_when: false
-  retries: 2
-  delay: 10
   ansible.builtin.ping:
   register: _ssh_ping
 
@@ -42,8 +40,6 @@
         timeout: 25
 
     - name: SSH ping after poweron
-      retries: 2
-      delay: 10
       ansible.builtin.ping:
 
     - name: System is up

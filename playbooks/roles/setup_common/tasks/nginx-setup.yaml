@@ -21,6 +21,4 @@
   ansible.builtin.template:
     src: nginx.override.conf.j2
     dest: /etc/systemd/system/nginx.service.d/override.conf
-  notify:
-    - Reload systemd
-    - Restart nginx
+  notify: Restart nginx

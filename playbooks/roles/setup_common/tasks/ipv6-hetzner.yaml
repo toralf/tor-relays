@@ -33,31 +33,31 @@
       ansible.builtin.debug:
         var: ansible_facts.default_ipv6.address
 
-    - name: Change IPv6 for Debian
+    - name: Debian
       when: ansible_facts.distribution == 'Debian'
       block:
-        - name: Set IPv6 address
+        - name: Change IPv6 for Debian
           ansible.builtin.lineinfile:
             line: "    address {{ _ipv6_new }}/64"
             path: /etc/network/interfaces.d/50-cloud-init
             regexp: "^    address "
 
-        - name: Activate new IPv6 address
+        - name: Activate new IPv6 address for Debian
           ansible.builtin.systemd_service:
             name: networking
             state: restarted
 
-    - name: Change IPv6 for Ubuntu
+    - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
       block:
-        - name: Set IPv6 address
+        - name: Change IPv6 for Ubuntu
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
             regex: '      - "{{ _ipv6_prefix }}:'
             mode: "0600"
 
-        - name: Activate new IPv6 address
+        - name: Activate new IPv6 address for Ubuntu
           changed_when: true
           ansible.builtin.shell:
             cmd: |-

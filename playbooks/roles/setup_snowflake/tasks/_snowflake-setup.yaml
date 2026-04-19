@@ -42,8 +42,7 @@
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
     dest: "/etc/systemd/system/{{ item.name }}.service"
-  notify:
-    - "Restart {{ item.name }}"
+  notify: "Restart {{ item.name }}"
 
 - name: Enable {{ item.name }}
   ansible.builtin.systemd_service:

@@ -5,8 +5,8 @@
   roles:
     - role: poweron
     - role: setup_common
-    - role: setup_tor
     - role: setup_snowflake
+    - role: setup_tor
     - role: setup_kernel
     - role: setup_autoupdate
     - role: info_common
