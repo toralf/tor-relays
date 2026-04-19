@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: >-
-      tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} 2>/dev/null |
+      tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} |
         grep -v ': using inherited sockets from '
         sort |
         tail -n 10

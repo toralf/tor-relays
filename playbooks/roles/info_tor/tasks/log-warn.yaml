@@ -10,7 +10,7 @@
         -e 'Please upgrade! This version of Tor' \
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
         -e 'Unrecognized BridgeDistribution value' \
-         {{ log_warn }}.1 {{ log_warn }} 2>/dev/null |
+         {{ log_warn }}.1 {{ log_warn }} |
         tail -n 10
   register: _result
 

@@ -5,7 +5,7 @@
     cmd: |-
       zgrep -h -v -e 'Reading database' -e '^$' \
         /var/log/unattended-upgrades/unattended-upgrades-dpkg.log.1{,.gz} \
-        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log 2>/dev/null |
+        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log |
         tail -n 20
     executable: /bin/bash
   register: _result

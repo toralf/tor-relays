@@ -5,18 +5,10 @@
     log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
-      set -euf
-
-      diff=$(( EPOCHSECONDS - $(stat -c %Z {{ log_notice }}) ))
-      if ((diff > 6 * 3600)); then
-        echo "{{ log_notice }} is older than $diff seconds" >&2
-      fi
-
       grep -h -v -F \
         -e 'Please upgrade! This version of Tor' \
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' {{ log_notice }}.1 {{ log_notice }} \
-        -e 'Unrecognized BridgeDistribution value' \
-        2>/dev/null |
+        -e 'Unrecognized BridgeDistribution value' |
         tail -n 10
     executable: /bin/bash
   register: _result
@@ -26,9 +18,3 @@
   changed_when: true
   ansible.builtin.debug:
     var: _result.stdout_lines
-
-- name: Error
-  when: _result.stderr | length > 0
-  changed_when: true
-  ansible.builtin.debug:
-    var: _result.stderr_lines

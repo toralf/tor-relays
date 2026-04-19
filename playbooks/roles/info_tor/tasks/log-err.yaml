@@ -5,7 +5,7 @@
     log_err: /var/log/tor/err.log
   ansible.builtin.shell:
     cmd: |-
-      grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} 2>/dev/null |
+      grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} |
         tail -n 50
   register: _result
 

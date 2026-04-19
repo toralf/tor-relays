@@ -24,7 +24,7 @@
     cmd: |-
       set -euf
 
-      before=$(grep -v '^#' .config 2>/dev/null | md5sum)
+      before=$(grep -v '^#' .config | md5sum)
 
       cp /boot/config-{{ ansible_facts.kernel }} .config
       # force module loading
