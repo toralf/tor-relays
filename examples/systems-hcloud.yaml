@@ -1,63 +1,114 @@
 ---
+hx:
+  vars:
+    __repos:
+      # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
+      mainline:
+        url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        ver: master
+        # env:
+        #   GITLAB_API_TOKEN: abcd
+      stablerc:
+        url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        ver: linux-6.19.y
+      ltsrc:
+        url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        ver: linux-6.18.y
+    # hostname examples:  hs0-dt-arm-mainline-bp-cl-89  or  hm1-db-x86
+    __parts: "{{ inventory_hostname.split('-') }}"
+    __name: "{{ __parts[3] | default('') }}"
+    additional_software:
+      - libc6-dbg
+    ansible_ssh_private_key_file: ~/.ssh/id_ed25519_hcloud_test
+    kernel_git_repo_url: "{{ __repos[__name].url | default('') }}"
+    kernel_git_version: "{{ __repos[__name].ver | default('') }}"
+    git_environment: "{{ __repos[__name].env | default({}) }}"
+    kernel_debian_backports: "{{ __parts[4] | default('') | default('') == 'bp' }}"
+    kernel_debian_cloud: "{{ __parts[5] | default('') | default('') == 'cl' }}"
+    node_metrics: true
+  children:
+    hb:
+    hi:
+    hm:
+    hp:
+    hr:
+    hs:
+
+# Image
 hix:
-  hosts:
+  vars:
+    snapshot_description: "{{ inventory_hostname | regex_replace('^hi-', '') | regex_replace('-[0-9]+$', '') }}"
   children:
     hi:
 
-hnx:
+# Misc
+hmx:
   vars:
     additional_ports:
-      - 80
+      # - 80
       - 443
-    nginx_metrics: true
-    nginx_public_site: true
+    # additional_software:
+    #   - nfs-common
+    #   - nfs-kernel-server
+    kernel_debian_backports: true
+    kernel_debian_cloud: true
+    # __name: "stablerc"
     nginx_site_directories:
       - dir: site01
         port: 1234
-        secret: sec23
       - dir: site02
-        port: 4567
+        port: 5678
+        secret: "{{ hmx_sec23 }}"
   children:
-    hn:
+    hm:
 
+# Snowflake
 hsx:
   children:
     hs:
 
-htx:
-  vars:
-    nickname: "x{{ ((seed_address + seed_host) | md5)[0:10] }}"
-    tor_build_from_source: false
-    torrc_config_hosts:
-      - name: MaxAdvertisedBandwidth
-        value: 16MBytes
+# Tor public bridge
+hbx:
   children:
     hb:
+
+# Tor private bridge
+hpx:
+  children:
     hp:
+
+# Tor server
+hrx:
+  vars:
+    _torrc_config_hrx:
+      - name: PublishServerDescriptor
+        value: 0
+    # # Exit:
+    # additional_software:
+    #   - dns-root-data
+    #   - unbound
+    tor_bridge_distribution: ""
+    tor_egress_slew: >-
+      EGRESS_SUBNET_SLEW="45.84.107.0 64.65.0.0/23 64.65.60.0/22 96.9.98.0 109.70.100 171.25.193.0 185.220.101.0 192.42.116.0"
+  children:
     hr:
 
-h_common:
+# Tor
+htx:
   vars:
-    _repo_urls:
-      mainline: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-      stablerc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-      ltsrc: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-      stable: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-      lts: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git
-    _versions:
-      mainline: master
-      stablerc: linux-6.15.y
-      ltsrc: linux-6.12.y
-      stable: linux-rolling-stable
-      lts: linux-rolling-lts
-    # hostname examples:  hs0-dt-arm-mainline-nobp-cl-89  or  hi-un-x86-ltsrc
-    _parts: "{{ inventory_hostname.split('-') }}"
-    kernel_git_repo_url: "{{ _repo_urls[_parts[3] | default('')] | default('') }}"
-    kernel_git_version: "{{ _versions[_parts[3] | default('')] | default('') }}"
-    kernel_debian_backports: "{{ _parts[4] | default('') != 'nobp' }}"
-    kernel_debian_cloud: "{{ _parts[5] | default('') != 'nocl' }}"
+    _torrc_config_htx:
+      - name: Nickname
+        value: "gnampfx{{ ((seed_address + seed_host) | md5)[0:12] }}"
+      - name: RelayBandwidthRate
+        value: 8 MB
+      - name: RelayBandwidthBurst
+        value: 24 MB
+    _torrc_config: >-
+      {{ (_torrc_config_hpx | default([]) + _torrc_config_hbx | default([]) + _torrc_config_hrx | default([])
+        + _torrc_config_htx) | unique(attribute='name') }}
+    tor_keys_backup: true
+    tor_keys_restore: true
   children:
-    hi:
-    hn:
-    hs:
-    ht:
+    hbx:
+    hpx:
+    hrx:
