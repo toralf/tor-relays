@@ -4,7 +4,7 @@
 StartLimitIntervalSec=0
 
 [Service]
-NoNewPrivileges={{ (tor_bridge_distribution | length == 0) | ternary('yes', 'no') }}
+NoNewPrivileges={{ (tor_port > 1024) | ternary('yes', 'no') }}
 {% if tor_use_mimalloc %}
 {% set ver = (ansible_facts.distribution_release == 'trixie') | ternary ('3', '2') %}
 Environment="LD_PRELOAD=/usr/lib/{{ ansible_facts.architecture }}-linux-gnu/libmimalloc.so.{{ ver }}"
