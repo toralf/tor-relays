@@ -46,5 +46,5 @@ EOF
   chmod 600 ${local_inventory}
 fi
 
-# Root CA and certificates are stored under ./secrets
-mkdir -p ${HOME}/tmp/tor-relays/{artefact,coredump,ddos,ddos64,ddos80,ddos128,dmesg,kconfig,tor-keys,trace}
+# Root CA and certificates are stored separately under <repo dir>/secrets
+mkdir -p ~/tmp/tor-relays/{artefact,coredump,ddos,ddos64,ddos80,ddos128,dmesg,kconfig,tor-keys,trace}
