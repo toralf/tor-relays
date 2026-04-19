@@ -4,7 +4,7 @@
     gather_subset:
       - "!all"
       - "!min"
-      - default_ipv6
+      - all_ipv6_addresses
 
 - name: Ensure IPv6 address has valid prefix
   ansible.builtin.assert:
@@ -79,7 +79,7 @@
         gather_subset:
           - "!all"
           - "!min"
-          - default_ipv6
+          - all_ipv6_addresses
 
     - name: Current gathered IPv6
       changed_when: true
