@@ -1,11 +1,13 @@
 ---
 - name: Generate OpenSSL host key
+  no_log: true
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_privatekey:
     path: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
 
 - name: Generate OpenSSL host CSR
+  no_log: true
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.openssl_csr:
@@ -19,6 +21,7 @@
       - "IP:{{ ansible_facts.default_ipv6.address }}"
 
 - name: Generate OpenSSL host certificate
+  no_log: true
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   community.crypto.x509_certificate:
@@ -29,6 +32,7 @@
     provider: ownca
 
 - name: Copy OpenSSL host key
+  no_log: true
   ansible.builtin.copy:
     src: "{{ ca_dir }}/{{ ca_name }}/clients/keys/{{ inventory_hostname }}.key"
     dest: /etc/nginx/conf.d/client.key
