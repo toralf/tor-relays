@@ -61,7 +61,8 @@ elif [[ ${type} =~ "image" ]]; then
     # only clone kernel repo
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl,kernel-make"
+    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl" \
+      -e '{ "kernel_build": false }'
   fi
 
 elif [[ ${type} == "kernel" ]]; then

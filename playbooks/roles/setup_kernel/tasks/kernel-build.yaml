@@ -55,13 +55,11 @@
   register: _kernel_make_script
 
 - name: Make
-  tags:
-    - kernel-make
-  when: ('kernel-make' in ansible_run_tags) or
-    _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running
+  when: kernel_build
   vars:
     _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
     _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
+    kernel_build: "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running }}"
   block:
     - name: Stop unattended upgrade
       ansible.builtin.systemd_service:
