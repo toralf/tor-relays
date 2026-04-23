@@ -11,7 +11,7 @@ names=$(xargs -r <<<$*)
 echo -e "\n dis-trusting $(wc -w <<<${names}) ssh host key/s ..."
 
 if ! xargs -r -n 1 ssh-keygen -R <<<${names} &>/dev/null; then
-  echo " NOT ok"
+  echo " NOT ok" >&2
   exit 1
 fi
 

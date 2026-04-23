@@ -49,6 +49,6 @@ echo " rc=${rc}"
 if [[ ${rc} -eq 0 || ${rc} -eq 123 ]]; then
   echo " OK"
 else
-  echo " NOT ok"
+  echo " NOT ok" >&2
   exit ${rc}
 fi

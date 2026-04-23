@@ -1,16 +1,16 @@
 # shellcheck shell=bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# hint: ./.wellknown entries will not cleaned here
+# note: ./.wellknown entries will not cleaned
 
 function cleanLocalDataEntries() {
   local files
 
   echo -e " deleting local entries and facts ..."
   files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
-  set +e
   while read -r name; do
     rm -f ./.ansible_facts/{,s1_}${name}
+    set +e
     sed -i \
       -e "/^${name}$/d" \
       -e "/^${name} /d" \
@@ -18,14 +18,13 @@ function cleanLocalDataEntries() {
       -e "/ ${name} /d" \
       -e "/\[\"${name}:[0-9]*\"\]/d" \
       ${files} 2>/dev/null
-    sed -i -e "/ # ${name}$/d" /tmp/tor-relays/*_bridgeline 2>/dev/null
+    sed -i -e "/ # ${name}$/d" ~/tmp/tor-relays/*_bridgeline 2>/dev/null
+    set -e
   done < <(xargs -r -n 1 <<<$*)
-  set -e
 }
 
 function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
-  set +e
   while read -r name; do
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos64,ddos80,ddos128,dmesg,kconfig,trace}/${name}{,.*}
     if [[ -z ${KEEP_TOR_KEYS-} ]]; then
@@ -35,7 +34,6 @@ function cleanLocalDataFiles() {
       rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
     fi
   done < <(xargs -r -n 1 <<<$*)
-  set -e
 }
 
 # project is a global variable
@@ -63,11 +61,11 @@ function _setImageByHostname() {
   local name=${1?NAME NOT GIVEN}
 
   if [[ ${name} =~ "-db-" ]]; then
-    echo debian-12
+    echo debian-12 # bookworm
   elif [[ ${name} =~ "-dt-" ]]; then
-    echo debian-13
+    echo debian-13 # trixie
   elif [[ ${name} =~ "-un-" ]]; then
-    echo ubuntu-24.04
+    echo ubuntu-24.04 # noble
   elif [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
     echo ${HCLOUD_FALLBACK_IMAGE}
   else

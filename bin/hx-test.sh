@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: maintain golden image and test apps
+# goal: maintain golden image and test apps and kernel build
 
 set -euf
 export LANG=C.utf8
@@ -54,7 +54,13 @@ elif [[ ${type} =~ "image" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   if [[ ${type} == "image_build" ]]; then
     # clone kernel repo + build it
-    names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+    names=$(
+      os_grep=$(tr '{},' '()|' <<<${os})
+      eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid} |
+        xargs -r -n 1 |
+        grep -E "^hi-${os_grep:-.}-" |
+        xargs
+    )
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl"
   else
@@ -65,11 +71,23 @@ elif [[ ${type} =~ "image" ]]; then
       -e '{ "kernel_build": false }'
   fi
 
-elif [[ ${type} == "kernel" ]]; then
+elif [[ ${type} =~ "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
-  names=$(eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid})
+  names=$(
+    # shellcheck disable=SC2030 disable=SC2031
+    os_grep=$(tr '{},' '()|' <<<${os})
+    eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid} |
+      xargs -r -n 1 |
+      grep -E "^hi-${os_grep:-.}-" |
+      xargs
+  )
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "h?-*-${uid}"
+  if [[ ${type} == "kernel_build" ]]; then
+    # force a build
+    time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
+  else
+    time ./site-test-kernel.yaml --limit "h?-*-${uid}"
+  fi
 
 else
   echo "unknown type ${type}" >&2

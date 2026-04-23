@@ -123,6 +123,6 @@ if [[ ${rc} -eq 0 || ${rc} -eq 123 ]]; then
   ./bin/update-dns.sh
   ./bin/trust-host-ssh-key.sh ${names}
 else
-  echo " NOT ok"
+  echo " NOT ok" >&2
   exit ${rc}
 fi

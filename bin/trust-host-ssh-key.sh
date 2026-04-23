@@ -19,7 +19,7 @@ while read -r name; do
 done <<<${names}
 echo -n "   $(wc -w <<<${todo}) found in DNS ..."
 if [[ -z ${todo} ]]; then
-  echo -e "\n NOT ok"
+  echo -e "\n NOT ok" >&2
   exit 1
 fi
 
@@ -30,7 +30,7 @@ while ((attempts--)); do
       if ! grep -q -m 1 "^${name} " ~/.ssh/known_hosts; then
         echo ${name}
       fi
-    done < <(xargs -n 1 <<<${todo})
+    done < <(xargs -r -n 1 <<<${todo})
   )
 
   echo -en "\n   $(wc -w <<<${todo}) to do ..."
@@ -46,6 +46,6 @@ while ((attempts--)); do
 done
 
 if [[ -n ${todo} ]]; then
-  echo -e " NOT ok,  to do:     $(xargs <<<${todo})\n"
+  echo -e " NOT ok,  to do:     $(xargs -r <<<${todo})\n" >&2
   exit 1
 fi

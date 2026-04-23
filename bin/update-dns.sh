@@ -35,6 +35,7 @@ hcloud --quiet server list --output noheader --output columns=name,ipv4 |
   sort |
   while read -r name ipv4; do
     if [[ -z ${ipv4} ]]; then
+      echo "no ipv4, skipping ${name}" >&2
       continue
     fi
     printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
