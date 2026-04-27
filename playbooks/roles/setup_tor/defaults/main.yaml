@@ -4,6 +4,7 @@ tor_build_from_source: true
 tor_git_patches: []
 tor_git_version: main
 
+go_version: ''
 lyrebird_git_patches: []
 lyrebird_git_version: main
 

@@ -3,6 +3,8 @@
   ignore_errors: true
   ignore_unreachable: true
   changed_when: false
+  retries: 2
+  delay: 15
   ansible.builtin.ping:
   register: _ssh_ping
 

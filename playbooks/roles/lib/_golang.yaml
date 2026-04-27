@@ -1,0 +1,63 @@
+---
+# curl -s https://go.dev/dl/ | grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' | sort -Vr | head -n 1
+
+- name: Go apt
+  when: go_version | length == 0
+  block:
+    - name: Add PPA Go repo for Ubuntu
+      when: ansible_facts.distribution == 'Ubuntu'
+      ansible.builtin.apt_repository:
+        repo: ppa:longsleep/golang-backports
+
+    - name: Install/Update toolchain
+      ansible.builtin.apt:
+        default_release: "{{ ansible_facts.distribution_release }}-backports"
+        name:
+          - golang-go
+
+- name: Go upstream
+  when: go_version | length > 0
+  block:
+    - name: Get current Go version
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: >-
+          go version | awk '{ print $3 }'
+      register: __go_version_current
+
+    - name: Go
+      when: __go_version_current.stdout != go_version
+      vars:
+        _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+        _name: "{{ go_version }}.linux-{{ _arch }}.tar.gz"
+      block:
+        - name: Debug
+          changed_when: true
+          ansible.builtin.debug:
+            msg: "Go version change {{ __go_version_current.stdout }} -> {{ go_version }}"
+
+        - name: Get Go
+          throttle: 16
+          ansible.builtin.get_url:
+            url: "https://go.dev/dl/{{ _name }}"
+            dest: "/root/{{ _name }}"
+            mode: "0744"
+            force: true
+
+        - name: Unpack Go
+          ansible.builtin.shell:
+            cmd: |-
+              set -euf
+
+              sudo tar -xzf /root/{{ _name }}
+              mv go {{ go_version }}
+              cd ./bin
+              ln -sf ../{{ go_version }}/bin/go
+            chdir: /usr/local
+
+        - name: Deinstall Go
+          ansible.builtin.apt:
+            name:
+              - golang
+              - golang-go
+            state: absent

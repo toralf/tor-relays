@@ -57,19 +57,26 @@ function setImage() {
   fi
 }
 
+# hcloud image list --type system --output json | jq -r '.[].name' | sort -uV
 function _setImageByHostname() {
   local name=${1?NAME NOT GIVEN}
 
-  if [[ ${name} =~ "-db-" ]]; then
-    echo debian-12 # bookworm
-  elif [[ ${name} =~ "-dt-" ]]; then
-    echo debian-13 # trixie
-  elif [[ ${name} =~ "-un-" ]]; then
-    echo ubuntu-24.04 # noble
+  if [[ ${name} =~ "-du-" ]]; then # bullseye
+    echo debian-11
+  elif [[ ${name} =~ "-db-" ]]; then # bookworm
+    echo debian-12
+  elif [[ ${name} =~ "-dt-" ]]; then # trixie
+    echo debian-13
+  elif [[ ${name} =~ "-uj-" ]]; then # jammy jellyfish
+    echo ubuntu-22.04
+  elif [[ ${name} =~ "-un-" ]]; then # noble numbat
+    echo ubuntu-24.04
+  elif [[ ${name} =~ "-ur-" ]]; then # resolute racoon
+    echo ubuntu-26.04
   elif [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
     echo ${HCLOUD_FALLBACK_IMAGE}
   else
-    shuf -n 1 -e debian-12 debian-13 ubuntu-24.04
+    shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24,26}.04
   fi
 }
 

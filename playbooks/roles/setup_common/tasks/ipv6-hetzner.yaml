@@ -50,7 +50,17 @@
     - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
       block:
+        # fix buggy indentation
+        - name: Change IPv6 for Ubuntu Jammy
+          when: ansible_facts.distribution_release == 'jammy'
+          ansible.builtin.lineinfile:
+            line: '              - "{{ _ipv6_new }}/64"'
+            path: /etc/netplan/50-cloud-init.yaml
+            regex: "            - {{ _ipv6_prefix }}:"
+            mode: "0600"
+
         - name: Change IPv6 for Ubuntu
+          when: ansible_facts.distribution_release != 'jammy'
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
@@ -66,13 +76,16 @@
               netplan generate
               netplan apply
 
-    - name: Check that IPv6 is up and confirmed
-      changed_when: false
+    - name: Check that IPv6 is confirmed
+      changed_when: _confirmed.rc == 123
       ansible.builtin.shell:
         cmd: |-
+          rc=0
           while ip -6 a | grep -q ' tentative'; do
+            rc=123
             sleep 1
           done
+      register: _confirmed
 
     - name: Gather facts - IPv6
       ansible.builtin.setup:

@@ -24,7 +24,4 @@
 
 - name: Install/Update toolchain for Tor bridge
   when: tor_bridge_distribution | length > 0
-  ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}-backports"
-    name:
-      - golang-go
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_golang.yaml"

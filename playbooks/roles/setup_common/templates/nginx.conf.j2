@@ -33,7 +33,9 @@ server {
   ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/nginx/conf.d/client.crt;
   ssl_certificate_key /etc/nginx/conf.d/client.key;
+{% if ansible_facts.distribution_release not in ('bullseye', 'jammy') %}
   ssl_conf_command Options KTLS;
+{% endif %}
   add_header Strict-Transport-Security "max-age=63072000" always;
 
   server_name _443;
@@ -129,7 +131,9 @@ server {
   ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/nginx/conf.d/client.crt;
   ssl_certificate_key /etc/nginx/conf.d/client.key;
+{% if ansible_facts.distribution_release not in ('bullseye', 'jammy') %}
   ssl_conf_command Options KTLS;
+{% endif %}
   add_header Strict-Transport-Security "max-age=63072000" always;
 
   server_name _{{ metrics_port }};
