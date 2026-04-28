@@ -77,6 +77,7 @@
 
     - name: Wait till IPv6 is confirmed
       changed_when: _confirmed.rc == 123
+      failed_when: _confirmed.rc not in (0, 123)
       ansible.builtin.shell:
         cmd: |-
           rc=0
