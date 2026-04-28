@@ -8,8 +8,6 @@
       - all_ipv4_addresses
       - all_ipv6_addresses
       - architecture
-      - default_ipv4
-      - default_ipv6
       - distribution
   tags:
     - facts
@@ -83,7 +81,7 @@
           when: ansible_facts.system_vendor == 'QEMU'
           ansible.builtin.import_tasks: ipv6-ionos.yaml
 
-        - name: Ensure Ipv6 address is non-default
+        - name: Ensure Ipv6 address is set
           ansible.builtin.assert:
             quiet: true
             that:

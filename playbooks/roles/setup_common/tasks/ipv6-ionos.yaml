@@ -1,5 +1,5 @@
 ---
-- name: Test at a pseudo-randomly choosen ipv6 address
+- name: Test at a pseudo-randomized IPv6 address
   vars:
     _a: "0"
     _b: "{{ '%x' % (range(0, 65535) |
@@ -12,6 +12,7 @@
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   failed_when: _ipv6_new != ansible_facts.default_ipv6.address
+  changed_when: true
   ansible.builtin.debug:
     msg:
       - "expected: {{ _ipv6_new }}"

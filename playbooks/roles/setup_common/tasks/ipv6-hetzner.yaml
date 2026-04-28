@@ -13,7 +13,7 @@
       - "ansible_facts.default_ipv6.address | length > 0"
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
-- name: Set a pseudo-randomly choosen ipv6 address
+- name: IPv6
   when: ansible_facts.default_ipv6.address != _ipv6_new
   vars:
     _a: "{{ '%x' % (range(0, 65535) |
@@ -27,11 +27,10 @@
     _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   block:
-    - name: Change non-default IPv6
+    - name: IPv6 change
       changed_when: true
-      when: ansible_facts.default_ipv6.address is not search('::1$')
       ansible.builtin.debug:
-        var: ansible_facts.default_ipv6.address
+        msg: "{{ ansible_facts.default_ipv6.address }}  ->  {{ _ipv6_new }}"
 
     - name: Debian
       when: ansible_facts.distribution == 'Debian'
@@ -76,25 +75,23 @@
               netplan generate
               netplan apply
 
-    - name: Check that IPv6 is confirmed
+    - name: Wait till IPv6 is confirmed
       changed_when: _confirmed.rc == 123
       ansible.builtin.shell:
         cmd: |-
           rc=0
+
           while ip -6 a | grep -q ' tentative'; do
             rc=123
             sleep 1
           done
+
+          exit $rc
       register: _confirmed
 
-    - name: Gather facts - IPv6
+    - name: Gather facts - IPv6 again
       ansible.builtin.setup:
         gather_subset:
           - "!all"
           - "!min"
           - all_ipv6_addresses
-
-    - name: Current gathered IPv6
-      changed_when: true
-      ansible.builtin.debug:
-        var: ansible_facts.default_ipv6.address
