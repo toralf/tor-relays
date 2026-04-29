@@ -8,7 +8,7 @@
 - name: Get DDoS scripts
   throttle: 16
   ansible.builtin.get_url:
-    url: "https://github.com/toralf/torutils/raw/{{ torutils_git_version }}/{{ item }}"
+    url: "{{ torutils_path }}/{{ item }}"
     dest: "/root/{{ item }}"
   with_items:
     - ipv4-rules.sh
@@ -115,7 +115,7 @@
       when: tor_egress_slew | length > 0
       throttle: 16
       ansible.builtin.get_url:
-        url: "https://github.com/toralf/torutils/raw/{{ torutils_git_version }}/{{ item }}"
+        url: "{{ torutils_path }}/{{ item }}"
         dest: "/root/{{ item }}"
       with_items:
         - ipv4-rules-egress.sh

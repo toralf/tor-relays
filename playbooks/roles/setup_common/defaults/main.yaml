@@ -28,7 +28,7 @@ tor_port: 0
 tor_egress_slew: ""
 
 # DDoS solution
-torutils_git_version: main
+torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
 
 # nginx
 nginx_public_site: false

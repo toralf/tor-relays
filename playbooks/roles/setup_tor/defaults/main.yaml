@@ -9,7 +9,7 @@ lyrebird_git_patches: []
 lyrebird_git_version: main
 
 # DDoS solution
-torutils_git_version: main
+torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
 
 # 2 lists for additional torrc values
 torrc_config_group: []
