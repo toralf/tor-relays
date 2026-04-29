@@ -74,7 +74,6 @@ elif [[ ${type} =~ "image" ]]; then
 elif [[ ${type} =~ "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(
-    # shellcheck disable=SC2030 disable=SC2031
     os_grep=$(tr '{},' '()|' <<<${os})
     eval echo hi-{db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-un-${arch}-${branch}-x-x-${uid} |
       xargs -r -n 1 |

@@ -4,4 +4,4 @@ use_tor_geoip_data: false
 
 snowflake_proxies: []
 
-go_version: ''
+go_version: ""
