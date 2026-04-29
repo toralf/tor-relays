@@ -49,13 +49,13 @@
     - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
       block:
-        # fix buggy indentation
+        # fix buggy indentation and missing quoting
         - name: Change IPv6 for Ubuntu Jammy
           when: ansible_facts.distribution_release == 'jammy'
           ansible.builtin.lineinfile:
-            line: '              - "{{ _ipv6_new }}/64"'
+            line: '        - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
-            regex: "            - {{ _ipv6_prefix }}:"
+            regex: '^  * - "*{{ _ipv6_prefix }}:'
             mode: "0600"
 
         - name: Change IPv6 for Ubuntu
@@ -63,7 +63,7 @@
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
-            regex: '      - "{{ _ipv6_prefix }}:'
+            regex: '^      - "{{ _ipv6_prefix }}:'
             mode: "0600"
 
         - name: Activate new IPv6 address for Ubuntu
