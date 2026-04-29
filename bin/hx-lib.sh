@@ -20,12 +20,13 @@ function wait_for_jobs() {
 function pit_stop() {
   local rc=$?
   local sec=${1:-60}
+  local stopfile=${2:-~/tmp/hx/STOP}
 
-  echo -en " $(date) sleeping up to ${sec}s    \r"
-  while ((sec--)) && [[ ! -f ~/tmp/hx/STOP ]]; do
+  echo -en " $(date) sleeping ${sec}s    \r"
+  while ((sec--)) && [[ ! -f ${stopfile} ]]; do
     sleep 1
   done
-  if [[ -f ~/tmp/hx/STOP ]]; then
+  if [[ -f ${stopfile} ]]; then
     set +euf
     trap - INT QUIT TERM EXIT
     info "caught STOP"

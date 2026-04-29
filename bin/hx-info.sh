@@ -16,10 +16,10 @@ if [[ ! -d ~/tmp/hx ]]; then
   mkdir -p ~/tmp/hx
 fi
 logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop 0
+pit_stop 0 STOP-INFO
 while :; do
 
   #--------------------------------------------------------------------
@@ -44,5 +44,5 @@ while :; do
   fi
 
   #--------------------------------------------------------------------
-  pit_stop 300
+  pit_stop 300 STOP-INFO
 done
