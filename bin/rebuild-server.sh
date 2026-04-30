@@ -32,11 +32,7 @@ snapshots=$(getSnapshots)
 
 commands=$(
   while read -r name; do
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
-    else
-      image=$(setImage ${name})
-    fi
+    image=$(getImage ${name})
     echo --poll-interval $((1 + jobs / 2))s server rebuild --image ${image} ${name}
   done <<<${names}
 )

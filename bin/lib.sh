@@ -49,42 +49,45 @@ function getSnapshots() {
     sort -r -n
 }
 
-function setImage() {
+function getImage() {
   local name=${1?NAME NOT GIVEN}
 
-  if [[ -z ${snapshots} ]] || ! _setImageBySnapshot ${name}; then
-    _setImageByHostname ${name}
+  if [[ -n ${HCLOUD_IMAGE-} ]]; then
+    echo ${HCLOUD_IMAGE}
+    return
+  fi
+
+  if [[ -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
+    _getImageByHostname ${name}
   fi
 }
 
-# hcloud image list --type system --output json | jq -r '.[].name' | sort -uV
-function _setImageByHostname() {
+function _getImageByHostname() {
   local name=${1?NAME NOT GIVEN}
 
-  if [[ ${name} =~ "-du-" ]]; then # bullseye
-    echo debian-11
-  elif [[ ${name} =~ "-db-" ]]; then # bookworm
-    echo debian-12
-  elif [[ ${name} =~ "-dt-" ]]; then # trixie
-    echo debian-13
-  elif [[ ${name} =~ "-uj-" ]]; then # jammy jellyfish
-    echo ubuntu-22.04
-  elif [[ ${name} =~ "-un-" ]]; then # noble numbat
-    echo ubuntu-24.04
-  elif [[ ${name} =~ "-ur-" ]]; then # resolute racoon
-    echo ubuntu-26.04
-  elif [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
-    echo ${HCLOUD_FALLBACK_IMAGE}
-  else
-    shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24,26}.04
-  fi
+  # hcloud image list --type system --output json | jq -r '.[].name' | sort -uV
+  case $(cut -f 2 -d '-' <<<${name}) in
+  du) echo debian-11 ;;
+  db) echo debian-12 ;;
+  dt) echo debian-13 ;;
+  uj) echo ubuntu-22.04 ;;
+  un) echo ubuntu-24.04 ;;
+  ur) echo ubuntu-26.04 ;;
+  *)
+    if [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
+      echo ${HCLOUD_FALLBACK_IMAGE}
+    else
+      shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24,26}.04
+    fi
+    ;;
+  esac
 }
 
 # examples for match ordering e.g. for hs0-dt-arm-stablerc-bp-cl-89
 #   dt-arm-stablerc
 #   dt-arm-stable
 #   dt-arm
-function _setImageBySnapshot() {
+function _getImageBySnapshot() {
   local name=${1?NAME NOT GIVEN}
 
   local description id

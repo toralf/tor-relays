@@ -97,11 +97,7 @@ commands=$(
       loc="--location ${loc}"
     fi
 
-    if [[ -n ${HCLOUD_IMAGE-} ]]; then
-      image=${HCLOUD_IMAGE}
-    else
-      image=$(setImage ${name})
-    fi
+    image=$(getImage ${name})
     if [[ -z ${image} ]]; then
       echo " ERROR: empty image for ${name}" >&2
       exit 1
