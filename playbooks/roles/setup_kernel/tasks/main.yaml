@@ -12,6 +12,9 @@
       owner: root
       group: root
       mode: "0644"
+    ansible.builtin.get_url:
+      mode: "0744"
+      force: true
   block:
     - name: Gather facts
       ansible.builtin.setup:
@@ -29,6 +32,12 @@
       ansible.builtin.import_tasks: tools.yaml
       tags:
         - tools
+
+    - name: Firewall Image
+      when: (snapshot_description | default('')) | length > 0
+      ansible.builtin.import_tasks: firewall-image.yaml
+      tags:
+        - firewall-image
 
     - name: Check for running kernel build process
       community.general.pids:
