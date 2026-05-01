@@ -8,7 +8,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 [[ $# -ne 0 ]]
 
-names=$(xargs -r -n 1 <<<$*)
+names=$(xargs -n 1 <<<$*)
 echo " trusting $(wc -w <<<${names}) system/s ..."
 
 todo=""
@@ -46,6 +46,6 @@ while ((attempts--)); do
 done
 
 if [[ -n ${todo} ]]; then
-  echo -e " NOT ok,  to do:     $(xargs -r <<<${todo})\n" >&2
+  echo -e " NOT ok,  to do:     $(xargs <<<${todo})\n" >&2
   exit 1
 fi

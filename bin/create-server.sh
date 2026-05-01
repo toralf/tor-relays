@@ -23,7 +23,7 @@ setProject
 
 jobs=24
 
-names=$(xargs -r -n 1 <<<$*)
+names=$(xargs -n 1 <<<$*)
 
 if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   echo " ^^ invalid hostname/s" >&2

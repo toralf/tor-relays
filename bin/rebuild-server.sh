@@ -21,7 +21,7 @@ setProject
 
 jobs=24
 
-names=$(xargs -r -n 1 <<<$*)
+names=$(xargs -n 1 <<<$*)
 
 echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
 
