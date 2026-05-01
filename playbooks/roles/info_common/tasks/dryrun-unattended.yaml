@@ -6,10 +6,10 @@
       unattended-upgrade --debug --dry-run |
         awk '/pkgs that look like they should be upgraded:/,/Fetched /' |
         sed -e '1d' -e '$d'
-  register: _result
+  register: _result_unatt_dryrun
 
 - name: Output of dry run
-  when: _result.stdout | length > 0
+  when: _result_unatt_dryrun.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    var: _result_unatt_dryrun.stdout_lines

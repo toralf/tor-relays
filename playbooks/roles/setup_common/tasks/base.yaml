@@ -25,11 +25,11 @@
 
 - name: Have only 1 authorized key
   changed_when: false
-  failed_when: _result.stdout_lines | length != 1
+  failed_when: _result_auth_keys.stdout_lines | length != 1
   ansible.builtin.shell:
     cmd: >-
       wc -l </root/.ssh/authorized_keys
-  register: _result
+  register: _result_auth_keys
 
 - name: Create swapfile for tiny systems (e.g. IONOS)
   when: ansible_facts.memtotal_mb < 2048 and tor_port > 0

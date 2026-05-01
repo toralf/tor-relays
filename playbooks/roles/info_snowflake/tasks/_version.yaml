@@ -7,15 +7,15 @@
         head -n 1 |
         cut -f 2- -d ' ' |
         tr ' ' '_'
-  register: _result
+  register: _result_sf_version
 
 - name: File version
   delegate_to: localhost
   throttle: 1
   vars:
-    _version: "{{ _result.stdout | default('-') }}"
+    _version: "{{ _result_sf_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} sf {{ _version }}"
     path: "{{ infodir }}/{{ item.name }}_version"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (item.state == 'present' and _result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _result_sf_version.stdout | length > 0) | ternary('present', 'absent') }}"

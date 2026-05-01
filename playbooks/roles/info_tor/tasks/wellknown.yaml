@@ -14,7 +14,7 @@
     - name: Ensure hashed fingerprint is in wellknown file
       delegate_to: localhost
       ansible.builtin.lineinfile:
-        line: "{{ _fingerprint_hashed }}"
+        line: "{{ _fp_hashed }}"
         path: "{{ infodir }}/hashed-bridge-rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
@@ -34,13 +34,13 @@
     - name: Ensure RSA fingerprint is in wellknown file
       delegate_to: localhost
       ansible.builtin.lineinfile:
-        line: "{{ _fingerprint }}"
+        line: "{{ _fp }}"
         path: "{{ infodir }}/rsa-fingerprint.txt"
         insertafter: "^# {{ inventory_hostname }}\n"
 
     - name: Ensure ED25519 fingerprint is in wellknown file
       delegate_to: localhost
       ansible.builtin.lineinfile:
-        line: "{{ _fingerprint_ed25519 }}"
+        line: "{{ _fp_ed25519 }}"
         path: "{{ infodir }}/ed25519-master-pubkey.txt"
         insertafter: "^# {{ inventory_hostname }}\n"

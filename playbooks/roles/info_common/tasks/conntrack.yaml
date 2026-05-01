@@ -9,13 +9,13 @@
         awk '{ print $1, $5, $6 }' |
         cut -f 2- -d ':' |
         xargs -r
-  register: _result
+  register: _result_ct_drop
 
 - name: File conntrack drop value
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result_ct_drop.stdout }}"
     path: "{{ infodir }}/firewall_conntrack_drop"
     regexp: "^{{ inventory_hostname }} "
 
@@ -25,13 +25,13 @@
   ansible.builtin.command:
     cmd: >-
       conntrack -C
-  register: _result
+  register: _result_ct_counter
 
 - name: File conntrack counter
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result_ct_counter.stdout }}"
     path: "{{ infodir }}/firewall_conntrack_counter"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stderr | length > 0 or _result.rc > 0) | ternary('absent', 'present') }}"
+    state: "{{ (_result_ct_counter.stderr | length > 0 or _result_ct_counter.rc > 0) | ternary('absent', 'present') }}"

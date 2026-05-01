@@ -8,9 +8,9 @@
         grep -F -B 1 -A 1 'kernel: ------------[ cut here ]------------' |
         grep -E ' .*/.*\.[ch]:[0-9]+' |
         sort -u
-  register: _result
+  register: _result_trace
   notify: Not Healthy
 
 - name: Results of trace
   ansible.builtin.include_tasks: _trace.yaml
-  loop: "{{ _result.stdout_lines }}"
+  loop: "{{ _result_trace.stdout_lines }}"

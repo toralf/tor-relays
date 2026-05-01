@@ -7,21 +7,21 @@
         cmd: |-
           {{ lookup('ansible.builtin.file', custom_command_file) }}
         executable: /bin/bash
-      register: _result
+      register: _result_custom_cmd
   rescue:
     - name: Rc of custom command
       failed_when: true
       ansible.builtin.debug:
-        var: _result.rc
+        var: _result_custom_cmd.rc
   always:
     - name: Stdout of custom command
-      when: _result.stdout | length > 0
+      when: _result_custom_cmd.stdout | length > 0
       changed_when: true
       ansible.builtin.debug:
-        var: _result.stdout_lines
+        var: _result_custom_cmd.stdout_lines
 
     - name: Stderr of custom command
-      when: _result.stderr | length > 0
+      when: _result_custom_cmd.stderr | length > 0
       changed_when: true
       ansible.builtin.debug:
-        var: _result.stderr_lines
+        var: _result_custom_cmd.stderr_lines

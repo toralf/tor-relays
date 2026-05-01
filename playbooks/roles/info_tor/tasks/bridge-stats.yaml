@@ -5,13 +5,13 @@
   ansible.builtin.command:
     cmd: >-
       grep -F 'bridge-ips' /var/lib/tor/stats/bridge-stats
-  register: _result
+  register: _result_bridge_stats
 
 - name: File bridge stats
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result_bridge_stats.stdout }}"
     path: "{{ infodir }}/tor_bridge_stats"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (_result_bridge_stats.stdout | length > 0) | ternary('present', 'absent') }}"

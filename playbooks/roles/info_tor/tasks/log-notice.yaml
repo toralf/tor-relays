@@ -11,10 +11,10 @@
         -e 'Unrecognized BridgeDistribution value' |
         tail -n 10
     executable: /bin/bash
-  register: _result
+  register: _result_log_notice
 
 - name: Results of notice log
-  when: _result.stdout | length > 0
+  when: _result_log_notice.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    var: _result_log_notice.stdout_lines

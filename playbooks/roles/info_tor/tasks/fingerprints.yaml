@@ -4,24 +4,24 @@
   ansible.builtin.command:
     cmd: >-
       cut -f 2 -d ' ' /var/lib/tor/fingerprint
-  register: _result
+  register: _result_fp
 
-- name: Set fact _fingerprint
-  when: _result.stdout | length > 0
+- name: Set fact _fp
+  when: _result_fp.stdout | length > 0
   ansible.builtin.set_fact:
-    _fingerprint: "{{ _result.stdout_lines[0] }}"
+    _fp: "{{ _result_fp.stdout_lines[0] }}"
 
 - name: Get ED25519 fingerprint
   changed_when: false
   ansible.builtin.command:
     cmd: >-
       cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
-  register: _result
+  register: _result_fp_ed25519
 
-- name: Set fact _fingerprint_ed25519
-  when: _result.stdout | length > 0
+- name: Set fact _fp_ed25519
+  when: _result_fp_ed25519.stdout | length > 0
   ansible.builtin.set_fact:
-    _fingerprint_ed25519: "{{ _result.stdout_lines[0] }}"
+    _fp_ed25519: "{{ _result_fp_ed25519.stdout_lines[0] }}"
 
 - name: Hashed fingerprint
   when: tor_bridge_distribution | length > 0
@@ -31,9 +31,9 @@
       ansible.builtin.command:
         cmd: >-
           cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
-      register: _result
+      register: _result_fp_hashed
 
-    - name: Set fact _fingerprint_hashed
-      when: _result.stdout | length > 0
+    - name: Set fact _fp_hashed
+      when: _result_fp_hashed.stdout | length > 0
       ansible.builtin.set_fact:
-        _fingerprint_hashed: "{{ _result.stdout_lines[0] }}"
+        _fp_hashed: "{{ _result_fp_hashed.stdout_lines[0] }}"

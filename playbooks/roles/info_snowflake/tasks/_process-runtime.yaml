@@ -7,13 +7,13 @@
         grep " /usr/bin/{{ item.name }} " |
         grep -v " grep " |
         awk '{ printf("%i-%02i\n", $1 / 86400, $1 % 86400 / 3600) }'
-  register: _result
+  register: _result_process_runtime
 
 - name: File process runtime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} etimes {{ _result.stdout | default('-') }}"
+    line: "{{ inventory_hostname }} etimes {{ _result_process_runtime.stdout | default('-') }}"
     path: "{{ infodir }}/{{ item.name }}_process_runtime"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (item.state == 'present' and _result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _result_process_runtime.stdout | length > 0) | ternary('present', 'absent') }}"

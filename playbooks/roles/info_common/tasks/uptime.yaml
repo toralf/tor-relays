@@ -4,12 +4,12 @@
   ansible.builtin.command:
     cmd: >-
       uptime -ps
-  register: _result
+  register: _result_uptime
 
 - name: File uptime
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} Uptime {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} Uptime {{ _result_uptime.stdout }}"
     path: "{{ infodir }}/uptime"
     regexp: "^{{ inventory_hostname }} "

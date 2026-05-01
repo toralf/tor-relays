@@ -1,8 +1,8 @@
 ---
 tor_bridge_distribution: "none"
 
-_fingerprint: ""
-_fingerprint_ed25519: ""
-_fingerprint_hashed: ""
+_fp: ""
+_fp_ed25519: ""
+_fp_hashed: ""
 
 tor_keys_backup: false

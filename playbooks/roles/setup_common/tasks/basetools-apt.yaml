@@ -21,11 +21,11 @@
     dest: /etc/apt/apt.conf.d/
 
 - name: Update apt cache
-  changed_when: _result.cache_updated
+  changed_when: _result_apt_cache.cache_updated
   ansible.builtin.apt:
     cache_valid_time: 3600
     update_cache: true
-  register: _result
+  register: _result_apt_cache
 
 - name: Install/Update Ansible deps
   ansible.builtin.apt:

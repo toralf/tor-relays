@@ -1,7 +1,7 @@
 ---
 - name: Grep system log for issue/s
   changed_when: false
-  failed_when: _result.stderr | length > 0
+  failed_when: _result_syslog.stderr | length > 0
   ansible.builtin.shell:
     cmd: |-
       journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
@@ -18,13 +18,13 @@
           -e '.service: Control process exited' \
           -e 'status=9/KILL' \
           -e 'WARNING:'
-  register: _result
+  register: _result_syslog
 
 - name: File issue
   delegate_to: localhost
   throttle: 1
   ansible.builtin.blockinfile:
-    block: "{{ _result.stdout }}"
+    block: "{{ _result_syslog.stdout }}"
     path: "{{ infodir }}/issue.txt"
     marker: "# {mark} {{ inventory_hostname }} "
-    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (_result_syslog.stdout | length > 0) | ternary('present', 'absent') }}"

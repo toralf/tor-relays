@@ -22,10 +22,10 @@
             sort -rn |
             awk 'x[$2]++ { print $1 }' |
             xargs -r hcloud --quiet --poll-interval 5s image delete
-      register: _result
+      register: _result_snapshot
 
     - name: Failure
-      when: _result.rc != 0
+      when: _result_snapshot.rc != 0
       changed_when: true
       ansible.builtin.debug:
-        var: _result
+        var: _result_snapshot

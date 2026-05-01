@@ -10,11 +10,11 @@
     recurse: true
     hidden: true
     follow: true
-  register: _result
+  register: _result_artefact
 
 - name: Work on found artefact
-  when: _result.files is defined
+  when: _result_artefact.files is defined
   ansible.builtin.include_tasks: _artefact.yaml
   loop_control:
     label: "{{ item.path }}    {{ item.size }}"
-  loop: "{{ _result.files }}"
+  loop: "{{ _result_artefact.files }}"

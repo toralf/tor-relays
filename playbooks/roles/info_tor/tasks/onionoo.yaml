@@ -2,7 +2,7 @@
 - name: Query Onionoo
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.uri:
-    url: "https://onionoo.torproject.org/details?search={{ _fingerprint_hashed }}"
+    url: "https://onionoo.torproject.org/details?search={{ _fp_hashed }}"
     return_content: true
     status_code: [200, 404]
   register: _uri

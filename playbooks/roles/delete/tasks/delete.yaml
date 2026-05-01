@@ -23,8 +23,8 @@
 - name: SSH known key
   delegate_to: localhost
   throttle: 1
-  changed_when: _result.stdout is not search('not found in')
+  changed_when: _result_sshkey.stdout is not search('not found in')
   ansible.builtin.command:
     cmd: >-
       ssh-keygen -R {{ inventory_hostname }}
-  register: _result
+  register: _result_sshkey

@@ -10,10 +10,10 @@
           -e ' completed connections.' \
           -e ' Proxy connection closed' |
         tail -n {{ log_lines }}
-  register: _result
+  register: _result_proxylog
 
 - name: Results of proxy log
-  when: _result.stdout | length > 0
+  when: _result_proxylog.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    var: _result_proxylog.stdout_lines

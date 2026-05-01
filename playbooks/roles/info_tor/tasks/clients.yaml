@@ -13,13 +13,13 @@
         grep -Po ' \d+ ' |
         tac |
         xargs -r
-  register: _result
+  register: _result_tor_clients
 
 - name: File clients
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout }}"
+    line: "{{ inventory_hostname }} {{ _result_tor_clients.stdout }}"
     path: "{{ infodir }}/tor_clients"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result.stdout | length > 0) | ternary('present', 'absent') }}"
+    state: "{{ (_result_tor_clients.stdout | length > 0) | ternary('present', 'absent') }}"

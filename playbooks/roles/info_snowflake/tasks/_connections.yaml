@@ -17,13 +17,13 @@
       )
       echo $(( equatation ))
     executable: /bin/bash
-  register: _result
+  register: _result_conns
 
 - name: File connections
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result.stdout | default('n/a') }}"
+    line: "{{ inventory_hostname }} {{ _result_conns.stdout | default('n/a') }}"
     path: "{{ infodir }}/{{ item.name }}_connections"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (item.state == 'present' and _result.stderr | length == 0) | ternary('present', 'absent') }}"
+    state: "{{ (item.state == 'present' and _result_conns.stderr | length == 0) | ternary('present', 'absent') }}"

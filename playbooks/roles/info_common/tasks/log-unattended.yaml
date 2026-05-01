@@ -8,10 +8,10 @@
         /var/log/unattended-upgrades/unattended-upgrades-dpkg.log |
         tail -n 20
     executable: /bin/bash
-  register: _result
+  register: _result_unatt_log
 
 - name: Findings of unattended log
-  when: _result.stdout | length > 0
+  when: _result_unatt_log.stdout | length > 0
   changed_when: true
   ansible.builtin.debug:
-    var: _result.stdout_lines
+    var: _result_unatt_log.stdout_lines

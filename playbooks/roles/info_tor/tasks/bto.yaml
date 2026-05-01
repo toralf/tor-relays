@@ -2,7 +2,7 @@
 - name: Query b.t.o.
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.uri:
-    url: "https://bridges.torproject.org/status?id={{ _fingerprint_hashed }}"
+    url: "https://bridges.torproject.org/status?id={{ _fp_hashed }}"
     return_content: true
     status_code: [200, 404]
   register: _uri

@@ -35,12 +35,12 @@
   register: _sysctl
 
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl.changed or _result.stderr | length > 0
+  changed_when: _sysctl.changed or _result_sysctl.stderr | length > 0
   failed_when: false # Ubuntu: sysctl: setting key "kernel.yama.ptrace_scope": Invalid argument
   ansible.builtin.command:
     cmd: >-
       sysctl --system >/dev/null
-  register: _result
+  register: _result_sysctl
 
 - name: Set crontab vars
   ansible.builtin.cron:

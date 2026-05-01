@@ -6,17 +6,17 @@
     limit: "{{ coredump_limit }}"
     get_checksum: true
     recurse: true
-  register: _result
+  register: _result_minicoredumper
 
 - name: Result
-  when: _result.files | default([]) | length > 0
+  when: _result_minicoredumper.files | default([]) | length > 0
   block:
     - name: Loop over coredumps
-      when: _result.files | length < 50
+      when: _result_minicoredumper.files | length < 50
       vars:
         _fname: "{{ item.path }}"
         _unique_id: "{{ inventory_hostname }}.{{ _fname | dirname | basename }}"
       ansible.builtin.include_tasks: _coredump.yaml
       loop_control:
         label: "{{ _unique_id }}"
-      loop: "{{ _result.files }}"
+      loop: "{{ _result_minicoredumper.files }}"
