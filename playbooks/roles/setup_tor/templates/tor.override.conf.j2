@@ -6,6 +6,6 @@ StartLimitIntervalSec=0
 [Service]
 NoNewPrivileges={{ (tor_bridge_distribution | length > 0 or tor_port > 1024) | ternary('yes', 'no') }}
 {% if tor_use_mimalloc %}
-{% set ver = (ansible_facts.distribution_release == 'trixie') | ternary ('3', '2') %}
+{% set ver = (ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')) | ternary ('2', '3') %}
 Environment="LD_PRELOAD=/usr/lib/{{ ansible_facts.architecture }}-linux-gnu/libmimalloc.so.{{ ver }}"
 {% endif %}

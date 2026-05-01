@@ -48,7 +48,7 @@
 # https://www.1aeo.com/blog/tor-memory-optizations-what-actually-works.html
 - name: Malloc alternative
   vars:
-    _ver: "{{ (ansible_facts.distribution_release == 'trixie') | ternary('3', '2.0') }}"
+    _ver: "{{ (ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')) | ternary('2.0', '3') }}"
   ansible.builtin.apt:
     name:
       - "libmimalloc{{ _ver }}"
