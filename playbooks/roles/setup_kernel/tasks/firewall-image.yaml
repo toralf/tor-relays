@@ -1,20 +1,41 @@
 ---
+- name: Load multiport module
+  ansible.builtin.iptables:
+    ip_version: "ip{{ item.0 }}"
+    chain: INPUT
+    table: filter
+    protocol: udp
+    destination: "{{ (item.0 == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
+    destination_ports: "1234:6789"
+    jump: ACCEPT
+    state: "{{ item.1 }}"
+  loop: "{{ ['v4', 'v6'] | product(['present', 'absent']) }}"
+
 - name: Install/Update tools for DDoS
   ansible.builtin.apt:
     name:
       - ipset
       - jq
 
-- name: Get DDoS scripts
+- name: Fetch
   throttle: 16
-  ansible.builtin.get_url:
-    url: "{{ torutils_path }}/{{ item }}"
-    dest: "/root/{{ item }}"
-  with_items:
-    - ipv4-rules.sh
-    - ipv6-rules.sh
+  block:
+    - name: Get DDoS scripts
+      ansible.builtin.get_url:
+        url: "{{ torutils_path }}/{{ item }}"
+        dest: "/root/{{ item }}"
+      with_items:
+        - ipv4-rules.sh
+        - ipv6-rules.sh
 
-- name: Start/Stop DDoS
+    - name: Get egress script
+      ansible.builtin.get_url:
+        url: "{{ torutils_path }}/{{ item }}"
+        dest: "/root/{{ item }}"
+      with_items:
+        - ipv4-rules-egress.sh
+
+- name: Start/Stop
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -29,14 +50,7 @@
       /root/ipv6-rules.sh start
       /root/ipv6-rules.sh stop
 
-- name: Load multiport module
-  ansible.builtin.iptables:
-    ip_version: "ip{{ item.0 }}"
-    chain: INPUT
-    table: filter
-    protocol: udp
-    destination: "{{ (item.0 == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
-    destination_ports: "1234:6789"
-    jump: ACCEPT
-    state: "{{ item.1 }}"
-  with_items: "{{ ['v4', 'v6'] | product(['present', 'absent']) }}"
+      export EGRESS_SUBNET_SLEW="1.2.3.4"
+
+      /root/ipv4-rules-egress.sh start
+      /root/ipv4-rules-egress.sh
