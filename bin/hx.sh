@@ -9,7 +9,7 @@ function git_ls_remote() {
 
   local url ver tok
   case ${name} in
-  # Tor project
+  # apps
   #
   lyrebird)
     url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
@@ -27,7 +27,7 @@ function git_ls_remote() {
   #
   ltsrc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    ver=linux-6.12.y
+    ver=linux-6.18.y
     ;;
   mainline)
     url=git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
@@ -36,7 +36,7 @@ function git_ls_remote() {
     ;;
   stablerc)
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    ver=linux-6.18.y
+    ver=linux-7.0.y
     ;;
   #
   #
@@ -50,17 +50,19 @@ function git_ls_remote() {
     awk '{ print $1 }'
 }
 
+# an empty "old" is not considered as "changed"
 function git_changed() {
-  local name=${1?NAME MUST BE GIVEN}
+  local group=${1?GROUP MUST BE GIVEN}
+  local name=${2?NAME MUST BE GIVEN}
 
   # shellcheck disable=SC2155
-  local old=$(cat /tmp/git.${name} 2>/dev/null)
+  local old=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
   # shellcheck disable=SC2155
   local new=$(git_ls_remote ${name} 2>/dev/null)
   if [[ -n ${new} ]]; then
-    echo ${new} >/tmp/git.${name}
+    echo ${new} >~/tmp/hx/git.${group}.${name}
     if [[ -n ${old} && ${old} != "${new}" ]]; then
-      info "git ${name}: $(cut -c -12 <<<${old}) -> $(cut -c -12 <<<${new})"
+      info "git ${group} ${name}: $(cut -c -12 <<<${old}) -> $(cut -c -12 <<<${new})"
       return 0
     fi
   fi
@@ -89,44 +91,47 @@ trap 'echo; echo stopping...; touch ~/tmp/hx/STOP' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop 0
+
 while :; do
-  # Tor app update
+  # Tor app update(s)
   for i in $(shuf -e lyrebird snowflake tor); do
-    if git_changed ${i}; then
-      info "app: ${i}"
+    if git_changed app ${i}; then
+      info "update app: ${i}"
       limit=""
       case ${i} in
       lyrebird) limit="hbx,hpx" ;;
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
       esac
-      if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.${i}.log; then
+      if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.app.${i}.log; then
         info "  NOT ok" >&2
       fi
       pit_stop
     fi
   done
 
-  # kernel update
+  # previous image builds should finish first
+  wait_for_bg_jobs
+  # kernel update(s)
   for i in $(shuf -e ltsrc mainline stablerc); do
-    if git_changed ${i}; then
-      info "kernel: ${i}"
-      ./bin/hx-test.sh -t image_build -b ${i} &>${logprefix}.image_build.${i}.log &
+    if git_changed kernel ${i}; then
+      info "update kernel: ${i}"
+      ./bin/hx-test.sh -e -t image_build -b ${i} &>${logprefix}.image_build.${i}.log &
       if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build \
-        -e '{ "kernel_git_build_wait": false }' &>${logprefix}.${i}.log; then
+        -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop
+      pit_stop 600
     fi
   done
 
-  # handle unreachable systems
-  info "check that all systems are up"
+  # unreachable systems
+  info "check for down systems"
   if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${logprefix}.down.log; then
     info "  NOT ok" >&2
   fi
   pit_stop 1
-  down=$(xargs -r <~/tmp/tor_relays/is_down 2>/dev/null)
+  down=$(grep "^h" ~/tmp/tor_relays/is_down 2>/dev/null | xargs)
   if [[ -n ${down} ]]; then
     info "  power off/on: $(wc -w <<<${down})"
     info "    power off"
@@ -141,7 +146,7 @@ while :; do
     fi
     pit_stop
 
-    # catch up any missed updates
+    # catch up missed update(s) if any
     info "  update: $(wc -w <<<${down})"
     if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${down})" --tags kernel-build,lyrebird,snowflake,tor \
       -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
@@ -149,11 +154,11 @@ while :; do
     fi
     pit_stop
 
-    # rebuild failed systems
-    rebuild=$(xargs -r <~/tmp/hx/.retry)
+    # rebuild failed system(s)
+    rebuild=$(xargs <~/tmp/hx/.retry)
     if [[ -n ${rebuild} ]]; then
       info "  rebuild: $(wc -w <<<${rebuild})"
-      rebuild=$(shuf -n 64 -e ${rebuild} | xargs -r) # reduce blast radius
+      rebuild=$(shuf -n 64 -e ${rebuild} | xargs) # limit blast radius
       if ! ./bin/rebuild-server.sh ${rebuild}; then
         info "  NOT ok" >&2
       fi
@@ -165,6 +170,5 @@ while :; do
     fi
   fi
 
-  pit_stop
-  wait_for_jobs
+  pit_stop 300
 done

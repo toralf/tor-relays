@@ -5,15 +5,13 @@ function info() {
   echo -e " $(date) $*                            "
 }
 
-function wait_for_jobs() {
-  # shellcheck disable=SC2155
-  local jobs=$(jobs -p | xargs -r)
+function wait_for_bg_jobs() {
+  local n
 
-  if [[ -n ${jobs} ]]; then
-    info "wait for jobs: ${jobs}"
-    while fg 2>/dev/null; do
-      :
-    done
+  n=$(jobs -r | wc -l)
+  if [[ ${n} -gt 0 ]]; then
+    info "wait for ${n} background job(s) ..."
+    wait
   fi
 }
 
@@ -22,7 +20,7 @@ function pit_stop() {
   local sec=${1:-60}
   local stopfile=${2:-~/tmp/hx/STOP}
 
-  echo -en " $(date) sleeping ${sec}s    \r"
+  echo -en " $(date) sleep for ${sec}s    \r"
   while ((sec--)) && [[ ! -f ${stopfile} ]]; do
     sleep 1
   done
@@ -30,7 +28,7 @@ function pit_stop() {
     set +euf
     trap - INT QUIT TERM EXIT
     info "caught STOP"
-    wait_for_jobs
+    wait_for_bg_jobs
     info "exit\n"
     exit ${rc}
   fi

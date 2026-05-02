@@ -4,6 +4,26 @@
 
 # goal: CI/CD
 
+function sync_site() {
+  if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${site}.ansible.${tags}.log |
+    grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
+    local srv
+    for srv in $*; do
+      info "  rsync ${site} to ${srv}"
+      local dest="${srv}:/var/www/${site}"
+      local log="${logprefix}.${site}.rsync.${srv}.log"
+      echo -e "\n# epoch ${EPOCHSECONDS}\n# $(date -R)" >>${log}
+      if ! rsync --verbose --recursive ~/tmp/hx/${site}/ ${dest} >>${log} 2>/dev/null; then
+        info "  NOT ok" >&2
+      fi
+      if ! rsync --verbose ${log} ${dest} &>/dev/null; then
+        info "  NOT ok" >&2
+      fi
+    done
+  fi
+}
+
+#######################################################################
 set -euf
 set -m
 export LANG=C.utf8
@@ -20,28 +40,30 @@ trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop 0 STOP-INFO
+
 while :; do
+  site="site01"
+  tags="coredump,trace"
+  srvs="hm0-dt-arm-dist-x-x-0 hm0-dt-arm-dist-x-x-1"
 
-  #--------------------------------------------------------------------
-  i="info01"
-
-  info "${i}"
-  if ! ./site-info.yaml --limit 'hx,!hix' --tags artefact,coredump,issue,trace -e '{ "infodir": "~/tmp/hx/'${i}'" }' \
-    -e '{ "issue_since": "1 days ago" }' -e '{ "trace_since": "1 days ago" }' &>${logprefix}.${i}.log; then
+  info "${site} ${tags}"
+  if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
+    -e '{ "issue_since": "12 hours ago" }' -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
+  sync_site ${srvs}
 
-  if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${i}.log |
-    grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
-    echo -e "${EPOCHSECONDS}\n$(date -R)" >~/tmp/hx/${i}/last-change.txt
-    for dest in foo bar; do
-      info "  rsync ${i} to ${dest}"
-      # trailing / in "from" is intentionally
-      if ! rsync --verbose --recursive ~/tmp/hx/${i}/ ${dest}:/var/www/site01 &>${logprefix}.${i}.rsync.log; then
-        info "  NOT ok" >&2
-      fi
-    done
+  #--------------------------------------------------------------------
+  site="site02"
+  tags="artefact"
+  srvs="hm1-dt-arm-dist-x-x-0 hm1-dt-arm-dist-x-x-1"
+
+  info "${site} ${tags}"
+  if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
+    -e '{ "issue_since": "12 hours ago" }' -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
+    info "  NOT ok" >&2
   fi
+  sync_site ${srvs}
 
   #--------------------------------------------------------------------
   pit_stop 300 STOP-INFO
