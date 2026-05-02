@@ -34,8 +34,8 @@
                 gpg --dearmor >"{{ _keyring }}"
             creates: "{{ _keyring }}"
 
-        - name: Enable legacy repository - sources bookworm
-          when: ansible_facts.distribution_release == 'bookworm'
+        - name: Enable legacy repository - sources Debian
+          when: ansible_facts.distribution == 'Debian'
           ansible.builtin.deb822_repository:
             name: tor
             types:
