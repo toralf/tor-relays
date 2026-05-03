@@ -142,24 +142,29 @@ while :; do
   # down systems
   if ! ANSIBLE_RETRY_FILES_ENABLED="True" ANSIBLE_RETRY_FILES_SAVE_PATH="${HOME}/tmp/hx" \
     ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
-    before=$(grep "^h" ~/tmp/hx/site-setup.retry | grep -v "^hi" | xargs)
+    grep "^h" ~/tmp/hx/site-setup.retry |
+      grep -v "^hi" |
+      sort >~/tmp/hx/down-before
+    before=$(wc -w <<<~/tmp/hx/down-before)
     if [[ ${before} -gt 0 ]]; then
       info "  down before: $(wc -w <<<${before})"
-      mv ~/tmp/hx/site-setup.retry ~/tmp/hx/down-before
       pit_stop
       if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
-        after=$(grep "^h" ~/tmp/hx/site-setup.retry | grep -v "^hi" | xargs)
+        grep "^h" ~/tmp/hx/site-setup.retry |
+          grep -v "^hi" |
+          sort >~/tmp/hx/down-after
+        after=$(wc -w <<<~/tmp/hx/down-after)
         if [[ ${after} -gt 0 ]]; then
           info "  down after: $(wc -w <<<${after})"
 
           number=${EPOCHSECONDS}
-          comm -12 ~/tmp/hx/down-before ~/tmp/hx/site-setup.retry >~/tmp/hx/job.${number}.rebuild
+          comm -12 ~/tmp/hx/down-{after,before} >~/tmp/hx/job.${number}.rebuild
           rebuild=$(wc -w <~/tmp/hx/job.${number}.rebuild)
           info "  rebuild: $(wc -w <<<${rebuild})"
         fi
       fi
     fi
-    rm -f ~/tmp/hx/down-before ~/tmp/hx/site-setup.retry
+    rm -f ~/tmp/hx/down-{after,before} ~/tmp/hx/site-setup.retry
     pit_stop
   fi
 
