@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-# set -x
+set -x
 
 # goal: CI/CD
 
@@ -42,11 +42,11 @@ pit_stop 0 STOP-INFO
 while :; do
   site="site01"
   tags="coredump,trace"
-  srvs="hm0-dt-arm-dist-x-x-0 hm0-dt-arm-dist-x-x-1"
+  srvs="hm0-uj-x86-dist hm0-uj-arm-dist"
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
-    -e '{ "issue_since": "12 hours ago" }' -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
+    -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
@@ -54,11 +54,11 @@ while :; do
   #--------------------------------------------------------------------
   site="site02"
   tags="artefact"
-  srvs="hm1-dt-arm-dist-x-x-0 hm1-dt-arm-dist-x-x-1"
+  srvs="hm0-un-x86-dist hm0-un-arm-dist"
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
-    -e '{ "issue_since": "12 hours ago" }' -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
+    &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}

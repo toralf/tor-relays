@@ -15,14 +15,14 @@ source ./hx/hx-lib.sh
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-IMG' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-IMAGE' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop 0 STOP-IMG
 
 while :; do
-  find ~/tmp/hx/ -maxdepth 1 -type 1 -name 'git.kernel.*'
-  grep -v "\.image$" |
+  find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
+    grep -v "\.image$" |
     shuf |
     while read -r f; do
       if [[ ! -f ${f}.image ]]; then
@@ -34,9 +34,9 @@ while :; do
         if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>${logprefix}.${i}.log; then
           info "  NOT ok" >&2
         fi
-        pit_stop 60 STOP-IMG
+        pit_stop 60 STOP-IMAGE
       fi
     done
 
-  pit_stop 300 STOP-IMG
+  pit_stop 300 STOP-IMAGE
 done

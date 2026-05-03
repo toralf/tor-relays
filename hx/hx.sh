@@ -75,10 +75,6 @@ set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
-# ansible settings
-export RETRY_FILES_ENABLED="True"
-export RETRY_FILES_SAVE_PATH="${HOME}"
-
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
@@ -93,16 +89,21 @@ info "pid $$"
 pit_stop 0
 
 while :; do
+  # jobs
   find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" \) |
     sort -V |
     while read -r job; do
       action=$(cut -f 3 -d '.' <<<${job})
       names=$(xargs <${job})
-      if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
-        info "  NOT ok" >&2
+      mv ${job} /tmp/
+
+      if [[ ${action} == "create" || ${action} == "delete" || ${action} == "rebuild" ]]; then
+        if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
+          info "  NOT ok" >&2
+        fi
       fi
-      if [[ ${action} != "delete" ]]; then
-        if ! ./site-setup.yaml --limit "tr ' ' ',' <<<${names}" &>${logprefix}.job.setup.log; then
+      if [[ ${action} == "create" || ${action} == "rebuild" || ${action} == "setup" ]]; then
+        if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.setup.log; then
           info "  NOT ok" >&2
         fi
       fi
@@ -138,50 +139,30 @@ while :; do
     fi
   done
 
-  # unreachable systems
-  info "check for down systems"
-  if ! ./site-setup.yaml --limit 'hx,!hix' --tags poweron &>${logprefix}.down.log; then
-    info "  NOT ok" >&2
-  fi
-  pit_stop 1
-  down=$(grep "^h" ~/tmp/tor_relays/is_down 2>/dev/null | xargs)
-  if [[ -n ${down} ]]; then
-    info "  power off/on: $(wc -w <<<${down})"
-    info "    power off"
-    if ! xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweroff <<<${down} \
-      &>${logprefix}.poweroff.log; then
-      info "  NOT ok" >&2
-    fi
-    info "    power on"
-    if xargs -r -n 1 -P 32 hcloud --quiet --poll-interval 10s server poweron <<<${down} \
-      &>${logprefix}.poweron.log; then
-      info "  NOT ok" >&2
-    fi
-    pit_stop
-
-    # catch up missed update(s) if any
-    info "  update: $(wc -w <<<${down})"
-    if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${down})" --tags kernel-build,lyrebird,snowflake,tor \
-      -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
-      info "  NOT ok" >&2
-    fi
-    pit_stop
-
-    # rebuild failed system(s)
-    rebuild=$(xargs <~/tmp/hx/.retry)
-    if [[ -n ${rebuild} ]]; then
-      info "  rebuild: $(wc -w <<<${rebuild})"
-      rebuild=$(shuf -n 64 -e ${rebuild} | xargs) # limit blast radius
-      if ! ./bin/rebuild-server.sh ${rebuild}; then
-        info "  NOT ok" >&2
-      fi
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${rebuild})" \
-        -e '{ "kernel_git_build_wait": false }' &>${logprefix}.rebuild.log; then
-        info "  NOT ok" >&2
-      fi
+  # down systems
+  if ! ANSIBLE_RETRY_FILES_ENABLED="True" ANSIBLE_RETRY_FILES_SAVE_PATH="${HOME}/tmp/hx" \
+    ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
+    before=$(grep "^h" ~/tmp/hx/site-setup.retry | grep -v "^hi" | xargs)
+    if [[ ${before} -gt 0 ]]; then
+      info "  down before: $(wc -w <<<${before})"
+      mv ~/tmp/hx/site-setup.retry ~/tmp/hx/down-before
       pit_stop
+      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
+        after=$(grep "^h" ~/tmp/hx/site-setup.retry | grep -v "^hi" | xargs)
+        if [[ ${after} -gt 0 ]]; then
+          info "  down after: $(wc -w <<<${after})"
+
+          number=${EPOCHSECONDS}
+          comm -12 ~/tmp/hx/down-before ~/tmp/hx/site-setup.retry >~/tmp/hx/job.${number}.rebuild
+          rebuild=$(wc -w <~/tmp/hx/job.${number}.rebuild)
+          info "  rebuild: $(wc -w <<<${rebuild})"
+        fi
+      fi
     fi
+    rm -f ~/tmp/hx/down-before ~/tmp/hx/site-setup.retry
+    pit_stop
   fi
 
+  # main loop
   pit_stop 300
 done
