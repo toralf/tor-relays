@@ -1,6 +1,6 @@
 ---
 - name: Halt
-  changed_when: _halt.shutdown | default(false)
+  changed_when: _halt.changed or _halt.shutdown | default(false)
   ignore_unreachable: true
   retries: 2
   delay: 10
