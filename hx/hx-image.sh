@@ -21,22 +21,29 @@ info "pid $$"
 pit_stop 0 STOP-IMG
 
 while :; do
-  find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
-    grep -v "\.image$" |
-    shuf |
-    while read -r f; do
-      if [[ ! -f ${f}.image ]]; then
-        touch ${f}.image
-      elif [[ ${f} -nt ${f}.image ]]; then
-        i=$(cut -f 3 -d '.' -s <<<${f})
-        info "image build for ${i}"
-        touch ${f}.image
-        if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>${logprefix}.${i}.log; then
-          info "  NOT ok" >&2
-        fi
-        pit_stop 60 STOP-IMAGE
+  while read -r f; do
+    if [[ ! -f ${f}.image ]]; then
+      cp ${f} ${f}.image
+
+    elif ! diff -q ${f} ${f}.image >/dev/null; then
+      i=$(cut -f 3 -d '.' -s <<<${f})
+      cp ${f} ${f}.image
+
+      info "image ${i}"
+      if ! ./hx/hx-test.sh -e -t image -b ${i} &>${logprefix}.${i}.log; then
+        info "  NOT ok" >&2
       fi
-    done
+      info "image build ${i}"
+      if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>${logprefix}.${i}.log; then
+        info "  NOT ok" >&2
+      fi
+      pit_stop 60 STOP-IMAGE
+    fi
+  done < <(
+    find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
+      grep -v "\.image$" |
+      shuf
+  )
 
   pit_stop 300 STOP-IMAGE
 done

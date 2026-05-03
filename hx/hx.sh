@@ -59,6 +59,7 @@ function git_changed() {
   local old=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
   # shellcheck disable=SC2155
   local new=$(git_ls_remote ${name} 2>/dev/null)
+
   if [[ -n ${new} ]]; then
     echo ${new} >~/tmp/hx/git.${group}.${name}
     if [[ -n ${old} && ${old} != "${new}" ]]; then
@@ -75,6 +76,9 @@ set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
+export ANSIBLE_RETRY_FILES_ENABLED="True"
+export ANSIBLE_RETRY_FILES_SAVE_PATH="${HOME}/tmp/hx"
+
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
@@ -90,25 +94,33 @@ pit_stop 0
 
 while :; do
   # jobs
-  find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" \) |
-    sort -V |
-    while read -r job; do
-      action=$(cut -f 3 -d '.' <<<${job})
-      names=$(xargs <${job})
-      mv ${job} /tmp/
+  while read -r job; do
+    info "work on job $(basename ${job})"
 
-      if [[ ${action} == "create" || ${action} == "delete" || ${action} == "rebuild" ]]; then
-        if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
-          info "  NOT ok" >&2
-        fi
+    if [[ ! -s ${job} ]]; then
+      info "  empty" >&2
+      rm ${job}
+      continue
+    fi
+    action=$(cut -f 3 -d '.' <<<${job})
+    names=$(xargs <${job})
+    mv ${job} /tmp/
+
+    if [[ ${action} != "setup" ]]; then
+      if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
+        info "  NOT ok" >&2
       fi
-      if [[ ${action} == "create" || ${action} == "rebuild" || ${action} == "setup" ]]; then
-        if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.setup.log; then
-          info "  NOT ok" >&2
-        fi
+    fi
+    if [[ ${action} != "delete" ]]; then
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.${action}.log; then
+        info "  NOT ok" >&2
       fi
-      pit_stop
-    done
+    fi
+    pit_stop
+  done < <(
+    find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
+      sort -V
+  )
 
   # Tor app update(s)
   for i in $(shuf -e lyrebird snowflake tor); do
@@ -131,7 +143,7 @@ while :; do
   for i in $(shuf -e ltsrc mainline stablerc); do
     if git_changed kernel ${i}; then
       info "update kernel: ${i}"
-      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags kernel-build \
+      if ! ./site-setup.yaml --limit 'hx,!hix,&h*-*-*-'${i}'*' --tags kernel-build \
         -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
         info "  NOT ok" >&2
       fi
@@ -140,32 +152,48 @@ while :; do
   done
 
   # down systems
-  if ! ANSIBLE_RETRY_FILES_ENABLED="True" ANSIBLE_RETRY_FILES_SAVE_PATH="${HOME}/tmp/hx" \
-    ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
-    grep "^h" ~/tmp/hx/site-setup.retry |
-      grep -v "^hi" |
-      sort >~/tmp/hx/down-before
-    before=$(wc -w <<<~/tmp/hx/down-before)
-    if [[ ${before} -gt 0 ]]; then
-      info "  down before: $(wc -w <<<${before})"
-      pit_stop
-      if ! ./site-setup.yaml --limit "hx,!hix,&h*-*-*-${i}*" --tags uptime &>${logprefix}.uptime.log; then
-        grep "^h" ~/tmp/hx/site-setup.retry |
-          grep -v "^hi" |
-          sort >~/tmp/hx/down-after
-        after=$(wc -w <<<~/tmp/hx/down-after)
-        if [[ ${after} -gt 0 ]]; then
-          info "  down after: $(wc -w <<<${after})"
+  rm -f ~/tmp/hx/site-{info,setup}.retry ~/tmp/hx/down-{after,before}
+  info "uptime"
+  if ! ./site-info.yaml --limit 'hx,!hix' --tags uptime &>${logprefix}.uptime.log; then
+    info "  NOT ok" >&2
+  fi
+  grep "^h" ~/tmp/hx/site-info.retry 2>/dev/null |
+    grep -v "^hi" |
+    sort |
+    xargs -r >~/tmp/hx/down-before
 
-          number=${EPOCHSECONDS}
-          comm -12 ~/tmp/hx/down-{after,before} >~/tmp/hx/job.${number}.rebuild
-          rebuild=$(wc -w <~/tmp/hx/job.${number}.rebuild)
-          info "  rebuild: $(wc -w <<<${rebuild})"
-        fi
-      fi
-    fi
-    rm -f ~/tmp/hx/down-{after,before} ~/tmp/hx/site-setup.retry
+  if [[ -s ~/tmp/hx/down-before ]]; then
+    info "  down before: $(wc -w <~/tmp/hx/down-before)"
     pit_stop
+    info "  poweron"
+    if ! ./site-setup.yaml --limit "$(xargs <~/tmp/hx/down-before | tr ' ' ',')" \
+      --tags poweron &>${logprefix}.poweron.log; then
+      info "  NOT ok" >&2
+    fi
+
+    grep "^h" ~/tmp/hx/site-setup.retry 2>/dev/null |
+      grep -v "^hi" |
+      sort |
+      xargs -r >~/tmp/hx/down-after
+    info "  down after: $(wc -w <~/tmp/hx/down-after)"
+
+    # only down before; catch up any missed updates
+    number=${EPOCHSECONDS}
+    comm -2 ~/tmp/hx/down-before ~/tmp/hx/down-after |
+      shuf -n 64 |
+      sort |
+      xargs -r >~/tmp/hx/job.${number}.setup
+    info "  job setup: $(wc -w <~/tmp/hx/job.${number}.setup)"
+
+    # down before and after: rebuild to keep same ip
+    number=${EPOCHSECONDS}
+    comm -12 ~/tmp/hx/down-before ~/tmp/hx/down-after |
+      shuf -n 64 |
+      sort |
+      xargs -r >~/tmp/hx/job.${number}.rebuild
+    info "  job rebuild: $(wc -w <~/tmp/hx/job.${number}.rebuild)"
+
+    # only down after: check again next round
   fi
 
   # main loop

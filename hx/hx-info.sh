@@ -1,6 +1,6 @@
 #!/bin/bash
 # SPDX-License-Identifier: GPL-3.0-or-later
-set -x
+# set -x
 
 # goal: CI/CD
 
@@ -15,12 +15,15 @@ function sync_site() {
       echo -e "\n# epoch ${EPOCHSECONDS}\n# $(date -R)" >>${log}
       if ! rsync --verbose --recursive ~/tmp/hx/${site}/ ${dest} >>${log} 2>/dev/null; then
         info "  NOT ok" >&2
-      fi
-      if ! rsync --verbose ${log} ${dest} &>/dev/null; then
-        info "  NOT ok" >&2
+      else
+        info "  rsync ${site} log to ${srv}"
+        if ! rsync --verbose ${log} ${dest} &>/dev/null; then
+          info "  NOT ok" >&2
+        fi
       fi
     done
   fi
+  pit_stop 60 STOP-INFO
 }
 
 #######################################################################
@@ -41,12 +44,12 @@ pit_stop 0 STOP-INFO
 
 while :; do
   site="site01"
-  tags="coredump,trace"
+  tags="coredump,issue,trace"
   srvs="hm0-uj-x86-dist hm0-uj-arm-dist"
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
-    -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
+    -e '{ "issue_since": "12 hours ago" }' -e '{ "trace_since": "12 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}

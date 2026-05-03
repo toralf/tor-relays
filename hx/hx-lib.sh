@@ -8,18 +8,20 @@ function info() {
 function pit_stop() {
   local rc=$?
   local sec=${1:-60}
-  local stopfile=${2:-STOP}
+  local stopfile=~/tmp/hx/${2:-STOP}
 
-  echo -en " $(date) sleep for ${sec}s    \r"
+  info "sleep for ${sec}s"
 
-  while ((sec--)) && [[ ! -f ~/tmp/hx/${stopfile} ]]; do
+  while ((sec--)) && [[ ! -f ${stopfile} ]]; do
     sleep 1
   done
 
-  if [[ -f ~/tmp/hx/${stopfile} ]]; then
+  if [[ -f ${stopfile} ]]; then
     set +euf
     trap - INT QUIT TERM EXIT
-    info "caught ${stopfile}\nexit\n"
+    echo
+    info "caught ${stopfile}\n"
+    rm ${stopfile}
     exit ${rc}
   fi
 }
