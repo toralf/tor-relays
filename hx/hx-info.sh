@@ -32,9 +32,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
-if [[ ! -d ~/tmp/hx ]]; then
-  mkdir -p ~/tmp/hx
-fi
+[[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
 

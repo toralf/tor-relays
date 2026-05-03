@@ -1,6 +1,5 @@
 source-path=SCRIPTDIR
 disable=SC2001 # See if you can use ${variable//search/replace} instead.
-disable=SC2010 # Don't use ls | grep. Use a glob or a for loop with a condition to allow
 disable=SC2046 # Disable quote this to prevent word splitting.
 disable=SC2048 # Use "$@" (with quotes) to prevent whitespace problems.
 disable=SC2086 # Disable double quote to prevent globbing and word splitting.

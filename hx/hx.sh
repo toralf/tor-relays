@@ -93,6 +93,22 @@ info "pid $$"
 pit_stop 0
 
 while :; do
+  find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" \) |
+    sort -V |
+    while read -r job; do
+      action=$(cut -f 3 -d '.' <<<${job})
+      names=$(xargs <${job})
+      if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
+        info "  NOT ok" >&2
+      fi
+      if [[ ${action} != "delete" ]]; then
+        if ! ./site-setup.yaml --limit "tr ' ' ',' <<<${names}" &>${logprefix}.job.setup.log; then
+          info "  NOT ok" >&2
+        fi
+      fi
+      pit_stop
+    done
+
   # Tor app update(s)
   for i in $(shuf -e lyrebird snowflake tor); do
     if git_changed app ${i}; then

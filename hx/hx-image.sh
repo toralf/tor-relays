@@ -21,8 +21,8 @@ info "pid $$"
 pit_stop 0 STOP-IMG
 
 while :; do
-  ls ~/tmp/hx/git.kernel.* 2>/dev/null |
-    grep -v "\.image$" |
+  find ~/tmp/hx/ -maxdepth 1 -type 1 -name 'git.kernel.*'
+  grep -v "\.image$" |
     shuf |
     while read -r f; do
       if [[ ! -f ${f}.image ]]; then
