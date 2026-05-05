@@ -7,14 +7,14 @@ function info() {
 
 function pit_stop() {
   local rc=$?
-  local sec=${1:-60}
-  local stopfile=~/tmp/hx/${2:-STOP}
+  local stopfile=~/tmp/hx/${1-}
+  local sec=${2:-60}
 
   info "sleep for ${sec}s"
-
-  while ((sec--)) && [[ ! -f ${stopfile} ]]; do
+  while ((sec--)) && [[ ! -f ${stopfile} && ! -f ${stopfile}-CONT ]]; do
     sleep 1
   done
+  rm -f ${stopfile}-CONT
 
   if [[ -f ${stopfile} ]]; then
     set +euf

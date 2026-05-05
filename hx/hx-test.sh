@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: maintain golden image and test apps and kernel build
+# goal: maintain golden image, test apps and kernels
 
 set -euf
 export LANG=C.utf8

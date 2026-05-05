@@ -2,8 +2,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: CI/CD
-
 function sync_site() {
   if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${site}.ansible.${tags}.log |
     grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
@@ -23,12 +21,10 @@ function sync_site() {
       fi
     done
   fi
-  pit_stop 60 STOP-INFO
 }
 
 #######################################################################
 set -euf
-set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
@@ -40,12 +36,12 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop 0 STOP-INFO
+pit_stop STOP-INFO 0
 
 while :; do
   site="site01"
   tags="coredump,issue,trace"
-  srvs="hm0-uj-x86-dist hm0-uj-arm-dist"
+  srvs=""
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
@@ -53,11 +49,12 @@ while :; do
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
+  pit_stop STOP-INFO
 
   #--------------------------------------------------------------------
   site="site02"
   tags="artefact"
-  srvs="hm0-un-x86-dist hm0-un-arm-dist"
+  srvs=""
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
@@ -65,7 +62,8 @@ while :; do
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
+  pit_stop STOP-INFO
 
   #--------------------------------------------------------------------
-  pit_stop 300 STOP-INFO
+  pit_stop STOP-INFO 300
 done

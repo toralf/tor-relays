@@ -2,11 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: CI/CD
-
-#######################################################################
 set -euf
-set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
@@ -18,7 +14,7 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-IMAGE' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop 0 STOP-IMG
+pit_stop STOP-IMG 0
 
 while :; do
   while read -r f; do
@@ -34,10 +30,10 @@ while :; do
         info "  NOT ok" >&2
       fi
       info "image build ${i}"
-      if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>${logprefix}.${i}.log; then
+      if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>>${logprefix}.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop 60 STOP-IMAGE
+      pit_stop STOP-IMAGE
     fi
   done < <(
     find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
@@ -45,5 +41,5 @@ while :; do
       shuf
   )
 
-  pit_stop 300 STOP-IMAGE
+  pit_stop STOP-IMAGE 300
 done

@@ -2,27 +2,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: CI/CD
-
 function git_ls_remote() {
   local name=${1?NAME MUST BE GIVEN}
 
   local url ver tok
   case ${name} in
+  #
   # apps
   #
-  lyrebird)
-    url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
-    ver="main"
-    ;;
-  snowflake)
-    url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
-    ver="main"
-    ;;
-  tor)
-    url=gitlab.torproject.org/tpo/core/tor.git
-    ver="main"
-    ;;
+  lyrebird) url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git ;;
+  snowflake) url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git ;;
+  tor) url=gitlab.torproject.org/tpo/core/tor.git ;;
+  #
   # kernel
   #
   ltsrc)
@@ -38,32 +29,29 @@ function git_ls_remote() {
     url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
     ver=linux-7.0.y
     ;;
-  #
-  #
   *)
     echo " ${name} is not implemented"
     exit 2
     ;;
   esac
 
-  ${tok-} git ls-remote --quiet https://${url} ${ver} |
+  ${tok-} git ls-remote --quiet https://${url} ${ver:-main} |
     awk '{ print $1 }'
 }
 
-# an empty "old" is not considered as "changed"
+# an empty "old_id" is considered as "unchanged"
 function git_changed() {
   local group=${1?GROUP MUST BE GIVEN}
   local name=${2?NAME MUST BE GIVEN}
 
-  # shellcheck disable=SC2155
-  local old=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
-  # shellcheck disable=SC2155
-  local new=$(git_ls_remote ${name} 2>/dev/null)
-
-  if [[ -n ${new} ]]; then
-    echo ${new} >~/tmp/hx/git.${group}.${name}
-    if [[ -n ${old} && ${old} != "${new}" ]]; then
-      info "git ${group} ${name}: $(cut -c -12 <<<${old}) -> $(cut -c -12 <<<${new})"
+  local current_id
+  current_id=$(git_ls_remote ${name} 2>/dev/null)
+  if [[ -n ${current_id} ]]; then
+    # shellcheck disable=SC2155
+    local old_id=$(<~/tmp/hx/git.${group}.${name}) 2>/dev/null
+    echo ${current_id} >~/tmp/hx/git.${group}.${name}
+    if [[ -n ${old_id} && ${old_id} != "${current_id}" ]]; then
+      info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
       return 0
     fi
   fi
@@ -72,28 +60,21 @@ function git_changed() {
 
 #######################################################################
 set -euf
-set -m
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
-
-export ANSIBLE_RETRY_FILES_ENABLED="True"
-export ANSIBLE_RETRY_FILES_SAVE_PATH="${HOME}/tmp/hx"
 
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
-if [[ ! -d ~/tmp/hx ]]; then
-  mkdir ~/tmp/hx
-fi
+[[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
-type hcloud >/dev/null
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-CRUD' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop 0
+pit_stop STOP-CRUD 0
 
 while :; do
-  # jobs
+  # crud
   while read -r job; do
     info "work on job $(basename ${job})"
 
@@ -106,17 +87,19 @@ while :; do
     names=$(xargs <${job})
     mv ${job} /tmp/
 
+    # create, rebuild, delete
     if [[ ${action} != "setup" ]]; then
       if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
+    # create, rebuild, setup
     if [[ ${action} != "delete" ]]; then
       if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
-    pit_stop
+    pit_stop STOP-CRUD
   done < <(
     find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
       sort -V
@@ -135,7 +118,7 @@ while :; do
       if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.app.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop
+      pit_stop STOP-CRUD
     fi
   done
 
@@ -147,55 +130,34 @@ while :; do
         -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop
+      pit_stop STOP-CRUD
     fi
   done
 
-  # down systems
-  rm -f ~/tmp/hx/site-{info,setup}.retry ~/tmp/hx/down-{after,before}
-  info "uptime"
-  if ! ./site-info.yaml --limit 'hx,!hix' --tags uptime &>${logprefix}.uptime.log; then
+  # handle down systems
+  info "is_down"
+  if ./site-setup.yaml --limit 'hx,!hix' --tags poweron -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
     info "  NOT ok" >&2
   fi
-  grep "^h" ~/tmp/hx/site-info.retry 2>/dev/null |
-    grep -v "^hi" |
-    sort |
-    xargs -r >~/tmp/hx/down-before
+  names=$(
+    grep "^h" ~/tmp/hx/is_down 2>/dev/null |
+      grep -v "^hi-" |
+      shuf |
+      xargs -r
+  )
+  if [[ -n ${names} ]]; then
+    info "  down: $(wc -w <<<${names})"
+    shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
 
-  if [[ -s ~/tmp/hx/down-before ]]; then
-    info "  down before: $(wc -w <~/tmp/hx/down-before)"
-    pit_stop
-    info "  poweron"
-    if ! ./site-setup.yaml --limit "$(xargs <~/tmp/hx/down-before | tr ' ' ',')" \
-      --tags poweron &>${logprefix}.poweron.log; then
+    info "  power off"
+    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 5s server poweroff <<<${names} &>${logprefix}.off.log; then
       info "  NOT ok" >&2
     fi
-
-    grep "^h" ~/tmp/hx/site-setup.retry 2>/dev/null |
-      grep -v "^hi" |
-      sort |
-      xargs -r >~/tmp/hx/down-after
-    info "  down after: $(wc -w <~/tmp/hx/down-after)"
-
-    # only down before; catch up any missed updates
-    number=${EPOCHSECONDS}
-    comm -2 ~/tmp/hx/down-before ~/tmp/hx/down-after |
-      shuf -n 64 |
-      sort |
-      xargs -r >~/tmp/hx/job.${number}.setup
-    info "  job setup: $(wc -w <~/tmp/hx/job.${number}.setup)"
-
-    # down before and after: rebuild to keep same ip
-    number=${EPOCHSECONDS}
-    comm -12 ~/tmp/hx/down-before ~/tmp/hx/down-after |
-      shuf -n 64 |
-      sort |
-      xargs -r >~/tmp/hx/job.${number}.rebuild
-    info "  job rebuild: $(wc -w <~/tmp/hx/job.${number}.rebuild)"
-
-    # only down after: check again next round
+    info "  power on"
+    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 5s server poweron <<<${names} &>${logprefix}.on.log; then
+      info "  NOT ok" >&2
+    fi
   fi
 
-  # main loop
-  pit_stop 300
+  pit_stop STOP-CRUD 300
 done
