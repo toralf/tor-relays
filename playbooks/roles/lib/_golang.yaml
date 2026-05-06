@@ -31,11 +31,6 @@
         _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
         _name: "{{ go_version }}.linux-{{ _arch }}.tar.gz"
       block:
-        - name: Debug
-          changed_when: true
-          ansible.builtin.debug:
-            msg: "Go version change {{ __go_version_current.stdout }} -> {{ go_version }}"
-
         - name: Get Go
           throttle: 16
           ansible.builtin.get_url:
@@ -45,17 +40,19 @@
             force: true
 
         - name: Unpack Go
+          changed_when: true
           ansible.builtin.shell:
             cmd: |-
               set -euf
 
+              rm -rf /root/{{ _name }}/
               sudo tar -xzf /root/{{ _name }}
               mv go {{ go_version }}
               cd ./bin
               ln -sf ../{{ go_version }}/bin/go
             chdir: /usr/local
 
-        - name: Deinstall Go
+        - name: Deinstall Go apt
           ansible.builtin.apt:
             name:
               - golang
