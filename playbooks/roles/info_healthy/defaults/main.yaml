@@ -15,3 +15,5 @@ issue_since: ""
 trace_since: ""
 
 tor_port: 0
+
+filter_sensitive_data: "tee"

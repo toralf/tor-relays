@@ -9,7 +9,8 @@
           -e ' completed successful connections.' \
           -e ' completed connections.' \
           -e ' Proxy connection closed' |
-        tail -n {{ log_lines }}
+        tail -n {{ log_lines }} |
+        {{ filter_sensitive_data }}
   register: _result_proxylog
 
 - name: Results of proxy log

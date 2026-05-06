@@ -1,9 +1,10 @@
 ---
 - name: Get dmesg
   changed_when: false
-  ansible.builtin.command:
+  ansible.builtin.shell:
     cmd: >-
-      dmesg
+      dmesg |
+        {{ filter_sensitive_data }}
   register: __dmesg
 
 - name: File dmesg
@@ -12,15 +13,3 @@
   ansible.builtin.copy:
     dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d_%H:%M:%S') }}Z.txt"
     content: "{{ __dmesg.stdout }}"
-
-- name: File dmesg info
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
-  ansible.builtin.copy:
-    content: |
-      {{ ansible_facts.distribution }}
-      {{ ansible_facts.distribution_release }}
-      {{ ansible_facts.architecture }}
-      {{ ansible_facts.processor[1] }}
-
-    dest: "{{ infodir }}/dmesg/{{ inventory_hostname }}.{{ now(utc=true, fmt='%Y-%m-%d_%H:%M:%S') }}Z.info.txt"

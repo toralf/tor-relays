@@ -6,7 +6,8 @@
   ansible.builtin.shell:
     cmd: |-
       grep -h -v -e 'opening .*log file.' {{ log_err }}.1 {{ log_err }} |
-        tail -n 50
+        tail -n 50 |
+        {{ filter_sensitive_data }}
   register: _result_log_err
 
 - name: Results of error log
