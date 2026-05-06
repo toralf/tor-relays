@@ -3,14 +3,14 @@
   vars:
     _a: "0"
     _b: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'B' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'B' + _ipv6_network)) }}"
     _c: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'C' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'C' + _ipv6_network)) }}"
     _d: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'D' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'D' + _ipv6_network)) }}"
     # yamllint disable-line rule:line-length
-    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
-    _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
+    _ipv6_network: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+    _ipv6_new: "{{ _ipv6_network }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   failed_when: _ipv6_new != ansible_facts.default_ipv6.address
   changed_when: true
   ansible.builtin.debug:

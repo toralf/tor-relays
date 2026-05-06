@@ -17,15 +17,15 @@
   when: ansible_facts.default_ipv6.address != _ipv6_new
   vars:
     _a: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'A' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'A' + _ipv6_network)) }}"
     _b: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'B' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'B' + _ipv6_network)) }}"
     _c: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'C' + _ipv6_prefix)) }}"
+      random(seed=seed_address + seed_host + 'C' + _ipv6_network)) }}"
     _d: "{{ '%x' % (range(0, 65535) |
-      random(seed=seed_address + seed_host + 'D' + _ipv6_prefix)) }}"
-    _ipv6_prefix: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
-    _ipv6_new: "{{ _ipv6_prefix }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
+      random(seed=seed_address + seed_host + 'D' + _ipv6_network)) }}"
+    _ipv6_network: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
+    _ipv6_new: "{{ _ipv6_network }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   block:
     - name: IPv6 change
       changed_when: true
@@ -55,7 +55,7 @@
           ansible.builtin.lineinfile:
             line: "            - {{ _ipv6_new }}/64"
             path: /etc/netplan/50-cloud-init.yaml
-            regex: '^  * - "*{{ _ipv6_prefix }}:'
+            regex: '^  * - "*{{ _ipv6_network }}:'
             mode: "0600"
 
         - name: Change IPv6 for Ubuntu
@@ -63,7 +63,7 @@
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
-            regex: '^      - "{{ _ipv6_prefix }}:'
+            regex: '^      - "{{ _ipv6_network }}:'
             mode: "0600"
 
         - name: Activate new IPv6 address for Ubuntu
