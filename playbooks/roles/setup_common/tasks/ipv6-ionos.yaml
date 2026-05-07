@@ -12,7 +12,7 @@
     _ipv6_network: "{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }}"
     _ipv6_new: "{{ _ipv6_network }}:{{ _a }}:{{ _b }}:{{ _c }}:{{ _d }}"
   failed_when: _ipv6_new != ansible_facts.default_ipv6.address
-  changed_when: true
+  changed_when: false
   ansible.builtin.debug:
     msg:
       - "expected: {{ _ipv6_new }}"
