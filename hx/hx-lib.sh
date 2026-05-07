@@ -7,15 +7,16 @@ function info() {
 
 function pit_stop() {
   local rc=$?
-  local stopfile=~/tmp/hx/${1-}
+  local contfile=~/tmp/hx/CONT-${1-}
+  local stopfile=~/tmp/hx/STOP-${1-}
   local sec=${2:-60}
 
   info "sleep for ${sec}s"
-  while ((sec--)) && [[ ! -f ${stopfile} && ! -f ${stopfile}-CONT ]]; do
+  while ((sec--)) && [[ ! -f ${contfile} && ! -f ${stopfile} ]]; do
     sleep 1
   done
-  rm -f ${stopfile}-CONT
 
+  rm -f ${contfile}
   if [[ -f ${stopfile} ]]; then
     set +euf
     trap - INT QUIT TERM EXIT

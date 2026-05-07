@@ -14,7 +14,7 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-IMAGE' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop STOP-IMG 0
+pit_stop image 0
 
 while :; do
   while read -r f; do
@@ -30,7 +30,7 @@ while :; do
       if ! ./hx/hx-test.sh -e -t ${tag} -b ${repo} &>${logprefix}.${repo}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop STOP-IMAGE
+      pit_stop image
     fi
   done < <(
     find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
@@ -38,5 +38,5 @@ while :; do
       shuf
   )
 
-  pit_stop STOP-IMAGE 300
+  pit_stop image 300
 done

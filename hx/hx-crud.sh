@@ -59,7 +59,7 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-CRUD' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop STOP-CRUD 0
+pit_stop crud 0
 
 while :; do
   # crud
@@ -87,7 +87,7 @@ while :; do
         info "  NOT ok" >&2
       fi
     fi
-    pit_stop STOP-CRUD
+    pit_stop crud
   done < <(
     find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
       sort -V
@@ -106,7 +106,7 @@ while :; do
       if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.app.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop STOP-CRUD
+      pit_stop crud
     fi
   done
 
@@ -126,7 +126,7 @@ while :; do
         -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
         info "  NOT ok" >&2
       fi
-      pit_stop STOP-CRUD
+      pit_stop crud
     fi
   done
 
@@ -155,5 +155,5 @@ while :; do
     fi
   fi
 
-  pit_stop STOP-CRUD 300
+  pit_stop crud 300
 done

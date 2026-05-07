@@ -36,7 +36,7 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop STOP-INFO 0
+pit_stop info 0
 
 while :; do
   site="site01"
@@ -49,7 +49,7 @@ while :; do
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
-  pit_stop STOP-INFO
+  pit_stop info
 
   #--------------------------------------------------------------------
   site="site02"
@@ -62,8 +62,8 @@ while :; do
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
-  pit_stop STOP-INFO
+  pit_stop info
 
   #--------------------------------------------------------------------
-  pit_stop STOP-INFO 300
+  pit_stop info 300
 done
