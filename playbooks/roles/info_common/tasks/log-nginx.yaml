@@ -4,10 +4,10 @@
   ansible.builtin.shell:
     cmd: >-
       tail -q -n 10 /var/log/nginx/{{ nginx_loglevel | default('error') }}.log{,.1} |
-        grep -v ': using inherited sockets from '
+        grep -v ': using inherited sockets from ' |
         sort |
         tail -n 10 |
-        filter_sensitive_data
+        {{ filter_sensitive_data }}
     executable: /bin/bash
   register: _result_nginx
 
