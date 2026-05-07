@@ -3,39 +3,25 @@
 # set -x
 
 function git_ls_remote() {
-  local name=${1?NAME MUST BE GIVEN}
+  local group=${1?GROUP MUST BE GIVEN}
+  local name=${2?NAME MUST BE GIVEN}
 
   local url ver tok
-  case ${name} in
-  #
-  # apps
-  #
-  lyrebird) url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git ;;
-  snowflake) url=gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git ;;
-  tor) url=gitlab.torproject.org/tpo/core/tor.git ;;
-  #
-  # kernel
-  #
-  ltsrc)
-    url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    ver=linux-6.18.y
-    ;;
-  mainline)
-    url=git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-    ver=master
-    # tok="GITLAB_API_TOKEN=abcd"
-    ;;
-  stablerc)
-    url=git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-    ver=linux-7.0.y
-    ;;
-  *)
-    echo " ${name} is not implemented"
-    exit 2
-    ;;
-  esac
 
-  ${tok-} git ls-remote --quiet https://${url} ${ver:-main} |
+  if [[ ${group} == "app" ]]; then
+    case ${name} in
+    lyrebird | snowflake) url=https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/${name}.git ;;
+    tor) url=https://gitlab.torproject.org/tpo/core/tor.git ;;
+    *) return 1 ;;
+    esac
+
+  elif [[ ${group} == "kernel" ]]; then
+    url=$(yq <./inventory/systems-hetzner-test.yaml | jq -cr '.hx.vars.hx_repos.'${name}'.url')
+    ver=$(yq <./inventory/systems-hetzner-test.yaml | jq -cr '.hx.vars.hx_repos.'${name}'.ver' | sed -e 's,null,,')
+    tok=$(yq <./secrets/local.yaml | jq -cr '.hx_repos_'${name}'_tok' | sed -e 's,null,,')
+  fi
+
+  eval ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
     awk '{ print $1 }'
 }
 
@@ -45,10 +31,10 @@ function git_changed() {
   local name=${2?NAME MUST BE GIVEN}
 
   local current_id
-  current_id=$(git_ls_remote ${name} 2>/dev/null)
+  current_id=$(git_ls_remote ${group} ${name})
   if [[ -n ${current_id} ]]; then
     # shellcheck disable=SC2155
-    local old_id=$(<~/tmp/hx/git.${group}.${name}) 2>/dev/null
+    local old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
     echo ${current_id} >~/tmp/hx/git.${group}.${name}
     if [[ -n ${old_id} && ${old_id} != "${current_id}" ]]; then
       info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
@@ -65,6 +51,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
+
+type jq yq >/dev/null
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
@@ -123,7 +111,15 @@ while :; do
   done
 
   # kernel update(s)
-  for i in $(shuf -e ltsrc mainline stablerc); do
+  kernels=$(
+    yq <./inventory/systems-hetzner-test.yaml |
+      jq -cr '.hx.vars.hx_repos | keys' |
+      tr ',' ' ' |
+      tr -d ']["' |
+      xargs -n 1 |
+      shuf
+  )
+  for i in ${kernels}; do
     if git_changed kernel ${i}; then
       info "update kernel: ${i}"
       if ! ./site-setup.yaml --limit 'hx,!hix,&h*-*-*-'${i}'*' --tags kernel-build \

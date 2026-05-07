@@ -22,15 +22,12 @@ while :; do
       cp ${f} ${f}.image
 
     elif ! diff -q ${f} ${f}.image >/dev/null; then
-      i=$(cut -f 3 -d '.' -s <<<${f})
+      repo=$(cut -f 3 -d '.' -s <<<${f})
       cp ${f} ${f}.image
 
-      info "image ${i}"
-      if ! ./hx/hx-test.sh -e -t image -b ${i} &>${logprefix}.${i}.log; then
-        info "  NOT ok" >&2
-      fi
-      info "image build ${i}"
-      if ! ./hx/hx-test.sh -e -t image_build -b ${i} &>>${logprefix}.${i}.log; then
+      tag="image"
+      info "${tag} ${repo}"
+      if ! ./hx/hx-test.sh -e -t ${tag} -b ${repo} &>${logprefix}.${repo}.log; then
         info "  NOT ok" >&2
       fi
       pit_stop STOP-IMAGE
