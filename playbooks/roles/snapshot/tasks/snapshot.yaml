@@ -5,13 +5,14 @@
   environment:
     PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
   block:
-    - name: Create
+    - name: Create image
       changed_when: true
       ansible.builtin.command:
         cmd: >-
-          hcloud --quiet --poll-interval 10s server create-image
+          timeout 15m hcloud --quiet --poll-interval 10s server create-image
             --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
 
+  always:
     - name: Delete outdated
       changed_when: true
       failed_when: false
@@ -21,11 +22,4 @@
             grep -e " {{ snapshot_description }}[ ]*$" |
             sort -rn |
             awk 'x[$2]++ { print $1 }' |
-            xargs -r hcloud --quiet --poll-interval 5s image delete
-      register: _result_snapshot
-
-    - name: Failure
-      when: _result_snapshot.rc != 0
-      changed_when: true
-      ansible.builtin.debug:
-        var: _result_snapshot
+            xargs -r hcloud --quiet --poll-interval 10s image delete

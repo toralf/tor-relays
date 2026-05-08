@@ -41,7 +41,7 @@ sudo rc-service unbound reload
 # the API call to Hetzner
 echo " deleting systems ..."
 set +e
-xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 5s server delete <<<${names} 2>/dev/null
+xargs -r -P ${jobs} -n 10 timeout 2m hcloud --quiet --poll-interval 10s server delete <<<${names} 2>/dev/null
 rc=$?
 set -e
 
