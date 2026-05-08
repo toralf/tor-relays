@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-function git_ls_remote() {
+function _git_ls_remote() {
   local group=${1?GROUP MUST BE GIVEN}
   local name=${2?NAME MUST BE GIVEN}
 
@@ -26,12 +26,12 @@ function git_ls_remote() {
 }
 
 # an empty "old_id" is considered as "unchanged"
-function git_changed() {
+function _git_changed() {
   local group=${1?GROUP MUST BE GIVEN}
   local name=${2?NAME MUST BE GIVEN}
 
   local current_id
-  current_id=$(git_ls_remote ${group} ${name})
+  current_id=$(_git_ls_remote ${group} ${name})
   if [[ -n ${current_id} ]]; then
     # shellcheck disable=SC2155
     local old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
@@ -44,25 +44,9 @@ function git_changed() {
   return 1
 }
 
-#######################################################################
-set -euf
-export LANG=C.utf8
-export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
+function work_on_job_files() {
+  local action names
 
-cd $(dirname $0)/..
-source ./hx/hx-lib.sh
-
-type jq yq >/dev/null
-
-[[ -d ~/tmp/hx ]]
-logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-CRUD' INT QUIT TERM EXIT
-
-info "pid $$"
-pit_stop crud 0
-
-while :; do
-  # crud
   while read -r job; do
     info "work on job $(basename ${job})"
 
@@ -92,16 +76,19 @@ while :; do
     find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
       sort -V
   )
+}
 
-  # Tor app update(s)
+function update_tor_apps() {
+  local limit
+
   for i in $(shuf -e lyrebird snowflake tor); do
-    if git_changed app ${i}; then
+    if _git_changed app ${i}; then
       info "update app: ${i}"
-      limit=""
       case ${i} in
       lyrebird) limit="hbx,hpx" ;;
       snowflake) limit="hsx" ;;
       tor) limit="htx" ;;
+      *) return 1 ;;
       esac
       if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.app.${i}.log; then
         info "  NOT ok" >&2
@@ -109,8 +96,11 @@ while :; do
       pit_stop crud
     fi
   done
+}
 
-  # kernel update(s)
+function update_linux_kernels() {
+  local kernels
+
   kernels=$(
     yq <./inventory/systems-hetzner-test.yaml |
       jq -cr '.hx.vars.hx_repos | keys' |
@@ -119,8 +109,9 @@ while :; do
       xargs -n 1 |
       shuf
   )
+
   for i in ${kernels}; do
-    if git_changed kernel ${i}; then
+    if _git_changed kernel ${i}; then
       info "update kernel: ${i}"
       if ! ./site-setup.yaml --limit 'hx,!hix,&h*-*-*-'${i}'*' --tags kernel-build \
         -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
@@ -129,31 +120,60 @@ while :; do
       pit_stop crud
     fi
   done
+}
 
-  # handle down systems
+function handle_down_systems() {
+  local names
+
   info "is_down"
   if ./site-setup.yaml --limit 'hx,!hix' --tags poweron -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
     info "  NOT ok" >&2
   fi
+
   names=$(
     grep "^h" ~/tmp/hx/is_down 2>/dev/null |
       grep -v "^hi-" |
       shuf |
       xargs -r
   )
+
   if [[ -n ${names} ]]; then
     info "  down: $(wc -w <<<${names})"
     shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
 
     info "  power off"
-    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 5s server poweroff <<<${names} &>${logprefix}.off.log; then
+    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server poweroff <<<${names} &>${logprefix}.off.log; then
       info "  NOT ok" >&2
     fi
     info "  power on"
-    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 5s server poweron <<<${names} &>${logprefix}.on.log; then
+    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server poweron <<<${names} &>${logprefix}.on.log; then
       info "  NOT ok" >&2
     fi
   fi
+}
+
+#######################################################################
+set -euf
+export LANG=C.utf8
+export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
+
+cd $(dirname $0)/..
+source ./hx/hx-lib.sh
+
+type jq yq >/dev/null
+
+[[ -d ~/tmp/hx ]]
+logprefix=~/tmp/hx/$(basename $0)
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-CRUD' INT QUIT TERM EXIT
+
+info "pid $$"
+pit_stop crud 0
+
+while :; do
+  work_on_job_files
+  update_tor_apps
+  update_linux_kernels
+  handle_down_systems
 
   pit_stop crud 300
 done
