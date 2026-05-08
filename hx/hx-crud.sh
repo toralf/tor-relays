@@ -21,7 +21,7 @@ function git_ls_remote() {
     tok=$(yq <./secrets/local.yaml | jq -cr '.hx_repos_'${name}'_tok' | sed -e 's,null,,')
   fi
 
-  eval ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
+  ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
     awk '{ print $1 }'
 }
 
