@@ -15,7 +15,7 @@ if [[ ! -d ~/tmp/hx ]]; then
   mkdir ~/tmp/hx
 fi
 
-info "create, update, delete systems"
+info "create, rebuild, update(setup), delete systems"
 if ! pgrep -f ./hx/hx-crud.sh; then
   ./hx/hx-crud.sh &>>~/tmp/hx/hx-crud.sh.log &
 fi

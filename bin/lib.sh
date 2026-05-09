@@ -65,7 +65,7 @@ function getImage() {
 function _getImageByHostname() {
   local name=${1?NAME NOT GIVEN}
 
-  # hcloud image list --type system --output json | jq -r '.[].name' | sort -uV
+  # hcloud --quiet image list --type system --output json | jq -r '.[].name' | sort -uV
   case $(cut -f 2 -d '-' -s <<<${name}) in
   du) echo debian-11 ;;
   db) echo debian-12 ;;
