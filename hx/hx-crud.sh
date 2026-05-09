@@ -164,7 +164,7 @@ type jq yq >/dev/null
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-CRUD' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-crud' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop crud 0

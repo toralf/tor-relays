@@ -11,7 +11,7 @@ source ./hx/hx-lib.sh
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-IMAGE' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-image' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop image 0

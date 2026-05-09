@@ -33,7 +33,7 @@ source ./hx/hx-lib.sh
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
-trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-INFO' INT QUIT TERM EXIT
+trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-info' INT QUIT TERM EXIT
 
 info "pid $$"
 pit_stop info 0
