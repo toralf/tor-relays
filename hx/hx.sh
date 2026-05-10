@@ -30,4 +30,6 @@ if ! pgrep -f ./hx/hx-info.sh; then
   ./hx/hx-info.sh &>>~/tmp/hx/hx-info.sh.log &
 fi
 
-echo -e "\n tail -f ~/tmp/hx/hx-{crud,image,info}.sh.log\n\n touch ~/tmp/hx/STOP-{crud,image,info}\n"
+echo -e "\n tail -f ~/tmp/hx/hx-{crud,image,info}.sh.log\n"
+
+# echo touch ~/tmp/hx/STOP-{crud,image,info}
