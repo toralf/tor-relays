@@ -26,6 +26,7 @@
       ansible.builtin.import_tasks: tools.yaml
       tags:
         - tools
+        - golang
 
     - name: Build
       tags:

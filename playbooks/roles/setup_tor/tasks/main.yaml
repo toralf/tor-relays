@@ -61,6 +61,7 @@
           ansible.builtin.import_tasks: tools.yaml
           tags:
             - tools
+            - golang
 
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml

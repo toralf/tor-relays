@@ -1,3 +1,5 @@
 ---
 - name: Golang
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_golang.yaml"
+  tags:
+    - golang

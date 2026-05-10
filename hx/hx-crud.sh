@@ -29,8 +29,8 @@ function _git_ls_remote() {
 function _git_changed() {
   local group=${1?GROUP MUST BE GIVEN}
   local name=${2?NAME MUST BE GIVEN}
-
   local current_id
+
   current_id=$(_git_ls_remote ${group} ${name})
   if [[ -n ${current_id} ]]; then
     # shellcheck disable=SC2155
@@ -44,8 +44,35 @@ function _git_changed() {
   return 1
 }
 
+function _go_changed() {
+  local _go_ver_inventory _go_ver_upstream
+
+  _go_ver_upstream=$(
+    curl -s https://go.dev/dl/ |
+      grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' |
+      sort -Vr |
+      head -n 1 |
+      sed -e 's,\.linux.*,,'
+  )
+
+  if [[ -n ${_go_ver_upstream} ]]; then
+    _go_ver_inventory=$(
+      yq <./inventory/systems-hetzner-test.yaml |
+        jq -cr '.hx.vars.go_version'
+    )
+
+    if [[ ${_go_ver_inventory} != "${_go_ver_upstream}" ]]; then
+      info "Go: ${_go_ver_inventory}  ->  ${_go_ver_upstream}"
+      yq -i -y '.hx.vars.go_version = "'${_go_ver_upstream}'"' inventory/systems-hetzner-test.yaml
+      return 0
+    fi
+  fi
+
+  return 1
+}
+
 function work_on_job_files() {
-  local action names
+  local action names job
 
   while read -r job; do
     info "work on job $(basename ${job})"
@@ -79,38 +106,39 @@ function work_on_job_files() {
 }
 
 function update_tor_apps() {
-  local limit
-
-  for i in $(shuf -e lyrebird snowflake tor); do
-    if _git_changed app ${i}; then
-      info "update app: ${i}"
-      case ${i} in
-      lyrebird) limit="hbx,hpx" ;;
-      snowflake) limit="hsx" ;;
-      tor) limit="htx" ;;
-      *) return 1 ;;
-      esac
-      if ! ./site-setup.yaml --limit "${limit}" --tags ${i} &>${logprefix}.app.${i}.log; then
-        info "  NOT ok" >&2
-      fi
-      pit_stop crud
+  if _go_changed; then
+    if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags golang,lyrebird,snowflake &>${logprefix}.golang.log; then
+      info "  NOT ok" >&2
     fi
-  done
+    pit_stop crud
+  fi
+
+  if _git_changed app lyrebird; then
+    if ! ./site-setup.yaml --limit "hbx,hpx" --tags lyrebird &>${logprefix}.app.lyrebird.log; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+  fi
+
+  if _git_changed app snowflake; then
+    if ! ./site-setup.yaml --limit "hsx" --tags snowflake &>${logprefix}.app.snowflake.log; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+  fi
+
+  if _git_changed app tor; then
+    if ! ./site-setup.yaml --limit "htx" --tags tor &>${logprefix}.app.tor.log; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+  fi
 }
 
 function update_linux_kernels() {
-  local kernels
+  local i
 
-  kernels=$(
-    yq <./inventory/systems-hetzner-test.yaml |
-      jq -cr '.hx.vars.hx_repos | keys' |
-      tr ',' ' ' |
-      tr -d ']["' |
-      xargs -n 1 |
-      shuf
-  )
-
-  for i in ${kernels}; do
+  while read -r i; do
     if _git_changed kernel ${i}; then
       info "update kernel: ${i}"
       if ! ./site-setup.yaml --limit 'hx,!hix,&h*-*-*-'${i}'*' --tags kernel-build \
@@ -119,7 +147,14 @@ function update_linux_kernels() {
       fi
       pit_stop crud
     fi
-  done
+  done < <(
+    yq <./inventory/systems-hetzner-test.yaml |
+      jq -cr '.hx.vars.hx_repos | keys' |
+      tr ',' ' ' |
+      tr -d ']["' |
+      xargs -n 1 |
+      shuf
+  )
 }
 
 function handle_down_systems() {
