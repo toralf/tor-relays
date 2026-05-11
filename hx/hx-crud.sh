@@ -16,9 +16,9 @@ function _git_ls_remote() {
     esac
 
   elif [[ ${group} == "kernel" ]]; then
-    url=$(yq <./inventory/systems-hetzner-test.yaml | jq -cr '.hx.vars.hx_repos.'${name}'.url')
-    ver=$(yq <./inventory/systems-hetzner-test.yaml | jq -cr '.hx.vars.hx_repos.'${name}'.ver' | sed -e 's,null,,')
-    tok=$(yq <./secrets/local.yaml | jq -cr '.hx_repos_'${name}'_tok' | sed -e 's,null,,')
+    url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hetzner-test.yaml)
+    ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hetzner-test.yaml | sed -e 's,null,,')
+    tok=$(yq -r ".hx_repos_${name}_tok" <./secrets/local.yaml | sed -e 's,null,,')
   fi
 
   ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
@@ -56,14 +56,11 @@ function _go_changed() {
   )
 
   if [[ -n ${_go_ver_upstream} ]]; then
-    _go_ver_inventory=$(
-      yq <./inventory/systems-hetzner-test.yaml |
-        jq -cr '.hx.vars.go_version'
-    )
+    _go_ver_inventory=$(yq -r '.hx.vars.go_version' <./inventory/systems-hetzner-test.yaml)
 
     if [[ ${_go_ver_inventory} != "${_go_ver_upstream}" ]]; then
       info "Go: ${_go_ver_inventory}  ->  ${_go_ver_upstream}"
-      yq -i -y '.hx.vars.go_version = "'${_go_ver_upstream}'"' inventory/systems-hetzner-test.yaml
+      sed -i -e "s,^    go_version: go.*,    go_version: ${_go_ver_upstream}," inventory/systems-hetzner-test.yaml
       return 0
     fi
   fi
@@ -148,10 +145,8 @@ function update_linux_kernels() {
       pit_stop crud
     fi
   done < <(
-    yq <./inventory/systems-hetzner-test.yaml |
-      jq -cr '.hx.vars.hx_repos | keys' |
-      tr ',' ' ' |
-      tr -d ']["' |
+    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml |
+      tr -d '][",' |
       xargs -n 1 |
       shuf
   )
