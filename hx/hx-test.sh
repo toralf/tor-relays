@@ -57,7 +57,7 @@ elif [[ ${task} =~ "image" ]]; then
     # clone sources + build kernel
     names=$(
       os_grep=$(tr '{},' '()|' <<<${os})
-      eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un,ur}-${arch}-${branch}-x-x-${uid} |
+      eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un}-${arch}-${branch}-x-x-${uid} |
         xargs -r -n 1 |
         grep -E "^hi-${os_grep:-.}-" |
         xargs
@@ -76,7 +76,7 @@ elif [[ ${task} =~ "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(
     os_grep=$(tr '{},' '()|' <<<${os})
-    eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un,ur}-${arch}-${branch}-x-x-${uid} |
+    eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un}-${arch}-${branch}-x-x-${uid} |
       xargs -r -n 1 |
       grep -E "^hi-${os_grep:-.}-" |
       xargs
