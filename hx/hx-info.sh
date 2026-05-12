@@ -45,7 +45,8 @@ while :; do
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
-    -e '{ "issue_since": "24 hours ago" }' -e '{ "trace_since": "24 hours ago" }' &>${logprefix}.${site}.ansible.${tags}.log; then
+    -e '{ "issue_since": "24 hours ago" }' -e '{ "trace_since": "24 hours ago" }' \
+    &>${logprefix}.${site}.ansible.$(tr ',' '_' <<<${tags}).log; then
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
@@ -58,7 +59,7 @@ while :; do
 
   info "${site} ${tags}"
   if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
-    &>${logprefix}.${site}.ansible.${tags}.log; then
+    &>${logprefix}.${site}.ansible.$(tr ',' '_' <<<${tags}).log; then
     info "  NOT ok" >&2
   fi
   sync_site ${srvs}
