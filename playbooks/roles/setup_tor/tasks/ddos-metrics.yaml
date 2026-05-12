@@ -6,12 +6,18 @@
     dest: /root/metrics.sh
   register: _download
 
+- name: Create nginx metrics-ddos
+  ansible.builtin.file:
+    path: /var/www/metrics-ddos
+    state: directory
+    mode: "0755"
+
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
     name: DDoS metrics
     special_time: reboot
     job: >-
-      nice /root/metrics.sh 15 /var/www/html/
+      nice /root/metrics.sh 15 /var/www/metrics-ddos
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
   register: _cronjob
 
@@ -40,4 +46,4 @@
   changed_when: true
   ansible.builtin.shell:
     cmd: >-
-      nice /root/metrics.sh 15 /var/www/html/ &
+      nice /root/metrics.sh 15 /var/www/metrics-ddos &

@@ -12,6 +12,7 @@
   ansible.builtin.template:
     src: nginx.conf.j2
     dest: /etc/nginx/conf.d/tor-relays.conf
+    mode: "0600"
   notify: Reload nginx
 
 - name: Verify nginx config

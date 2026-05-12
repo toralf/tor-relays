@@ -20,7 +20,7 @@ server {
 {% if nginx_public_site or nginx_site_directories | length > 0 %}
 
 server {
-{% if ansible_facts.distribution == 'Debian' and ansible_facts.distribution_release == 'trixie' %}
+{% if ansible_facts.distribution_release == 'trixie' %}
   listen {{ ansible_facts.default_ipv4.address }}:443 ssl;
   listen [{{ ansible_facts.default_ipv6.address }}]:443 ssl;
   http2 on;
@@ -103,7 +103,7 @@ server {
   listen 127.0.0.1:3305;
 
   server_name _3305;
-  root /var/www/html;
+  root /var/www/metrics-ddos;
   index torutils.prom;
 
   access_log off;
