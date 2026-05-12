@@ -1,30 +1,36 @@
 ---
 hx:
   vars:
-    __repos:
-      # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
+    go_version: go1.26.3
+    hx_repos:
       mainline:
         url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
         ver: master
-        # env:
-        #   GITLAB_API_TOKEN: abcd
+        # tok: "{{ hx_repos_mainline_tok }}"
       stablerc:
         url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        ver: linux-6.19.y
+        ver: linux-7.0.y
       ltsrc:
         url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
         ver: linux-6.18.y
-    # hostname examples:  hs0-dt-arm-mainline-bp-cl-89  or  hm1-db-x86
-    __parts: "{{ inventory_hostname.split('-') }}"
-    __name: "{{ __parts[3] | default('') }}"
+      stable:
+        url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
+        ver: linux-rolling-stable
+      lts:
+        url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
+        ver: linux-rolling-lts
+
+    # hostname examples:  hs0-dt-arm-mainline-bp-cl-47-11  or  hm1-db-x86
+    hx_parts: "{{ inventory_hostname.split('-') }}"
+    hx_repo: "{{ hx_parts[3] | default('') }}"
     additional_software:
       - libc6-dbg
     ansible_ssh_private_key_file: ~/.ssh/id_ed25519_hcloud_test
-    kernel_git_repo_url: "{{ __repos[__name].url | default('') }}"
-    kernel_git_version: "{{ __repos[__name].ver | default('') }}"
-    git_environment: "{{ __repos[__name].env | default({}) }}"
-    kernel_debian_backports: "{{ __parts[4] | default('') | default('') == 'bp' }}"
-    kernel_debian_cloud: "{{ __parts[5] | default('') | default('') == 'cl' }}"
+    kernel_git_repo_url: "{{ hx_repos[hx_repo].url | default('') }}"
+    kernel_git_version: "{{ hx_repos[hx_repo].ver | default('') }}"
+    git_environment: "{{ hx_repos[hx_repo].tok | default({}) }}"
+    kernel_debian_backports: "{{ hx_parts[4] | default('') == 'bp' }}"
+    kernel_debian_cloud: "{{ hx_parts[5] | default('') == 'cl' }}"
     node_metrics: true
   children:
     hb:
@@ -47,12 +53,13 @@ hmx:
     additional_ports:
       # - 80
       - 443
+      # - 2049
     # additional_software:
     #   - nfs-common
     #   - nfs-kernel-server
     kernel_debian_backports: true
     kernel_debian_cloud: true
-    # __name: "stablerc"
+    # hx_repo: "stable"
     nginx_site_directories:
       - dir: site01
         port: 1234
@@ -69,6 +76,10 @@ hsx:
 
 # Tor public bridge
 hbx:
+  vars:
+    _torrc_config_hbx:
+      - name: PublishServerDescriptor
+        value: 0
   children:
     hb:
 
