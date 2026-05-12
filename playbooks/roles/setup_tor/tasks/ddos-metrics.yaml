@@ -10,7 +10,8 @@
   ansible.builtin.file:
     path: /var/www/metrics-ddos
     state: directory
-    mode: "0755"
+    group: www-data
+    mode: "0750"
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:

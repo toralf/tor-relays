@@ -3,7 +3,8 @@
   ansible.builtin.file:
     path: /var/www/{{ item.dir }}
     state: directory
-    mode: "0755"
+    group: www-data
+    mode: "0750"
   loop_control:
     label: "{{ item.dir }}"
   loop: "{{ nginx_site_directories }}"
