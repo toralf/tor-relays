@@ -50,15 +50,13 @@ function getSnapshots() {
 }
 
 function getImage() {
-  local name=${1?NAME NOT GIVEN}
-
   if [[ -n ${HCLOUD_IMAGE-} ]]; then
     echo ${HCLOUD_IMAGE}
-    return
-  fi
-
-  if [[ -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
-    _getImageByHostname ${name}
+  else
+    local name=${1?NAME NOT GIVEN}
+    if [[ -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
+      _getImageByHostname ${name}
+    fi
   fi
 }
 
