@@ -61,15 +61,6 @@
     _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
     kernel_build: "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running }}"
   block:
-    - name: Stop unattended upgrade
-      ansible.builtin.systemd_service:
-        name: "{{ item }}"
-        state: stopped
-      loop:
-        - apt-daily.timer
-        - apt-daily-upgrade.timer
-        - unattended-upgrades
-
     - name: Make nowait
       when: not kernel_git_build_wait
       changed_when: true
@@ -117,13 +108,15 @@
                   {{ (_make_log['content'] | b64decode)[-10:] }}
 
         - name: Reboot
-          failed_when: not (
-            _reboot.rebooted or
-            _reboot.msg is search('Action reboot already in progress') or
-            _reboot.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start' is included in transaction")
+          failed_when: >2-
+            not (
+            _reboot_kernel.rebooted or
+            _reboot_kernel.msg is search('Action reboot already in progress') or
+            _reboot_kernel.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start'
+            is included in transaction")
             )
           retries: 2
           ansible.builtin.reboot:
             reboot_timeout: 180
             reboot_command: reboot
-          register: _reboot
+          register: _reboot_kernel
