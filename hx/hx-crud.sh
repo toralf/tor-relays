@@ -83,13 +83,12 @@ function work_on_job_files() {
     names=$(xargs <${job})
     mv ${job} /tmp/
 
-    # create, rebuild, delete
-    if [[ ${action} != "setup" ]]; then
+    if [[ -x ./bin/${action}-server.sh ]]; then
       if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
-    # create, rebuild, setup
+
     if [[ ${action} != "delete" ]]; then
       if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
@@ -155,8 +154,8 @@ function update_linux_kernels() {
 function handle_down_systems() {
   local names
 
-  info "is_down"
-  if ./site-setup.yaml --limit 'hx,!hix' --tags poweron -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
+  info "ping"
+  if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
     info "  NOT ok" >&2
   fi
 
@@ -168,16 +167,45 @@ function handle_down_systems() {
   )
 
   if [[ -n ${names} ]]; then
-    info "  down: $(wc -w <<<${names})"
-    shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+    pit_stop crud
 
-    info "  power off"
-    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server poweroff <<<${names} &>${logprefix}.off.log; then
+    info "  reboot: $(wc -w <<<${names})"
+    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server reboot <<<${names} &>${logprefix}.reboot.log; then
       info "  NOT ok" >&2
     fi
-    info "  power on"
-    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server poweron <<<${names} &>${logprefix}.on.log; then
+
+    info "ping 2nd"
+    if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
       info "  NOT ok" >&2
+    fi
+    xargs -r -n 1 <<<${names} |
+      sort >~/tmp/hx/is_down_before
+
+    names=$(
+      grep "^h" ~/tmp/hx/is_down 2>/dev/null |
+        grep -v "^hi-" |
+        shuf |
+        xargs -r
+    )
+
+    # systems are dead
+    xargs -r -n 1 <<<${names} |
+      sort >~/tmp/hx/is_down_after
+
+    if [[ -n ${names} ]]; then
+      info "  rebuild: $(wc -w <<<${names})"
+      shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+    fi
+
+    # might have missed updates
+    names=$(comm -2 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after)
+    if [[ -n ${names} ]]; then
+      info "  update: $(wc -w <<<${names})"
+      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags golang,lyrebird,snowflake,tor,kernel-build \
+        -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
+        info "  NOT ok" >&2
+      fi
+      pit_stop crud
     fi
   fi
 }

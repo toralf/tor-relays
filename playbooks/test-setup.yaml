@@ -3,7 +3,7 @@
   hosts: hx
   order: shuffle
   roles:
-    - role: poweron
+    - role: ping
     - role: setup_common
     - role: setup_snowflake
     - role: setup_tor

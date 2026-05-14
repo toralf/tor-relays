@@ -6,7 +6,7 @@
       firstmatch: true
       mode: "0644"
   block:
-    - name: Poweron
-      ansible.builtin.import_tasks: poweron.yaml
+    - name: Ping
+      ansible.builtin.import_tasks: ping.yaml
       tags:
-        - poweron
+        - ping
