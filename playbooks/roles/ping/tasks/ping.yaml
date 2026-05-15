@@ -1,14 +1,15 @@
 ---
-- name: Ping
-  block:
-    - name: SSH ping
-      retries: 1
-      delay: 30
-      ansible.builtin.ping:
-      register: _ssh_ping
+- name: SSH ping
+  ignore_unreachable: true
+  retries: 1
+  delay: 30
+  ansible.builtin.ping:
+  register: ping
 
-  always:
-    - name: Ensure that network is ok
+- name: Is Down
+  when: ping is unreachable
+  block:
+    - name: Ping hetzner
       delegate_to: localhost
       throttle: "{{ concurrent_local_jobs }}"
       changed_when: false
@@ -16,12 +17,25 @@
         cmd: >-
           ping -c 3 hetzner.de
 
-    - name: File that system is down
+    - name: File is_down state
       delegate_to: localhost
       throttle: 1
-      vars:
-        is_down: "{{ _ssh_ping.unreachable is defined or _ssh_ping.ping | default('') != 'pong' }}"
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
         path: "{{ infodir }}/is_down"
-        state: "{{ is_down | ternary('present', 'absent') }}"
+
+    - name: Failed
+      ansible.builtin.fail:
+        msg: ping
+
+# remove state only on demand
+- name: Remove is_down state
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ infodir }}/is_down"
+    state: absent
+  tags:
+    - ping
+    - never
