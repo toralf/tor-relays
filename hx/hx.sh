@@ -15,17 +15,17 @@ if [[ ! -d ~/tmp/hx ]]; then
   mkdir ~/tmp/hx
 fi
 
-info "create, rebuild, update(setup), delete systems"
+info "lifecycle"
 if ! pgrep -f ./hx/hx-crud.sh; then
   ./hx/hx-crud.sh &>>~/tmp/hx/hx-crud.sh.log &
 fi
 
-info "maintain golden images"
+info "golden images"
 if ! pgrep -f ./hx/hx-image.sh; then
   ./hx/hx-image.sh &>>~/tmp/hx/hx-image.sh.log &
 fi
 
-info "gather info and sync them"
+info "information"
 if ! pgrep -f ./hx/hx-info.sh; then
   ./hx/hx-info.sh &>>~/tmp/hx/hx-info.sh.log &
 fi

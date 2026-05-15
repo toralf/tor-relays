@@ -3,6 +3,7 @@
   hosts: all
   order: shuffle
   roles:
+    - role: ping
     - role: info_common
     - role: info_healthy
     - role: info_snowflake

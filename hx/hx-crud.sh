@@ -152,61 +152,47 @@ function update_linux_kernels() {
 }
 
 function handle_down_systems() {
-  local names
+  local files names
 
-  info "ping"
-  if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
-    info "  NOT ok" >&2
+  # check for any failed pings
+  files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down)
+  if [[ -z ${files} ]]; then
+    return
+  fi
+  grep -h "^h" ${files} |
+    grep -v "^hi-" |
+    sort -u >~/tmp/hx/is_down_before
+
+  if [[ ! -s ~/tmp/hx/is_down_before ]]; then
+    return
   fi
 
-  names=$(
-    grep "^h" ~/tmp/hx/is_down 2>/dev/null |
-      grep -v "^hi-" |
-      shuf |
-      xargs -r
-  )
+  # "is_down" will be resetted if system is pingable
+  info "ping"
+  names=$(xargs <~/tmp/hx/is_down_before)
+  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping.log; then
+    info "  NOT ok" >&2
+  fi
+  grep "^h" ~/tmp/hx/is_down |
+    grep -v "^hi-" |
+    sort >~/tmp/hx/is_down_after
 
+  # down before and after
+  names=$(comm -12 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after | xargs -r)
   if [[ -n ${names} ]]; then
+    info "  rebuild: $(wc -w <<<${names})"
+    shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+  fi
+
+  # down before but pingable after
+  names=$(comm -23 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after | xargs -r)
+  if [[ -n ${names} ]]; then
+    info "  update: $(wc -w <<<${names})"
+    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags golang,lyrebird,snowflake,tor,kernel-build \
+      -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
+      info "  NOT ok" >&2
+    fi
     pit_stop crud
-
-    info "  reboot: $(wc -w <<<${names})"
-    if ! xargs -n 1 -P $(($(nproc) / 2)) hcloud --quiet --poll-interval 10s server reboot <<<${names} &>${logprefix}.reboot.log; then
-      info "  NOT ok" >&2
-    fi
-
-    info "ping 2nd"
-    if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.is_down.log; then
-      info "  NOT ok" >&2
-    fi
-    xargs -r -n 1 <<<${names} |
-      sort >~/tmp/hx/is_down_before
-
-    names=$(
-      grep "^h" ~/tmp/hx/is_down 2>/dev/null |
-        grep -v "^hi-" |
-        shuf |
-        xargs -r
-    )
-
-    # systems are dead
-    xargs -r -n 1 <<<${names} |
-      sort >~/tmp/hx/is_down_after
-
-    if [[ -n ${names} ]]; then
-      info "  rebuild: $(wc -w <<<${names})"
-      shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
-    fi
-
-    # might have missed updates
-    names=$(comm -2 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after)
-    if [[ -n ${names} ]]; then
-      info "  update: $(wc -w <<<${names})"
-      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags golang,lyrebird,snowflake,tor,kernel-build \
-        -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
-        info "  NOT ok" >&2
-      fi
-      pit_stop crud
-    fi
   fi
 }
 
@@ -231,7 +217,6 @@ while :; do
   work_on_job_files
   update_tor_apps
   update_linux_kernels
-  handle_down_systems
-
   pit_stop crud 300
+  handle_down_systems
 done
