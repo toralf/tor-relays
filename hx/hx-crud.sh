@@ -156,9 +156,8 @@ function update_linux_kernels() {
 function handle_down_systems() {
   local files names
 
-  rm -f ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2
-
-  # get candidates from all places
+  # get candidates from all places for 1st ping
+  rm -f ~/tmp/hx/is_down_{1,2}
   files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down ! -empty)
   if [[ -z ${files} ]]; then
     return
@@ -168,6 +167,7 @@ function handle_down_systems() {
     return
   fi
 
+  # 1st ping
   info "  ping 1 before: $(wc -w <<<${names})"
   if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
     info "  NOT ok" >&2
@@ -180,6 +180,7 @@ function handle_down_systems() {
 
   pit_stop crud
 
+  # 2nd ping
   names=$(xargs <~/tmp/hx/is_down_1)
   info "  ping 2 before: $(wc -w <<<${names})"
   if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_2.log; then
@@ -188,7 +189,7 @@ function handle_down_systems() {
   grep "^h" ~/tmp/hx/is_down | grep -v "^hi-" | sort >~/tmp/hx/is_down_2
   info "  ping 2  after: $(wc -w <~/tmp/hx/is_down_2)"
 
-  # was and is down
+  # was down and is still down
   names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
     info "  rebuild: $(wc -w <<<${names})"
