@@ -84,16 +84,18 @@ function work_on_job_files() {
     mv ${job} /tmp/
 
     if [[ -x ./bin/${action}-server.sh ]]; then
+      info "  ${action}"
       if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
-
     if [[ ${action} != "delete" ]]; then
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>${logprefix}.job.${action}.log; then
+      info "  setup"
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
+
     pit_stop crud
   done < <(
     find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
@@ -154,38 +156,47 @@ function update_linux_kernels() {
 function handle_down_systems() {
   local files names
 
-  # check for any failed pings
-  files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down)
+  rm -f ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2
+
+  # get candidates from all places
+  files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down ! -empty)
   if [[ -z ${files} ]]; then
     return
   fi
-  grep -h "^h" ${files} |
-    grep -v "^hi-" |
-    sort -u >~/tmp/hx/is_down_before
-
-  if [[ ! -s ~/tmp/hx/is_down_before ]]; then
+  names=$(grep -h "^h" ${files} | grep -v "^hi-" | sort -u)
+  if [[ -z ${names} ]]; then
     return
   fi
 
-  # "is_down" will be resetted if system is pingable
-  info "ping"
-  names=$(xargs <~/tmp/hx/is_down_before)
-  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping.log; then
+  info "  ping 1 before: $(wc -w <<<${names})"
+  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
     info "  NOT ok" >&2
   fi
-  grep "^h" ~/tmp/hx/is_down |
-    grep -v "^hi-" |
-    sort >~/tmp/hx/is_down_after
+  grep "^h" ~/tmp/hx/is_down | grep -v "^hi-" | sort >~/tmp/hx/is_down_1
+  info "  ping 1  after: $(wc -w <~/tmp/hx/is_down_1)"
+  if [[ ! -s ~/tmp/hx/is_down_1 ]]; then
+    return
+  fi
 
-  # down before and after
-  names=$(comm -12 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after | xargs -r)
+  pit_stop crud
+
+  names=$(xargs <~/tmp/hx/is_down_1)
+  info "  ping 2 before: $(wc -w <<<${names})"
+  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_2.log; then
+    info "  NOT ok" >&2
+  fi
+  grep "^h" ~/tmp/hx/is_down | grep -v "^hi-" | sort >~/tmp/hx/is_down_2
+  info "  ping 2  after: $(wc -w <~/tmp/hx/is_down_2)"
+
+  # was and is down
+  names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
     info "  rebuild: $(wc -w <<<${names})"
     shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
   fi
 
-  # down before but pingable after
-  names=$(comm -23 ~/tmp/hx/is_down_before ~/tmp/hx/is_down_after | xargs -r)
+  # was down but is now pingable
+  names=$(comm -23 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
     info "  update: $(wc -w <<<${names})"
     if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags golang,lyrebird,snowflake,tor,kernel-build \
@@ -217,6 +228,7 @@ while :; do
   work_on_job_files
   update_tor_apps
   update_linux_kernels
-  pit_stop crud 300
   handle_down_systems
+
+  pit_stop crud 300
 done

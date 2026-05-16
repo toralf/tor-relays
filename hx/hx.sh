@@ -15,17 +15,17 @@ if [[ ! -d ~/tmp/hx ]]; then
   mkdir ~/tmp/hx
 fi
 
-info "lifecycle"
+info "crud"
 if ! pgrep -f ./hx/hx-crud.sh; then
   ./hx/hx-crud.sh &>>~/tmp/hx/hx-crud.sh.log &
 fi
 
-info "golden images"
+info "image"
 if ! pgrep -f ./hx/hx-image.sh; then
   ./hx/hx-image.sh &>>~/tmp/hx/hx-image.sh.log &
 fi
 
-info "information"
+info "info"
 if ! pgrep -f ./hx/hx-info.sh; then
   ./hx/hx-info.sh &>>~/tmp/hx/hx-info.sh.log &
 fi

@@ -6,7 +6,7 @@
   ansible.builtin.ping:
   register: ping
 
-- name: Is Down
+- name: Is down
   when: ping is unreachable
   block:
     - name: Ping hetzner
@@ -17,7 +17,7 @@
         cmd: >-
           ping -c 3 hetzner.de
 
-    - name: File is_down state
+    - name: Set is_down
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
@@ -28,14 +28,10 @@
       ansible.builtin.fail:
         msg: ping
 
-# remove state only on demand
-- name: Remove is_down state
+- name: Unset is_down
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }}"
     path: "{{ infodir }}/is_down"
     state: absent
-  tags:
-    - ping
-    - never
