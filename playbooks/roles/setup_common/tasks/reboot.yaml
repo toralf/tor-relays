@@ -14,7 +14,7 @@
   failed_when: _kernel_reboot_needed.rc > 1
   ansible.builtin.shell:
     cmd: |-
-      needrestart -r l -b |
+      LC_ALL=C.UTF-8 needrestart -r l -b |
         grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'
   register: _kernel_reboot_needed
   notify: Reboot
@@ -24,7 +24,7 @@
   failed_when: _service_reboot_needed.rc > 1
   ansible.builtin.shell:
     cmd: |-
-      needrestart -r l -b |
+      LC_ALL=C.UTF-8 needrestart -r l -b |
         grep 'NEEDRESTART-SVC:'
   register: _service_reboot_needed
   notify: Reboot
