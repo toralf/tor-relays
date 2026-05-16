@@ -3,9 +3,10 @@
 # set -x
 
 function sync_site() {
+  local srv
+
   if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${site}.ansible.${tags}.log |
     grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
-    local srv
     for srv in $*; do
       info "  rsync ${site} to ${srv}"
       local dest="${srv}:/var/www/${site}"

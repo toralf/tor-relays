@@ -3,10 +3,11 @@
 # set -x
 
 function _git_ls_remote() {
-  local group=${1?GROUP MUST BE GIVEN}
-  local name=${2?NAME MUST BE GIVEN}
-
+  local group name
   local url ver tok
+
+  group=${1?GROUP MUST BE GIVEN}
+  name=${2?NAME MUST BE GIVEN}
 
   if [[ ${group} == "app" ]]; then
     case ${name} in
@@ -27,11 +28,12 @@ function _git_ls_remote() {
 
 # an empty "old_id" is considered as "unchanged"
 function _git_changed() {
-  local group=${1?GROUP MUST BE GIVEN}
-  local name=${2?NAME MUST BE GIVEN}
-  local current_id
+  local group name current_id
 
+  group=${1?GROUP MUST BE GIVEN}
+  name=${2?NAME MUST BE GIVEN}
   current_id=$(_git_ls_remote ${group} ${name})
+
   if [[ -n ${current_id} ]]; then
     # shellcheck disable=SC2155
     local old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
@@ -45,9 +47,9 @@ function _git_changed() {
 }
 
 function _go_changed() {
-  local _go_ver_inventory _go_ver_upstream
+  local go_ver_inventory go_ver_upstream
 
-  _go_ver_upstream=$(
+  go_ver_upstream=$(
     curl -s https://go.dev/dl/ |
       grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' |
       sort -Vr |
@@ -55,12 +57,12 @@ function _go_changed() {
       sed -e 's,\.linux.*,,'
   )
 
-  if [[ -n ${_go_ver_upstream} ]]; then
-    _go_ver_inventory=$(yq -r '.hx.vars.go_version' <./inventory/systems-hetzner-test.yaml)
+  if [[ -n ${go_ver_upstream} ]]; then
+    go_ver_inventory=$(yq -r '.hx.vars.go_version' <./inventory/systems-hetzner-test.yaml)
 
-    if [[ ${_go_ver_inventory} != "${_go_ver_upstream}" ]]; then
-      info "Go: ${_go_ver_inventory}  ->  ${_go_ver_upstream}"
-      sed -i -e "s,^    go_version: go.*,    go_version: ${_go_ver_upstream}," inventory/systems-hetzner-test.yaml
+    if [[ ${go_ver_inventory} != "${go_ver_upstream}" ]]; then
+      info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
+      sed -i -e "s,^    go_version: go.*,    go_version: ${go_ver_upstream}," inventory/systems-hetzner-test.yaml
       return 0
     fi
   fi

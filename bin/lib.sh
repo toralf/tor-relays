@@ -36,13 +36,13 @@ function cleanLocalDataFiles() {
   done < <(xargs -r -n 1 <<<$*)
 }
 
-# project is a global variable
 function setProject() {
+  # project is a global variable
   project=$(hcloud context active)
   echo -e "\n >>> using Hetzner project \"${project?NO PROJECT FOUND}\""
 }
 
-# revert sort order helps later for the first match being the best match
+# revert sort order ensures that in _getImageBySnapshot() the first match is the best one
 function getSnapshots() {
   hcloud --quiet image list --type snapshot --output noheader --output columns=description,id,image_size |
     awk '{ if (NF == 4 && $3 != "-") { print $1, $2} }' |
@@ -50,10 +50,12 @@ function getSnapshots() {
 }
 
 function getImage() {
+  local name
+
   if [[ -n ${HCLOUD_IMAGE-} ]]; then
     echo ${HCLOUD_IMAGE}
   else
-    local name=${1?NAME NOT GIVEN}
+    name=${1?NAME NOT GIVEN}
     if [[ -z ${snapshots} ]] || ! _getImageBySnapshot ${name}; then
       _getImageByHostname ${name}
     fi
@@ -61,8 +63,9 @@ function getImage() {
 }
 
 function _getImageByHostname() {
-  local name=${1?NAME NOT GIVEN}
+  local name
 
+  name=${1?NAME NOT GIVEN}
   # hcloud --quiet image list --type system --output json | jq -r '.[].name' | sort -uV
   case $(cut -f 2 -d '-' -s <<<${name}) in
   du) echo debian-11 ;;
@@ -86,9 +89,10 @@ function _getImageByHostname() {
 #   dt-arm-stable
 #   dt-arm
 function _getImageBySnapshot() {
-  local name=${1?NAME NOT GIVEN}
+  local name description id
 
-  local description id
+  name=${1?NAME NOT GIVEN}
+
   while read -r description id; do
     if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
       echo ${id}
