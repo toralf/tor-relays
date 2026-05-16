@@ -83,7 +83,7 @@ elif [[ ${task} =~ "kernel" ]]; then
   )
   time ./bin/create-server.sh ${names}
   if [[ ${task} == "kernel_build" ]]; then
-    # force building of a kernel
+    # force kernel build even if git and/or .config did not changed
     time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
   else
     time ./site-test-kernel.yaml --limit "h?-*-${uid}"

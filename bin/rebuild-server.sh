@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# This is a wrapper of "hcloud server crrebuildeate ..."
+# This is a wrapper of "hcloud server rebuild ..."
 
 # e.g.:
 #   ./bin/rebuild-server.sh foo bar
