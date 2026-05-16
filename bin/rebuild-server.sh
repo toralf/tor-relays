@@ -39,6 +39,15 @@ commands=$(
 
 # the API call to Hetzner
 echo -e " rebuilding ..."
+set +e
 xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${commands}
+rc=$?
+set -e
 
-./bin/trust-host-ssh-key.sh ${names}
+echo " rc=${rc}"
+if [[ ${rc} -eq 0 || ${rc} -eq 123 ]]; then
+  ./bin/trust-host-ssh-key.sh ${names}
+else
+  echo " NOT ok" >&2
+  exit ${rc}
+fi
