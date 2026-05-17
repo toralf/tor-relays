@@ -49,12 +49,13 @@ function _git_changed() {
 function _go_changed() {
   local go_ver_inventory go_ver_upstream
 
+  # the arch is not relevant and arbitrarily chosen
   go_ver_upstream=$(
     curl -s https://go.dev/dl/ |
       grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' |
       sort -Vr |
       head -n 1 |
-      sed -e 's,\.linux.*,,'
+      sed -e 's,\.linux-amd64\..*,,'
   )
 
   if [[ -n ${go_ver_upstream} ]]; then
@@ -93,7 +94,8 @@ function work_on_job_files() {
     fi
     if [[ ${action} != "delete" ]]; then
       info "  setup"
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>>${logprefix}.job.${action}.log; then
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
+        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
     fi
