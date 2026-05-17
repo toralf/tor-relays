@@ -6,11 +6,6 @@
       cut -f 2 -d ' ' /var/lib/tor/fingerprint
   register: _result_fp
 
-- name: Set fact _fp
-  when: _result_fp.stdout | length > 0
-  ansible.builtin.set_fact:
-    _fp: "{{ _result_fp.stdout_lines[0] }}"
-
 - name: Get ED25519 fingerprint
   changed_when: false
   ansible.builtin.command:
@@ -18,22 +13,10 @@
       cut -f 2 -d ' ' /var/lib/tor/fingerprint-ed25519
   register: _result_fp_ed25519
 
-- name: Set fact _fp_ed25519
-  when: _result_fp_ed25519.stdout | length > 0
-  ansible.builtin.set_fact:
-    _fp_ed25519: "{{ _result_fp_ed25519.stdout_lines[0] }}"
-
-- name: Hashed fingerprint
+- name: Get hashed fingerprint of a bridge
   when: tor_bridge_distribution | length > 0
-  block:
-    - name: Get hashed fingerprint of a bridge
-      changed_when: false
-      ansible.builtin.command:
-        cmd: >-
-          cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
-      register: _result_fp_hashed
-
-    - name: Set fact _fp_hashed
-      when: _result_fp_hashed.stdout | length > 0
-      ansible.builtin.set_fact:
-        _fp_hashed: "{{ _result_fp_hashed.stdout_lines[0] }}"
+  changed_when: false
+  ansible.builtin.command:
+    cmd: >-
+      cut -f 2 -d ' ' /var/lib/tor/hashed-fingerprint
+  register: _result_fp_hashed
