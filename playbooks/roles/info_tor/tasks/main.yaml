@@ -7,7 +7,7 @@
       firstmatch: true
   block:
     - name: Server and public bridge
-      when: tor_bridge_distribution not in ('', 'none')
+      when: tor_bridge_distribution | length == 0 or tor_bridge_distribution != 'none'
       block:
         - name: Get fingerprints
           ansible.builtin.import_tasks: fingerprints.yaml
