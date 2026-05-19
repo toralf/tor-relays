@@ -20,6 +20,15 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
+- name: Enable trixie-backports at IONOS
+  when: ansible_facts.system_vendor == 'QEMU'
+  vars:
+    _rel: "{{ ansible_facts.distribution_release }}"
+  ansible.builtin.lineinfile:
+    line: "Suites: {{ _rel }} {{ _rel }}-updates {{ _rel }}-backports"
+    path: /etc/apt/sources.list.d/debian.sources
+    regexp: "^Suites: {{ _rel }} {{ _rel }}-updates$"
+
 - name: Update apt cache
   changed_when: _result_apt_cache.cache_updated
   ansible.builtin.apt:
