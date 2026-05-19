@@ -16,7 +16,7 @@ cd $(dirname $0)/..
 [[ $# -ge 2 ]]
 
 arch='{arm,x86}'
-os='{dt,un}'
+os='{dt,ur}'
 uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
@@ -56,10 +56,9 @@ elif [[ ${task} =~ "image" ]]; then
   if [[ ${task} == "image_build" ]]; then
     # clone sources + build kernel
     names=$(
-      os_grep=$(tr '{},' '()|' <<<${os})
-      eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un}-${arch}-${branch}-x-x-${uid} |
-        xargs -r -n 1 |
-        grep -E "^hi-${os_grep:-.}-" |
+      eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
+        xargs -n 1 |
+        grep -v -e 'hi-d.*-.*-x' -e 'hi-u.*-.*-*bp' -e 'hi-u.*-.*-*cl' |
         xargs
     )
     time ./bin/create-server.sh ${names}
@@ -75,10 +74,9 @@ elif [[ ${task} =~ "image" ]]; then
 elif [[ ${task} =~ "kernel" ]]; then
   branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(
-    os_grep=$(tr '{},' '()|' <<<${os})
-    eval echo hi-{du,db,dt}-${arch}-${branch}-{,no}bp-{,no}cl-${uid} hi-{uj,un}-${arch}-${branch}-x-x-${uid} |
-      xargs -r -n 1 |
-      grep -E "^hi-${os_grep:-.}-" |
+    eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
+      xargs -n 1 |
+      grep -v -e 'hi-d.*-.*-x' -e 'hi-u.*-.*-*bp' -e 'hi-u.*-.*-*cl' |
       xargs
   )
   time ./bin/create-server.sh ${names}

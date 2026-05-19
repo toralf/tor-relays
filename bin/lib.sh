@@ -73,12 +73,12 @@ function _getImageByHostname() {
   dt) echo debian-13 ;;
   uj) echo ubuntu-22.04 ;;
   un) echo ubuntu-24.04 ;;
-  # ur) echo ubuntu-26.04 ;;
+  ur) echo ubuntu-26.04 ;;
   *)
     if [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
       echo ${HCLOUD_FALLBACK_IMAGE}
     else
-      shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24}.04
+      shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24,26}.04
     fi
     ;;
   esac
