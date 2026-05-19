@@ -62,18 +62,15 @@ function getImage() {
   fi
 }
 
+# hcloud --quiet image list --type system --output json | jq -r '.[].name' | sort -uV
 function _getImageByHostname() {
-  local name
+  local name os
 
   name=${1?NAME NOT GIVEN}
-  # hcloud --quiet image list --type system --output json | jq -r '.[].name' | sort -uV
-  case $(cut -f 2 -d '-' -s <<<${name}) in
-  du) echo debian-11 ;;
-  db) echo debian-12 ;;
-  dt) echo debian-13 ;;
-  uj) echo ubuntu-22.04 ;;
-  un) echo ubuntu-24.04 ;;
-  ur) echo ubuntu-26.04 ;;
+  os=$(cut -f 2 -d '-' -s <<<${name})
+  case ${os} in
+  d*) sed -e 's,d,debian-,' <<<${os} ;;
+  u*) sed -e 's,u,ubuntu-,' -e 's,$,.04,' <<<${os} ;;
   *)
     if [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
       echo ${HCLOUD_FALLBACK_IMAGE}
@@ -84,10 +81,10 @@ function _getImageByHostname() {
   esac
 }
 
-# examples for match ordering e.g. for hs0-dt-arm-stablerc-bp-cl-89
-#   dt-arm-stablerc
-#   dt-arm-stable
-#   dt-arm
+# examples for match ordering e.g. for hs0-d13-arm-stablerc-bp-cl-89
+#   d13-arm-stablerc
+#   d13-arm-stable
+#   d13-arm
 function _getImageBySnapshot() {
   local name description id
 

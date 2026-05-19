@@ -1,5 +1,5 @@
 ---
-- name: Desired Debian kernel
+- name: Debian
   when: kernel_debian_backports or kernel_debian_cloud
   block:
     - name: Change Debian kernel

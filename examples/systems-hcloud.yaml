@@ -20,7 +20,7 @@ hx:
         url: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/
         ver: linux-rolling-lts
 
-    # hostname examples:  hs0-dt-arm-mainline-bp-cl-47-11  or  hm1-db-x86
+    # hostname examples:  hs0-d13-arm-mainline-bp-cl-47-11  or  hm1-d13-x86
     hx_parts: "{{ inventory_hostname.split('-') }}"
     hx_repo: "{{ hx_parts[3] | default('') }}"
     additional_software:

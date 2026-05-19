@@ -71,7 +71,7 @@ commands=$(
     if [[ -n ${HCLOUD_TYPE-} ]]; then
       htype=${HCLOUD_TYPE}
     else
-      # set htype based on hostname (e.g. hm1-db-x86)
+      # set htype based on hostname (e.g. hm1-d13-x86)
       if htype=$(cut -f 3 -d '-' -s <<<${name}); then
         case ${htype} in
         arm) htype="cax11" ;;
