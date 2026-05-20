@@ -28,7 +28,7 @@ function cleanLocalDataFiles() {
   while read -r name; do
     rm -f ~/tmp/tor-relays/{coredump,ddos,ddos64,ddos80,ddos128,dmesg,kconfig,trace}/${name}{,.*}
     if [[ -z ${KEEP_TOR_KEYS-} ]]; then
-      rm -rf ~/tmp/tor-relays/tor-keys/${name}/
+      rm -rf ~/tmp/tor-relays/tor-identity/${name}/
     fi
     if [[ -z ${KEEP_CLIENT_CERTS-} ]]; then
       rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}

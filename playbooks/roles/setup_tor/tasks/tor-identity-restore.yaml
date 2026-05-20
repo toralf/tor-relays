@@ -1,0 +1,51 @@
+---
+- name: Test for existance of backed up Tor keys
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.stat:
+    path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}"
+  register: _keys_backup
+
+- name: Restore identity
+  when: _keys_backup.stat.exists and not _keys.stat.exists
+  vars:
+    _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
+  block:
+    - name: Create Tor identity dir
+      ansible.builtin.file:
+        state: directory
+        path: "/var/lib/tor/keys/"
+        mode: u=rwx,g=s,o=
+        owner: "{{ _user }}"
+        group: "{{ _user }}"
+
+    - name: Restore Tor identity
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.copy:
+        src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/"
+        dest: "/var/lib/tor/keys/"
+        mode: "0600"
+        owner: "{{ _user }}"
+        group: "{{ _user }}"
+      notify: Restart Tor
+
+    - name: PT state
+      when: tor_bridge_distribution | length > 0
+      block:
+        - name: Create PT identity dir
+          ansible.builtin.file:
+            state: directory
+            path: "/var/lib/tor/pt_state/"
+            mode: u=rwx,g=s,o=
+            owner: "{{ _user }}"
+            group: "{{ _user }}"
+
+        - name: Restore PT identity
+          throttle: "{{ concurrent_local_jobs }}"
+          ansible.builtin.copy:
+            src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/"
+            dest: "/var/lib/tor/pt_state/"
+            mode: "0600"
+            owner: "{{ _user }}"
+            group: "{{ _user }}"
+          notify: Restart Tor

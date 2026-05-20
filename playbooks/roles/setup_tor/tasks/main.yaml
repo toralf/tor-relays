@@ -40,12 +40,12 @@
         - validate
 
     - name: Test for existance of Tor keys
-      when: tor_keys_restore
+      when: tor_identity_restore
       ansible.builtin.stat:
         path: /var/lib/tor/keys/
       register: _keys
       tags:
-        - tor-keys-restore
+        - tor-identity-restore
 
     - name: Tor Debian
       when: not tor_build_from_source
@@ -74,11 +74,11 @@
           tags:
             - lyrebird
 
-    - name: Tor keys restore
-      when: tor_keys_restore
-      ansible.builtin.import_tasks: tor-keys-restore.yaml
+    - name: Tor identity restore
+      when: tor_identity_restore
+      ansible.builtin.import_tasks: tor-identity-restore.yaml
       tags:
-        - tor-keys-restore
+        - tor-identity-restore
 
     - name: DDoS metrics
       when: ddos_metrics

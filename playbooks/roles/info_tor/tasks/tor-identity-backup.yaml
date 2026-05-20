@@ -1,0 +1,33 @@
+---
+- name: Test at local Tor identity dir
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.stat:
+    path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/"
+    get_attributes: false
+    get_checksum: false
+    get_mime: false
+  register: _tor_identity_dir
+
+- name: Block
+  throttle: "{{ concurrent_local_jobs }}"
+  when: not _tor_identity_dir.stat.exists
+  block:
+    - name: Backup Tor identity
+      ansible.builtin.fetch:
+        src: "/var/lib/tor/keys/{{ item }}"
+        dest: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/"
+        flat: true
+      loop:
+        - ed25519_master_id_secret_key
+        - secret_id_key
+
+    - name: Backup PT identity
+      when: tor_bridge_distribution | length > 0
+      ansible.builtin.fetch:
+        src: "/var/lib/tor/pt_state/{{ item }}"
+        dest: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/"
+        flat: true
+      loop:
+        - obfs4_bridgeline.txt
+        - obfs4_state.json

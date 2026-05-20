@@ -117,8 +117,8 @@ htx:
     _torrc_config: >-
       {{ (_torrc_config_hpx | default([]) + _torrc_config_hbx | default([]) + _torrc_config_hrx | default([])
         + _torrc_config_htx) | unique(attribute='name') }}
-    tor_keys_backup: true
-    tor_keys_restore: true
+    tor_identity_backup: true
+    tor_identity_restore: true
   children:
     hbx:
     hpx:
