@@ -1,6 +1,5 @@
 ---
 - name: Get certificate
-  when: tor_bridge_distribution | length > 0
   changed_when: false
   ansible.builtin.command:
     cmd: >-
@@ -20,4 +19,3 @@
     state: "{{ (_cert.stdout | length > 0) | ternary('present', 'absent') }}"
   with_items:
     - "{{ ansible_facts.default_ipv4.address }}"
-    - "[{{ ansible_facts.default_ipv6.address }}]"
