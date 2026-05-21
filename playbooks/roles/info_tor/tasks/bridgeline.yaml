@@ -10,12 +10,10 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    _torport: "{{ '%41s' | format(item) }}:{{ '%-5s' | format(tor_port) }}"
+    _torport: "{{ '%16s' | format(ansible_facts.default_ipv4.address) }}:{{ '%-5s' | format(tor_port) }}"
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ _torport }} {{ _fp }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
     regexp: "^Bridge obfs4 {{ _torport }} {{ _fp }} "
     path: /tmp/tor_bridgeline
     mode: "0600"
     state: "{{ (_cert.stdout | length > 0) | ternary('present', 'absent') }}"
-  with_items:
-    - "{{ ansible_facts.default_ipv4.address }}"
