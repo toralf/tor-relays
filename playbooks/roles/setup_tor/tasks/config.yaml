@@ -1,13 +1,17 @@
 ---
-- name: Set sysctl max user namespaces
+- name: Set sysctl values
   ansible.posix.sysctl:
-    name: user.max_user_namespaces
-    value: 2 # debian bookworm default: 14886
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     sysctl_file: /etc/sysctl.d/21tor-relay.conf
     sysctl_set: true
-  notify: Restart Tor
+  loop:
+    - name: kernel.yama.ptrace_scope
+      value: "{{ (tor_bridge_distribution | length > 0) | ternary(1, 3) }}"
+    - name: user.max_user_namespaces
+      value: 2
 
-- name: Set sysctl TCP memory
+- name: Set sysctl for small RAM
   when: ansible_facts.memtotal_mb < 1024
   ansible.posix.sysctl:
     name: net.ipv4.tcp_mem

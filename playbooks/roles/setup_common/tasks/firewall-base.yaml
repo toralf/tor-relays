@@ -13,8 +13,10 @@
     sysctl_file: /etc/sysctl.d/21firewall.conf
     sysctl_set: true
   loop:
-    - { name: net.core.somaxconn, value: "{{ _max }}" }
-    - { name: net.ipv4.tcp_max_syn_backlog, value: "{{ _max }}" }
+    - name: net.core.somaxconn
+      value: "{{ _max }}"
+    - name: net.ipv4.tcp_max_syn_backlog
+      value: "{{ _max }}"
 
 - name: Create base firewall script
   ansible.builtin.template:

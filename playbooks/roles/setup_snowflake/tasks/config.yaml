@@ -1,11 +1,15 @@
 ---
-- name: Set sysctl max user namespaces
+- name: Set sysctl values
   ansible.posix.sysctl:
-    name: user.max_user_namespaces
-    # https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake/-/issues/40287
-    value: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') | length * 4 + 2 }}"
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     sysctl_file: /etc/sysctl.d/21tor-snowflake.conf
     sysctl_set: true
+  loop:
+    - name: kernel.yama.ptrace_scope
+      value: 3
+    - name: user.max_user_namespaces
+      value: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') | length * 4 + 2 }}"
 
 - name: GeoIP directory
   ansible.builtin.file:
