@@ -40,19 +40,19 @@ if [[ ${task} =~ "app" ]]; then
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
-elif [[ ${task} =~ "dist" ]]; then
+elif [[ ${task} =~ "bin" ]]; then
   names=$(eval echo h{b,p,r}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": false }'
 
 elif [[ ${task} == "full" ]]; then
-  branch=${branch:-'{dist,ltsrc,mainline,stablerc}'}
+  branch=${branch:-'{dist,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "kernel_git_build_wait": false }'
 
 elif [[ ${task} =~ "image" ]]; then
-  branch=${branch:-'{ltsrc,mainline,stablerc}'}
+  branch=${branch:-'{mainline,stablerc}'}
   if [[ ${task} == "image_build" ]]; then
     # clone sources + build kernel
     names=$(
@@ -72,7 +72,7 @@ elif [[ ${task} =~ "image" ]]; then
   fi
 
 elif [[ ${task} =~ "kernel" ]]; then
-  branch=${branch:-'{ltsrc,mainline,stablerc}'}
+  branch=${branch:-'{mainline,stablerc}'}
   names=$(
     eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
       xargs -n 1 |
