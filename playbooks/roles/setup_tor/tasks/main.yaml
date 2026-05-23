@@ -80,16 +80,16 @@
       tags:
         - tor-identity-restore
 
+    - name: Config
+      ansible.builtin.import_tasks: config.yaml
+      tags:
+        - config
+
     - name: DDoS metrics
       when: ddos_metrics
       ansible.builtin.import_tasks: ddos-metrics.yaml
       tags:
         - ddos-metrics
-
-    - name: Config
-      ansible.builtin.import_tasks: config.yaml
-      tags:
-        - config
 
     - name: Flush handlers (tor)
       ansible.builtin.meta: flush_handlers
