@@ -6,8 +6,8 @@
     _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
     _uri: https://deb.torproject.org/torproject.org
   block:
-    - name: Enable repository for trixie
-      when: ansible_facts.distribution_release == 'trixie'
+    - name: Enable Tor repository
+      when: ansible_facts.distribution_release not in ('bullseye', 'bookworm', 'jammy', 'noble')
       ansible.builtin.deb822_repository:
         name: tor
         types:
@@ -18,23 +18,23 @@
         components: main
         signed_by: "{{ _uri }}/{{ _key }}"
 
-    - name: Non-Trixie
-      when: ansible_facts.distribution_release != 'trixie'
+    - name: Legacy
+      when: ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')
       block:
-        - name: Enable legacy repository - apt
+        - name: Enable Tor legacy repository - apt
           ansible.builtin.apt:
             name:
               - apt-transport-https
               - gnupg
 
-        - name: Enable legacy repository - gpg key
+        - name: Enable Tor legacy repository - gpg key
           ansible.builtin.shell:
             cmd: >-
               curl -q {{ _uri }}/{{ _key }} -o - |
                 gpg --dearmor >"{{ _keyring }}"
             creates: "{{ _keyring }}"
 
-        - name: Enable legacy repository - sources Debian
+        - name: Enable Tor legacy repository - Debian
           when: ansible_facts.distribution == 'Debian'
           ansible.builtin.deb822_repository:
             name: tor
@@ -46,7 +46,7 @@
             components: main
             signed_by: "{{ _keyring }}"
 
-        - name: Enable legacy repository - sources Ubuntu
+        - name: Enable Tor legacy repository - Ubuntu
           when: ansible_facts.distribution == 'Ubuntu'
           ansible.builtin.apt_repository:
             repo: >-
