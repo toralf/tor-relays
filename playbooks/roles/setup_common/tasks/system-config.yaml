@@ -37,7 +37,8 @@
   register: _sysctl
 
 - name: Ensure sysctl values are up to date
-  changed_when: _sysctl.changed or _result_sysctl.stderr | length > 0
+  changed_when: _sysctl.changed
+  failed_when: false # failures expected for older kernels
   ansible.builtin.command:
     cmd: >-
       sysctl --system >/dev/null

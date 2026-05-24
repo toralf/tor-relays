@@ -3,7 +3,7 @@
   throttle: 16
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics.sh"
-    dest: /root/metrics.sh
+    dest: /root/
   register: _download
 
 - name: Create nginx metrics-ddos

@@ -6,10 +6,10 @@
       - jq
 
 - name: Get DDoS scripts
-  throttle: 16
+  throttle: 8
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/{{ item }}"
-    dest: "/root/{{ item }}"
+    dest: /root/
   with_items:
     - ipv4-rules.sh
     - ipv6-rules.sh
@@ -115,10 +115,8 @@
       when: tor_egress_slew | length > 0
       throttle: 16
       ansible.builtin.get_url:
-        url: "{{ torutils_path }}/{{ item }}"
-        dest: "/root/{{ item }}"
-      with_items:
-        - ipv4-rules-egress.sh
+        url: "{{ torutils_path }}/ipv4-rules-egress.sh"
+        dest: /root/
       register: _egress_script
 
     - name: Create egress firewall cron job for reboot

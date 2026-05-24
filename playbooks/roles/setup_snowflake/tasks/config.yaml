@@ -21,7 +21,7 @@
 # alternative: https://location.ipfire.org/databases/1/location.db.xz  +  libloc package  +  Tor's geoip-db-tool
 - name: Get GeoIP data
   when: use_tor_geoip_data
-  throttle: 16
+  throttle: 8
   ansible.builtin.get_url:
     url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
     dest: /usr/share/tor/

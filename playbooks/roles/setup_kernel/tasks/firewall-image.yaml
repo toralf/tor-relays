@@ -18,22 +18,20 @@
       - jq
 
 - name: Fetch
-  throttle: 16
+  throttle: 8
   block:
     - name: Get DDoS scripts
       ansible.builtin.get_url:
         url: "{{ torutils_path }}/{{ item }}"
-        dest: "/root/{{ item }}"
+        dest: /root/
       with_items:
         - ipv4-rules.sh
         - ipv6-rules.sh
 
     - name: Get egress script
       ansible.builtin.get_url:
-        url: "{{ torutils_path }}/{{ item }}"
-        dest: "/root/{{ item }}"
-      with_items:
-        - ipv4-rules-egress.sh
+        url: "{{ torutils_path }}/ipv4-rules-egress.sh"
+        dest: /root/
 
 - name: Start/Stop
   changed_when: false
