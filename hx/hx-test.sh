@@ -38,12 +38,11 @@ trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 if [[ ${task} =~ "app" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}"
-
-elif [[ ${task} =~ "bin" ]]; then
-  names=$(eval echo h{b,p,r}-${os}-${arch}-dist-x-x-${uid})
-  time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": false }'
+  if [[ ${task} == "app_bin" ]]; then
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": false }' -e '{ "go_version": "" }'
+  else
+    time ./site-test-setup.yaml --limit "h?-*-${uid}"
+  fi
 
 elif [[ ${task} == "full" ]]; then
   branch=${branch:-'{dist,mainline,stablerc}'}
