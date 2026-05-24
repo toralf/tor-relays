@@ -7,6 +7,7 @@
   ansible.builtin.user:
     group: "{{ item.name }}"
     name: "{{ item.name }}"
+    create_home: false
 
 - name: Git {{ item.name }}
   vars:

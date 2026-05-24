@@ -7,6 +7,7 @@
   ansible.builtin.user:
     group: tor
     name: tor
+    create_home: false
 
 - name: Work on "{{ _repo_dir }}"
   vars:
