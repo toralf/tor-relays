@@ -80,7 +80,10 @@
 
 - name: Install/Update PT
   when: tor_bridge_distribution | length > 0
+  vars:
+    _package: >-
+      {{ (ansible_facts.distribution_release == 'forky') | ternary('lyrebird', 'obfs4proxy') }}
   ansible.builtin.apt:
     name:
-      - obfs4proxy
+      - "{{ _package }}"
   notify: Restart Tor
