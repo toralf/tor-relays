@@ -37,7 +37,6 @@
             name:
               - apt-transport-https
               - gnupg
-              - python3-apt
 
         - name: Enable Tor legacy repository - gpg key
           ansible.builtin.shell:
@@ -49,7 +48,6 @@
         - name: Enable Tor legacy repository
           ansible.builtin.apt_repository:
             filename: tor
-            install_python_apt: false
             repo: >-
               {{ item }} [signed-by={{ _keyring }}] {{ _uri }} {{ ansible_facts.distribution_release }} main
             update_cache_retries: 1
