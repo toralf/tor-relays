@@ -3,39 +3,12 @@
 - name: Repo
   vars:
     _key: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc # gitleaks:allow
-    _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
     _uri: https://deb.torproject.org/torproject.org
   block:
-    - name: Enable Tor repository
-      when: ansible_facts.distribution_release not in ('bullseye', 'bookworm', 'jammy', 'noble')
-      ansible.builtin.deb822_repository:
-        name: tor
-        types:
-          - deb
-          - deb-src
-        uris: "{{ _uri }}"
-        suites: "{{ ansible_facts.distribution_release }}"
-        components: main
-        signed_by: "{{ _uri }}/{{ _key }}"
-
-    - name: Legacy
-      when: ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')
+    - name: Repo
+      when: ansible_facts.distribution_release not in ('bullseye', 'jammy')
       block:
-        - name: Enable Tor legacy repository - apt
-          ansible.builtin.apt:
-            name:
-              - apt-transport-https
-              - gnupg
-
-        - name: Enable Tor legacy repository - gpg key
-          ansible.builtin.shell:
-            cmd: >-
-              curl -q {{ _uri }}/{{ _key }} -o - |
-                gpg --dearmor >"{{ _keyring }}"
-            creates: "{{ _keyring }}"
-
-        - name: Enable Tor legacy repository - Debian
-          when: ansible_facts.distribution == 'Debian'
+        - name: Enable Tor repository
           ansible.builtin.deb822_repository:
             name: tor
             types:
@@ -44,21 +17,51 @@
             uris: "{{ _uri }}"
             suites: "{{ ansible_facts.distribution_release }}"
             components: main
-            signed_by: "{{ _keyring }}"
+            signed_by: "{{ _uri }}/{{ _key }}"
+          register: _tor_repo
 
-        - name: Enable Tor legacy repository - Ubuntu
-          when: ansible_facts.distribution == 'Ubuntu'
+        - name: Update apt cache
+          when: _tor_repo.changed
+          ansible.builtin.apt:
+            cache_valid_time: 1
+            update_cache: true
+            update_cache_retries: 1
+
+    - name: Legacy repo
+      when: ansible_facts.distribution_release in ('jammy')
+      vars:
+        _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
+      block:
+        - name: Enable Tor legacy repository - tools
+          ansible.builtin.apt:
+            name:
+              - apt-transport-https
+              - gnupg
+              - python3-apt
+
+        - name: Enable Tor legacy repository - gpg key
+          ansible.builtin.shell:
+            cmd: >-
+              curl -q {{ _uri }}/{{ _key }} -o - |
+                gpg --dearmor >"{{ _keyring }}"
+            creates: "{{ _keyring }}"
+
+        - name: Enable Tor legacy repository
           ansible.builtin.apt_repository:
+            filename: tor
+            install_python_apt: false
             repo: >-
               {{ item }} [signed-by={{ _keyring }}] {{ _uri }} {{ ansible_facts.distribution_release }} main
+            update_cache_retries: 1
           loop:
             - deb
             - deb-src
 
-- name: Update apt cache
-  ansible.builtin.apt:
-    cache_valid_time: 1
-    update_cache: true
+    - name: Install/Update Tor keyring
+      when: ansible_facts.distribution_release not in ('bullseye')
+      ansible.builtin.apt:
+        name:
+          - deb.torproject.org-keyring
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Allow low port for Tor apt
@@ -73,7 +76,6 @@
 - name: Install/Update Tor
   ansible.builtin.apt:
     name:
-      - deb.torproject.org-keyring
       - tor
       - tor-geoipdb
   notify: Restart Tor

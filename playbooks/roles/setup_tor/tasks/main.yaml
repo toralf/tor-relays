@@ -47,9 +47,9 @@
       tags:
         - tor-identity-restore
 
-    - name: Tor Debian
+    - name: Install apt package
       when: not tor_build_from_source
-      ansible.builtin.import_tasks: tor-debian.yaml
+      ansible.builtin.import_tasks: tor-apt.yaml
       tags:
         - tor
 
