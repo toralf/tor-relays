@@ -35,11 +35,12 @@ done
 
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
-if [[ ${task} =~ "app" ]]; then
+if [[ ${task} =~ "dist" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  if [[ ${task} == "app_bin" ]]; then
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": false }' -e '{ "go_version": "" }'
+  if [[ ${task} == "dist_build" ]]; then
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" \
+      -e '{ "tor_build_from_source": true }' -e '{ "go_version": "go1.26.3" }'
   else
     time ./site-test-setup.yaml --limit "h?-*-${uid}"
   fi
@@ -57,7 +58,7 @@ elif [[ ${task} =~ "image" ]]; then
     names=$(
       eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
         xargs -n 1 |
-        grep -v -e 'hi-d.*-.*-x' -e 'hi-u.*-.*-*bp' -e 'hi-u.*-.*-*cl' |
+        grep -v -e '^hi-d.*-.*-x' -e '^hi-u.*-.*-*bp' -e '^hi-u.*-.*-.*-*cl' |
         xargs
     )
     time ./bin/create-server.sh ${names}
@@ -75,16 +76,11 @@ elif [[ ${task} =~ "kernel" ]]; then
   names=$(
     eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
       xargs -n 1 |
-      grep -v -e 'hi-d.*-.*-x' -e 'hi-u.*-.*-*bp' -e 'hi-u.*-.*-*cl' |
+      grep -v -e '^hi-d.*-.*-x' -e '^hi-u.*-.*-.*bp' -e '^hi-u.*-.*-.*-.*cl' |
       xargs
   )
   time ./bin/create-server.sh ${names}
-  if [[ ${task} == "kernel_build" ]]; then
-    # force kernel build even if git and/or .config did not changed
-    time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
-  else
-    time ./site-test-kernel.yaml --limit "h?-*-${uid}"
-  fi
+  time ./site-test-kernel.yaml --limit "h?-*-${uid}"
 
 else
   echo "unknown task ${task}" >&2

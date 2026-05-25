@@ -1,12 +1,13 @@
 ---
 # https://support.torproject.org/apt/tor-deb-repo/
 - name: Repo
+  when: ansible_facts.distribution_release not in ('bullseye')
   vars:
     _key: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc # gitleaks:allow
     _uri: https://deb.torproject.org/torproject.org
   block:
     - name: Repo
-      when: ansible_facts.distribution_release not in ('bullseye', 'jammy')
+      when: ansible_facts.distribution_release not in ('jammy')
       block:
         - name: Enable Tor repository
           ansible.builtin.deb822_repository:
@@ -56,7 +57,7 @@
             - deb-src
 
     - name: Install/Update Tor keyring
-      when: ansible_facts.distribution_release not in ('bullseye')
+      when: ansible_facts.distribution_release not in ('resolute')
       ansible.builtin.apt:
         name:
           - deb.torproject.org-keyring
@@ -72,7 +73,10 @@
     path: /etc/apt/apt.conf.d/99-tor-lowport
 
 - name: Install/Update Tor
+  vars:
+    _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
   ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
     name:
       - tor
       - tor-geoipdb
@@ -81,9 +85,11 @@
 - name: Install/Update PT
   when: tor_bridge_distribution | length > 0
   vars:
+    _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
     _package: >-
       {{ (ansible_facts.distribution_release == 'forky') | ternary('lyrebird', 'obfs4proxy') }}
   ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
     name:
       - "{{ _package }}"
   notify: Restart Tor

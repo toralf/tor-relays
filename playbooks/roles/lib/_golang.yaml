@@ -11,7 +11,7 @@
 
     - name: Install/Update Go
       vars:
-        _backports: "{{ (ansible_facts.distribution_release in ('resolute')) | ternary('', '-backports') }}"
+        _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
         name:

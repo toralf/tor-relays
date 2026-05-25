@@ -18,7 +18,7 @@ SandBox 0
 ORPort 127.0.0.1:auto IPv4Only
 AssumeReachable 1
 ExtORPort auto
-ServerTransportPlugin obfs4 exec /usr/bin/{{ tor_build_from_source | ternary('lyrebird', 'obfs4proxy') }}
+ServerTransportPlugin obfs4 exec /usr/bin/{{ (tor_build_from_source or ansible_facts.distribution_release == 'forky') | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
 {# Tor server #}
@@ -51,5 +51,7 @@ Log warn file /var/log/tor/warn.log
 Log err file /var/log/tor/err.log
 
 {% for item in torrc_config %}
+{% if tor_build_from_source or item.name == 'FamilyId' and ansible_facts.distribution_release not in ('bullseye', 'bookworm', 'jammy', 'noble') %}
 {{ item.name }} {{ item.value }}
+{% endif %}
 {% endfor %}

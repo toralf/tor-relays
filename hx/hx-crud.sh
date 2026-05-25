@@ -63,7 +63,7 @@ function _go_changed() {
 
     if [[ ${go_ver_inventory} != "${go_ver_upstream}" ]]; then
       info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
-      sed -i -e "s,^    go_version: go.*,    go_version: ${go_ver_upstream}," inventory/systems-hetzner-test.yaml
+      sed -i -E "s,'go[1-9]+\.[0-9]+\.[0-9]+','${go_ver_upstream}',g" inventory/systems-hetzner-test.yaml
       return 0
     fi
   fi
