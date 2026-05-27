@@ -13,9 +13,3 @@
       - libncurses5-dev
       - libssl-dev
       - lz4
-
-- name: Install/Update toolchain for Ubuntu
-  when: ansible_facts.distribution_release == 'resolute'
-  ansible.builtin.apt:
-    name:
-      - libdw-dev
