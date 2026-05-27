@@ -49,21 +49,11 @@
     - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
       block:
-        # fix buggy indentation and missing quoting
-        - name: Change IPv6 for Ubuntu Jammy
-          when: ansible_facts.distribution_release == 'jammy'
-          ansible.builtin.lineinfile:
-            line: "            - {{ _ipv6_new }}/64"
-            path: /etc/netplan/50-cloud-init.yaml
-            regex: '^  * - "*{{ _ipv6_network }}:'
-            mode: "0600"
-
         - name: Change IPv6 for Ubuntu
-          when: ansible_facts.distribution_release != 'jammy'
           ansible.builtin.lineinfile:
             line: '      - "{{ _ipv6_new }}/64"'
             path: /etc/netplan/50-cloud-init.yaml
-            regex: '^      - "{{ _ipv6_network }}:'
+            regex: '      - "{{ _ipv6_network }}:'
             mode: "0600"
 
         - name: Activate new IPv6 address for Ubuntu
@@ -72,22 +62,21 @@
             cmd: |-
               set -e
 
+              echo "network: {config: disabled}" >/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+
               netplan generate
               netplan apply
 
-    - name: Wait till IPv6 is confirmed
-      changed_when: _confirmed.rc == 123
-      failed_when: _confirmed.rc not in (0, 123)
+    - name: Wait till IPv6 works
+      changed_when: false
       ansible.builtin.shell:
         cmd: |-
-          rc=0
+          set -e
 
           while ip -6 a | grep -q ' tentative'; do
-            rc=123
             sleep 1
           done
-
-          exit $rc
+          ping6 -c 3 {{ _ipv6_new }}
       register: _confirmed
 
     - name: Gather facts - IPv6 again

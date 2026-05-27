@@ -67,6 +67,7 @@
         - basetools-apt
 
     - name: IPv6
+      when: ansible_facts.distribution != 'Ubuntu' or snapshot_description is not defined
       tags:
         - ipv6
       block:
