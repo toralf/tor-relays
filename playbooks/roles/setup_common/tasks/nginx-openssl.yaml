@@ -39,7 +39,7 @@
     mode: "0600"
   notify: Reload nginx
 
-- name: Compile OpenSSL certificate
+- name: Compile OpenSSL host bundle
   ansible.builtin.copy:
     content: |
       {{ lookup("file", ca_dir + "/" + ca_name + "/clients/crts/" + inventory_hostname + ".crt") }}
