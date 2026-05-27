@@ -40,7 +40,7 @@
         - issue
 
     - name: Kernel config
-      ansible.builtin.import_tasks: _kconfig.yaml
+      ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
       tags:
         - kconfig
         - never

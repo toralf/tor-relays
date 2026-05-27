@@ -96,16 +96,24 @@
                 mode: cleanup
 
           rescue:
+            - name: Kernel config
+              ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
+
             - name: Slurp make.log
               ansible.builtin.slurp:
                 src: /root/make.log
               register: _make_log
 
-            - name: Print last few lines of make.log
-              failed_when: true
+            - name: Print last few bits of make.log
+              changed_when: true
+              vars:
+                _last_bits: "{{ (_make_log['content'] | b64decode) | split('\n') }}"
               ansible.builtin.debug:
-                msg: >-
-                  {{ (_make_log['content'] | b64decode)[-10:] }}
+                msg: "{{ _last_bits[-10:] }}"
+
+            - name: Fail
+              ansible.builtin.fail:
+                msg: Build failed.
 
         - name: Reboot
           failed_when: >2-
@@ -115,7 +123,7 @@
             _reboot_kernel.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start'
             is included in transaction")
             )
-          retries: 2
+          retries: 1
           ansible.builtin.reboot:
             reboot_timeout: 180
             reboot_command: reboot

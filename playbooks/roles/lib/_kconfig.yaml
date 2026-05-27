@@ -13,6 +13,7 @@
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
     dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ ansible_facts.date_time.iso8601 }}.kconfig.txt"
+    flat: true
 
 - name: File kconfig info
   delegate_to: localhost
@@ -23,5 +24,5 @@
       {{ ansible_facts.distribution_release }}
       {{ ansible_facts.architecture }}
       {{ ansible_facts.processor[1] }}
-
     dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ ansible_facts.date_time.iso8601 }}.info.txt"
+    mode: "0644"

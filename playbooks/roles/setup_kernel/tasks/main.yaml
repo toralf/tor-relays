@@ -9,8 +9,6 @@
       purge: true
       state: latest
     ansible.builtin.copy:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.get_url:
       mode: "0744"
