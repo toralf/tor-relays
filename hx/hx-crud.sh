@@ -49,26 +49,24 @@ function _git_changed() {
 function _go_changed() {
   local go_ver_inventory go_ver_upstream
 
-  # the arch is not relevant and arbitrarily chosen
-  go_ver_upstream=$(
-    curl -s https://go.dev/dl/ |
-      grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' |
-      sort -Vr |
-      head -n 1 |
-      sed -e 's,\.linux-amd64\..*,,'
-  )
-
-  if [[ -n ${go_ver_upstream} ]]; then
-    go_ver_inventory=$(yq -r '.hx.vars.go_version' <./inventory/systems-hetzner-test.yaml)
-
-    if [[ ${go_ver_inventory} != "${go_ver_upstream}" ]]; then
-      info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
-      sed -i -E "s,'go[1-9]+\.[0-9]+\.[0-9]+','${go_ver_upstream}',g" inventory/systems-hetzner-test.yaml
-      return 0
-    fi
+  if ! go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml); then
+    return 5
+  fi
+  if [[ -z ${go_ver_inventory} || ${go_ver_inventory} =~ " " || ${go_ver_inventory} =~ $'\n' ]]; then
+    return 4
+  fi
+  if ! go_ver_upstream=\'$(curl -s --follow 'https://golang.org/VERSION?m=text' | head -n 1)\'; then
+    return 3
+  fi
+  if [[ -z ${go_ver_upstream} ]]; then
+    return 2
+  fi
+  if [[ ${go_ver_inventory} == "${go_ver_upstream}" ]]; then
+    return 1
   fi
 
-  return 1
+  info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
+  sed -i -E "s,'go[1-9]+\.[0-9]+\.[0-9]+','${go_ver_upstream}'," inventory/systems-hetzner-test.yaml
 }
 
 function work_on_job_files() {

@@ -32,4 +32,4 @@ fi
 
 echo -e "\n tail -f ~/tmp/hx/hx-{crud,image,info}.sh.log\n"
 
-# echo touch ~/tmp/hx/STOP-{crud,image,info}
+# touch ~/tmp/hx/STOP-{crud,image,info}
