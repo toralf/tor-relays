@@ -96,9 +96,8 @@
             - firewall
             - firewall-tools
 
-        # all non-Tor
         - name: Firewall base
-          when: tor_port == 0
+          when: tor_port == 0 or snowflake_proxies | length > 0
           ansible.builtin.import_tasks: firewall-base.yaml
           tags:
             - firewall
