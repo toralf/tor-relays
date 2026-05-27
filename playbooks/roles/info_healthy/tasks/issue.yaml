@@ -1,23 +1,22 @@
 ---
 - name: Grep system log for issue/s
   changed_when: false
-  failed_when: _result_syslog.stderr | length > 0
+  failed_when: _result_syslog.stderr | length > 0 or _result_syslog.rc > 1
   ansible.builtin.shell:
     cmd: |-
       journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
-        grep -v -F 'Speculative Return Stack Overflow: WARNING:' |
-        grep -m 500 -F \
-          -e 'BUG:' \
+        grep -m 200 -F \
+          -e 'BUG: ' \
           -e 'BUG at' \
-          -e 'Call Trace:' \
-          -e 'Error:' \
+          -e 'Call Trace: ' \
+          -e 'Error: ' \
           -e 'invoked oom-killer' \
+          -e 'kernel: WARN' \
           -e 'No space left on device' \
-          -e 'Oops:' \
+          -e 'Oops: ' \
           -e 'rebooting.' \
           -e '.service: Control process exited' \
-          -e 'status=9/KILL' \
-          -e 'WARNING:'
+          -e 'status=9/KILL'
   register: _result_syslog
 
 - name: File issue
