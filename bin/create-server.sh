@@ -30,7 +30,7 @@ if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   exit 2
 fi
 
-export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-y}
+export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-}
 
 if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   # US and Singapore are more expensive and do have less traffic incl.
