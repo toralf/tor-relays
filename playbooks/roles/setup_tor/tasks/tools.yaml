@@ -25,5 +25,3 @@
 - name: Install/Update toolchain for Tor bridge
   when: tor_bridge_distribution | length > 0
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_golang.yaml"
-  tags:
-    - golang
