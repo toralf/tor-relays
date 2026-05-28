@@ -107,7 +107,7 @@ function work_on_job_files() {
 
 function update_tor_apps() {
   if _go_changed; then
-    if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags golang,lyrebird,snowflake &>${logprefix}.golang.log; then
+    if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags tools,lyrebird,snowflake &>${logprefix}.golang.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
