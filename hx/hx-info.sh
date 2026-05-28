@@ -3,14 +3,14 @@
 # set -x
 
 function sync_site() {
-  local srv
+  local srv dest log
 
   if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${site}.ansible.${tags}.log |
     grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
     for srv in $*; do
       info "  rsync ${site} to ${srv}"
-      local dest="${srv}:/var/www/${site}"
-      local log="${logprefix}.${site}.rsync.${srv}.log"
+      dest="${srv}:/var/www/${site}"
+      log="${logprefix}.${site}.rsync.${srv}.log"
       echo -e "\n# epoch ${EPOCHSECONDS}\n# $(date -R)" >>${log}
       if ! rsync --verbose --recursive ~/tmp/hx/${site}/ ${dest} >>${log} 2>/dev/null; then
         info "  NOT ok" >&2
