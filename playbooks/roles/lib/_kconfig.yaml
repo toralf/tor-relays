@@ -4,7 +4,6 @@
     gather_subset:
       - "!all"
       - "!min"
-      - date_time
       - distribution
       - kernel
 
@@ -12,7 +11,7 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
-    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ ansible_facts.date_time.iso8601 }}.kconfig.txt"
+    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.kconfig.txt"
     flat: true
 
 - name: File kconfig info
@@ -24,5 +23,5 @@
       {{ ansible_facts.distribution_release }}
       {{ ansible_facts.architecture }}
       {{ ansible_facts.processor[1] }}
-    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.{{ ansible_facts.date_time.iso8601 }}.info.txt"
+    dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.info.txt"
     mode: "0644"
