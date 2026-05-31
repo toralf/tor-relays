@@ -6,7 +6,6 @@ Documentation=man:tor
 Documentation=https://www.torproject.org/
 After=network-online.target docker.socket firewalld.service systemd-networkd-wait-online.service
 Wants=network-online.target
-StartLimitIntervalSec=0
 
 [Service]
 ExecStartPre=/usr/bin/tor --verify-config
@@ -15,7 +14,6 @@ ExecReload=/bin/kill -HUP ${MAINPID}
 TimeoutSec=45
 User=tor
 Group=tor
-Restart=on-failure
 LimitNOFILE=65536
 KillSignal=SIGINT
 

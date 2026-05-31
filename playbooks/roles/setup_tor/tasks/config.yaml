@@ -70,7 +70,7 @@
         state: directory
         mode: "0755"
 
-    - name: Add Tor systemd override
+    - name: Configure Tor systemd override
       ansible.builtin.template:
         src: tor.override.conf.j2
         dest: "{{ _svcdir }}/override.conf"
