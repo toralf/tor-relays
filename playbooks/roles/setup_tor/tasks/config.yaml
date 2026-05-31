@@ -49,16 +49,6 @@
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
 
-# https://www.1aeo.com/blog/tor-memory-optizations-what-actually-works.html
-- name: Malloc alternative
-  vars:
-    _ver: "{{ (ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')) | ternary('2.0', '3') }}"
-  ansible.builtin.apt:
-    name:
-      - "libmimalloc{{ _ver }}"
-    state: "{{ tor_use_mimalloc | ternary('present', 'absent') }}"
-  notify: Restart Tor
-
 - name: Override
   vars:
     _svcname: "{{ tor_build_from_source | ternary('tor', 'tor@default') }}"
