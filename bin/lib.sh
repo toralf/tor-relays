@@ -83,22 +83,26 @@ function _getImageByHostname() {
   esac
 }
 
-# examples for match ordering e.g. for hs0-d13-arm-stablerc-bp-cl-89
-#   d13-arm-stablerc
-#   d13-arm-stable
-#   d13-arm
+# example for match ordering:
+#   hostname: hs0-d13-arm-stablerc-bp-cl-89
+#   descriptions:
+#     d13-arm-stablerc
+#     d13-arm-stable
+#     d13-arm
 function _getImageBySnapshot() {
   local name description id
 
   name=${1?NAME NOT GIVEN}
 
+  # word match
   while read -r description id; do
-    if [[ ${name} =~ -${description}$ || ${name} =~ -${description}- || ${HCLOUD_FALLBACK_IMAGE-} == "${description}" ]]; then
+    if [[ ${name} =~ -${description}-*$ ]]; then
       echo ${id}
       return 0
     fi
   done <<<${snapshots}
 
+  # starts with
   while read -r description id; do
     if [[ ${name} =~ -${description} ]]; then
       echo ${id}
