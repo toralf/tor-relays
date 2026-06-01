@@ -39,10 +39,9 @@ if [[ ${task} =~ "dist" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   if [[ ${task} == "dist_build" ]]; then
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" \
-      -e '{ "tor_build_from_source": true }' -e '{ "go_version": "go1.26.3" }'
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": true }'
   else
-    time ./site-test-setup.yaml --limit "h?-*-${uid}"
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }'
   fi
 
 elif [[ ${task} == "full" ]]; then
