@@ -66,7 +66,7 @@ function _go_changed() {
   fi
 
   info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
-  sed -i -E "s,'go[1-9]+\.[0-9]+\.[0-9]+','${go_ver_upstream}'," inventory/systems-hetzner-test.yaml
+  sed -i -E "s,'go[1-9]+\.[0-9]+\.[0-9]+',${go_ver_upstream}," inventory/systems-hetzner-test.yaml
 }
 
 function work_on_job_files() {
