@@ -1,7 +1,7 @@
 ---
 hx:
   vars:
-    go_version: go1.26.3
+    go_version: "{{ (hx_repo | default('') == 'dist') | ternary('', 'go1.26.3') }}"
     hx_repos:
       mainline:
         url: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
@@ -31,7 +31,6 @@ hx:
     git_environment: "{{ hx_repos[hx_repo].tok | default({}) }}"
     kernel_debian_backports: "{{ hx_parts[4] | default('') == 'bp' }}"
     kernel_debian_cloud: "{{ hx_parts[5] | default('') == 'cl' }}"
-    node_metrics: true
   children:
     hb:
     hi:
@@ -76,10 +75,6 @@ hsx:
 
 # Tor public bridge
 hbx:
-  vars:
-    _torrc_config_hbx:
-      - name: PublishServerDescriptor
-        value: 0
   children:
     hb:
 
@@ -91,10 +86,7 @@ hpx:
 # Tor server
 hrx:
   vars:
-    _torrc_config_hrx:
-      - name: PublishServerDescriptor
-        value: 0
-    # # Exit:
+    # Exit:
     # additional_software:
     #   - dns-root-data
     #   - unbound
@@ -107,18 +99,15 @@ hrx:
 # Tor
 htx:
   vars:
-    _torrc_config_htx:
+    _torrc_config:
       - name: Nickname
         value: "gnampfx{{ ((seed_address + seed_host) | md5)[0:12] }}"
       - name: RelayBandwidthRate
         value: 8 MB
       - name: RelayBandwidthBurst
         value: 24 MB
-    _torrc_config: >-
-      {{ (_torrc_config_hpx | default([]) + _torrc_config_hbx | default([]) + _torrc_config_hrx | default([])
-        + _torrc_config_htx) | unique(attribute='name') }}
-    tor_identity_backup: true
-    tor_identity_restore: true
+      - name: PublishServerDescriptor
+        value: 0
   children:
     hbx:
     hpx:
