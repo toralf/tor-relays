@@ -21,6 +21,7 @@
   throttle: 8
   block:
     - name: Get DDoS scripts
+      retries: 1
       ansible.builtin.get_url:
         url: "{{ torutils_path }}/{{ item }}"
         dest: /root/
@@ -29,6 +30,7 @@
         - ipv6-rules.sh
 
     - name: Get egress script
+      retries: 1
       ansible.builtin.get_url:
         url: "{{ torutils_path }}/ipv4-rules-egress.sh"
         dest: /root/

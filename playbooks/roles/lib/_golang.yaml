@@ -35,6 +35,7 @@
       block:
         - name: Get Go
           throttle: 16
+          retries: 1
           ansible.builtin.get_url:
             url: "https://go.dev/dl/{{ _name }}"
             dest: /root/
