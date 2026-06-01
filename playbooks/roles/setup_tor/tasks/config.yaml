@@ -65,3 +65,16 @@
         src: tor.override.conf.j2
         dest: "{{ _svcdir }}/override.conf"
       notify: Restart Tor
+
+- name: Get GeoIP data
+  throttle: 8
+  ansible.builtin.get_url:
+    url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
+    dest: /usr/share/tor/
+  with_items:
+    - geoip
+    - geoip6
+  notify: Restart Tor
+  tags:
+    - geoip
+    - never

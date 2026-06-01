@@ -29,3 +29,6 @@
     - geoip
     - geoip6
   notify: Restart snowflake
+  tags:
+    - geoip
+    - never

@@ -79,7 +79,6 @@
     default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
     name:
       - tor
-      - tor-geoipdb
   notify: Restart Tor
 
 - name: Install/Update PT
