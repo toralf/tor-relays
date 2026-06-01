@@ -41,7 +41,7 @@ if [[ ${task} =~ "dist" ]]; then
   if [[ ${task} == "dist_build" ]]; then
     go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
     time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }' \
-       -e '{ "tor_build_from_source": true }'
+      -e '{ "tor_build_from_source": true }'
   else
     time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }'
   fi
