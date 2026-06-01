@@ -39,7 +39,9 @@ if [[ ${task} =~ "dist" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
   if [[ ${task} == "dist_build" ]]; then
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "tor_build_from_source": true }'
+    go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }' \
+       -e '{ "tor_build_from_source": true }'
   else
     time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }'
   fi
