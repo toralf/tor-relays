@@ -23,27 +23,34 @@ function _git_ls_remote() {
   fi
 
   ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
-    awk '{ print $1 }'
+    awk '{ print $1 }' |
+    grep .
 }
 
 # an empty "old_id" is considered as "unchanged"
 function _git_changed() {
-  local group name current_id
+  local group name current_id old_id
 
   group=${1?GROUP MUST BE GIVEN}
   name=${2?NAME MUST BE GIVEN}
-  current_id=$(_git_ls_remote ${group} ${name})
 
-  if [[ -n ${current_id} ]]; then
-    # shellcheck disable=SC2155
-    local old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null)
-    echo ${current_id} >~/tmp/hx/git.${group}.${name}
-    if [[ -n ${old_id} && ${old_id} != "${current_id}" ]]; then
-      info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
-      return 0
-    fi
+  # handle remote git issues
+  if ! current_id=$(_git_ls_remote ${group} ${name}); then
+    return 4
   fi
-  return 1
+  if [[ -z ${current_id} ]]; then
+    return 3
+  fi
+
+  # very first run == no change
+  old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null) || true
+  echo ${current_id} >~/tmp/hx/git.${group}.${name}
+  if [[ -z ${old_id} || ${old_id} == "${current_id}" ]]; then
+    return 1
+  fi
+
+  info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
+  return 0
 }
 
 function _go_changed() {
@@ -150,7 +157,7 @@ function update_linux_kernels() {
   done < <(
     yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml |
       tr -d '][",' |
-      xargs -n 1 |
+      xargs -r -n 1 |
       shuf
   )
 }
@@ -158,7 +165,7 @@ function update_linux_kernels() {
 function handle_down_systems() {
   local files names
 
-  # get candidates from all places for 1st ping
+  # get candidates for 1st ping from all available info files
   rm -f ~/tmp/hx/is_down_{1,2}
   files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down ! -empty)
   if [[ -z ${files} ]]; then
