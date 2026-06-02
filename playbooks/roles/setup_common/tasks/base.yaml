@@ -32,7 +32,7 @@
   register: _result_auth_keys
 
 - name: Create swapfile for tiny systems (e.g. IONOS)
-  when: ansible_facts.memtotal_mb < 2048 and tor_port > 0
+  when: ansible_facts.memtotal_mb < 2048
   ansible.builtin.shell:
     cmd: |-
       set -euf
