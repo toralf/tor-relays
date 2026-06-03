@@ -21,7 +21,7 @@ uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
-  b) branch=${OPTARG} ;;
+  b) branch=${OPTARG} ;;  # '{mainline,{lts,stable}{,q,rc}}'
   e) set +e ;; # created systems will be deleted eventually
   o) os=${OPTARG} ;;
   t) task=${OPTARG} ;;
@@ -40,22 +40,22 @@ if [[ ${task} =~ "dist" ]]; then
   time ./bin/create-server.sh ${names}
   if [[ ${task} == "dist_build" ]]; then
     go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }' \
-      -e '{ "tor_build_from_source": true }'
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }'
   else
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }'
+    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' \
+      -e '{ "tor_build_from_source": false }'
   fi
 
 elif [[ ${task} == "full" ]]; then
   branch=${branch:-'{dist,mainline,stablerc}'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "kernel_git_build_wait": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
 elif [[ ${task} =~ "image" ]]; then
   branch=${branch:-'{mainline,stablerc}'}
   if [[ ${task} == "image_build" ]]; then
-    # clone sources + build kernel
+    # clone/update sources and always build kernel
     names=$(
       eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
         xargs -n 1 |
@@ -63,13 +63,12 @@ elif [[ ${task} =~ "image" ]]; then
         xargs
     )
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl"
+    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
   else
-    # clone sources only
+    # clone/update sources but no build
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" --skip-tags "nginx-config,nginx-openssl" \
-      -e '{ "kernel_build": false }'
+    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
   fi
 
 elif [[ ${task} =~ "kernel" ]]; then
