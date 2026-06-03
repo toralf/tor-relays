@@ -90,7 +90,7 @@ function _getImageByHostname() {
 #     d13-arm-stable
 #     d13-arm
 function _getImageBySnapshot() {
-  local name description id
+  local name description id alt_name
 
   name=${1?NAME NOT GIVEN}
 
@@ -109,6 +109,15 @@ function _getImageBySnapshot() {
       return 0
     fi
   done <<<${snapshots}
+
+  # try to avoid an expensive git clone
+  if [[ ! ${name} =~ "-dist" && ! ${name} =~ "-mainline" ]]; then
+    if alt_name=$(awk -F- -v OFS=- '{ if (NF >=4) { $4="mainline"; print } }' <<<${name}); then
+      if [[ -n ${alt_name} ]] && _getImageBySnapshot ${alt_name}; then
+        return 0
+      fi
+    fi
+  fi
 
   return 1
 }
