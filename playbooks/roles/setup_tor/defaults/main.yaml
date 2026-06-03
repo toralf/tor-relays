@@ -1,5 +1,5 @@
 ---
-tor_build_from_source: true
+tor_build_from_source: false
 
 tor_git_patches: []
 tor_git_version: main
