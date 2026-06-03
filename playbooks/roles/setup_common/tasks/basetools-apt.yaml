@@ -20,7 +20,7 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
-- name: Enable trixie-backports at IONOS
+- name: Enable Debian backports at IONOS
   when: ansible_facts.system_vendor == 'QEMU' and ansible_facts.distribution == 'Debian'
   vars:
     _rel: "{{ ansible_facts.distribution_release }}"
@@ -62,14 +62,57 @@
       - rsync
       - sysstat
 
-- name: Install/Update additional software
-  when: additional_software | length > 0
-  ansible.builtin.apt:
-    name: "{{ additional_software }}"
-
 - name: Purge locale
   changed_when: _purged.stdout | length > 0
   ansible.builtin.command:
     cmd: >-
       localepurge
   register: _purged
+
+- name: Microcode
+  when: ansible_facts.architecture == 'x86_64'
+  block:
+    - name: Non-free
+      when: ansible_facts.distribution_release not in ('jammy')
+      block:
+        - name: Non-free repo
+          ansible.builtin.deb822_repository:
+            name: non-free
+            types:
+              - deb
+              - deb-src
+            uris: https://deb.debian.org/debian
+            suites: "{{ ansible_facts.distribution_release }}"
+            components: non-free-firmware
+          register: non_free_repo
+
+        - name: Update apt cache
+          when: non_free_repo.changed
+          ansible.builtin.apt:
+            cache_valid_time: 1
+            update_cache: true
+            update_cache_retries: 1
+
+    - name: Non-free legacy repo
+      when: ansible_facts.distribution_release in ('jammy')
+      ansible.builtin.apt_repository:
+        filename: non-free
+        repo: >-
+          {{ item }} http://archive.ubuntu.com/ubuntu/ {{ ansible_facts.distribution_release }} non-free-firmware
+        update_cache_retries: 1
+      loop:
+        - deb
+        - deb-src
+
+    - name: Install/Update Microcode
+      vars:
+        _proc: "{{ (ansible_facts.processor[1] == 'AuthenticAMD') | ternary('amd64', 'intel') }}"
+      ansible.builtin.apt:
+        name:
+          - "{{ _proc }}-microcode"
+      notify: Reboot
+
+- name: Install/Update additional software
+  when: additional_software | length > 0
+  ansible.builtin.apt:
+    name: "{{ additional_software }}"
