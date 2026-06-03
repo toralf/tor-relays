@@ -48,11 +48,15 @@
             cmd: |-
               set -euf
 
-              rm -rf /root/{{ _name }}/
               sudo tar -xzf /root/{{ _name }}
               mv go {{ go_version }}
               cd ./bin
               ln -sf ../{{ go_version }}/bin/go
+
+              ls -1d /usr/local/go[1-9]*.[0-9]*.[0-9]* 2>/dev/null |
+                grep -v "/usr/local/{{ go_version }}$" |
+                xargs -r rm -r
+              rm /root/go[1-9]*.[0-9]*.[0-9]*.linux-{{ _arch }}.tar.gz
             chdir: /usr/local
 
         - name: Deinstall Go apt
