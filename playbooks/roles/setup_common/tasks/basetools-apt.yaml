@@ -72,8 +72,8 @@
 - name: Microcode
   when: ansible_facts.architecture == 'x86_64'
   block:
-    - name: Non-free
-      when: ansible_facts.distribution_release not in ('jammy')
+    - name: Microcode add Debian sources
+      when: ansible_facts.distribution == 'Debian'
       block:
         - name: Non-free repo
           ansible.builtin.deb822_repository:
@@ -86,23 +86,12 @@
             components: non-free-firmware
           register: non_free_repo
 
-        - name: Update apt cache
+        - name: Microcode update apt cache
           when: non_free_repo.changed
           ansible.builtin.apt:
             cache_valid_time: 1
             update_cache: true
             update_cache_retries: 1
-
-    - name: Non-free legacy repo
-      when: ansible_facts.distribution_release in ('jammy')
-      ansible.builtin.apt_repository:
-        filename: non-free
-        repo: >-
-          {{ item }} http://archive.ubuntu.com/ubuntu/ {{ ansible_facts.distribution_release }} non-free-firmware
-        update_cache_retries: 1
-      loop:
-        - deb
-        - deb-src
 
     - name: Install/Update Microcode
       vars:
