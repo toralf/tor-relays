@@ -5,13 +5,13 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
-        grep -m 200 -F \
+        grep -m 50 \
           -e 'BUG: ' \
           -e 'BUG at' \
           -e 'Call Trace: ' \
           -e 'Error: ' \
           -e 'invoked oom-killer' \
-          -e 'kernel: WARN' \
+          -e "kernel.*: WARNING" \
           -e 'No space left on device' \
           -e 'Oops: ' \
           -e 'rebooting.' \
