@@ -11,14 +11,6 @@
     - name: user.max_user_namespaces
       value: 2
 
-- name: Set sysctl for small RAM
-  when: ansible_facts.memtotal_mb < 1024
-  ansible.posix.sysctl:
-    name: net.ipv4.tcp_mem
-    value: "1000 2000 4000"
-    sysctl_file: /etc/sysctl.d/21tor-relay.conf
-    sysctl_set: true
-
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
   vars:
