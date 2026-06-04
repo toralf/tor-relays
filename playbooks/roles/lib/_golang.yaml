@@ -46,7 +46,7 @@
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
-              set -euf
+              set -eu
 
               sudo tar -xzf /root/{{ _name }}
               mv go {{ go_version }}
