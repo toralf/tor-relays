@@ -112,7 +112,7 @@ function work_on_job_files() {
   )
 }
 
-function update_tor_apps() {
+function update_app() {
   if _go_changed; then
     if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags tools,lyrebird,snowflake &>${logprefix}.golang.log; then
       info "  NOT ok" >&2
@@ -142,7 +142,7 @@ function update_tor_apps() {
   fi
 }
 
-function update_linux_kernels() {
+function trigger_kernel_update() {
   local i
 
   while read -r i; do
@@ -236,8 +236,8 @@ pit_stop crud 0
 
 while :; do
   work_on_job_files
-  update_tor_apps
-  update_linux_kernels
+  update_app
+  trigger_kernel_update
   handle_down_systems
 
   pit_stop crud 300

@@ -18,11 +18,11 @@ pit_stop image 0
 
 while :; do
   while read -r f; do
-    # set the git commit baseline
+    # set HEAD
     if [[ ! -f ${f}.image ]]; then
       cp ${f} ${f}.image
 
-    # baseline was updated
+    # new HEAD
     elif ! diff -q ${f} ${f}.image >/dev/null; then
       repo=$(cut -f 3 -d '.' -s <<<${f})
       info "image ${repo}"
