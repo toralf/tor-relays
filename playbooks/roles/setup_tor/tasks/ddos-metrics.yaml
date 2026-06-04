@@ -36,7 +36,7 @@
       if kill -0 {{ item }}; then
         kill -9 {{ item }}
       fi
-  with_items: "{{ _ddos_metrics_pids_2_kill.pids | default([]) }}"
+  loop: "{{ _ddos_metrics_pids_2_kill.pids | default([]) }}"
 
 - name: Look if DDoS metrics script is running
   community.general.pids:

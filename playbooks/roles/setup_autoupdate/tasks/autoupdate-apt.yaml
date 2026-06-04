@@ -14,7 +14,7 @@
     state: directory
     path: "/etc/systemd/system/{{ item }}"
     mode: "0755"
-  with_items:
+  loop:
     - apt-daily.timer.d/
     - apt-daily-upgrade.timer.d/
 
@@ -69,7 +69,7 @@
   ansible.builtin.copy:
     src: "{{ item }}"
     dest: /etc/apt/apt.conf.d/
-  with_items:
+  loop:
     - 20auto-upgrades
     - 50unattended-upgrades
   notify: Reload systemd

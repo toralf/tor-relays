@@ -7,7 +7,7 @@
     state: directory
     path: "{{ ca_dir }}/{{ ca_name }}/clients/{{ item }}/"
     mode: "0755"
-  with_items:
+  loop:
     - crts
     - csrs
     - keys

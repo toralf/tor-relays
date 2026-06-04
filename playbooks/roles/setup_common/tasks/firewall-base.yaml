@@ -23,7 +23,7 @@
     src: "firewall-ip{{ item }}.sh.j2"
     dest: "/root/firewall-ip{{ item }}.sh"
     mode: "0700"
-  with_items:
+  loop:
     - v4
     - v6
   register: _fw_scripts
@@ -33,7 +33,7 @@
     ip_version: "ip{{ item }}"
     state: saved
     path: "/etc/iptables/rules.{{ item }}"
-  with_items:
+  loop:
     - v4
     - v6
   register: _fw_old
@@ -46,7 +46,7 @@
       ansible.builtin.command:
         cmd: >-
           /root/firewall-ip{{ item }}.sh start
-      with_items:
+      loop:
         - v4
         - v6
 
@@ -55,6 +55,6 @@
         ip_version: "ip{{ item }}"
         state: saved
         path: "/etc/iptables/rules.{{ item }}"
-      with_items:
+      loop:
         - v4
         - v6

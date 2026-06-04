@@ -11,7 +11,7 @@
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/{{ item }}"
     dest: /root/
-  with_items:
+  loop:
     - ipv4-rules.sh
     - ipv6-rules.sh
   register: _ddos_script
@@ -94,7 +94,7 @@
   ansible.builtin.file:
     path: "/etc/iptables/rules.{{ item }}"
     state: absent
-  with_items:
+  loop:
     - v4
     - v6
 

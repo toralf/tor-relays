@@ -25,7 +25,7 @@
       ansible.builtin.get_url:
         url: "{{ torutils_path }}/{{ item }}"
         dest: /root/
-      with_items:
+      loop:
         - ipv4-rules.sh
         - ipv6-rules.sh
 

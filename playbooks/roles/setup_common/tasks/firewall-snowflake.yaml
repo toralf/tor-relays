@@ -8,7 +8,7 @@
     destination: "{{ (item == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
     destination_ports: "32768:60999" # /proc/sys/net/ipv4/ip_local_port_range
     jump: ACCEPT
-  with_items:
+  loop:
     - v4
     - v6
   register: _firewall
@@ -19,6 +19,6 @@
     ip_version: "ip{{ item }}"
     state: saved
     path: "/etc/iptables/rules.{{ item }}"
-  with_items:
+  loop:
     - v4
     - v6

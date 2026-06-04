@@ -59,7 +59,7 @@
     owner: tor
     group: tor
     mode: u=rwx,g=s,o=
-  with_items:
+  loop:
     - /var/lib/tor/
     - /var/log/tor/
 
