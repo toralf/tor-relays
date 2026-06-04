@@ -10,26 +10,3 @@
       value: 3
     - name: user.max_user_namespaces
       value: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') | length * 4 + 2 }}"
-
-- name: GeoIP directory
-  ansible.builtin.file:
-    path: /usr/share/tor/
-    mode: "0755"
-    state: "{{ use_tor_geoip_data | ternary('directory', 'absent') }}"
-  notify: Restart snowflake
-
-# alternative: https://location.ipfire.org/databases/1/location.db.xz  +  libloc package  +  Tor's geoip-db-tool
-- name: Get GeoIP data
-  when: use_tor_geoip_data
-  throttle: 8
-  retries: 1
-  ansible.builtin.get_url:
-    url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
-    dest: /usr/share/tor/
-  with_items:
-    - geoip
-    - geoip6
-  notify: Restart snowflake
-  tags:
-    - geoip
-    - never

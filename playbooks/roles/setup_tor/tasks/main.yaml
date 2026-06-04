@@ -84,6 +84,11 @@
       tags:
         - config
 
+    - name: Geoip
+      ansible.builtin.import_tasks: geoip.yaml
+      tags:
+        - geoip
+
     - name: DDoS metrics
       when: ddos_metrics
       ansible.builtin.import_tasks: ddos-metrics.yaml

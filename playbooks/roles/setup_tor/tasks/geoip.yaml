@@ -1,0 +1,11 @@
+---
+- name: Get GeoIP data
+  throttle: 8
+  retries: 1
+  ansible.builtin.get_url:
+    url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
+    dest: /usr/share/tor/
+  loop:
+    - geoip
+    - geoip6
+  notify: Restart Tor

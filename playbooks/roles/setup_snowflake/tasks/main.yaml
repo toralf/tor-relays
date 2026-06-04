@@ -48,6 +48,11 @@
       tags:
         - config
 
+    - name: Geoip
+      ansible.builtin.import_tasks: geoip.yaml
+      tags:
+        - geoip
+
     - name: Flush handlers (snowflake)
       ansible.builtin.meta: flush_handlers
       tags:

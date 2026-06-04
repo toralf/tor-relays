@@ -1,0 +1,19 @@
+---
+- name: GeoIP directory
+  ansible.builtin.file:
+    path: /usr/share/tor/
+    mode: "0755"
+    state: "{{ use_tor_geoip_data | ternary('directory', 'absent') }}"
+  notify: Restart snowflake
+
+- name: Get GeoIP data
+  when: use_tor_geoip_data
+  throttle: 8
+  retries: 1
+  ansible.builtin.get_url:
+    url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
+    dest: /usr/share/tor/
+  loop:
+    - geoip
+    - geoip6
+  notify: Restart snowflake
