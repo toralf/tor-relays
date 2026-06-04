@@ -49,19 +49,19 @@
     - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
       vars:
-        netplan_path: /etc/netplan/50-cloud-init.yaml
+        _netplan_path: /etc/netplan/50-cloud-init.yaml
       block:
         - name: Slurp netplan
           ansible.builtin.slurp:
-            src: "{{ netplan_path }}"
+            src: "{{ _netplan_path }}"
           register: netplan_file
 
         - name: Change netplan
           vars:
-            netplan_data_in: "{{ netplan_file.content | b64decode | from_yaml }}"
-            netplan_data_out: >-
+            _netplan_data_in: "{{ netplan_file.content | b64decode | from_yaml }}"
+            _netplan_data_out: >-
               {{
-                netplan_data_in | combine({
+                _netplan_data_in | combine({
                   'network': {
                     'ethernets': {
                       'eth0': {
@@ -72,11 +72,11 @@
                 }, recursive=True)
               }}
           ansible.builtin.copy:
-            content: "{{ netplan_data_out | to_nice_yaml(indent=2) }}"
-            dest: "{{ netplan_path }}"
+            content: "{{ _netplan_data_out | to_nice_yaml(indent=2) }}"
+            dest: "{{ _netplan_path }}"
             mode: "0600"
 
-        - name: Disble netplan config
+        - name: Disble network config
           ansible.builtin.copy:
             content: |-
               network: {config: disabled}
