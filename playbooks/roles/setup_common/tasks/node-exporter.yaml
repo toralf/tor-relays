@@ -11,7 +11,7 @@
   ansible.builtin.lineinfile:
     create: false
     line: >-
-      ARGS='--web.listen-address=localhost:9100 {{ _collectors }}'
+      ARGS='--web.listen-address=localhost:9100 --collector.disable-defaults {{ _collectors }}'
     path: /etc/default/prometheus-node-exporter
     regexp: "^ARGS="
   notify: Restart Prometheus node exporter

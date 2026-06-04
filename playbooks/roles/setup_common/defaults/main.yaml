@@ -37,7 +37,6 @@ nginx_site_directories: []
 # https://github.com/prometheus/node_exporter
 # reduce the pressure at the (tiny cloud) instances itself instead filtering by "params:" in the prometheus.yaml config file
 node_exporter_collectors:
-  - disable-defaults
   - arp
   - conntrack
   - cpu
