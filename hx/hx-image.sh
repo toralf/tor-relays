@@ -35,6 +35,7 @@ while :; do
   done < <(
     find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
       grep -v "\.image$" |
+      grep -E "${1:-.}" |
       shuf
   )
 
