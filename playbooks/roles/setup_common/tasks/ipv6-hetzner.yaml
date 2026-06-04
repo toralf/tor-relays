@@ -48,23 +48,44 @@
 
     - name: Ubuntu
       when: ansible_facts.distribution == 'Ubuntu'
+      vars:
+        netplan_path: /etc/netplan/50-cloud-init.yaml
       block:
-        - name: Change IPv6 for Ubuntu
-          ansible.builtin.lineinfile:
-            line: '      - "{{ _ipv6_new }}/64"'
-            path: /etc/netplan/50-cloud-init.yaml
-            regex: '      - "{{ _ipv6_network }}:'
+        - name: Slurp netplan
+          ansible.builtin.slurp:
+            src: "{{ netplan_path }}"
+          register: netplan_file
+
+        - name: Change netplan
+          vars:
+            netplan_data_in: "{{ netplan_file.content | b64decode | from_yaml }}"
+            netplan_data_out: >-
+              {{
+                netplan_data_in | combine({
+                  'network': {
+                    'ethernets': {
+                      'eth0': {
+                        'addresses': [ _ipv6_new + "/64" ]
+                      }
+                    }
+                  }
+                }, recursive=True)
+              }}
+          ansible.builtin.copy:
+            content: "{{ netplan_data_out | to_nice_yaml(indent=2) }}"
+            dest: "{{ netplan_path }}"
             mode: "0600"
 
-        - name: Activate new IPv6 address for Ubuntu
+        - name: Disble netplan config
+          ansible.builtin.copy:
+            content: |-
+              network: {config: disabled}
+            dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+
+        - name: Apply netplan
           changed_when: true
-          ansible.builtin.shell:
+          ansible.builtin.command:
             cmd: |-
-              set -e
-
-              echo "network: {config: disabled}" >/etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
-
-              netplan generate
               netplan apply
 
     - name: Wait till IPv6 works
