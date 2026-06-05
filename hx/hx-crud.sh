@@ -90,11 +90,11 @@ function work_on_job_files() {
     action=$(cut -f 3 -d '.' <<<${job})
     names=$(xargs <${job})
     mv ${job} /tmp/
-    truncate -s 0 ${logprefix}.job.${action}.log
+    truncate -s 0 ${logprefix}.job.log
 
     if [[ -x ./bin/${action}-server.sh ]]; then
       info "  action ${action}: $(wc -w <<<${names})"
-      if ! ./bin/${action}-server.sh ${names} &>>${logprefix}.job.${action}.log; then
+      if ! ./bin/${action}-server.sh ${names} &>>${logprefix}.job.log; then
         info "  NOT ok" >&2
       fi
       pit_stop crud
@@ -103,7 +103,7 @@ function work_on_job_files() {
     if [[ ${action} == "update" ]]; then
       info "  update: $(wc -w <<<${names})"
       if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,golang,lyrebird,snowflake,tor,kernel-build \
-        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.${action}.log; then
+        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
         info "  NOT ok" >&2
       fi
       pit_stop crud
@@ -111,7 +111,7 @@ function work_on_job_files() {
     elif [[ ${action} != "delete" ]]; then
       info "  setup after ${action}"
       if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
-        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.${action}.log; then
+        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
         info "  NOT ok" >&2
       fi
       pit_stop crud
