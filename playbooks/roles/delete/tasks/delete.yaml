@@ -20,6 +20,9 @@
   ansible.builtin.debug:
     var: _deleted.stderr
 
+- name: Clear facts - delete
+  ansible.builtin.meta: clear_facts
+
 - name: SSH known key
   delegate_to: localhost
   throttle: 1
