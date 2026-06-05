@@ -5,9 +5,7 @@
     gather_subset:
       - "!all"
       - "!min"
-      - all_ipv4_addresses
       - all_ipv6_addresses
-      - architecture
       - distribution
   tags:
     - facts
