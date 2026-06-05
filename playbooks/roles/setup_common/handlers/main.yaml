@@ -49,6 +49,7 @@
     _reboot_common.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start' is included in transaction")
     )
   ansible.builtin.reboot:
+    post_reboot_delay: 20
     reboot_timeout: 180
     reboot_command: reboot
   register: _reboot_common
