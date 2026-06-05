@@ -166,7 +166,6 @@ function handle_down_systems() {
   local files names
 
   # get candidates for 1st ping from all available info files
-  rm -f ~/tmp/hx/is_down_{1,2}
   files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down ! -empty)
   if [[ -z ${files} ]]; then
     return
@@ -175,6 +174,9 @@ function handle_down_systems() {
   if [[ -z ${names} ]]; then
     return
   fi
+
+  rm -f ~/tmp/hx/is_down # might contain obsolete entries
+  rm -f ~/tmp/hx/is_down_{1,2}
 
   # 1st ping
   info "  ping 1 before: $(wc -w <<<${names})"
