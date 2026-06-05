@@ -42,7 +42,7 @@ pit_stop info 0
 while :; do
   #--------------------------------------------------------------------
   site="site01"
-  tags="coredump,issue,ping,trace"
+  tags="coredump,issue,trace"
   srvs=""
 
   info "${site} ${tags}"
@@ -56,7 +56,7 @@ while :; do
 
   #--------------------------------------------------------------------
   site="site02"
-  tags="artefact,ping"
+  tags="artefact"
   srvs=""
 
   info "${site} ${tags}"

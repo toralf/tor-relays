@@ -90,24 +90,35 @@ function work_on_job_files() {
     action=$(cut -f 3 -d '.' <<<${job})
     names=$(xargs <${job})
     mv ${job} /tmp/
+    truncate -s 0 ${logprefix}.job.${action}.log
 
     if [[ -x ./bin/${action}-server.sh ]]; then
-      info "  ${action}"
-      if ! ./bin/${action}-server.sh ${names} &>${logprefix}.job.${action}.log; then
+      info "  action ${action}: $(wc -w <<<${names})"
+      if ! ./bin/${action}-server.sh ${names} &>>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
+      pit_stop crud
     fi
-    if [[ ${action} != "delete" ]]; then
-      info "  setup"
+
+    if [[ ${action} == "update" ]]; then
+      info "  update: $(wc -w <<<${names})"
+      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,golang,lyrebird,snowflake,tor,kernel-build \
+        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.${action}.log; then
+        info "  NOT ok" >&2
+      fi
+      pit_stop crud
+
+    elif [[ ${action} != "delete" ]]; then
+      info "  setup after ${action}"
       if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
         -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.${action}.log; then
         info "  NOT ok" >&2
       fi
+      pit_stop crud
     fi
 
-    pit_stop crud
   done < <(
-    find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" \) |
+    find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" -o -name "job.*.update" \) |
       sort -V
   )
 }
@@ -163,59 +174,46 @@ function trigger_kernel_update() {
 }
 
 function handle_down_systems() {
-  local files names
+  local names
 
-  # get candidates for 1st ping from all available info files
-  files=$(find ~/tmp/ -mindepth 2 -maxdepth 3 -name is_down ! -empty)
-  if [[ -z ${files} ]]; then
-    return
-  fi
-  names=$(grep -h "^h" ${files} | grep -v "^hi-" | sort -u)
-  if [[ -z ${names} ]]; then
-    return
-  fi
-
-  rm -f ~/tmp/hx/is_down # might contain obsolete entries
+  info "down"
+  truncate -s 0 ~/tmp/hx/is_down # might contain obsolete entries
   rm -f ~/tmp/hx/is_down_{1,2}
 
   # 1st ping
-  info "  ping 1 before: $(wc -w <<<${names})"
-  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
+  info "  ping 1"
+  if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
     info "  NOT ok" >&2
   fi
-  grep "^h" ~/tmp/hx/is_down | grep -v "^hi-" | sort >~/tmp/hx/is_down_1
-  info "  ping 1  after: $(wc -w <~/tmp/hx/is_down_1)"
-  if [[ ! -s ~/tmp/hx/is_down_1 ]]; then
+  sort ~/tmp/hx/is_down >~/tmp/hx/is_down_1
+  names=$(xargs -r <~/tmp/hx/is_down_1)
+  info "  ping 1 down: $(wc -w <<<${names})"
+  if [[ -z ${names} ]]; then
     return
   fi
 
   pit_stop crud
 
   # 2nd ping
-  names=$(xargs <~/tmp/hx/is_down_1)
-  info "  ping 2 before: $(wc -w <<<${names})"
+  info "  ping 2"
   if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_2.log; then
     info "  NOT ok" >&2
   fi
-  grep "^h" ~/tmp/hx/is_down | grep -v "^hi-" | sort >~/tmp/hx/is_down_2
-  info "  ping 2  after: $(wc -w <~/tmp/hx/is_down_2)"
+  sort ~/tmp/hx/is_down >~/tmp/hx/is_down_2
+  info "  ping 2 down: $(wc -w <~/tmp/hx/is_down_2)"
 
   # was down and is still down
   names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
-    info "  rebuild: $(wc -w <<<${names})"
+    info "  needs a rebuild: $(wc -w <<<${names})"
     shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
   fi
 
   # was down but is now pingable
   names=$(comm -23 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
-    info "  update: $(wc -w <<<${names})"
-    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags golang,lyrebird,snowflake,tor,kernel-build \
-      -e '{ "kernel_git_build_wait": false }' &>${logprefix}.update.log; then
-      info "  NOT ok" >&2
-    fi
-    pit_stop crud
+    info "  needs an update: $(wc -w <<<${names})"
+    cat <<<${names} >~/tmp/hx/job.${EPOCHSECONDS}.update
   fi
 }
 
