@@ -4,8 +4,8 @@ additional_software: []
 
 custom_command_file: ""
 
-# e.g.: -e desired_debian_release=trixie
-desired_debian_release: ""
+# e.g. trixie
+desired_release: ""
 
 # Debian kernel flavours
 kernel_debian_backports: false
