@@ -21,7 +21,7 @@
             cmd: |-
               set -e
 
-              sed -i 's/{{ ansible_facts.distribution_release }}/{{ desired_debian_release }}/g' \
+              sed -i -e 's/{{ ansible_facts.distribution_release }}/{{ desired_debian_release }}/g' \
                 /etc/apt/sources.list /etc/apt/sources.list.d/*
               apt update
               apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
