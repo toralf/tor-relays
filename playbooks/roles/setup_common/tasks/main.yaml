@@ -3,10 +3,8 @@
 - name: Gather facts - common
   ansible.builtin.setup:
     gather_subset:
-      - "!all"
-      - "!min"
       - all_ipv6_addresses
-      - distribution
+      - distribution_release
   tags:
     - facts
 

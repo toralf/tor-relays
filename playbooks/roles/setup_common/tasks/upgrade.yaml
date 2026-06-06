@@ -1,5 +1,5 @@
 ---
-- name: Upgrade full
+- name: Upgrade
   ansible.builtin.apt:
     upgrade: full
     update_cache: true
@@ -20,21 +20,21 @@
               sed -i -e 's/{{ ansible_facts.distribution_release }}/{{ desired_release }}/g' \
                 /etc/apt/sources.list /etc/apt/sources.list.d/*
 
-        - name: Upgrade Debian
+        - name: Upgrade Debian release
           async: 1200
           poll: 60
           ansible.builtin.apt:
             upgrade: dist
             update_cache: true
 
-        - name: Finish Debian - upgrade
+        - name: Finish Debian release
           when: ansible_facts.distribution == 'Debian' and ansible_facts.distribution_release != "bullseye"
           changed_when: true
           ansible.builtin.command:
             cmd: |-
               apt -y modernize-sources
 
-    - name: New Ubuntu release
+    - name: Upgrade Ubuntu release
       environment:
         RELEASE_UPGRADE_NONINTERACTIVE: "1"
       when: ansible_facts.distribution == 'Ubuntu'
@@ -47,3 +47,9 @@
 
     - name: Reboot - upgrade
       ansible.builtin.import_tasks: reboot.yaml
+
+    - name: Gather facts - upgrade
+      ansible.builtin.setup:
+        gather_subset:
+          - kernel
+          - distribution_release
