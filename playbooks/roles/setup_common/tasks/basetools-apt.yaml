@@ -29,12 +29,9 @@
     path: /etc/apt/sources.list.d/debian.sources
     regexp: "^Suites: {{ _rel }} {{ _rel }}-updates$"
 
-- name: Update apt cache
-  changed_when: _result_apt_cache.cache_updated
+- name: Apt update cache
   ansible.builtin.apt:
-    cache_valid_time: 3600
     update_cache: true
-  register: _result_apt_cache
 
 - name: Install/Update Ansible deps
   ansible.builtin.apt:
@@ -72,7 +69,7 @@
 - name: Microcode
   when: ansible_facts.architecture == 'x86_64'
   block:
-    - name: Microcode add Debian sources
+    - name: Microcode Debian sources
       when: ansible_facts.distribution == 'Debian'
       block:
         - name: Non-free repo
@@ -86,12 +83,9 @@
             components: non-free-firmware
           register: non_free_repo
 
-        - name: Microcode update apt cache
-          when: non_free_repo.changed
+        - name: Apt update cache - Microcode
           ansible.builtin.apt:
-            cache_valid_time: 1
             update_cache: true
-            update_cache_retries: 1
 
     - name: Install/Update Microcode
       vars:
