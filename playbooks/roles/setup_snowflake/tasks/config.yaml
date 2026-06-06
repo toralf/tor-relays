@@ -10,3 +10,4 @@
       value: 3
     - name: user.max_user_namespaces
       value: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') | length * 4 + 2 }}"
+  notify: Restart snowflake
