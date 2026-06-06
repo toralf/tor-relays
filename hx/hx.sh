@@ -22,7 +22,7 @@ fi
 
 info "image"
 if ! pgrep -f ./hx/hx-image.sh; then
-  ./hx/hx-image.sh 'mainline|stable$|lts$' &>>~/tmp/hx/hx-image.sh.log &
+  ./hx/hx-image.sh 'mainline|stable|lts' &>>~/tmp/hx/hx-image.sh.log &
 fi
 
 info "info"

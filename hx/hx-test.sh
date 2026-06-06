@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: maintain golden image, test apps and kernels
+# goal: maintain golden images, test apps, kernels etc.
 
 set -euf
 export LANG=C.utf8
@@ -16,13 +16,13 @@ cd $(dirname $0)/..
 [[ $# -ge 2 ]]
 
 arch='{arm,x86}'
-os='{d13,u26}'
+os='{d12,d13,u24,u26}'
 uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
-  b) branch=${OPTARG} ;;  # '{mainline,{lts,stable}{,q,rc}}'
-  e) set +e ;; # created systems will be deleted eventually
+  b) branch=${OPTARG} ;; # '{mainline,{lts,stable}{,q,rc}}'
+  e) set +e ;;           # created systems will be deleted even if an error occurred
   o) os=${OPTARG} ;;
   t) task=${OPTARG} ;;
   u) uid=${OPTARG} ;;
@@ -63,7 +63,7 @@ elif [[ ${task} =~ "image" ]]; then
         xargs
     )
     time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
+    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }' # maybe tool chain was updated
   else
     # clone/update sources but no build
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
