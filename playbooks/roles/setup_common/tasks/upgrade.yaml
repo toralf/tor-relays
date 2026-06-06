@@ -1,47 +1,49 @@
 ---
-- name: Upgrade system
-  environment:
-    DEBIAN_FRONTEND: noninteractive
+- name: Upgrade full
+  ansible.builtin.apt:
+    upgrade: full
+    update_cache: true
+
+- name: Reboot - upgrade
+  ansible.builtin.import_tasks: reboot.yaml
+
+- name: Release
+  when: desired_release | length > 0 and desired_release != ansible_facts.distribution_release
   block:
-    - name: Apt upgrade
-      ansible.builtin.apt:
-        upgrade: full
-
-    - name: Reboot (after upgrade)
-      ansible.builtin.import_tasks: reboot.yaml
-
-    - name: New release
-      when: ansible_facts.distribution == 'Debian' and
-        desired_debian_release | length > 0 and
-        desired_debian_release != ansible_facts.distribution_release
+    - name: New Debian release
+      when: ansible_facts.distribution == 'Debian'
       block:
-        - name: Upgrade to new release
+        - name: Adapt Debian sources
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
-              set -e
-
-              sed -i -e 's/{{ ansible_facts.distribution_release }}/{{ desired_debian_release }}/g' \
+              sed -i -e 's/{{ ansible_facts.distribution_release }}/{{ desired_release }}/g' \
                 /etc/apt/sources.list /etc/apt/sources.list.d/*
-              apt update
-              apt full-upgrade -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"
 
-        - name: Reboot (after new release)
-          ansible.builtin.import_tasks: reboot.yaml
+        - name: Upgrade Debian
+          async: 1200
+          poll: 60
+          ansible.builtin.apt:
+            upgrade: dist
+            update_cache: true
 
-        - name: Finish new release
+        - name: Finish Debian - upgrade
+          when: ansible_facts.distribution == 'Debian' and ansible_facts.distribution_release != "bullseye"
           changed_when: true
-          ansible.builtin.shell:
+          ansible.builtin.command:
             cmd: |-
-              set -e
-
-              apt -y autoremove
-              apt clean
               apt -y modernize-sources
 
-        - name: Gather facts - upgrade
-          ansible.builtin.setup:
-            gather_subset:
-              - "!all"
-              - "!min"
-              - distribution
+    - name: New Ubuntu release
+      environment:
+        RELEASE_UPGRADE_NONINTERACTIVE: "1"
+      when: ansible_facts.distribution == 'Ubuntu'
+      changed_when: true
+      async: 1200
+      poll: 60
+      ansible.builtin.command:
+        cmd: |-
+          do-release-upgrade -f DistUpgradeViewNonInteractive -d
+
+    - name: Reboot - upgrade
+      ansible.builtin.import_tasks: reboot.yaml
