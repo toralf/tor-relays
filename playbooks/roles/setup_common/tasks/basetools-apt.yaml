@@ -38,7 +38,7 @@
     name:
       - python3-psutil
 
-- name: Ensure apt is not running
+- name: Ensure (unattended) apt is not running
   failed_when: _processes.pids | default([]) | length > 0
   retries: 2
   delay: 60
@@ -68,32 +68,12 @@
 
 - name: Microcode
   when: ansible_facts.architecture == 'x86_64'
-  block:
-    - name: Microcode Debian sources
-      when: ansible_facts.distribution == 'Debian'
-      block:
-        - name: Non-free repo
-          ansible.builtin.deb822_repository:
-            name: non-free
-            types:
-              - deb
-              - deb-src
-            uris: https://deb.debian.org/debian
-            suites: "{{ ansible_facts.distribution_release }}"
-            components: non-free-firmware
-          register: non_free_repo
-
-        - name: Apt update cache - Microcode
-          ansible.builtin.apt:
-            update_cache: true
-
-    - name: Install/Update Microcode
-      vars:
-        _proc: "{{ (ansible_facts.processor[1] == 'AuthenticAMD') | ternary('amd64', 'intel') }}"
-      ansible.builtin.apt:
-        name:
-          - "{{ _proc }}-microcode"
-      notify: Reboot
+  vars:
+    _proc: "{{ (ansible_facts.processor[1] == 'AuthenticAMD') | ternary('amd64', 'intel') }}"
+  ansible.builtin.apt:
+    name:
+      - "{{ _proc }}-microcode"
+  notify: Reboot
 
 - name: Install/Update additional software
   when: additional_software | length > 0
