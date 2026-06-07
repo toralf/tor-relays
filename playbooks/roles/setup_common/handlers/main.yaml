@@ -18,13 +18,6 @@
     state: restarted
     enabled: true
 
-- name: Restart netfilter-persistent
-  listen: Restart netfilter-persistent
-  ansible.builtin.systemd_service:
-    name: netfilter-persistent
-    state: restarted
-    enabled: true
-
 - name: Restart nginx
   listen: Restart nginx
   ansible.builtin.systemd_service:

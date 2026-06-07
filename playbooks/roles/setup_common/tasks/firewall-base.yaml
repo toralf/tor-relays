@@ -4,6 +4,11 @@
     name:
       - iptables-persistent
 
+- name: Enable netfilter-persistent
+  ansible.builtin.systemd_service:
+    name: netfilter-persistent
+    enabled: true
+
 - name: Sysctl values for base fw
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**16) | int, (2**18) | int) }}"
@@ -26,9 +31,17 @@
   loop:
     - v4
     - v6
-  register: _fw_scripts
 
-- name: Save iptables before base fw setup
+- name: (Re)start base firewall
+  changed_when: true
+  ansible.builtin.command:
+    cmd: >-
+      /root/firewall-ip{{ item }}.sh start
+  loop:
+    - v4
+    - v6
+
+- name: Save iptables after base fw setup
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
@@ -36,27 +49,3 @@
   loop:
     - v4
     - v6
-  register: _fw_old
-  notify: Restart netfilter-persistent
-
-- name: Reset base fw
-  when: _fw_scripts.changed or _fw_old.changed
-  block:
-    - name: Start base firewall
-      changed_when: true
-      ansible.builtin.command:
-        cmd: >-
-          /root/firewall-ip{{ item }}.sh start
-      loop:
-        - v4
-        - v6
-
-    - name: Save iptables after base fw setup
-      community.general.iptables_state:
-        ip_version: "ip{{ item }}"
-        state: saved
-        path: "/etc/iptables/rules.{{ item }}"
-      loop:
-        - v4
-        - v6
-      notify: Restart netfilter-persistent

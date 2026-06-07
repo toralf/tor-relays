@@ -22,4 +22,3 @@
   loop:
     - v4
     - v6
-  notify: Restart netfilter-persistent

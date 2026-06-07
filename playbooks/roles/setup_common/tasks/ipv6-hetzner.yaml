@@ -3,11 +3,13 @@
   ansible.builtin.setup:
     gather_subset:
       - all_ipv6_addresses
+      - default_ipv6
 
-- name: Ensure IPv6 address has valid prefix
+- name: Ensure IPv6 address is valid
   ansible.builtin.assert:
     quiet: true
     that:
+      - "ansible_facts.default_ipv6 is defined"
       - "ansible_facts.default_ipv6.address | length > 0"
       - "ansible_facts.default_ipv6.address is not match('fe80::')"
 
@@ -95,10 +97,13 @@
           while ip -6 a | grep -q ' tentative'; do
             sleep 1
           done
-          ping6 -c 3 {{ _ipv6_new }}
+
+          ip -6 a | grep "{{ _ipv6_new }}/"
+          ping6 -c 5 {{ _ipv6_new }}
       register: _confirmed
 
     - name: Gather facts - IPv6 again
       ansible.builtin.setup:
         gather_subset:
           - all_ipv6_addresses
+          - default_ipv6
