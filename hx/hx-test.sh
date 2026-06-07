@@ -16,7 +16,7 @@ cd $(dirname $0)/..
 [[ $# -ge 2 ]]
 
 arch='{arm,x86}'
-os='{d12,d13,u24,u26}'
+os='{d13,u26}'
 uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
@@ -55,7 +55,7 @@ elif [[ ${task} == "full" ]]; then
 elif [[ ${task} =~ "image" ]]; then
   branch=${branch:-'{mainline,stablerc}'}
   if [[ ${task} == "image_build" ]]; then
-    # clone/update sources and always build kernel
+    # clone/update sources + kernel build
     names=$(
       eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
         xargs -n 1 |
@@ -65,7 +65,7 @@ elif [[ ${task} =~ "image" ]]; then
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }' # maybe tool chain was updated
   else
-    # clone/update sources but no build
+    # clone/update sources but no kernel build
     names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
     time ./bin/create-server.sh ${names}
     time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
