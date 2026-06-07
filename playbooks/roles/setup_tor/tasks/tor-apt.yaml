@@ -7,7 +7,7 @@
     _uri: https://deb.torproject.org/torproject.org
   block:
     - name: Repo
-      when: ansible_facts.distribution_release not in ('jammy')
+      when: ansible_facts.distribution_release != 'jammy'
       block:
         - name: Enable Tor repository
           ansible.builtin.deb822_repository:
@@ -29,7 +29,7 @@
             update_cache_retries: 1
 
     - name: Legacy repo
-      when: ansible_facts.distribution_release in ('jammy')
+      when: ansible_facts.distribution_release == 'jammy'
       vars:
         _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
       block:

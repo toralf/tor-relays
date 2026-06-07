@@ -37,7 +37,7 @@
     - v4
     - v6
   register: _fw_old
-  notify: Restart persistent fw
+  notify: Restart netfilter-persistent
 
 - name: Reset base fw
   when: _fw_scripts.changed or _fw_old.changed
@@ -50,7 +50,6 @@
       loop:
         - v4
         - v6
-      notify: Restart persistent fw
 
     - name: Save iptables after base fw setup
       community.general.iptables_state:
@@ -60,4 +59,4 @@
       loop:
         - v4
         - v6
-      notify: Restart persistent fw
+      notify: Restart netfilter-persistent

@@ -22,4 +22,4 @@
   loop:
     - v4
     - v6
-  notify: Restart persistent fw
+  notify: Restart netfilter-persistent
