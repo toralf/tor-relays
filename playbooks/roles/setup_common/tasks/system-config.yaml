@@ -65,7 +65,7 @@
 
 - name: Ensure system mailfile is not too big
   ansible.builtin.cron:
-    name: regulary truncate system mail file
+    name: regularly truncate system mail file
     special_time: daily
     job: >-
       n=$(wc -l </var/mail/mail);
