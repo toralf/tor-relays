@@ -15,7 +15,7 @@ cd $(dirname $0)/..
 
 [[ $# -ge 2 ]]
 
-arch='{arm,x86}'
+arch='x86'
 os='{d13,u26}'
 uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
