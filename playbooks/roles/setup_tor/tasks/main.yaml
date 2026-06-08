@@ -95,7 +95,7 @@
       tags:
         - ddos-metrics
 
-    - name: Flush handlers (tor)
+    - name: Flush handlers
       ansible.builtin.meta: flush_handlers
       tags:
         - flush

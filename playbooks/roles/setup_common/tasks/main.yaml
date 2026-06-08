@@ -177,7 +177,7 @@
       tags:
         - reboot
 
-    - name: Flush handlers (common)
+    - name: Flush handlers (main)
       ansible.builtin.meta: flush_handlers
       tags:
         - flush

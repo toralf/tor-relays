@@ -2,14 +2,12 @@
 - name: Snapshot
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  environment:
-    PATH: "{{ lookup('env', 'PATH') }}:{{ lookup('env', 'HOME') }}/bin"
   block:
     - name: Create image
       changed_when: true
       ansible.builtin.command:
         cmd: >-
-          timeout 15m hcloud --quiet --poll-interval 10s server create-image
+          hcloud --quiet --poll-interval 10s server create-image
             --type snapshot --description='{{ snapshot_description }}' {{ inventory_hostname }}
 
   always:

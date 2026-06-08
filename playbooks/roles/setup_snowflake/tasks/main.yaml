@@ -53,7 +53,7 @@
       tags:
         - geoip
 
-    - name: Flush handlers (snowflake)
+    - name: Flush handlers
       ansible.builtin.meta: flush_handlers
       tags:
         - flush
