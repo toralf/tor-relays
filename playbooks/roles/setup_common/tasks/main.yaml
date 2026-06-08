@@ -1,10 +1,8 @@
 ---
-# Hint: facts cache is not updated if "--tags" or "--limit" is used
 - name: Gather facts - common
   ansible.builtin.setup:
     gather_subset:
-      - all_ipv6_addresses
-      - distribution_release
+      - kernel
   tags:
     - facts
 

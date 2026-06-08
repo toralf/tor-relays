@@ -1,10 +1,4 @@
 ---
-- name: Gather facts - IPv6
-  ansible.builtin.setup:
-    gather_subset:
-      - all_ipv6_addresses
-      - default_ipv6
-
 - name: Ensure IPv6 address is valid
   ansible.builtin.assert:
     quiet: true
@@ -102,7 +96,7 @@
           ping6 -c 5 {{ _ipv6_new }}
       register: _confirmed
 
-    - name: Gather facts - IPv6 again
+    - name: Gather facts - IPv6
       ansible.builtin.setup:
         gather_subset:
           - all_ipv6_addresses

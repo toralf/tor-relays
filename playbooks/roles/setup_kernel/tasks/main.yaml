@@ -14,11 +14,6 @@
       mode: "0744"
       force: true
   block:
-    - name: Gather facts
-      ansible.builtin.setup:
-        gather_subset:
-          - kernel
-
     - name: Validate
       ansible.builtin.import_tasks: validate.yaml
       tags:
