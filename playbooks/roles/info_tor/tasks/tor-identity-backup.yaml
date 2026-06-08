@@ -9,7 +9,7 @@
     get_mime: false
   register: _tor_identity_dir
 
-- name: Block
+- name: Backup
   throttle: "{{ concurrent_local_jobs }}"
   when: not _tor_identity_dir.stat.exists
   block:

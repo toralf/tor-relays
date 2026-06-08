@@ -1,13 +1,13 @@
 ---
-- name: Test for existance of backed up Tor keys
+- name: Test for backuped Tor keys
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
     path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}"
   register: _keys_backup
 
-- name: Restore identity
-  when: _keys_backup.stat.exists and not _keys.stat.exists
+- name: Restore
+  when: _keys_backup.stat.exists
   vars:
     _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
   block:
@@ -27,6 +27,7 @@
         mode: "0600"
         owner: "{{ _user }}"
         group: "{{ _user }}"
+        backup: true
       notify: Restart Tor
 
     - name: PT state
@@ -48,4 +49,5 @@
             mode: "0600"
             owner: "{{ _user }}"
             group: "{{ _user }}"
+            backup: true
           notify: Restart Tor
