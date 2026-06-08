@@ -14,9 +14,11 @@
           iptables  -nvL INPUT | grep -F '/* Firewall IPv4'
           ip6tables -nvL INPUT | grep -F '/* Firewall IPv6'
       register: _firewall_base
+      notify: Not Healthy
 
     - name: File firewall base
       delegate_to: localhost
+      changed_when: _firewall_base.rc != 0
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
@@ -30,7 +32,7 @@
     - firewall-tor
   block:
     - name: Check if firewall Tor is in place
-      changed_when: false
+      changed_when: _firewall_tor.rc != 0
       failed_when: false
       ansible.builtin.shell:
         cmd: |-
@@ -41,6 +43,7 @@
           iptables  -nvL INPUT | grep 'match-set .* src'
           ip6tables -nvL INPUT | grep 'match-set .* src'
       register: _firewall_tor
+      notify: Not Healthy
 
     - name: File firewall Tor
       delegate_to: localhost
