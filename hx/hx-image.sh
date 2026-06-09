@@ -27,7 +27,7 @@ while :; do
       repo=$(cut -f 3 -d '.' -s <<<${f})
       info "image ${repo}"
       cp ${f} ${f}.image
-      if ! ./hx/hx-test.sh -e -t image -b ${repo} &>${logprefix}.${repo}.log; then
+      if ! ./hx/hx-test.sh -e -t image -b ${repo} -a '{arm,x86}' &>${logprefix}.${repo}.log; then
         info "  NOT ok" >&2
       fi
       pit_stop image
