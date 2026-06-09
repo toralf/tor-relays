@@ -21,14 +21,14 @@
     mode: "0600"
     owner: "{{ _user }}"
     group: "{{ _user }}"
-  notify: Reload Tor
+  notify: Restart Tor
 
 - name: Configure torrc
   ansible.builtin.template:
     src: torrc.j2
     dest: /etc/tor/torrc
     backup: true
-  notify: Reload Tor
+  notify: Restart Tor
 
 - name: Verify torrc
   changed_when: false

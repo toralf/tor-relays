@@ -93,7 +93,7 @@
     enabled: true
   notify: Restart Tor
 
-# for bridges the PT needs the capability
+# for bridges the PT and not Tor itself needs the capability
 - name: Allow low port for Tor relay
   changed_when: false
   when: tor_port < 1024 and tor_bridge_distribution | length == 0
