@@ -137,6 +137,7 @@
     enabled: false
   loop:
     - fstrim.timer
+    - lvm2-monitor
 
 - name: De-install packages
   when: ansible_facts.os_family == 'Debian'
