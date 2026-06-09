@@ -27,7 +27,6 @@ function _git_ls_remote() {
     grep .
 }
 
-# an empty "old_id" is considered as "unchanged"
 function _git_changed() {
   local group name current_id old_id
 
@@ -42,9 +41,11 @@ function _git_changed() {
     return 3
   fi
 
-  # very first run == no change
   old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null) || true
+  # update timestamp of last check
   echo ${current_id} >~/tmp/hx/git.${group}.${name}
+
+  # an empty "old_id" is taken as "unchanged"
   if [[ -z ${old_id} || ${old_id} == "${current_id}" ]]; then
     return 1
   fi
@@ -62,6 +63,7 @@ function _go_changed() {
   if [[ -z ${go_ver_inventory} || ${go_ver_inventory} =~ " " || ${go_ver_inventory} =~ $'\n' ]]; then
     return 4
   fi
+  # surround it by single quotes here
   if ! go_ver_upstream=\'$(curl -s --follow 'https://golang.org/VERSION?m=text' | head -n 1)\'; then
     return 3
   fi
