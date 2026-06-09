@@ -75,6 +75,7 @@
   notify: Reload systemd
 
 - name: Enable and start
+  failed_when: false
   ansible.builtin.systemd_service:
     name: "{{ item }}"
     state: started
