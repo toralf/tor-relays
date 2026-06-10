@@ -92,7 +92,7 @@ function work_on_job_files() {
     action=$(cut -f 3 -d '.' <<<${job})
     names=$(xargs <${job})
     mv ${job} /tmp/
-    truncate -s 0 ${logprefix}.job.log
+    echo ${job} >${logprefix}.job.log
 
     if [[ -x ./bin/${action}-server.sh ]]; then
       info "  action ${action}: $(wc -w <<<${names})"
