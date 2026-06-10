@@ -170,7 +170,7 @@
         - never
         - force-a-reboot
 
-    - name: Check for an adviced reboot
+    - name: Check for an advised reboot
       ansible.builtin.import_tasks: reboot.yaml
       tags:
         - reboot

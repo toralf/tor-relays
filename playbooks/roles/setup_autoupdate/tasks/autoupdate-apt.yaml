@@ -46,7 +46,7 @@
 # 2x per day at :50
 - name: Ensure needrestart cron job is present
   ansible.builtin.cron:
-    name: Reboot if needrestart adviced it
+    name: Reboot if needrestart advised it
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 50 + 5 | random(seed=seed_host) }}"
     job: >-
