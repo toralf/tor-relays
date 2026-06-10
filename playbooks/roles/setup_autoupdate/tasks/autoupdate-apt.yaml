@@ -50,6 +50,7 @@
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
     minute: "{{ 50 + 5 | random(seed=seed_host) }}"
     job: >-
+      LC_ALL=C.UTF-8 needrestart -r a;
       if LC_ALL=C.UTF-8 needrestart -r l -b | grep -q -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3' -e 'NEEDRESTART-SVC:';
       then
       pgrep -af 'sshd:' | grep -q -v '/usr/sbin/sshd' || reboot;
