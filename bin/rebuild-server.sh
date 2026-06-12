@@ -28,7 +28,7 @@ echo -e " rebuilding $(wc -w <<<${names}) system/s ..."
 ./bin/distrust-host-ssh-key.sh ${names}
 cleanLocalDataEntries ${names}
 
-snapshots=$(getSnapshots)
+snapshots=${HCLOUD_SNAPSHOTS-$(getSnapshots)}
 
 commands=$(
   while read -r name; do

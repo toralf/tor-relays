@@ -67,7 +67,7 @@ function _getImageByHostname() {
   local name os
 
   name=${1?NAME NOT GIVEN}
-  os=$(cut -f 2 -d '-' -s <<<${name})
+  os=$(cut -f 2 -d '-' -s <<<${name}) # e.g. 'd13' or 'u24'
   case ${os} in
   d*) sed -e 's,d,debian-,' <<<${os} ;;
   u*) sed -e 's,u,ubuntu-,' -e 's,$,.04,' <<<${os} ;;
@@ -93,6 +93,10 @@ function _getImageBySnapshot() {
   local name description id alt_name
 
   name=${1?NAME NOT GIVEN}
+
+  if [[ -z ${snapshots} ]]; then
+    return 1
+  fi
 
   # word match
   while read -r description id; do

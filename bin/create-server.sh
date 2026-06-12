@@ -48,7 +48,6 @@ if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
   locations_x86=$(jq -r 'select(.server_types.available | contains(['${id_x86}'])) | .location.name' <<<${data_centers})
 fi
 
-# an empty string forces snapshot creation from scratch
 snapshots=${HCLOUD_SNAPSHOTS-$(getSnapshots)}
 
 if [[ -n ${HCLOUD_SSH_KEY-} ]]; then
