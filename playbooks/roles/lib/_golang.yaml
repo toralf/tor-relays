@@ -39,7 +39,7 @@
           ansible.builtin.get_url:
             url: "https://go.dev/dl/{{ _name }}"
             dest: /root/
-            mode: "0744"
+            mode: "0644"
             force: true
 
         - name: Install Go

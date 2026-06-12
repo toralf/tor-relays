@@ -5,6 +5,7 @@
   ansible.builtin.get_url:
     url: "https://tpo.pages.torproject.net/network-health/metrics/geoip-data/{{ item }}"
     dest: /usr/share/tor/
+    mode: "0644"
   loop:
     - geoip
     - geoip6
