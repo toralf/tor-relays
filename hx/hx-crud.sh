@@ -18,8 +18,8 @@ function _git_ls_remote() {
 
   elif [[ ${group} == "kernel" ]]; then
     url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hetzner-test.yaml)
-    ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hetzner-test.yaml | sed -e 's,null,,')
-    tok=$(yq -r ".hx_repos_${name}_tok" <./secrets/local.yaml | sed -e 's,null,,')
+    ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hetzner-test.yaml | grep -v '^null$')
+    tok=$(yq -r ".hx_repos_${name}_tok" <./secrets/local.yaml | grep -v '^null$')
   fi
 
   ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
@@ -168,7 +168,7 @@ function trigger_kernel_update() {
       pit_stop crud
     fi
   done < <(
-    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml |
+    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml 2>/dev/null |
       tr -d '][",' |
       xargs -r -n 1 |
       shuf
