@@ -45,7 +45,7 @@ function setProject() {
 # revert sort order ensures that in _getImageBySnapshot() the first match is the best one
 function getSnapshots() {
   hcloud --quiet image list --type snapshot --output noheader --output columns=description,id,image_size |
-    awk '{ if (NF == 4 && $3 != "-") { print $1, $2} }' |
+    awk '{ if (NF == 4 && $3 != "-") { print $1, $2 } }' |
     sort -r -n
 }
 
@@ -67,7 +67,7 @@ function _getImageByHostname() {
   local name os
 
   name=${1?NAME NOT GIVEN}
-  os=$(cut -f 2 -d '-' -s <<<${name}) # e.g. 'd13' or 'u24'
+  os=$(cut -f 2 -d '-' -s <<<${name}) # e.g. 'd13' or 'u26'
   case ${os} in
   d*) sed -e 's,d,debian-,' <<<${os} ;;
   u*) sed -e 's,u,ubuntu-,' -e 's,$,.04,' <<<${os} ;;
@@ -75,9 +75,9 @@ function _getImageByHostname() {
     if [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
       echo ${HCLOUD_FALLBACK_IMAGE}
     else
-      # 'bullseye','bookworm', 'trixie'
-      # 'jammy', 'noble', 'resolute'
-      shuf -n 1 -e debian-{11,12,13} ubuntu-{22,24,26}.04
+      # 11,12,13: bullseye,bookworm, trixie
+      # 22,24,26: jammy, noble, resolute
+      shuf -n 1 -e debian-{12,13} ubuntu-{24,26}.04
     fi
     ;;
   esac

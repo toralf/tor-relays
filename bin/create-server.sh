@@ -2,12 +2,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# This is a wrapper of "hcloud server create ..."
+# goal: wrap "hcloud server create ..."
 
 # e.g.:
-#   ./bin/create-server.sh foo-{{0..7},{a..f}}
-#   HCLOUD_TYPES=cax11 ./bin/create-server.sh foo bar
-#   HCLOUD_LOCATIONS="ash hil fsn1 hel1 nbg1" ./bin/create-server.sh baz
+#   ./bin/create-server.sh hm1-d13-x86-{{0..7},{a..f}}
+#   HCLOUD_TYPE=cax11 ./bin/create-server.sh foo
 
 set -euf
 export LANG=C.utf8
@@ -25,45 +24,28 @@ jobs=24
 
 names=$(xargs -n 1 <<<$*)
 
+echo -e " creating $(wc -w <<<${names}) system/s ..."
+
 if grep -Ev "^[a-z0-9\-]+$" <<<${names}; then
   echo " ^^ invalid hostname/s" >&2
   exit 2
 fi
 
-export HCLOUD_DICE_LOCATION=${HCLOUD_DICE_LOCATION-}
-
-if [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
-  # US and Singapore are more expensive and do have less traffic incl.
-  data_centers=$(
-    hcloud --quiet datacenter list --output json |
-      jq -r '.[] | select(.location.name == ("'$(sed -e 's/ /","/g' <<<${HCLOUD_LOCATIONS:-fsn1 hel1 nbg1})'"))'
-  )
-
-  # US has only AMD
-  server_types=$(hcloud --quiet server-type list --output json)
-  id_arm=$(jq -r '.[] | select(.name=="cax11") | .id' <<<${server_types}) # ARM
-  id_x86=$(jq -r '.[] | select(.name=="cx23") | .id' <<<${server_types})  # AMD/Intel
-
-  locations_arm=$(jq -r 'select(.server_types.available | contains(['${id_arm}'])) | .location.name' <<<${data_centers})
-  locations_x86=$(jq -r 'select(.server_types.available | contains(['${id_x86}'])) | .location.name' <<<${data_centers})
-fi
-
-snapshots=${HCLOUD_SNAPSHOTS-$(getSnapshots)}
-
 if [[ -n ${HCLOUD_SSH_KEY-} ]]; then
   ssh_key=${HCLOUD_SSH_KEY}
 else
+  # search for a labeled key, otherwise just take the first one
   ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[] | select(.labels.hx == "true") | .name')
   if [[ -z ${ssh_key} ]]; then
-    # take the first one
     ssh_key=$(hcloud --quiet ssh-key list --output json | jq -r '.[0].name')
-    if [[ -z ${ssh_key} ]]; then
-      echo "can't find an ssh key" >&2
-      exit 3
-    fi
   fi
 fi
-echo -e " creating $(wc -w <<<${names}) system/s ..."
+if [[ -z ${ssh_key} ]]; then
+  echo "no ssh key" >&2
+  exit 3
+fi
+
+snapshots=${HCLOUD_SNAPSHOTS-$(getSnapshots)}
 
 commands=$(
   while read -r name; do
@@ -78,22 +60,8 @@ commands=$(
         esac
       fi
       if [[ -z ${htype} ]]; then
-        htype=$(shuf -n 1 -e ${HCLOUD_TYPES-cax11 cx23})
+        htype=$(shuf -n 1 -e cax11 cx23)
       fi
-    fi
-
-    # Hetzner location
-    loc=""
-    if [[ -n ${HCLOUD_LOCATION-} ]]; then
-      loc=${HCLOUD_LOCATION}
-    elif [[ ${HCLOUD_DICE_LOCATION-} == "y" ]]; then
-      case ${htype} in
-      cax*) loc=$(shuf -n 1 -e ${locations_arm}) ;;
-      cx*) loc=$(shuf -n 1 -e ${locations_x86}) ;;
-      esac
-    fi
-    if [[ -n ${loc} ]]; then
-      loc="--location ${loc}"
     fi
 
     image=$(getImage ${name})
@@ -102,13 +70,13 @@ commands=$(
       exit 1
     fi
 
-    echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} ${loc} --name ${name}
+    echo --poll-interval $((1 + jobs / 2))s server create --image ${image} --type ${htype} --ssh-key ${ssh_key} --name ${name}
   done <<<${names}
 )
 
 # the API call to Hetzner
 set +e
-xargs -r -P ${jobs} -L 1 timeout 45m hcloud --quiet <<<${commands}
+xargs -r -P ${jobs} -L 1 hcloud --quiet <<<${commands}
 rc=$?
 set -e
 
