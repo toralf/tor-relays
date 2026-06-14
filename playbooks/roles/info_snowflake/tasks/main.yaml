@@ -34,7 +34,7 @@
           ansible.builtin.include_tasks: _log-proxy.yaml
           loop_control:
             label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
+          loop: "{{ snowflake_proxies }}"
 
     - name: Block
       tags:
