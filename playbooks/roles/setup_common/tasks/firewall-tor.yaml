@@ -90,7 +90,7 @@
       - iptables-persistent
     state: absent
 
-- name: Remove iptables state after DDosS setup
+- name: Remove iptables state after DDoS setup
   ansible.builtin.file:
     path: "/etc/iptables/rules.{{ item }}"
     state: absent
@@ -112,7 +112,7 @@
 
 - name: Egress
   block:
-    - name: Get egress firewall
+    - name: Get egress firewall script
       when: tor_egress_slew | length > 0
       throttle: 16
       retries: 1
@@ -130,7 +130,7 @@
         state: "{{ (tor_egress_slew | length > 0) | ternary('present', 'absent') }}"
       register: _egress_cron
 
-    - name: Ensure egress is updated
+    - name: Ensure OUTPUT chain is updated
       changed_when: true
       when: _egress_script.changed or _egress_cron.changed
       ansible.builtin.shell:
