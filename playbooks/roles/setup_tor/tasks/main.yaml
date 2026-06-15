@@ -95,6 +95,12 @@
       tags:
         - ddos-metrics
 
+    - name: Watchdog
+      when: tor_bridge_distribution | length == 0
+      ansible.builtin.import_tasks: watchdog.yaml
+      tags:
+        - watchdog
+
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
       tags:
