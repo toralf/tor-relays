@@ -40,10 +40,7 @@
       export CONFIGURED_RELAYS6="[{{ ansible_facts.default_ipv6.address }}]:5678"
 
       /root/ipv4-rules.sh start
-      /root/ipv4-rules.sh stop
-
       /root/ipv6-rules.sh start
-      /root/ipv6-rules.sh stop
 
       export EGRESS_SUBNET_SLEW="1.2.3.4"
 
