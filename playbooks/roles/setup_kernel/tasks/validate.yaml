@@ -1,6 +1,5 @@
 ---
 - name: Validate RAM for kernel build
-  when: kernel_git_repo_url | length > 0
   ansible.builtin.assert:
     quiet: true
     that:

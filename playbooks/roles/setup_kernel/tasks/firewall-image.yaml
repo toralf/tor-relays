@@ -28,14 +28,9 @@
       loop:
         - ipv4-rules.sh
         - ipv6-rules.sh
+        - ipv4-rules-egress.sh
 
-    - name: Get egress script
-      retries: 1
-      ansible.builtin.get_url:
-        url: "{{ torutils_path }}/ipv4-rules-egress.sh"
-        dest: /root/
-
-- name: Start/Stop
+- name: Trigger kernel module load
   changed_when: false
   ansible.builtin.shell:
     cmd: |-

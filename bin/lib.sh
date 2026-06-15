@@ -114,7 +114,7 @@ function _getImageBySnapshot() {
     fi
   done <<<${snapshots}
 
-  # try to avoid an expensive git clone
+  # use "mainline" as fallback to avoid the (expensive) clone of a kernel git repository
   if [[ ! ${name} =~ "-dist" && ! ${name} =~ "-mainline" ]]; then
     if alt_name=$(awk -F- -v OFS=- '{ if (NF >=4) { $4="mainline"; print } }' <<<${name}); then
       if [[ -n ${alt_name} ]] && _getImageBySnapshot ${alt_name}; then
