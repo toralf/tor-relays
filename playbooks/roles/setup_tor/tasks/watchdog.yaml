@@ -9,6 +9,6 @@
 - name: Cron job for watchdog
   ansible.builtin.cron:
     name: watchdog
-    minute: "*/15"
+    special_time: reboot
     job: >-
-      nice /root/watchdog.sh 13 5
+      nice /root/watchdog.sh
