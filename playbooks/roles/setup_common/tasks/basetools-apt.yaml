@@ -49,6 +49,7 @@
 - name: Install/Update tools
   ansible.builtin.apt:
     name:
+      - at
       - cron
       - curl
       - elfutils
