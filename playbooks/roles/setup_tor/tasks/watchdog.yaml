@@ -5,6 +5,7 @@
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/watchdog.sh"
     dest: /root/
+  register: _download_watchdog
 
 - name: Cron job for watchdog
   ansible.builtin.cron:
@@ -12,3 +13,21 @@
     special_time: reboot
     job: >-
       nice /root/watchdog.sh
+
+- name: Get watchdog.sh pids if any
+  community.general.pids:
+    name: watchdog.sh
+  register: _watchdog_pids_running
+
+- name: Ensure watchdog.sh is running
+  when: _download_watchdog.changed or _watchdog_pids_running.pids | default([]) | length == 0
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: >-
+      set -euf
+
+      if pgrep -f /root/watchdog.sh; then
+        pkill -f /root/watchdog.sh
+      fi
+
+      nice /root/watchdog.sh &
