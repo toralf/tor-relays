@@ -112,7 +112,8 @@ function work_on_job_files() {
 
     elif [[ ${action} != "delete" ]]; then
       info "  setup after ${action}"
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" &>>${logprefix}.job.log; then
+      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
+        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
         info "  NOT ok" >&2
       fi
       pit_stop crud
