@@ -12,7 +12,7 @@
 
   always:
     - name: Delete outdated
-      changed_when: true
+      changed_when: _at.stdout | length > 0
       ansible.builtin.shell:
         cmd: |-
           hcloud --quiet image list --type snapshot --output noheader --output columns=id,description |
@@ -24,3 +24,4 @@
               # use at to avoid a race with a parallel running create/rebuild job
               echo $cmd | at now + 15 min
             done
+      register: _at
