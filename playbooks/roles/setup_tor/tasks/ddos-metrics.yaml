@@ -5,7 +5,7 @@
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics.sh"
     dest: /root/
-  register: _download
+  register: _download_metrics
 
 - name: Create nginx metrics-ddos
   ansible.builtin.file:
@@ -23,29 +23,20 @@
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
   register: _cronjob
 
-- name: Getting process IDs of running DDoS metrics script(s)
+- name: Get metrics.sh pids if any
   community.general.pids:
     name: metrics.sh
-  register: _ddos_metrics_pids_2_kill
+  register: _metrics_pids_running
 
-- name: Ensure no outdated DDoS metrics script is running
-  when: _download.changed or not ddos_metrics or _cronjob.changed
-  changed_when: true
-  ansible.builtin.shell:
-    cmd: |-
-      if kill -0 {{ item }}; then
-        kill -9 {{ item }}
-      fi
-  loop: "{{ _ddos_metrics_pids_2_kill.pids | default([]) }}"
-
-- name: Look if DDoS metrics script is running
-  community.general.pids:
-    name: metrics.sh
-  register: _ddos_metrics_pids_running
-
-- name: Start DDoS metrics script
-  when: ddos_metrics and _ddos_metrics_pids_running.pids | default([]) | length == 0
+- name: Ensure metrics.sh is runnint
+  when: _download_metrics.changed or _metrics_pids_running.pids | default([]) | length == 0
   changed_when: true
   ansible.builtin.shell:
     cmd: >-
+      set -euf
+
+      if pgrep -f /root/metrics.sh; then
+        pkill -f /root/metrics.sh
+      fi
+
       nice /root/metrics.sh 15 /var/www/metrics-ddos &
