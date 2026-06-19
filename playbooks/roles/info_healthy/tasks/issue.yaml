@@ -16,7 +16,8 @@
           -e 'Oops: ' \
           -e 'rebooting.' \
           -e '.service: Control process exited' \
-          -e 'status=9/KILL'
+          -e 'status=9/KILL' \
+          -e 'watchdog.sh'
   register: _result_syslog
 
 - name: File issue
