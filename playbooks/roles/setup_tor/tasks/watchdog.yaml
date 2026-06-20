@@ -14,7 +14,7 @@
     job: >-
       nice /root/watchdog.sh
 
-- name: Get watchdog.sh pids if any
+- name: Get watchdog.sh pid if any
   community.general.pids:
     name: watchdog.sh
   register: _watchdog_pids_running
@@ -26,8 +26,8 @@
     cmd: |-
       set -euf
 
-      if pgrep -f /root/watchdog.sh; then
-        pkill -f /root/watchdog.sh
+      if [[ -n "{{ _watchdog_pids_running.pids | first }}" ]]; then
+        kill {{ _watchdog_pids_running.pids | first }}
       fi
 
       echo 'nice /root/watchdog.sh &' | at now

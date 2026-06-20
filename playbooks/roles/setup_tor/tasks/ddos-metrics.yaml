@@ -23,7 +23,7 @@
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
   register: _cronjob
 
-- name: Get metrics.sh pids if any
+- name: Get metrics.sh pid if any
   community.general.pids:
     name: metrics.sh
   register: _metrics_pids_running
@@ -35,8 +35,8 @@
     cmd: |-
       set -euf
 
-      if pgrep -f /root/metrics.sh; then
-        pkill -f /root/metrics.sh
+      if [[ -n "{{ _metrics_pids_running.pids | first }}" ]]; then
+        kill {{ _metrics_pids_running.pids | first }}
       fi
 
       echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
