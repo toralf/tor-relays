@@ -4,7 +4,7 @@
 
 function _git_ls_remote() {
   local group name
-  local url ver tok
+  local url ver env
 
   group=${1?GROUP MUST BE GIVEN}
   name=${2?NAME MUST BE GIVEN}
@@ -19,10 +19,10 @@ function _git_ls_remote() {
   elif [[ ${group} == "kernel" ]]; then
     url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hetzner-test.yaml)
     ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hetzner-test.yaml | grep -v '^null$')
-    tok=$(yq -r ".hx_repos_${name}_tok" <./secrets/local.yaml | grep -v '^null$')
+    env=$(yq -r ".hx_repos_${name}_env" <./secrets/local.yaml | grep -v '^null$')
   fi
 
-  ${tok-} git ls-remote --quiet ${url} ${ver:-main} |
+  ${env-} git ls-remote --quiet ${url} ${ver:-main} |
     awk '{ print $1 }' |
     grep .
 }
