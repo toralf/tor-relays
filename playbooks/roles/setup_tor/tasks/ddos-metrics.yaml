@@ -28,15 +28,15 @@
     name: metrics.sh
   register: _metrics_pids_running
 
-- name: Ensure metrics.sh is runnint
-  when: _download_metrics.changed or _metrics_pids_running.pids | default([]) | length == 0
+- name: Ensure metrics.sh is running
+  when: _download_metrics.changed or _metrics_pids_running.pids | length == 0
   changed_when: true
   ansible.builtin.shell:
-    cmd: >-
+    cmd: |-
       set -euf
 
       if pgrep -f /root/metrics.sh; then
         pkill -f /root/metrics.sh
       fi
 
-      nice /root/metrics.sh 15 /var/www/metrics-ddos &
+      echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
