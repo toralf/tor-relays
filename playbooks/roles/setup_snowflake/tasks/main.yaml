@@ -57,3 +57,21 @@
       ansible.builtin.meta: flush_handlers
       tags:
         - flush
+
+    - name: Start Snowflake
+      ansible.builtin.systemd_service:
+        name: "{{ item.name }}"
+        state: started
+        enabled: true
+      loop_control:
+        label: "{{ item.name }}"
+      loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
+
+    - name: Stop Snowflake
+      ansible.builtin.systemd_service:
+        name: "{{ item.name }}"
+        state: stopped
+        enabled: false
+      loop_control:
+        label: "{{ item.name }}"
+      loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'absent') }}"

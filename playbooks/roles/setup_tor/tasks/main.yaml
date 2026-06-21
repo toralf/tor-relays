@@ -105,3 +105,9 @@
       ansible.builtin.meta: flush_handlers
       tags:
         - flush
+
+    - name: Start Tor
+      ansible.builtin.systemd_service:
+        name: tor
+        state: started
+        enabled: true
