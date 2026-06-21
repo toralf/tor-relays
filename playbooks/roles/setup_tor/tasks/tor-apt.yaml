@@ -9,7 +9,7 @@
     - name: Repo
       when: ansible_facts.distribution_release != 'jammy'
       block:
-        - name: Enable Tor repository
+        - name: Add Tor repository
           ansible.builtin.deb822_repository:
             name: tor
             types:
@@ -33,20 +33,20 @@
       vars:
         _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
       block:
-        - name: Enable Tor legacy repository - tools
+        - name: Add Tor legacy repository - tools
           ansible.builtin.apt:
             name:
               - apt-transport-https
               - gnupg
 
-        - name: Enable Tor legacy repository - gpg key
+        - name: Add Tor legacy repository - gpg key
           ansible.builtin.shell:
             cmd: >-
               curl -q {{ _uri }}/{{ _key }} -o - |
                 gpg --dearmor >"{{ _keyring }}"
             creates: "{{ _keyring }}"
 
-        - name: Enable Tor legacy repository
+        - name: Add Tor legacy repository
           ansible.builtin.apt_repository:
             filename: tor
             repo: >-

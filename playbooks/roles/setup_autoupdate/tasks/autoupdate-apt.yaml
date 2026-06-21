@@ -80,8 +80,8 @@
   failed_when: false
   ansible.builtin.systemd_service:
     name: "{{ item }}"
-    state: started
     enabled: true
+    state: started
   loop:
     - apt-daily.timer
     - apt-daily-upgrade.timer
