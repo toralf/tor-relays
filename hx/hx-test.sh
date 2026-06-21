@@ -38,7 +38,7 @@ trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 if [[ ${task} == "apt" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' \ -e '{ "tor_build_from_source": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
 
 elif [[ ${task} == "common" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
