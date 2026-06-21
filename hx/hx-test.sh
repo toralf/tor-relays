@@ -35,16 +35,16 @@ done
 
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
-if [[ ${task} =~ "dist" ]]; then
+if [[ ${task} == "apt" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  if [[ ${task} == "dist_build" ]]; then
-    go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }'
-  else
-    time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' \
-      -e '{ "tor_build_from_source": false }'
-  fi
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' \ -e '{ "tor_build_from_source": false }'
+
+elif [[ ${task} == "common" ]]; then
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
+  time ./bin/create-server.sh ${names}
+  go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }'
 
 elif [[ ${task} == "full" ]]; then
   branch=${branch:-'{dist,mainline,stablerc}'}
@@ -52,26 +52,13 @@ elif [[ ${task} == "full" ]]; then
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
-elif [[ ${task} =~ "image" ]]; then
+elif [[ ${task} == "image" ]]; then
   branch=${branch:-'{mainline,stablerc}'}
-  if [[ ${task} == "image_build" ]]; then
-    # clone/update sources + kernel build
-    names=$(
-      eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
-        xargs -n 1 |
-        grep -v -e '^hi-d.*-.*-x' -e '^hi-u.*-.*-*bp' -e '^hi-u.*-.*-.*-*cl' |
-        xargs
-    )
-    time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }' # maybe tool chain was updated
-  else
-    # clone/update sources but no kernel build
-    names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
-    time ./bin/create-server.sh ${names}
-    time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
-  fi
+  names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
+  time ./bin/create-server.sh ${names}
+  time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
 
-elif [[ ${task} =~ "kernel" ]]; then
+elif [[ ${task} == "kernel" ]]; then
   branch=${branch:-'{mainline,stablerc}'}
   names=$(
     eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
@@ -80,7 +67,7 @@ elif [[ ${task} =~ "kernel" ]]; then
       xargs
   )
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "h?-*-${uid}"
+  time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
 
 else
   echo "unknown task ${task}" >&2
