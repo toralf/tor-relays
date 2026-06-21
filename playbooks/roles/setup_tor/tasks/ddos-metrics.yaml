@@ -28,16 +28,21 @@
     name: metrics.sh
   register: _metrics_pids_running
 
-- name: Ensure metrics.sh is running
-  when: _download_metrics.changed or _metrics_pids_running.pids | length == 0
+- name: Ensure recent metrics.sh is running
+  when: _download_metrics.changed or _metrics_pids_running.pids | default([]) | length == 0
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      if [[ -n "{{ _metrics_pids_running.pids | first }}" ]]; then
-        # pkill won't work in an ansible task
-        kill {{ _metrics_pids_running.pids | first }}
+      # pkill won't work in an ansible task
+      pids=$(echo {{ _metrics_pids_running.pids | default([]) | join(' ') }} | xargs -r -n 1)
+      if [[ -n $pids ]]; then
+        for p in $pids; do
+          if ! kill $p; then
+            : vanished
+          fi
+        done
       fi
 
       echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
