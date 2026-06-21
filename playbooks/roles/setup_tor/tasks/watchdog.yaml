@@ -27,6 +27,7 @@
       set -euf
 
       if [[ -n "{{ _watchdog_pids_running.pids | first }}" ]]; then
+        # pkill won't work in an ansible task
         kill {{ _watchdog_pids_running.pids | first }}
       fi
 
