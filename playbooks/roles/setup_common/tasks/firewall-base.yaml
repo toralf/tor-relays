@@ -4,10 +4,11 @@
     name:
       - iptables-persistent
 
-- name: Enable netfilter-persistent
+- name: Enable and start netfilter-persistent
   ansible.builtin.systemd_service:
     name: netfilter-persistent
     enabled: true
+    state: started
 
 - name: Sysctl values for base fw
   vars:
