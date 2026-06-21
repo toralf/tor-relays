@@ -111,3 +111,5 @@
         name: tor
         state: started
         enabled: true
+      tags:
+        - tor

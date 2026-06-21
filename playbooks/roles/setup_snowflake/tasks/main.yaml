@@ -75,3 +75,5 @@
       loop_control:
         label: "{{ item.name }}"
       loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'absent') }}"
+      tags:
+        - snowflake
