@@ -20,7 +20,8 @@
   register: _watchdog_pids_running
 
 - name: Ensure recent watchdog.sh is running
-  when: _download_watchdog.changed or _watchdog_pids_running.pids | length == 0
+  when: _download_watchdog.changed or
+    _watchdog_pids_running.pids | length == 0 or _watchdog_pids_running.pids | length > 2
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
@@ -28,13 +29,9 @@
 
       # pkill won't work in an ansible task
       pids=$(echo {{ _watchdog_pids_running.pids | default([]) | join(' ') }} | xargs -r -n 1)
-      if [[ -n $pids ]]; then
-        for p in $pids; do
-          if ! kill $p; then
-            : vanished
-          fi
-        done
-      fi
+      for p in $pids; do
+        kill $p || true
+      done
 
       echo 'nice /root/watchdog.sh &' | at now
     executable: /bin/bash
