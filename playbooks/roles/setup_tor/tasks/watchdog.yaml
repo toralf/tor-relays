@@ -17,18 +17,17 @@
 - name: Get watchdog.sh pid if any
   community.general.pids:
     name: watchdog.sh
-  register: _watchdog_pids_running
+  register: _watchdog
 
 - name: Ensure recent watchdog.sh is running
-  when: _download_watchdog.changed or
-    _watchdog_pids_running.pids | length == 0 or _watchdog_pids_running.pids | length > 2
+  when: _download_watchdog.changed or _watchdog.pids | length not in (1, 2)
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
       # pkill won't work in an ansible task
-      pids=$(echo {{ _watchdog_pids_running.pids | default([]) | join(' ') }} | xargs -r -n 1)
+      pids=$(echo {{ _watchdog.pids | default([]) | join(' ') }} | xargs -r -n 1)
       for p in $pids; do
         kill $p || true
       done

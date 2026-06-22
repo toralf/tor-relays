@@ -26,18 +26,17 @@
 - name: Get metrics.sh pid if any
   community.general.pids:
     name: metrics.sh
-  register: _metrics_pids_running
+  register: _metrics
 
 - name: Ensure recent metrics.sh is running
-  when: _download_metrics.changed or
-    _metrics_pids_running.pids | default([]) | length == 0 or _metrics_pids_running.pids | default([]) | length > 2
+  when: _download_metrics.changed or _metrics.pids | default([]) | length not in (1, 2)
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
       # pkill won't work in an ansible task
-      pids=$(echo {{ _metrics_pids_running.pids | default([]) | join(' ') }} | xargs -r -n 1)
+      pids=$(echo {{ _metrics.pids | default([]) | join(' ') }} | xargs -r -n 1)
       for p in $pids; do
         kill $p || true
       done
