@@ -36,18 +36,13 @@ done
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
 if [[ ${task} == "apt" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
+  branch=${branch:-'dist'}
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
 
 elif [[ ${task} == "common" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-dist-x-x-${uid})
-  time ./bin/create-server.sh ${names}
-  go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml | tr -d "'")
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "'${go_ver_inventory}'" }'
-
-elif [[ ${task} == "full" ]]; then
-  branch=${branch:-'{dist,mainline,stablerc}'}
+  branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
