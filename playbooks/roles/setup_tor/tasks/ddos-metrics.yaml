@@ -46,3 +46,4 @@
       fi
 
       echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
+    executable: /bin/bash

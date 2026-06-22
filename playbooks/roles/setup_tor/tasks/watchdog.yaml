@@ -37,3 +37,4 @@
       fi
 
       echo 'nice /root/watchdog.sh &' | at now
+    executable: /bin/bash
