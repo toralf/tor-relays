@@ -2,6 +2,9 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
+- name: Reset connection
+  ansible.builtin.meta: reset_connection
+
 - name: Instance
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"

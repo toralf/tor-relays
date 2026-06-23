@@ -17,6 +17,9 @@
         cmd: >-
           ping -c 3 hetzner.de
 
+    - name: Reset connection
+      ansible.builtin.meta: reset_connection
+
     - name: Set is_down
       delegate_to: localhost
       throttle: 1
