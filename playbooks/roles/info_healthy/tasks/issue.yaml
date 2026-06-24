@@ -5,19 +5,18 @@
   ansible.builtin.shell:
     cmd: |-
       journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
-        grep -m 50 \
+        grep -m 50 -F \
           -e 'BUG: ' \
           -e 'BUG at' \
           -e 'Call Trace: ' \
           -e 'Error: ' \
           -e 'invoked oom-killer' \
-          -e "kernel.*: WARNING" \
           -e 'No space left on device' \
           -e 'Oops: ' \
           -e 'rebooting.' \
           -e '.service: Control process exited' \
           -e 'status=9/KILL' \
-          -e 'watchdog.sh'
+          -e "WARNING:"
   register: _result_syslog
 
 - name: File issue
