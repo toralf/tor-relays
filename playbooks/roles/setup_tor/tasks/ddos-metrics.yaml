@@ -5,7 +5,7 @@
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics.sh"
     dest: /root/
-  register: _download_metrics
+  notify: Restart metrics
 
 - name: Create nginx metrics-ddos
   ansible.builtin.file:
@@ -13,6 +13,7 @@
     state: directory
     group: www-data
     mode: "0750"
+  notify: Restart metrics
 
 - name: Cron job for DDoS metrics
   ansible.builtin.cron:
@@ -21,25 +22,10 @@
     job: >-
       nice /root/metrics.sh 15 /var/www/metrics-ddos
     state: "{{ ddos_metrics | ternary('present', 'absent') }}"
-  register: _cronjob
+  notify: Restart metrics
 
 - name: Get metrics.sh pid if any
+  changed_when: _metrics.pids | default([]) | length not in (1, 2)
   community.general.pids:
     name: metrics.sh
-  register: _metrics
-
-- name: Ensure recent metrics.sh is running
-  when: _download_metrics.changed or _metrics.pids | default([]) | length not in (1, 2)
-  changed_when: true
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
-
-      # pkill won't work in an ansible task
-      pids=$(echo {{ _metrics.pids | default([]) | join(' ') }} | xargs -r -n 1)
-      for p in $pids; do
-        kill $p || true
-      done
-
-      echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
-    executable: /bin/bash
+  notify: Restart metrics

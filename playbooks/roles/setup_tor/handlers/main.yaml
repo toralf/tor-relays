@@ -6,3 +6,19 @@
     state: restarted
     enabled: true
     daemon_reload: true
+
+- name: Restart metrics
+  listen: Restart metrics
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      pkill -x metrics.sh
+      echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
+
+- name: Restart watchdog
+  listen: Restart watchdog
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      pkill -x watchdog.sh
+      echo 'nice /root/watchdog.sh {{ tor_watchdog_intervall }} &' | at now

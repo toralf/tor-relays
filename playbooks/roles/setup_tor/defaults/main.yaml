@@ -31,4 +31,8 @@ tor_secret_family_key_file: ""
 # <name, value> elements
 torrc_config: []
 
+# see info_tor role for tor_identity_backup
 tor_identity_restore: false
+
+# in minutes
+tor_watchdog_intervall: 15

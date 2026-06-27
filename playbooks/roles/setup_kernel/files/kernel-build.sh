@@ -43,10 +43,11 @@ ln -snf ${PWD} /usr/src/linux
 
 echo -e "\n$(date) reboot ...\n"
 if [[ ${1-} == "reboot" ]]; then
-  i=3
-  while ((i--)) && pgrep -af 'sshd:' | grep -v '/usr/sbin/sshd'; do
+  i=12 # 2 min
+  # pgrep works for Debian >= 13 or Ubuntu >= 26.04
+  while ((i--)) && pgrep -x sshd-session >/dev/null; do
     echo "finish ssh connections graceful ..."
-    sleep 60
+    sleep 10
   done
   reboot
 else
