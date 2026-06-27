@@ -59,14 +59,19 @@
     _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
     kernel_build: "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running }}"
   block:
-    - name: Make nowait
+    - name: No wait
       when: not kernel_git_build_wait
-      changed_when: true
-      ansible.builtin.shell:
-        cmd: >-
-          echo /root/kernel-build.sh reboot | at now
+      block:
+        - name: Make nowait
+          changed_when: true
+          ansible.builtin.shell:
+            cmd: >-
+              echo /root/kernel-build.sh reboot | at now
 
-    - name: Make wait
+        - name: Reset connection
+          ansible.builtin.meta: reset_connection
+
+    - name: Wait
       when: kernel_git_build_wait
       block:
         - name: Job
