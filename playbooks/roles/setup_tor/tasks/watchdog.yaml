@@ -16,7 +16,7 @@
   notify: Restart watchdog
 
 - name: Get watchdog.sh pid if any
-  changed_when: _watchdog.pids | default([]) | length not in (1, 2)
+  changed_when: _watchdog.pids | default([]) | length == 0
   community.general.pids:
     name: watchdog.sh
   register: _watchdog

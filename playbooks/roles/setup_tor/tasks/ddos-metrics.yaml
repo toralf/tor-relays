@@ -25,7 +25,7 @@
   notify: Restart metrics
 
 - name: Get metrics.sh pid if any
-  changed_when: _metrics.pids | default([]) | length not in (1, 2, 3)
+  changed_when: _metrics.pids | default([]) | length == 0
   community.general.pids:
     name: metrics.sh
   notify: Restart metrics
