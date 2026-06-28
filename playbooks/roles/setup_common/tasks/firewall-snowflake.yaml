@@ -11,10 +11,10 @@
   loop:
     - v4
     - v6
-  register: _firewall
+  register: _firewall_snowflake
 
 - name: Save iptables after Snowflake fw setup
-  when: _firewall.changed
+  when: _firewall_snowflake.changed
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
