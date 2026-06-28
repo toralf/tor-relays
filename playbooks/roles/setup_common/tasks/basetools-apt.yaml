@@ -80,3 +80,15 @@
   when: additional_software | length > 0
   ansible.builtin.apt:
     name: "{{ additional_software }}"
+
+- name: Needed service restart
+  changed_when: _service_restart.stdout | length > 0
+  environment:
+    LC_ALL: C.UTF-8
+  ansible.builtin.shell:
+    cmd: |-
+      if needrestart -r l -b | grep 'NEEDRESTART-SVC:';
+      then
+        needrestart -r a -b;
+      fi
+  register: _service_restart
