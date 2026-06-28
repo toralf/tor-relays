@@ -1,5 +1,5 @@
 ---
-- name: Check for reboot-required
+- name: Check for reboot-required file
   changed_when: _reboot_required.stat.exists
   ansible.builtin.stat:
     path: /var/run/reboot-required
@@ -10,25 +10,16 @@
   notify: Reboot
 
 - name: Check if a reboot is needed by a kernel
-  changed_when: _kernel_reboot_needed.rc == 0
-  failed_when: _kernel_reboot_needed.rc > 1
+  changed_when: _kernel_reboot_needed.stdout | length > 0
+  environment:
+    LC_ALL: C.UTF-8
   ansible.builtin.shell:
     cmd: |-
-      LC_ALL=C.UTF-8 needrestart -r l -b |
-        grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'
+      if needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'; then
+        : # yep
+      fi
   register: _kernel_reboot_needed
   notify: Reboot
 
-- name: Check if a reboot is needed by a service
-  changed_when: _service_reboot_needed.rc == 0
-  failed_when: _service_reboot_needed.rc > 1
-  ansible.builtin.shell:
-    cmd: |-
-      LC_ALL=C.UTF-8 needrestart -r l -b |
-        grep 'NEEDRESTART-SVC:'
-  register: _service_reboot_needed
-  notify: Reboot
-
-# reboot *now* if required
 - name: Flush handlers (Reboot)
   ansible.builtin.meta: flush_handlers
