@@ -1,0 +1,30 @@
+---
+- name: IPv6 Hetzner
+  when: ansible_facts.system_vendor == 'Hetzner'
+  ansible.builtin.import_tasks: ipv6-hetzner.yaml
+
+- name: IPv6 IONOS
+  when: ansible_facts.system_vendor == 'QEMU'
+  ansible.builtin.import_tasks: ipv6-ionos.yaml
+
+- name: File IPv6 address
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
+    path: "{{ infodir }}/ipv6"
+    regexp: "^{{ inventory_hostname }} "
+    owner: "{{ lookup('ansible.builtin.env', 'USER') }}"
+    group: "{{ lookup('ansible.builtin.env', 'USER') }}"
+
+- name: Ensure IPv6 address is not local
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is not match('fe80::')"
+
+- name: Ensure IPv6 address is non-default
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ansible_facts.default_ipv6.address is not search('::1$')"

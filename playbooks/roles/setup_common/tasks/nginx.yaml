@@ -1,0 +1,15 @@
+---
+- name: Setup
+  ansible.builtin.import_tasks: nginx-setup.yaml
+  tags:
+    - nginx-setup
+
+- name: Openssl
+  ansible.builtin.import_tasks: nginx-openssl.yaml
+  tags:
+    - nginx-openssl
+
+- name: Config
+  ansible.builtin.import_tasks: nginx-config.yaml
+  tags:
+    - nginx-config
