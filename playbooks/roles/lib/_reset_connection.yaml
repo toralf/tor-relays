@@ -1,0 +1,5 @@
+---
+# [WARNING]: reset_connection task does not support when conditional
+
+- name: Reset connection
+  ansible.builtin.meta: reset_connection

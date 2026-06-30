@@ -80,6 +80,14 @@
               - "ansible_facts.default_ipv6.address is not match('fe80::')"
               - "ansible_facts.default_ipv6.address is not search('::1$')"
 
+        - name: File IPv6 address
+          delegate_to: localhost
+          throttle: 1
+          ansible.builtin.lineinfile:
+            line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address }}"
+            path: "{{ infodir }}/ipv6"
+            regexp: "^{{ inventory_hostname }} "
+
     - name: Firewall
       tags:
         - firewall

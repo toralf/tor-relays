@@ -1,8 +1,0 @@
----
-- name: File IPv6 address
-  delegate_to: localhost
-  throttle: 1
-  ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ ansible_facts.default_ipv6.address | default('') }}"
-    path: "{{ infodir }}/ipv6"
-    regexp: "^{{ inventory_hostname }} "

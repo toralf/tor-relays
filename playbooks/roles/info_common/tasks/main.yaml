@@ -17,11 +17,6 @@
         - dryrun-unattended
         - never
 
-    - name: IPv6
-      ansible.builtin.import_tasks: ipv6.yaml
-      tags:
-        - ipv6
-
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
       tags:
