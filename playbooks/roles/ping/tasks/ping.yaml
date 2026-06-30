@@ -18,7 +18,7 @@
           ping -c 3 hetzner.de
 
     - name: Reset connection
-      ansible.builtin.meta: reset_connection
+      ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_reset_connection.yaml"
 
     - name: Set is_down
       delegate_to: localhost

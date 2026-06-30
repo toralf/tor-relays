@@ -2,4 +2,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- ansible.builtin.import_playbook: playbooks/info.yaml
+- name: Site info
+  ansible.builtin.import_playbook: playbooks/info.yaml

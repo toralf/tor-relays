@@ -69,7 +69,7 @@
               echo /root/kernel-build.sh reboot | at now
 
         - name: Reset connection
-          ansible.builtin.meta: reset_connection
+          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_reset_connection.yaml"
 
     - name: Wait
       when: kernel_git_build_wait
@@ -80,7 +80,7 @@
               changed_when: true
               async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
               poll: 0
-              ansible.builtin.shell:
+              ansible.builtin.command:
                 cmd: >-
                   /root/kernel-build.sh
               register: _kernel_make
