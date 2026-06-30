@@ -11,7 +11,8 @@ source ./bin/lib.sh
 
 type hcloud rc-service >/dev/null
 
-[[ $# -eq 0 ]]
+# ipv6 entries are optional
+[[ $# -le 1 ]]
 setProject
 
 hconf=/etc/unbound/hetzner-${project}.conf
@@ -41,10 +42,12 @@ hcloud --quiet server list --output noheader --output columns=name,ipv4 |
     printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "A" ${ipv4}
     printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
 
-    ipv6=$(awk '/^'"${name}"' / { print $2 }' ~/tmp/tor-relays/ipv6)
-    if [[ -n ${ipv6} ]]; then
-      printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6}
-      printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6} "" ${name}
+    if [[ ${1-} == "-6" ]]; then
+      ipv6=$(awk '/^'"${name}"' / { print $2 }' ~/tmp/tor-relays/ipv6)
+      if [[ -n ${ipv6} ]]; then
+        printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6}
+        printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6} "" ${name}
+      fi
     fi
   done |
   sudo tee -a ${hconf}.new >/dev/null
