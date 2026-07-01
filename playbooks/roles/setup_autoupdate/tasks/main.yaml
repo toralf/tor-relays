@@ -8,24 +8,16 @@
       purge: true
       state: latest
     ansible.builtin.copy:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.cron:
       backup: true
     ansible.builtin.file:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.template:
-      owner: root
-      group: root
       mode: "0644"
   block:
     - name: Configure Debian

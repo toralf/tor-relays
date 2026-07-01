@@ -9,12 +9,8 @@
       purge: true
       state: latest
     ansible.builtin.copy:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.file:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.get_url:
       mode: "0744"
@@ -22,16 +18,12 @@
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.stat:
       get_attributes: false
       get_checksum: false
       get_mime: false
     ansible.builtin.template:
-      owner: root
-      group: root
       mode: "0644"
   block:
     - name: Validate

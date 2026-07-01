@@ -21,8 +21,8 @@ uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
-  b) branch=${OPTARG} ;; # '{mainline,{lts,stable}{,q,rc}}'
-  e) set +e ;;           # created systems will be deleted even if an error occurred
+  b) branch=${OPTARG} ;; # '{mainline,{lts,stable}{,rc}}'
+  e) set +e ;;           # created systems will be always deleted
   o) os=${OPTARG} ;;
   t) task=${OPTARG} ;;
   u) uid=${OPTARG} ;;

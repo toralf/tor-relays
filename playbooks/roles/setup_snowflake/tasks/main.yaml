@@ -9,12 +9,8 @@
       purge: true
       state: latest
     ansible.builtin.copy:
-      owner: root
-      group: root
       mode: "0644"
     ansible.builtin.file:
-      owner: root
-      group: root
       mode: "0644"
   block:
     - name: Validate
