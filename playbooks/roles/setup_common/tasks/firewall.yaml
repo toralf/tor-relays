@@ -1,23 +1,18 @@
 ---
-- name: Firewall tools
-  ansible.builtin.import_tasks: firewall-tools.yaml
-  tags:
-    - firewall-tools
+- name: Install/Update iptables
+  ansible.builtin.apt:
+    name:
+      - conntrack
+      - iptables
 
 - name: Firewall base
   when: tor_port == 0
   ansible.builtin.import_tasks: firewall-base.yaml
-  tags:
-    - firewall-base
 
 - name: Firewall Snowflake
   when: snowflake_proxies | length > 0
   ansible.builtin.import_tasks: firewall-snowflake.yaml
-  tags:
-    - firewall-snowflake
 
 - name: Firewall Tor
   when: tor_port > 0
   ansible.builtin.import_tasks: firewall-tor.yaml
-  tags:
-    - firewall-tor

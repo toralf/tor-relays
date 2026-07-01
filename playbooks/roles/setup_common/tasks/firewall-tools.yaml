@@ -1,6 +1,0 @@
----
-- name: Install/Update iptables
-  ansible.builtin.apt:
-    name:
-      - conntrack
-      - iptables

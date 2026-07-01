@@ -121,6 +121,13 @@
         dest: /root/
       register: _egress_script
 
+    - name: Ensure OUTPUT chain is updated
+      changed_when: true
+      when: _egress_script.changed
+      ansible.builtin.shell: # noqa command-instead-of-shell
+        cmd: |-
+          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh {{ (tor_egress_slew | length > 0) | ternary('start', '') }}
+
     - name: Create egress firewall cron job for reboot
       ansible.builtin.cron:
         name: start firewall egress
@@ -128,11 +135,3 @@
         job: >-
           {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
         state: "{{ (tor_egress_slew | length > 0) | ternary('present', 'absent') }}"
-      register: _egress_cron
-
-    - name: Ensure OUTPUT chain is updated
-      changed_when: true
-      when: _egress_script.changed or _egress_cron.changed
-      ansible.builtin.command:
-        cmd: |-
-          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh {{ (tor_egress_slew | length > 0) | ternary('start', '') }}
