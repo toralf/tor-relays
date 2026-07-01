@@ -48,10 +48,9 @@
 
         - name: Add Tor legacy repository
           ansible.builtin.apt_repository:
-            filename: tor
             repo: >-
               {{ item }} [signed-by={{ _keyring }}] {{ _uri }} {{ ansible_facts.distribution_release }} main
-            update_cache_retries: 1
+            update_cache: true
           loop:
             - deb
             - deb-src

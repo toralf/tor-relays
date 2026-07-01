@@ -8,6 +8,7 @@
       when: ansible_facts.distribution_release in ('jammy', 'noble')
       ansible.builtin.apt_repository:
         repo: ppa:longsleep/golang-backports
+        update_cache: true
 
     - name: Install/Update Go
       vars:
