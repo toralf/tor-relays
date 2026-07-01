@@ -35,7 +35,7 @@ done
 
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
-if [[ ${task} == "apt" ]]; then
+if [[ ${task} == "bin" ]]; then
   branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
