@@ -35,4 +35,4 @@ torrc_config: []
 tor_identity_restore: false
 
 # in minutes
-tor_watchdog_intervall: 15
+tor_watchdog_intervall: ""
