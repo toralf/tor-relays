@@ -1,11 +1,11 @@
 ---
 - name: Grep system log for issue/s
   changed_when: false
-  failed_when: _result_syslog.stderr | length > 0 or _result_syslog.rc > 1
+  failed_when: _result_syslog.stderr | length > 0
   ansible.builtin.shell:
     cmd: |-
       journalctl {{ (issue_since | length > 0) | ternary('--since "' + issue_since + '"', '-b') }} --quiet |
-        grep -m 50 -F \
+        grep -F \
           -e 'BUG: ' \
           -e 'BUG at' \
           -e 'Call Trace: ' \
@@ -16,7 +16,8 @@
           -e 'rebooting.' \
           -e '.service: Control process exited' \
           -e 'status=9/KILL' \
-          -e "WARNING:"
+          -e "WARNING:" |
+        tail -n 30
   register: _result_syslog
 
 - name: File issue
