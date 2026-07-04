@@ -21,4 +21,4 @@
   ansible.builtin.shell:
     cmd: |-
       pkill -x watchdog.sh
-      echo 'nice /root/watchdog.sh {{ tor_watchdog_intervall }} &' | at now
+      echo 'nice /root/watchdog.sh &' | at now
