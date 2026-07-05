@@ -12,7 +12,7 @@
     name: watchdog
     special_time: reboot
     job: >-
-      nice /root/watchdog.sh {{ tor_watchdog_intervall }}
+      nice /root/watchdog.sh
   notify: Restart watchdog
 
 - name: Get watchdog.sh pid if any
