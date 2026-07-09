@@ -64,7 +64,7 @@ $ipt -nv -L INPUT
 
 modprobe nf_conntrack
 # see https://github.com/toralf/torutils/blob/main/ipv4-rules.sh#L239
-{% set _max = (ansible_facts.memtotal_mb < 1024) | ternary(2**17, 2**19) %}
+{% set _max = (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**20) %}
 sysctl -w net.netfilter.nf_conntrack_buckets={{ _max }} >/dev/null
 sysctl -w net.netfilter.nf_conntrack_max={{ _max }} >/dev/null
 
