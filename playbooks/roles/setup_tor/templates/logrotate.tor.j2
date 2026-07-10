@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-/var/log/tor/*.log /var/log/tor/*.log-???????? {
+/var/log/tor/*.log {
   daily
   size 10M
   rotate 5
@@ -15,4 +15,15 @@
       invoke-rc.d tor reload >dev/null
     fi
   endscript
+}
+
+/var/log/tor/*.log-???????? {
+  daily
+  size 10M
+  rotate 5
+  compress
+  delaycompress
+  missingok
+  notifempty
+  create 0640 {{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor adm', 'tor tor') }}
 }

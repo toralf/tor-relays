@@ -43,7 +43,7 @@
   register: _logrotate
 
 - name: Verify logrotate
-  when: _logrotate.changed or true
+  when: _logrotate.changed
   changed_when: false
   ansible.builtin.command:
     cmd: >-
