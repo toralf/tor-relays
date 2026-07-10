@@ -36,10 +36,18 @@
     cmd: >-
       su {{ tor_build_from_source | ternary('tor', 'root') }} -c "tor --verify-config"
 
-- name: Configure Tor logrotate
+- name: Configure logrotate
   ansible.builtin.template:
     src: logrotate.tor.j2
     dest: /etc/logrotate.d/tor
+  register: _logrotate
+
+- name: Verify logrotate
+  when: _logrotate.changed or true
+  changed_when: false
+  ansible.builtin.command:
+    cmd: >-
+      logrotate -d /etc/logrotate.conf
 
 - name: Override
   vars:

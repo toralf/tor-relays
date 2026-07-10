@@ -1,7 +1,8 @@
 # {{ ansible_managed }}
 
-/var/log/tor/err.log /var/log/tor/warn.log /var/log/tor/notice.log {
+/var/log/tor/*.log /var/log/tor/*.log-???????? {
   daily
+  size 10M
   rotate 5
   compress
   delaycompress
