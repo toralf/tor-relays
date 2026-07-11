@@ -6,8 +6,8 @@ function _git_ls_remote() {
   local group name
   local url ver env
 
-  group=${1?GROUP MUST BE GIVEN}
-  name=${2?NAME MUST BE GIVEN}
+  group=${1:?GROUP MUST BE GIVEN}
+  name=${2:?NAME MUST BE GIVEN}
 
   if [[ ${group} == "app" ]]; then
     case ${name} in
@@ -30,8 +30,8 @@ function _git_ls_remote() {
 function _git_changed() {
   local group name current_id old_id
 
-  group=${1?GROUP MUST BE GIVEN}
-  name=${2?NAME MUST BE GIVEN}
+  group=${1:?GROUP MUST BE GIVEN}
+  name=${2:?NAME MUST BE GIVEN}
 
   # handle remote git issues
   if ! current_id=$(_git_ls_remote ${group} ${name}); then
