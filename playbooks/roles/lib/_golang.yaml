@@ -5,7 +5,7 @@
   when: go_version | length == 0
   block:
     - name: Go repo for legacy ubuntu
-      when: ansible_facts.distribution_release in ('jammy', 'noble')
+      when: ansible_facts.distribution_release in ('noble')
       ansible.builtin.apt_repository:
         repo: ppa:longsleep/golang-backports
         update_cache: true

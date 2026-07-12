@@ -51,7 +51,7 @@ Log warn file /var/log/tor/warn.log
 Log err file /var/log/tor/err.log
 
 {% for item in torrc_config %}
-{% if tor_build_from_source or item.name != 'FamilyId' or ansible_facts.distribution_release not in ('bullseye', 'bookworm', 'jammy', 'noble') %}
+{% if tor_build_from_source or item.name != 'FamilyId' or ansible_facts.distribution_release not in ('bookworm', 'noble') %}
 {{ item.name }} {{ item.value }}
 {% endif %}
 {% endfor %}

@@ -1,13 +1,11 @@
 ---
 # https://support.torproject.org/apt/tor-deb-repo/
 - name: Repo
-  when: ansible_facts.distribution_release not in ('bullseye')
   vars:
     _key: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc # gitleaks:allow
     _uri: https://deb.torproject.org/torproject.org
   block:
     - name: Repo
-      when: ansible_facts.distribution_release != 'jammy'
       block:
         - name: Add Tor repository
           ansible.builtin.deb822_repository:
@@ -27,33 +25,6 @@
             cache_valid_time: 1
             update_cache: true
             update_cache_retries: 1
-
-    - name: Legacy repo
-      when: ansible_facts.distribution_release == 'jammy'
-      vars:
-        _keyring: /usr/share/keyrings/deb.torproject.org-keyring.gpg
-      block:
-        - name: Add Tor legacy repository - tools
-          ansible.builtin.apt:
-            name:
-              - apt-transport-https
-              - gnupg
-
-        - name: Add Tor legacy repository - gpg key
-          ansible.builtin.shell:
-            cmd: >-
-              curl -q {{ _uri }}/{{ _key }} -o - |
-                gpg --dearmor >"{{ _keyring }}"
-            creates: "{{ _keyring }}"
-
-        - name: Add Tor legacy repository
-          ansible.builtin.apt_repository:
-            repo: >-
-              {{ item }} [signed-by={{ _keyring }}] {{ _uri }} {{ ansible_facts.distribution_release }} main
-            update_cache: true
-          loop:
-            - deb
-            - deb-src
 
     - name: Install/Update Tor keyring
       when: ansible_facts.distribution_release not in ('resolute')

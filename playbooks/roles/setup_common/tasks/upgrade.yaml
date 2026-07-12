@@ -28,7 +28,7 @@
             update_cache: true
 
         - name: Finish Debian release
-          when: ansible_facts.distribution == 'Debian' and ansible_facts.distribution_release != "bullseye"
+          when: ansible_facts.distribution == 'Debian'
           changed_when: true
           ansible.builtin.command:
             cmd: |-

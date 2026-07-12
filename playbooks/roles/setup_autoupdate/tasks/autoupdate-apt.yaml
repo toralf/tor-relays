@@ -37,7 +37,7 @@
   vars:
     _check_cmd: >-
       {{
-      (ansible_facts.distribution_release in ('bullseye', 'bookworm', 'jammy', 'noble')) |
+      (ansible_facts.distribution_release in ('bookworm', 'noble')) |
       ternary('pgrep -x sshd | grep -v /usr/sbin/sshd | grep -v grep', 'pgrep -x sshd-session')
       }}
   ansible.builtin.cron:
