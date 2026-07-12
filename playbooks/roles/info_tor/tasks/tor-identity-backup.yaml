@@ -7,11 +7,11 @@
     get_attributes: false
     get_checksum: false
     get_mime: false
-  register: _tor_identity_dir
+  register: _tor_identity_backup_dir
 
 - name: Backup
   throttle: "{{ concurrent_local_jobs }}"
-  when: not _tor_identity_dir.stat.exists
+  when: not _tor_identity_backup_dir.stat.exists
   block:
     - name: Backup Tor identity
       ansible.builtin.fetch:

@@ -4,10 +4,10 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
     path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}"
-  register: _keys_backup
+  register: _tor_identity_restore_dir
 
 - name: Restore
-  when: _keys_backup.stat.exists
+  when: _tor_identity_restore_dir.stat.exists
   vars:
     _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
   block:
