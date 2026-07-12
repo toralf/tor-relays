@@ -7,6 +7,14 @@
     enabled: true
     daemon_reload: true
 
+- name: Reload Tor
+  listen: Reload Tor
+  ansible.builtin.systemd_service:
+    name: tor
+    state: reloaded
+    enabled: true
+    daemon_reload: true
+
 - name: Restart metrics
   listen: Restart metrics
   changed_when: true

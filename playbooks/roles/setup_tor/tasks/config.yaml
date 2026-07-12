@@ -28,7 +28,7 @@
     src: torrc.j2
     dest: /etc/tor/torrc
     backup: true
-  notify: Restart Tor
+  notify: Reload Tor
 
 - name: Verify torrc
   changed_when: false
