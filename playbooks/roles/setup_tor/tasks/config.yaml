@@ -29,6 +29,8 @@
     dest: /etc/tor/torrc
     backup: true
   notify: Reload Tor
+  tags:
+    - torrc
 
 - name: Verify torrc
   changed_when: false
