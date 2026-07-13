@@ -6,11 +6,22 @@
   block:
     - name: Go repo for legacy ubuntu
       when: ansible_facts.distribution_release in ('noble')
-      ansible.builtin.apt_repository:
-        repo: ppa:longsleep/golang-backports
-        update_cache: true
+      block:
+        - name: Install/Update Go ppa repo
+          ansible.builtin.command:
+            cmd: >-
+              add-apt-repository ppa:longsleep/golang-backports
+            creates: /etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-noble.sources
+          register: __go_repo
 
-    - name: Install/Update Go
+        - name: Update apt cache
+          when: __go_repo.changed
+          ansible.builtin.apt:
+            cache_valid_time: 1
+            update_cache: true
+            update_cache_retries: 1
+
+    - name: Install/Update Go via apt
       vars:
         _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
       ansible.builtin.apt:
@@ -43,7 +54,7 @@
             mode: "0644"
             force: true
 
-        - name: Install Go
+        - name: Install Go from upstream
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
