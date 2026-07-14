@@ -1,5 +1,5 @@
 ---
-- name: Gather facts
+- name: Gather facts - uname
   ansible.builtin.setup:
     gather_subset:
       - kernel
