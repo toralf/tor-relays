@@ -208,7 +208,9 @@ function handle_down_systems() {
   names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
     info "  needs a rebuild: $(wc -w <<<${names})"
-    shuf -n 64 -e ${names} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+    xargs -r -n 1 <<<${names} |
+      grep -e "^h[bprs]" |
+      shuf -n 64 >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
   fi
 
   # was down but is now pingable
