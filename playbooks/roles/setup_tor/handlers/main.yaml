@@ -20,7 +20,7 @@
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
-      pkill -x metrics.sh
+      pkill -9 -x metrics.sh
       echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
 
 - name: Restart watchdog
@@ -28,5 +28,5 @@
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
-      pkill -x watchdog.sh
+      pkill -9 -x watchdog.sh
       echo 'nice /root/watchdog.sh &' | at now
