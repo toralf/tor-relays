@@ -104,7 +104,7 @@ function work_on_job_files() {
 
     if [[ ${action} == "update" ]]; then
       info "  update: $(wc -w <<<${names})"
-      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,golang,lyrebird,snowflake,tor,kernel-build \
+      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
         -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
         info "  NOT ok" >&2
       fi
