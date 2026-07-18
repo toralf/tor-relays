@@ -1,5 +1,13 @@
 ---
+- name: GeoIP directory
+  ansible.builtin.file:
+    path: /usr/share/tor/
+    mode: "0755"
+    state: "{{ use_tor_geoip_data | ternary('directory', 'absent') }}"
+  notify: Restart Tor
+
 - name: Get GeoIP data
+  when: use_tor_geoip_data
   throttle: 8
   retries: 1
   ansible.builtin.get_url:

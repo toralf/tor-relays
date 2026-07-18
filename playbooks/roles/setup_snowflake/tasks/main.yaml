@@ -48,6 +48,7 @@
       ansible.builtin.import_tasks: geoip.yaml
       tags:
         - geoip
+        - never
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

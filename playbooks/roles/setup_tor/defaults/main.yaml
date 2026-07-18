@@ -1,5 +1,6 @@
 ---
 tor_build_from_source: false
+use_tor_geoip_data: true
 
 tor_git_patches: []
 tor_git_version: main

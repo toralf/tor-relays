@@ -80,6 +80,7 @@
       ansible.builtin.import_tasks: geoip.yaml
       tags:
         - geoip
+        - never
 
     - name: DDoS metrics
       when: ddos_metrics
