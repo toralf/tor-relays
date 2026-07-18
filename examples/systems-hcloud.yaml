@@ -91,8 +91,6 @@ hrx:
     #   - dns-root-data
     #   - unbound
     tor_bridge_distribution: ""
-    tor_egress_slew: >-
-      EGRESS_SUBNET_SLEW="45.84.107.0 64.65.0.0/23 64.65.60.0/22 96.9.98.0 109.70.100 171.25.193.0 185.220.101.0 192.42.116.0"
   children:
     hr:
 

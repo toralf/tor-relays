@@ -5,6 +5,9 @@
       - ipset
       - jq
 
+#
+# ingress
+#
 - name: Get DDoS scripts
   throttle: 8
   retries: 1
@@ -110,28 +113,27 @@
     special_time: daily
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
-- name: Egress
-  block:
-    - name: Get egress firewall script
-      when: tor_egress_slew | length > 0
-      throttle: 16
-      retries: 1
-      ansible.builtin.get_url:
-        url: "{{ torutils_path }}/ipv4-rules-egress.sh"
-        dest: /root/
-      register: _egress_script
+#
+# egress
+#
+- name: Get egress firewall script
+  throttle: 16
+  retries: 1
+  ansible.builtin.get_url:
+    url: "{{ torutils_path }}/ipv4-rules-egress.sh"
+    dest: /root/
+  register: _egress_script
 
-    - name: Ensure OUTPUT chain is updated
-      changed_when: true
-      when: _egress_script.changed
-      ansible.builtin.shell: # noqa command-instead-of-shell
-        cmd: |-
-          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh {{ (tor_egress_slew | length > 0) | ternary('start', '') }}
+- name: Ensure OUTPUT chain is updated
+  changed_when: true
+  when: _egress_script.changed
+  ansible.builtin.shell: # noqa command-instead-of-shell
+    cmd: |-
+      /root/ipv4-rules-egress.sh start
 
-    - name: Create egress firewall cron job for reboot
-      ansible.builtin.cron:
-        name: start firewall egress
-        special_time: reboot
-        job: >-
-          {{ tor_egress_slew }} /root/ipv4-rules-egress.sh start
-        state: "{{ (tor_egress_slew | length > 0) | ternary('present', 'absent') }}"
+- name: Create egress firewall cron job for reboot
+  ansible.builtin.cron:
+    name: start firewall egress
+    special_time: reboot
+    job: >-
+      /root/ipv4-rules-egress.sh start

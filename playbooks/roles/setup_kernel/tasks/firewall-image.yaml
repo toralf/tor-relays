@@ -42,7 +42,5 @@
       /root/ipv4-rules.sh start
       /root/ipv6-rules.sh start
 
-      export EGRESS_SUBNET_SLEW="10.12.13.14"
-
       /root/ipv4-rules-egress.sh start
       /root/ipv4-rules-egress.sh
