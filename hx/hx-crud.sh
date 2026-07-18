@@ -148,7 +148,7 @@ function update_app() {
   fi
 
   if _git_changed app tor; then
-    if ! ./site-setup.yaml --limit "htx" --tags tor &>${logprefix}.app.tor.log; then
+    if ! ./site-setup.yaml --limit "htx" --tags tor-src &>${logprefix}.app.tor.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud

@@ -43,7 +43,7 @@
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-apt.yaml
       tags:
-        - tor
+        - tor-apt
 
     - name: Build from source
       when: tor_build_from_source
@@ -57,7 +57,7 @@
         - name: Tor
           ansible.builtin.import_tasks: tor-src.yaml
           tags:
-            - tor
+            - tor-src
 
         - name: Lyrebird
           when: tor_bridge_distribution | length > 0
