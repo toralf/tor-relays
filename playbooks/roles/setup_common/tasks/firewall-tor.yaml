@@ -117,6 +117,7 @@
 # egress
 #
 - name: Get egress firewall script
+  when: tor_shape_egress
   throttle: 16
   retries: 1
   ansible.builtin.get_url:
@@ -124,16 +125,17 @@
     dest: /root/
   register: _egress_script
 
-- name: Ensure OUTPUT chain is updated
+- name: Ensure egress is updated
   changed_when: true
   when: _egress_script.changed
   ansible.builtin.shell: # noqa command-instead-of-shell
     cmd: |-
-      /root/ipv4-rules-egress.sh start
+      /root/ipv4-rules-egress.sh {{ tor_shape_egress | ternary('start', '') }}
 
-- name: Create egress firewall cron job for reboot
+- name: Handle egress firewall cron job
   ansible.builtin.cron:
     name: start firewall egress
     special_time: reboot
     job: >-
       /root/ipv4-rules-egress.sh start
+    state: "{{ tor_shape_egress | ternary('present', 'absent') }}"

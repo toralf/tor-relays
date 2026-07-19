@@ -24,6 +24,8 @@ tor_metrics: false
 tor_bridge_distribution: "none"
 snowflake_proxies: []
 tor_port: 0
+# in Hetzner subnets shape egress
+tor_shape_egress: false
 
 # DDoS solution
 torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
