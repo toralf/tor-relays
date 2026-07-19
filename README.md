@@ -48,11 +48,13 @@ Setup a new Tor private bridge (i.e. with the hostname _my_bridge_):
 
 ## Details
 
-The deployment is made by _Ansible_.
-The Ansible role expects a `seed_address` value to change the ipv6 address at a Hetzner system
-to a reliable randomized one (at IONOS a proposed one is displayed, but not set).
-For Tor relays the DDoS solution of [torutils](https://github.com/toralf/torutils) is used.
-For Snowflake and NGinx instances a lightweight version of that iptables ruleset is deployed.
+The configuration is made by _Ansible_.
+The creation of a relay has to be made before.
+For Hetzner there're appropriate scripts in _./bin_.
+The Ansible role uses `seed_address` to change the IPv6 address at a Hetzner system
+to a pseudo-randomized one. At IONOS a proposed IPv6 one is printed out, but not set.
+For Tor relays the DDoS prevention solution from [torutils](https://github.com/toralf/torutils) is used.
+For Snowflake and NGinx instances a lightweight version of that ruleset is deployed.
 
 ### Additional software
 
@@ -67,19 +69,19 @@ hosts:
       - quassel-core
 ```
 
-### Compiling the Linux kernel, Tor, Lyrebird or Snowflake from source
+### Compiling the Linux kernel, Tor, Lyrebird and Snowflake from source
 
 The default branch is defined by the variable _<...>\_git_version_.
-The variable _<...>\_patches_ might contain list of URIs to apply additional patches on the fly.
+The list _<...>\_patches_ can be used to apply additional patches on the fly.
 
 ### Metrics
 
 If a Prometheus server is configured (`prometheus_server`) then the inbound traffic from its ip to the
-metrics port is passed by a firewall allow rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
-The metrics port is pseudo-randomly choosen using _seed_metrics_.
+metrics port of a Tor relay is granted by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+The metrics port is pseudo-randomized choosen using _seed_metrics_.
 Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
-using the certificate of the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-The Root CA key has to be put into the Prometheus config to enable scraping metrics via TLS.
+secured by the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
+The Root CA key has to be put at the Prometheus system to enable scrape metrics via TLS.
 
 ```yaml
 snowflake:
@@ -132,14 +134,14 @@ The _targets_ lines for the Prometheus config are in _~/tmp/tor-relays/\*\-targe
 
 ### Misc
 
-To create a new VPS with the hostname _my_bridge_ at Hetzner cloud in the project _my_project_, do:
+To create a new VPS in the Hetzner cloud with the hostname _my_bridge_ and the project name _my_project_, do:
 
 ```bash
 hcloud context use my_project
 ./bin/create-server.sh my_bridge
 ```
 
-The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolve and _openrc_ as the init system,
+The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver and _OpenRC_ as the init system,
 configured for the appropriate project:
 
 ```config
