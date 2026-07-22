@@ -29,6 +29,7 @@
       /root/ipv4-rules.sh
       /root/ipv6-rules.sh
 
+# use CONFIGURED_RELAYS[6] here b/c torrc might not yet been configured at initial setup
 - name: DDoS
   vars:
     _additional_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}"

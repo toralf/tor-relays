@@ -22,17 +22,21 @@ function addRules() {
 
   # make sure NEW incoming tcp connections are SYN packets
   $ipt -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
-  $ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 
   # do not touch established connections
   $ipt -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+  $ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 
   # ssh
   $ipt -A INPUT -p tcp --dport 22 --syn -j ACCEPT
 
-  # ratelimit ICMP echo
-  $ipt -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s -j ACCEPT
-  $ipt -A INPUT -p icmp --icmp-type echo-request -j DROP
+  #  PMTUD
+  $ipt -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
+  $ipt -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
+  $ipt -A INPUT -p icmp --icmp-type parameter-problem -j ACCEPT
+
+  # ping
+  $ipt -A INPUT -p icmp --icmp-type echo-request -m limit --limit 6/s --limit-burst 10 -j ACCEPT
 
   # DHCPv4
   $ipt -A INPUT -p udp --dport 68 -j ACCEPT
