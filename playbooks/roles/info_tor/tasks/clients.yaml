@@ -10,7 +10,7 @@
         {{ log_notice }}.1 {{ log_notice }} |
         tail -n 12 |
         cut -f 2- -d ',' |
-        grep -Po ' \d+ ' |
+        grep -Eo ' [0-9]+ ' |
         tac |
         xargs -r
   register: _result_tor_clients
