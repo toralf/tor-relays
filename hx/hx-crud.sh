@@ -82,17 +82,14 @@ function work_on_job_files() {
   local action names job
 
   while read -r job; do
-    info "work on job $(basename ${job})"
-
-    if [[ ! -s ${job} ]]; then
-      info "  empty" >&2
-      rm ${job}
-      continue
-    fi
+    info "work on ${job}"
     action=$(cut -f 3 -d '.' <<<${job})
     names=$(xargs <${job})
-    mv ${job} /tmp/
-    echo ${job} >${logprefix}.job.log
+    mv ${job} /tmp
+    if [[ -z ${names} ]]; then
+      info "  no names in ${job}" >&2
+      continue
+    fi
 
     if [[ -x ./bin/${action}-server.sh ]]; then
       info "  action ${action}: $(wc -w <<<${names})"
