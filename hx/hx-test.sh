@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # set -x
 
-# goal: maintain golden images, test apps, kernels etc.
+# goal: maintain golden images, test ansible, kernels etc.
 
 set -euf
 export LANG=C.utf8
