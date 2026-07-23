@@ -51,7 +51,7 @@ while :; do
     &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
-  sync_site ${srvs}
+  sync_site $(eval echo ${srvs})
   pit_stop info
 
   #--------------------------------------------------------------------
@@ -64,7 +64,7 @@ while :; do
     &>${logprefix}.${site}.ansible.${tags}.log; then
     info "  NOT ok" >&2
   fi
-  sync_site ${srvs}
+  sync_site $(eval echo ${srvs})
   pit_stop info
 
   #--------------------------------------------------------------------
