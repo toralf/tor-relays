@@ -1,16 +1,39 @@
 ---
-- name: Fetch saved DDoS ipset files
+- name: Create local DDoS info directory
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
-  failed_when: false # might not yet be created shortly after setup
-  ansible.posix.synchronize:
-    mode: pull
+  ansible.builtin.file:
+    state: directory
+    path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+    mode: "0755"
+
+- name: Fetch DDoS ipsets
+  throttle: "{{ concurrent_local_jobs }}"
+  failed_when: false
+  ansible.builtin.fetch:
     src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"
-    dest: "{{ infodir }}/{{ item }}/{{ inventory_hostname }}"
-    use_ssh_args: true
-    verify_host: true
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ item }}"
   loop:
     - ddos
     - ddos64
     - ddos80
     - ddos128
+
+- name: Fetch DDoS hashes
+  throttle: "{{ concurrent_local_jobs }}"
+  failed_when: false
+  vars:
+    _dest: >-
+      {{ item | regex_replace('/proc/net/ip6?t_hashlimit/tor-ddos', 'hash') | regex_replace('-' ~ tor_port, '') }}
+  ansible.builtin.fetch:
+    src: "{{ item }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _dest }}"
+  loop:
+    - "/proc/net/ipt_hashlimit/tor-ddos-{{ tor_port }}"
+    - "/proc/net/ipt_hashlimit/tor-ddos-{{ tor_port }}-x"
+    - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}"
+    - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}-x"
+    - "/proc/net/ip6t_hashlimit/tor-ddos80-{{ tor_port }}"
+    - "/proc/net/ip6t_hashlimit/tor-ddos80-{{ tor_port }}-x"
+    - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}"
+    - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}-x"

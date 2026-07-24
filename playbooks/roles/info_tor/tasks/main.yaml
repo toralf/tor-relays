@@ -2,6 +2,8 @@
 - name: Main
   when: tor_port is defined and tor_port > 0
   module_defaults:
+    ansible.builtin.fetch:
+      flat: true
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
@@ -57,7 +59,7 @@
       tags:
         - clients
 
-    - name: DDoS ipsets
+    - name: DDoS data
       ansible.builtin.import_tasks: ddos.yaml
       tags:
         - ddos

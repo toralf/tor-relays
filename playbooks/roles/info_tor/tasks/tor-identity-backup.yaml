@@ -17,7 +17,6 @@
       ansible.builtin.fetch:
         src: "/var/lib/tor/keys/{{ item }}"
         dest: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/"
-        flat: true
       loop:
         - ed25519_master_id_secret_key
         - secret_id_key
@@ -27,7 +26,6 @@
       ansible.builtin.fetch:
         src: "/var/lib/tor/pt_state/{{ item }}"
         dest: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/"
-        flat: true
       loop:
         - obfs4_bridgeline.txt
         - obfs4_state.json
