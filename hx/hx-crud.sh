@@ -45,7 +45,7 @@ function _git_changed() {
   # update timestamp of last check
   echo ${current_id} >~/tmp/hx/git.${group}.${name}
 
-  # an empty "old_id" is taken as "unchanged"
+  # an empty "old_id" means "unchanged"
   if [[ -z ${old_id} || ${old_id} == "${current_id}" ]]; then
     return 1
   fi
@@ -78,48 +78,53 @@ function _go_changed() {
   sed -i -E "s,${go_ver_inventory},${go_ver_upstream}," inventory/systems-hetzner-test.yaml
 }
 
-function work_on_job_files() {
-  local action names job
+function next_job() {
+  local action job joblog names
 
-  while read -r job; do
-    info "work on ${job}"
-    action=$(cut -f 3 -d '.' <<<${job})
-    names=$(xargs <${job})
-    mv ${job} /tmp
-    if [[ -z ${names} ]]; then
-      info "  no names in ${job}" >&2
-      continue
-    fi
-
-    if [[ -x ./bin/${action}-server.sh ]]; then
-      info "  action ${action}: $(wc -w <<<${names})"
-      if ! ./bin/${action}-server.sh ${names} &>>${logprefix}.job.log; then
-        info "  NOT ok" >&2
-      fi
-      pit_stop crud
-    fi
-
-    if [[ ${action} == "update" ]]; then
-      info "  update: $(wc -w <<<${names})"
-      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
-        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
-        info "  NOT ok" >&2
-      fi
-      pit_stop crud
-
-    elif [[ ${action} != "delete" ]]; then
-      info "  setup after ${action}"
-      if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
-        -e '{ "kernel_git_build_wait": false }' &>>${logprefix}.job.log; then
-        info "  NOT ok" >&2
-      fi
-      pit_stop crud
-    fi
-
-  done < <(
-    find ~/tmp/hx -maxdepth 1 -type f \( -name "job.*.create" -o -name "job.*.delete" -o -name "job.*.rebuild" -o -name "job.*.setup" -o -name "job.*.update" \) |
-      sort -V
+  job=$(
+    # shellcheck disable=SC2012
+    ls ~/tmp/hx/job.*.{create,delete,rebuild,setup,update} 2>/dev/null |
+      sort -V |
+      head -n 1
   )
+  if [[ ! -f ${job} ]]; then
+    return 0
+  fi
+
+  action=$(cut -f 3 -d '.' <<<${job})
+  names=$(xargs <${job})
+  if [[ -z ${names} ]]; then
+    info "  no names in ${job}" >&2
+    return 0
+  fi
+  info "working on ${job}"
+  mv ${job} /tmp
+  joblog=/tmp/$(basename ${job}).log
+
+  if [[ -x ./bin/${action}-server.sh ]]; then
+    info "  action ${action}: $(wc -w <<<${names})"
+    if ! ./bin/${action}-server.sh ${names} &>>${joblog}; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+  fi
+
+  if [[ ${action} == "update" ]]; then
+    info "  update: $(wc -w <<<${names})"
+    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
+      -e '{ "kernel_git_build_wait": false }' &>>${joblog}; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+
+  elif [[ ${action} != "delete" ]]; then
+    info "  setup after ${action}"
+    if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
+      -e '{ "kernel_git_build_wait": false }' &>>${joblog}; then
+      info "  NOT ok" >&2
+    fi
+    pit_stop crud
+  fi
 }
 
 function update_app() {
@@ -219,7 +224,7 @@ function handle_down_systems() {
 }
 
 #######################################################################
-set -euf
+set -eu # no -f
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
@@ -236,10 +241,12 @@ info "pid $$"
 pit_stop crud 0
 
 while :; do
-  work_on_job_files
+  next_job
   update_app
   trigger_kernel_update
-  handle_down_systems
-
+  if ls ~/tmp/hx/job.*.* &>/dev/null; then
+    continue
+  fi
   pit_stop crud 300
+  handle_down_systems
 done
