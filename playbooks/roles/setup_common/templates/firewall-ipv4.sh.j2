@@ -4,19 +4,11 @@
 
 function clearAll() {
   $ipt -P INPUT ACCEPT
-  $ipt -P OUTPUT ACCEPT
-
-  for table in filter nat; do
-    $ipt -F -t $table
-    $ipt -X -t $table
-    $ipt -Z -t $table
-  done
+  $ipt -F INPUT
+  $ipt -Z INPUT
 }
 
 function addRules() {
-  $ipt -P INPUT DROP
-  $ipt -P OUTPUT ACCEPT
-
   # allow loopback
   $ipt -A INPUT --in-interface lo -m comment --comment "Firewall IPv4 $(date -R)" -j ACCEPT
 
@@ -56,6 +48,8 @@ function addRules() {
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} --syn -j ACCEPT
 {% endif %}
 {% endfor %}
+
+  $ipt -P INPUT DROP
 }
 
 #######################################################################
