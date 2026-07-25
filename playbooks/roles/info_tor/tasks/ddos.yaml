@@ -11,13 +11,15 @@
   throttle: "{{ concurrent_local_jobs }}"
   failed_when: false
   ansible.builtin.fetch:
-    src: "/var/tmp/tor-{{ item }}-{{ tor_port }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ item }}"
+    src: "/var/tmp/tor-ddos{{ item }}-{{ tor_port }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ipset{{ item }}"
   loop:
-    - ddos
-    - ddos64
-    - ddos80
-    - ddos128
+    - ""
+    - 64
+    - 80
+    - 128
+  tags:
+    - ddos-ipset
 
 - name: Fetch DDoS hashes
   throttle: "{{ concurrent_local_jobs }}"
@@ -37,3 +39,5 @@
     - "/proc/net/ip6t_hashlimit/tor-ddos80-{{ tor_port }}-x"
     - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}"
     - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}-x"
+  tags:
+    - ddos-hash
