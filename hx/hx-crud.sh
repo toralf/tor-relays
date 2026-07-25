@@ -170,8 +170,9 @@ function trigger_kernel_update() {
       pit_stop crud
     fi
   done < <(
-    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml 2>/dev/null |
+    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml |
       tr -d '][",' |
+      grep -v '^null$' |
       xargs -r -n 1 |
       shuf
   )
@@ -210,6 +211,7 @@ function handle_down_systems() {
   names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
     info "  needs a rebuild: $(wc -w <<<${names})"
+    # shuffle and limit to reduce the blast radius
     xargs -r -n 1 <<<${names} |
       grep -e "^h[bprs]" |
       shuf -n 64 >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
