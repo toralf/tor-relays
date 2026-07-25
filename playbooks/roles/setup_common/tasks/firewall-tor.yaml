@@ -52,14 +52,19 @@
     _configured_relays_v6: >-
       {{ (tor_bridge_distribution | length == 0) |
         ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
+    # DDoS overflow
+    _netmask_overrule_v4: "" # "NETMASK_OVERRULE=26"
+    _netmask_overrule_v6: "" # "NETMASK6_OVERRULE=90"
+    _args_v4: "{{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} {{ _netmask_overrule_v4 }}"
+    _args_v6: "{{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} {{ _netmask_overrule_v6 }}"
   block:
     - name: Create DDoS cron job for reboot
       ansible.builtin.cron:
         name: start firewall
         special_time: reboot
         job: >-
-          {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start;
-          {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
+          {{ _args_v4 }} /root/ipv4-rules.sh start;
+          {{ _args_v6 }} /root/ipv6-rules.sh start
       register: _ddos_cron
 
     - name: Check if DDoS is in place
@@ -85,8 +90,8 @@
           /root/ipv4-rules.sh save
           /root/ipv6-rules.sh save
 
-          {{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} /root/ipv4-rules.sh start
-          {{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} /root/ipv6-rules.sh start
+          {{ _args_v4 }} /root/ipv4-rules.sh start
+          {{ _args_v6 }} /root/ipv6-rules.sh start
 
 - name: Remove iptables-persistent
   ansible.builtin.apt:
