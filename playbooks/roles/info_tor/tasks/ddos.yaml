@@ -41,3 +41,4 @@
     - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}-x"
   tags:
     - ddos-hash
+    - never
