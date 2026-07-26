@@ -17,10 +17,10 @@ function addRules() {
   $ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 
   # make sure NEW incoming tcp connections are SYN packets
-  $ipt -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+  $ipt -A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
 
   # ssh
-  $ipt -A INPUT -p tcp --dport 22 --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dport 22 -j ACCEPT
 
   # see RFC 4890
 
@@ -50,17 +50,17 @@ function addRules() {
 {% if metrics_port > 0 and prometheus_server6 | length > 0 %}
 
   # Prometheus scrape metrics
-  $ipt -A INPUT -p tcp --src {{ prometheus_server6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --src {{ prometheus_server6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} -j ACCEPT
 {%endif %}
 {% for _i in additional_ports %}
 
   # additional port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -j ACCEPT
 {% else %}
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -j ACCEPT
 {% endif %}
 {% endfor %}
 

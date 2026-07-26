@@ -17,7 +17,7 @@ function addRules() {
   $ipt -A INPUT -m conntrack --ctstate INVALID -j DROP
 
   # make sure NEW incoming tcp connections are SYN packets
-  $ipt -A INPUT -p tcp ! --syn -m state --state NEW -j DROP
+  $ipt -A INPUT -p tcp ! --syn -m conntrack --ctstate NEW -j DROP
 
   # ssh
   $ipt -A INPUT -p tcp --dport 22 --syn -j ACCEPT
