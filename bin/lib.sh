@@ -29,7 +29,8 @@ function cleanLocalDataEntries() {
 function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   while read -r name; do
-    rm -f ~/tmp/tor-relays/{coredump,ddos,ddos64,ddos80,ddos128,dmesg,kconfig,trace}/${name}{,.*}
+    rm -f ~/tmp/tor-relays/{coredump,dmesg,kconfig,trace}/${name}{,.*}
+    rm -rf ~/tmp/tor-relays/fw/${name}/
     if [[ -z ${KEEP_TOR_KEYS-} ]]; then
       rm -rf ~/tmp/tor-relays/tor-identity/${name}/
     fi

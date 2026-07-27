@@ -16,7 +16,6 @@
   loop:
     - ""
     - 64
-    - 80
     - 128
   tags:
     - ddos-ipset
@@ -35,8 +34,6 @@
     - "/proc/net/ipt_hashlimit/tor-ddos-{{ tor_port }}-x"
     - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}"
     - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}-x"
-    - "/proc/net/ip6t_hashlimit/tor-ddos80-{{ tor_port }}"
-    - "/proc/net/ip6t_hashlimit/tor-ddos80-{{ tor_port }}-x"
     - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}"
     - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}-x"
   tags:
