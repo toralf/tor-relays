@@ -53,8 +53,8 @@
       {{ (tor_bridge_distribution | length == 0) |
         ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
     # DDoS overflow
-    _netmask_overrule_v4: "" # "NETMASK_OVERRULE=26"
-    _netmask_overrule_v6: "" # "NETMASK6_OVERRULE=90"
+    _netmask_overrule_v4: "" # "NETMASK_OVERRULE=27"
+    _netmask_overrule_v6: "" # "NETMASK_OVERRULE6=75"
     _args_v4: "{{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} {{ _netmask_overrule_v4 }}"
     _args_v6: "{{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} {{ _netmask_overrule_v6 }}"
   block:
@@ -82,13 +82,10 @@
 
     - name: Ensure that DDoS is up
       changed_when: true
-      when: _ddos_script.changed or _ddos_cron.changed or _ddos_in_place.rc == 1
+      when: _ddos_script.changed or _ddos_cron.changed or _ddos_in_place.rc != 0
       ansible.builtin.shell:
         cmd: |-
           set -euf
-
-          /root/ipv4-rules.sh save
-          /root/ipv6-rules.sh save
 
           {{ _args_v4 }} /root/ipv4-rules.sh start
           {{ _args_v6 }} /root/ipv6-rules.sh start

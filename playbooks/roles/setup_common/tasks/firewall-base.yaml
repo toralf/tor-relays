@@ -34,7 +34,7 @@
     - v6
   register: _firewall_base
 
-- name: (Re)start base firewall
+- name: Start base fw
   when: _firewall_base.changed
   changed_when: true
   ansible.builtin.command:
@@ -44,7 +44,7 @@
     - v4
     - v6
 
-- name: Save iptables after base fw setup
+- name: Save iptables of base fw
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
