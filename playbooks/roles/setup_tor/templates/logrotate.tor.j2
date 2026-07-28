@@ -17,8 +17,9 @@
   endscript
 }
 
+# Tor dump files
 /var/log/tor/*.log-???????? {
-  daily
+  hourly
   size 10M
   rotate 5
   compress
