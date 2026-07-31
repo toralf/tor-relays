@@ -7,6 +7,18 @@
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
     mode: "0755"
 
+- name: Trigger DDoS save
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      /root/ipv4-rules.sh save
+      /root/ipv6-rules.sh save
+  tags:
+    - ddos-save
+    - never
+
 - name: Fetch DDoS ipsets
   throttle: "{{ concurrent_local_jobs }}"
   failed_when: false
