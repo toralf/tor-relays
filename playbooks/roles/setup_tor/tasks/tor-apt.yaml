@@ -34,31 +34,23 @@
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1021911
 - name: Allow low port for Tor apt
-  when: tor_port < 1024
   vars:
-    _exe: "{{ (tor_bridge_distribution | length > 0) | ternary('/usr/bin/obfs4proxy', '/usr/bin/tor') }}"
+    _exe: "{{ (tor_bridge_distribution | length > 0) | ternary('/usr/bin/lyrebird', '/usr/bin/tor') }}"
   ansible.builtin.lineinfile:
     line: >-
       DPkg::Post-Invoke { "setcap cap_net_bind_service=+ep {{ _exe }}"; };
     path: /etc/apt/apt.conf.d/99-tor-lowport
+    state: "{{ (tor_port < 1024) | ternary('present', 'absent') }}"
 
 - name: Install/Update Tor
-  vars:
-    _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
   ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
     name:
       - tor
   notify: Restart Tor
 
-- name: Install/Update PT
+- name: Install/Update Lyrebird
   when: tor_bridge_distribution | length > 0
-  vars:
-    _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
-    _package: >-
-      {{ (ansible_facts.distribution_release == 'forky') | ternary('lyrebird', 'obfs4proxy') }}
   ansible.builtin.apt:
-    default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
     name:
-      - "{{ _package }}"
+      - lyrebird
   notify: Restart Tor
