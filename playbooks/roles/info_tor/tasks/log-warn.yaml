@@ -13,6 +13,7 @@
          {{ log_warn }}.1 {{ log_warn }} |
         tail -n 10 |
         {{ filter_sensitive_data }}
+    executable: /bin/bash
   register: _result_log_warn
 
 - name: Results of warn log

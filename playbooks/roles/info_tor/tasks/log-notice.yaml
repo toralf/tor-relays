@@ -5,10 +5,12 @@
     log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
-      grep -h -v -F \
+      grep -h -v \
+        -e 'opening .*log file.' \
         -e 'Please upgrade! This version of Tor' \
-        -e 'The IPv4 ORPort address 127.0.0.1 does not match' {{ log_notice }}.1 {{ log_notice }} \
-        -e 'Unrecognized BridgeDistribution value' |
+        -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
+        -e 'Unrecognized BridgeDistribution value' \
+        {{ log_notice }}.1 {{ log_notice }} |
         tail -n 10 |
         {{ filter_sensitive_data }}
     executable: /bin/bash
