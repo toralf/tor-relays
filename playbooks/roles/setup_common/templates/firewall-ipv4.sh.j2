@@ -37,10 +37,10 @@ function addRules() {
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server_v4 }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
 {%endif %}
-{% if additional_ports | length > 0 %}
+{% if ingress_ports | length > 0 %}
 
   hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 32"
-{% for _i in additional_ports %}
+{% for _i in ingress_ports %}
 
   # additional port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}

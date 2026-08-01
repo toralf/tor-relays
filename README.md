@@ -63,7 +63,7 @@ To deploy additional software, configure it (i.e. for a _Quassel_ server) like:
 ```yaml
 hosts:
   my_system:
-    additional_ports:
+    ingress_ports:
       - 4242
     additional_software:
       - quassel-core

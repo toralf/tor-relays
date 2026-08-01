@@ -32,12 +32,12 @@
 # use CONFIGURED_RELAYS[6] here b/c torrc might not yet been configured at initial setup
 - name: DDoS
   vars:
-    _add_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}"
-    _add_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}"
+    _ingress_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(ingress_ports) | map('join', ':') }}"
+    _ingress_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(ingress_ports) | map('join', ':') }}"
     _torutils_local_v4: >-
-      {{ (_add_ports_v4 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V4="' + _add_ports_v4 | join(' ') + '"', '') }}
+      {{ (_ingress_ports_v4 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V4="' + _ingress_ports_v4 | join(' ') + '"', '') }}
     _torutils_local_v6: >-
-      {{ (_add_ports_v6 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V6="' + _add_ports_v6 | join(' ') + '"', '') }}
+      {{ (_ingress_ports_v6 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V6="' + _ingress_ports_v6 | join(' ') + '"', '') }}
     # Prometheus server
     _torutils_remote_v4: >-
       {{ (metrics_port > 0 and prometheus_server_v4 | length > 0) |

@@ -1,5 +1,5 @@
 ---
-additional_ports: []
+ingress_ports: []
 additional_software: []
 
 custom_command_file: ""
