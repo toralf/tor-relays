@@ -34,29 +34,29 @@
   vars:
     _ingress_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(ingress_ports) | map('join', ':') }}"
     _ingress_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(ingress_ports) | map('join', ':') }}"
-    _torutils_local_v4: >-
+    _local_v4: >-
       {{ (_ingress_ports_v4 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V4="' + _ingress_ports_v4 | join(' ') + '"', '') }}
-    _torutils_local_v6: >-
+    _local_v6: >-
       {{ (_ingress_ports_v6 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V6="' + _ingress_ports_v6 | join(' ') + '"', '') }}
     # Prometheus server
-    _torutils_remote_v4: >-
+    _remote_v4: >-
       {{ (metrics_port > 0 and prometheus_server_v4 | length > 0) |
         ternary('TORUTILS_REMOTE_SERVICES_V4="' + prometheus_server_v4 + '>' + metrics_port | string + '"', '') }}
-    _torutils_remote_v6: >-
+    _remote_v6: >-
       {{ (metrics_port > 0 and prometheus_server_v6 | length > 0 ) |
         ternary('TORUTILS_REMOTE_SERVICES_V6="[' + prometheus_server_v6 + ']>' + metrics_port | string + '"', '') }}
     # ipv4 for all
-    _torutils_relays_v4: >-
+    _relays_v4: >-
       {{ 'TORUTILS_RELAYS_V4="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
     # no ipv6 for bridges
-    _torutils_relays_v6: >-
+    _relays_v6: >-
       {{ (tor_bridge_distribution | length == 0) |
         ternary('TORUTILS_RELAYS_V6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
     # DDoS overflow
-    _torutils_netmask_v4: "TORUTILS_NETMASK_V4=27"
-    _torutils_netmask_v6: "TORUTILS_NETMASK_V6=80"
-    _args_v4: "{{ _torutils_local_v4 }} {{ _torutils_remote_v4 }} {{ _torutils_relays_v4 }} {{ _torutils_netmask_v4 }}"
-    _args_v6: "{{ _torutils_local_v6 }} {{ _torutils_remote_v6 }} {{ _torutils_relays_v6 }} {{ _torutils_netmask_v6 }}"
+    _netmask_v4: "TORUTILS_NETMASK_V4=27"
+    _netmask_v6: "TORUTILS_NETMASK_V6=80"
+    _args_v4: "{{ _local_v4 }} {{ _remote_v4 }} {{ _relays_v4 }} {{ _netmask_v4 }}"
+    _args_v6: "{{ _local_v6 }} {{ _remote_v6 }} {{ _relays_v6 }} {{ _netmask_v6 }}"
   block:
     - name: Create DDoS cron job for reboot
       ansible.builtin.cron:
