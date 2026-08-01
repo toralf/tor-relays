@@ -32,31 +32,31 @@
 # use CONFIGURED_RELAYS[6] here b/c torrc might not yet been configured at initial setup
 - name: DDoS
   vars:
-    _additional_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}"
-    _additional_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}"
-    _add_local_services_v4: >-
-      {{ (_additional_ports_v4 | length > 0) | ternary('ADD_LOCAL_SERVICES="' + _additional_ports_v4 | join(' ') + '"', '') }}
-    _add_local_services_v6: >-
-      {{ (_additional_ports_v6 | length > 0) | ternary('ADD_LOCAL_SERVICES6="' + _additional_ports_v6 | join(' ') + '"', '') }}
+    _add_ports_v4: "{{ [ansible_facts.default_ipv4.address] | product(additional_ports) | map('join', ':') }}"
+    _add_ports_v6: "{{ ['[' + ansible_facts.default_ipv6.address + ']'] | product(additional_ports) | map('join', ':') }}"
+    _torutils_local_v4: >-
+      {{ (_add_ports_v4 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V4="' + _add_ports_v4 | join(' ') + '"', '') }}
+    _torutils_local_v6: >-
+      {{ (_add_ports_v6 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V6="' + _add_ports_v6 | join(' ') + '"', '') }}
     # Prometheus server
-    _add_remote_services_v4: >-
+    _torutils_remote_v4: >-
       {{ (metrics_port > 0 and prometheus_server | length > 0) |
-        ternary('ADD_REMOTE_SERVICES="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
-    _add_remote_services_v6: >-
+        ternary('TORUTILS_REMOTE_SERVICES_V4="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
+    _torutils_remote_v6: >-
       {{ (metrics_port > 0 and prometheus_server6 | length > 0 ) |
-        ternary('ADD_REMOTE_SERVICES6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
+        ternary('TORUTILS_REMOTE_SERVICES_V6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
     # ipv4 for all
-    _configured_relays_v4: >-
-      {{ 'CONFIGURED_RELAYS="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
+    _torutils_relays_v4: >-
+      {{ 'TORUTILS_RELAYS_V4="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}
     # no ipv6 for bridges
-    _configured_relays_v6: >-
+    _torutils_relays_v6: >-
       {{ (tor_bridge_distribution | length == 0) |
-        ternary('CONFIGURED_RELAYS6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
+        ternary('TORUTILS_RELAYS_V6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
     # DDoS overflow
-    _netmask_overrule_v4: "" # "NETMASK_OVERRULE=27"
-    _netmask_overrule_v6: "" # "NETMASK_OVERRULE6=75"
-    _args_v4: "{{ _add_local_services_v4 }} {{ _add_remote_services_v4 }} {{ _configured_relays_v4 }} {{ _netmask_overrule_v4 }}"
-    _args_v6: "{{ _add_local_services_v6 }} {{ _add_remote_services_v6 }} {{ _configured_relays_v6 }} {{ _netmask_overrule_v6 }}"
+    _torutils_netmask_v4: "TORUTILS_NETMASK_V4=27"
+    _torutils_netmask_v6: "TORUTILS_NETMASK_V6=80"
+    _args_v4: "{{ _torutils_local_v4 }} {{ _torutils_remote_v4 }} {{ _torutils_relays_v4 }} {{ _torutils_netmask_v4 }}"
+    _args_v6: "{{ _torutils_local_v6 }} {{ _torutils_remote_v6 }} {{ _torutils_relays_v6 }} {{ _torutils_netmask_v6 }}"
   block:
     - name: Create DDoS cron job for reboot
       ansible.builtin.cron:

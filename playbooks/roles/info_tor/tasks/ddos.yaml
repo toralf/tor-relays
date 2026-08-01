@@ -15,39 +15,38 @@
 
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
-  tags:
-    - ddos-save
-    - never
 
-- name: Fetch DDoS ipsets
-  throttle: "{{ concurrent_local_jobs }}"
-  failed_when: false
-  ansible.builtin.fetch:
-    src: "/var/tmp/tor-ddos{{ item }}-{{ tor_port }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ipset{{ item }}"
-  loop:
-    - ""
-    - 64
-    - 128
-  tags:
-    - ddos-ipset
+- name: Get DDoS ipset name
+  ansible.builtin.find:
+    paths: /var/tmp/
+    patterns: torutils-ddos-v*
+    file_type: file
+  register: ddos_ipset
 
-- name: Fetch DDoS hashes
+- name: Fetch DDoS ipset
   throttle: "{{ concurrent_local_jobs }}"
-  failed_when: false
-  vars:
-    _dest: >-
-      {{ item | regex_replace('/proc/net/ip6?t_hashlimit/tor-ddos', 'hash') | regex_replace('-' ~ tor_port, '') }}
   ansible.builtin.fetch:
-    src: "{{ item }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _dest }}"
-  loop:
-    - "/proc/net/ipt_hashlimit/tor-ddos-{{ tor_port }}"
-    - "/proc/net/ipt_hashlimit/tor-ddos-{{ tor_port }}-x"
-    - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}"
-    - "/proc/net/ip6t_hashlimit/tor-ddos64-{{ tor_port }}-x"
-    - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}"
-    - "/proc/net/ip6t_hashlimit/tor-ddos128-{{ tor_port }}-x"
-  tags:
-    - ddos-hash
-    - never
+    src: "{{ item.path }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+  loop_control:
+    label: "{{ item.path }}"
+  loop: "{{ ddos_ipset.files | default([]) }}"
+
+- name: Get DDoS hash name
+  ansible.builtin.find:
+    paths:
+      - /proc/net/ipt_hashlimit/
+      - /proc/net/ip6t_hashlimit/
+    patterns: torutils-ddos-v*
+    file_type: file
+  register: ddos_hash
+
+- name: Fetch DDoS hash
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.fetch:
+    src: "{{ item.path }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+    validate_checksum: false
+  loop_control:
+    label: "{{ item.path }}"
+  loop: "{{ ddos_hash.files | default([]) }}"
