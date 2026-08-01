@@ -47,10 +47,10 @@ function addRules() {
 
   # IPv6 Multicast
   $ipt -A INPUT -p udp --source fe80::/10 --dst ff02::/80 -j ACCEPT
-{% if metrics_port > 0 and prometheus_server6 | length > 0 %}
+{% if metrics_port > 0 and prometheus_server_v6 | length > 0 %}
 
   # Prometheus scrape metrics
-  $ipt -A INPUT -p tcp --src {{ prometheus_server6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} -j ACCEPT
+  $ipt -A INPUT -p tcp --src {{ prometheus_server_v6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} -j ACCEPT
 {%endif %}
 {% if additional_ports | length > 0 %}
 

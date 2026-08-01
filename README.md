@@ -76,18 +76,17 @@ The list _<...>\_patches_ can be used to apply additional patches on the fly.
 
 ### Metrics
 
-If a Prometheus server is configured (`prometheus_server`) then the inbound traffic from its ip to the
-metrics port of a Tor relay is granted by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
-The metrics port is pseudo-randomized choosen using _seed_metrics_.
-Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/metrics.yaml))
-secured by the self-signed Root CA ([code](./playbooks/roles/setup_common/tasks/ca.yaml)).
-The Root CA key has to be put at the Prometheus system to enable scrape metrics via TLS.
+If a Prometheus server ip is configured then the inbound traffic from it to the
+metrics port of a Tor relay is opened by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
+The metrics port is pseudo-randomized, _seed_metrics_ is expected to be set.
+Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/nginx.yaml))
+secured by the self-signed Root CA ([code](./playbooks/roles/ca/tasks/main.yaml)).
+The Root CA key has to be configured at Prometheus to enable it to scrape metrics via TLS.
 
 ```yaml
-snowflake:
-  vars:
-    metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
-    prometheus_server: "1.2.3.4"
+vars:
+  metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+  prometheus_server_v4: "1.2.3.4"
 ```
 
 A _Prometheus node exporter_ is deployed if `node_metrics: true` is set.
@@ -130,7 +129,7 @@ A static prometheus config could look like this:
       replacement: "${1}"
 ```
 
-The _targets_ lines for the Prometheus config are in _~/tmp/tor-relays/\*\-targets.yaml_.
+The _targets_ lines for the Prometheus config are in _~/tmp/tor-relays/\*\-targets.yaml_ ([code](./playbooks/roles/setup_common/tasks/targets.yaml)).
 
 ### Misc
 

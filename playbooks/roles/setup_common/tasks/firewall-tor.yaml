@@ -40,11 +40,11 @@
       {{ (_add_ports_v6 | length > 0) | ternary('TORUTILS_LOCAL_SERVICES_V6="' + _add_ports_v6 | join(' ') + '"', '') }}
     # Prometheus server
     _torutils_remote_v4: >-
-      {{ (metrics_port > 0 and prometheus_server | length > 0) |
-        ternary('TORUTILS_REMOTE_SERVICES_V4="' + prometheus_server + '>' + metrics_port | string + '"', '') }}
+      {{ (metrics_port > 0 and prometheus_server_v4 | length > 0) |
+        ternary('TORUTILS_REMOTE_SERVICES_V4="' + prometheus_server_v4 + '>' + metrics_port | string + '"', '') }}
     _torutils_remote_v6: >-
-      {{ (metrics_port > 0 and prometheus_server6 | length > 0 ) |
-        ternary('TORUTILS_REMOTE_SERVICES_V6="[' + prometheus_server6 + ']>' + metrics_port | string + '"', '') }}
+      {{ (metrics_port > 0 and prometheus_server_v6 | length > 0 ) |
+        ternary('TORUTILS_REMOTE_SERVICES_V6="[' + prometheus_server_v6 + ']>' + metrics_port | string + '"', '') }}
     # ipv4 for all
     _torutils_relays_v4: >-
       {{ 'TORUTILS_RELAYS_V4="' + ansible_facts.default_ipv4.address + ':' + tor_port | string + '"' }}

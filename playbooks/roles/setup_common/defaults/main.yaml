@@ -16,12 +16,12 @@ ddos_metrics: false
 metrics_port: 0
 nginx_metrics: false
 node_metrics: false
-prometheus_server: ""
-prometheus_server6: ""
+prometheus_server_v4: ""
+prometheus_server_v6: ""
 tor_metrics: false
 
 # Tor / Snowflake
-tor_bridge_distribution: "none"
+tor_bridge_distribution: none
 snowflake_proxies: []
 tor_port: 0
 # in Hetzner subnets shape egress

@@ -10,16 +10,16 @@ all:
       -e 's,{{ ansible_facts.default_ipv4.address }},<snip ipv4>,g'
       -e 's,{{ ansible_facts.default_ipv6.address}},<snip ipv6>,g'
       -e "s,{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }},<snip ipv6 net>,g"
-      -e s',{{ _prometheus_server }},<snip prometheus>,g'
-      -e s',{{ _prometheus_server6 }},<snip prometheus6>,g'
+      -e s',{{ _prometheus_server_v4 }},<snip prometheus>,g'
+      -e s',{{ _prometheus_server_v6 }},<snip prometheus6>,g'
       -e 's,[a-zA-Z0-9+/]{70},<snip b64>,g'
       -e 's,[a-zA-Z0-9+/]{40},<snip b64>,g'
 
 metrics:
   vars:
     metrics_port: "{{ range(..., ...) | random(seed=seed_metrics + seed_host) }}"
-    prometheus_server: "1.2.3.4"
-    prometheus_server6: ::1:2:3:4
+    prometheus_server_v4: "1.2.3.4"
+    prometheus_server_v6: ::1:2:3:4
   children:
     misc:
     snowflake:
