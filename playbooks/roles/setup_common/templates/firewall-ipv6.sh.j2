@@ -52,17 +52,23 @@ function addRules() {
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} -j ACCEPT
 {%endif %}
+{% if additional_ports | length > 0 %}
+
+  # see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L365
+  max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**20) }}
+  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 64"
 {% for _i in additional_ports %}
 
   # additional port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -j ACCEPT
 {% else %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 80 --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -j ACCEPT
 {% endif %}
 {% endfor %}
+{% endif %}
 
   $ipt -P INPUT DROP
 }
@@ -71,9 +77,6 @@ function addRules() {
 set -euf
 
 ipt="ip6tables"
-
-# jump out if this fails
-$ipt -nv -L INPUT
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

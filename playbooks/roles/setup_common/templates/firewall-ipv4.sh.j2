@@ -37,17 +37,21 @@ function addRules() {
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
 {%endif %}
+{% if additional_ports | length > 0 %}
+
+  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 32"
 {% for _i in additional_ports %}
 
   # additional port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} --syn -j ACCEPT
 {% else %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} -m hashlimit --hashlimit-mode srcip,dstport --hashlimit-srcmask 32 --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire {{ 2 * 60 * 1000 }} -j DROP
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} --syn -j ACCEPT
 {% endif %}
 {% endfor %}
+{% endif %}
 
   $ipt -P INPUT DROP
 }
@@ -57,14 +61,11 @@ set -euf
 
 ipt="iptables"
 
-# jump out if this fails
-$ipt -nv -L INPUT
-
 modprobe nf_conntrack
-# see https://github.com/toralf/torutils/blob/main/ipv4-rules.sh#L239
-{% set _max = (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**20) %}
-sysctl -w net.netfilter.nf_conntrack_buckets={{ _max }} >/dev/null
-sysctl -w net.netfilter.nf_conntrack_max={{ _max }} >/dev/null
+# see https://github.com/toralf/torutils/blob/main/ipv4-rules.sh#L300
+max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**20) }}
+sysctl -w net.netfilter.nf_conntrack_buckets=$max >/dev/null
+sysctl -w net.netfilter.nf_conntrack_max=$max >/dev/null
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then
