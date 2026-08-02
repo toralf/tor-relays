@@ -13,7 +13,6 @@ BridgeDistribution {{ tor_bridge_distribution }}
 
 PublishServerDescriptor 0
 {% endif %}
-SandBox 0
 
 ORPort 127.0.0.1:auto IPv4Only
 AssumeReachable 1
@@ -23,12 +22,8 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
 {# Tor server #}
 
-ExitRelay 0
 NoExec 1
-{% if ansible_facts.architecture != 'x86_64' %}
-# sandbox issues with ARM64 (e.g. aarch64)
-SandBox 0
-{% else %}
+{% if ansible_facts.architecture == 'x86_64' %}
 SandBox 1
 {% endif %}
 
