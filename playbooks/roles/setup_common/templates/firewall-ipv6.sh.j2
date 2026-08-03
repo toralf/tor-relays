@@ -55,7 +55,7 @@ function addRules() {
 {% if ingress_ports | length > 0 %}
 
   # see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L365
-  max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**20) }}
+  max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
   hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 64"
 {% for _i in ingress_ports %}
 
