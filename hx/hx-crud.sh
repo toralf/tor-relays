@@ -163,7 +163,7 @@ function trigger_kernel_update() {
   while read -r i; do
     if _git_changed kernel ${i}; then
       info "update kernel: ${i}"
-      if ! ./site-setup.yaml --limit 'hx,!hix,&h*-*-*-'${i}'*' --tags kernel-build \
+      if ! ./site-setup.yaml --limit 'hsx,htx,&h*-*-*-'${i}'*' --tags kernel-build \
         -e '{ "kernel_git_build_wait": false }' &>${logprefix}.kernel.${i}.log; then
         info "  NOT ok" >&2
       fi
@@ -187,7 +187,7 @@ function handle_down_systems() {
 
   # 1st ping
   info "  ping 1"
-  if ./site-setup.yaml --limit 'hx,!hix' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
+  if ./site-setup.yaml --limit 'hsx,htx' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
     info "  NOT ok" >&2
   fi
   sort ~/tmp/hx/is_down >~/tmp/hx/is_down_1

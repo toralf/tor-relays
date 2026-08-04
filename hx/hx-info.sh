@@ -48,7 +48,7 @@ while :; do
   tags="coredump,issue,trace"
 
   info "${site}  tags:  ${tags}"
-  if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
+  if ! ./site-info.yaml --limit 'hsx,htx' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
     -e '{ "issue_since": "24 hours ago" }' -e '{ "trace_since": "24 hours ago" }' \
     &>${logprefix}.${site}.ansible.log; then
     info "  NOT ok" >&2
@@ -62,7 +62,7 @@ while :; do
   tags="artefact"
 
   info "${site}  tags:  ${tags}"
-  if ! ./site-info.yaml --limit 'hx,!hix' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
+  if ! ./site-info.yaml --limit 'hsx,htx' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'" }' \
     &>${logprefix}.${site}.ansible.log; then
     info "  NOT ok" >&2
   fi
