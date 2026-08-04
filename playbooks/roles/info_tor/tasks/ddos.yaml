@@ -21,6 +21,8 @@
     paths: /var/tmp/
     patterns: torutils-ddos-v*
     file_type: file
+    age: "-1h"
+    age_stamp: atime
   register: ddos_ipset
 
 - name: Fetch DDoS ipset
