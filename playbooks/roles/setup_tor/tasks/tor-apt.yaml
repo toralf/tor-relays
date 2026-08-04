@@ -22,7 +22,7 @@
         - name: Update apt cache
           when: _tor_repo.changed
           ansible.builtin.apt:
-            cache_valid_time: 1
+            cache_valid_time: 0
             update_cache: true
             update_cache_retries: 1
 
@@ -42,15 +42,10 @@
     path: /etc/apt/apt.conf.d/99-tor-lowport
     state: "{{ (tor_port < 1024) | ternary('present', 'absent') }}"
 
-- name: Install/Update Tor
+- name: Install/Update Tor/PT
+  vars:
+    _names: >-
+      {{ (tor_bridge_distribution | length > 0) | ternary(['tor', 'lyrebird'], ['tor']) }}
   ansible.builtin.apt:
-    name:
-      - tor
-  notify: Restart Tor
-
-- name: Install/Update Lyrebird
-  when: tor_bridge_distribution | length > 0
-  ansible.builtin.apt:
-    name:
-      - lyrebird
+    name: "{{ _names }}"
   notify: Restart Tor
