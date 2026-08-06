@@ -53,8 +53,8 @@
       {{ (tor_bridge_distribution | length == 0) |
         ternary('TORUTILS_RELAYS_V6="[' + ansible_facts.default_ipv6.address + ']:' + tor_port | string + '"', '') }}
     # DDoS overflow
-    _netmask_v4: "TORUTILS_NETMASK_V4=27"
-    _netmask_v6: "TORUTILS_NETMASK_V6=80"
+    _netmask_v4: "" # "TORUTILS_NETMASK_V4=27"
+    _netmask_v6: "" # "TORUTILS_NETMASK_V6=59"
     _args_v4: "{{ _local_v4 }} {{ _remote_v4 }} {{ _relays_v4 }} {{ _netmask_v4 }}"
     _args_v6: "{{ _local_v6 }} {{ _remote_v6 }} {{ _relays_v6 }} {{ _netmask_v6 }}"
   block:
