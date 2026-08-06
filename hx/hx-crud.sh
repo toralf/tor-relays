@@ -111,7 +111,8 @@ function next_job() {
 
   if [[ ${action} == "update" ]]; then
     info "  update: $(wc -w <<<${names})"
-    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
+    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) \
+      --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
       -e '{ "kernel_git_build_wait": false }' &>>${joblog}; then
       info "  NOT ok" >&2
     fi
@@ -233,7 +234,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
-type jq yq >/dev/null
+type git jq yq >/dev/null
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)

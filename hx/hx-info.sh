@@ -5,7 +5,8 @@
 function sync_site() {
   local site=${1?SITE NOT GIVEN}
   shift
-  local srvs=$(eval echo $*)
+  local srvs
+  srvs=$(eval echo $*)
 
   if awk '/^PLAY RECAP/,/^$/' ${logprefix}.${site}.ansible.log |
     grep -v -e "^PLAY RECAP" -e " changed=0 " | awk '{ print $0 }' | sort | xargs -r | grep -q .; then
@@ -33,6 +34,8 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
+
+type rsync >/dev/null
 
 [[ -d ~/tmp/hx ]]
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-info' INT QUIT TERM EXIT
