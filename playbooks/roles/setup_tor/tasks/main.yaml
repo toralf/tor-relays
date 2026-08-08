@@ -99,7 +99,7 @@
       tags:
         - flush
 
-    - name: Start Tor
+    - name: Ensure Tor is enabled and started
       ansible.builtin.systemd_service:
         name: tor
         state: started

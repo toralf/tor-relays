@@ -4,7 +4,7 @@
     name:
       - iptables-persistent
 
-- name: Enable and start netfilter-persistent
+- name: Ensure netfilter-persistent is enabled and started
   ansible.builtin.systemd_service:
     name: netfilter-persistent
     enabled: true

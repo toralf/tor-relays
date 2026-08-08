@@ -73,7 +73,7 @@
     - 50unattended-upgrades
   notify: Reload systemd
 
-- name: Enable and start
+- name: Ensure unatt apt is enabled and started
   failed_when: false
   ansible.builtin.systemd_service:
     name: "{{ item }}"

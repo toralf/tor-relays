@@ -55,7 +55,7 @@
       tags:
         - flush
 
-    - name: Start Snowflake
+    - name: Ensure Snowflake is enabled and started
       ansible.builtin.systemd_service:
         name: "{{ item.name }}"
         state: started
