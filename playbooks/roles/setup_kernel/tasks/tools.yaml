@@ -13,3 +13,22 @@
       - libncurses5-dev
       - libssl-dev
       - lz4
+
+- name: Hold if not an image
+  when: (snapshot_description | default('')) | length == 0
+  block:
+    - name: Deactivate Debian kernel upgrade
+      when: ansible_facts.distribution == 'Debian'
+      changed_when: false
+      vars:
+        _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+      ansible.builtin.command:
+        cmd: |-
+          apt-mark hold linux-image-{{ _arch }} linux-headers-{{ _arch }}
+
+    - name: Deactivate Ubuntu kernel upgrade
+      when: ansible_facts.distribution == 'Ubuntu'
+      changed_when: false
+      ansible.builtin.command:
+        cmd: |-
+          apt-mark hold linux-image-generic linux-headers-generic
