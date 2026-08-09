@@ -22,13 +22,14 @@
       changed_when: false
       vars:
         _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+        _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
       ansible.builtin.command:
         cmd: |-
-          apt-mark hold linux-image-{{ _arch }} linux-headers-{{ _arch }}
+          apt-mark hold linux-image{{ _cloud }}-{{ _arch }}
 
     - name: Deactivate Ubuntu kernel upgrade
       when: ansible_facts.distribution == 'Ubuntu'
       changed_when: false
       ansible.builtin.command:
         cmd: |-
-          apt-mark hold linux-image-generic linux-headers-generic
+          apt-mark hold linux-image-virtual
