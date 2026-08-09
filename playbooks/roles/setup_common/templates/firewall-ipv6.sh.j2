@@ -52,22 +52,18 @@ function addRules() {
   # Prometheus scrape metrics
   $ipt -A INPUT -p tcp --src {{ prometheus_server_v6 }} --dst {{ ansible_facts.default_ipv6.address }} --dport {{ metrics_port }} -j ACCEPT
 {%endif %}
-{% if ingress_ports | length > 0 %}
-
-  # see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L365
-  max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
-  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 64 --hashlimit-htable-expire $((2 * 60 * 1000))"
 {% for _i in ingress_ports %}
+{% set _mp = (_i is search(',') or _i is search(':')) | ternary('--match multiport --dports', '--dport')  %}
 
-  # ingress port {{ _i }}
-{% if _i is search(',') or _i is search(':') %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
-{% else %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
-{% endif %}
+  # ingress_ports {{ _i }}
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} {{ _mp }} {{ _i }} \
+    -m hashlimit --hashlimit-name ingress_ports-{{ _i }} --hashlimit-mode srcip,dstport \
+    --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) \
+    --hashlimit-srcmask 64 --hashlimit-htable-expire $((2 * 60 * 1000)) \
+    --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% endfor %}
-{% endif %}
 
+  # default ingress policy
   $ipt -P INPUT DROP
 }
 
@@ -75,6 +71,9 @@ function addRules() {
 set -euf
 
 ipt="ip6tables"
+
+# see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L300
+max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then
