@@ -39,16 +39,14 @@ function addRules() {
 {%endif %}
 {% if ingress_ports | length > 0 %}
 
-  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 32"
+  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 32 --hashlimit-htable-expire $((2 * 60 * 1000))"
 {% for _i in ingress_ports %}
 
-  # additional port {{ _i }}
+  # ingress_ports port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 -j DROP
 {% else %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} --syn -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port-{{ _i }} --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% endif %}
 {% endfor %}
 {% endif %}

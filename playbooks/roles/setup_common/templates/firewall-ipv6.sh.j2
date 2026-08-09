@@ -56,16 +56,14 @@ function addRules() {
 
   # see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L365
   max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
-  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 64"
+  hashlimit_opts="--hashlimit-mode srcip,dstport --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) --hashlimit-srcmask 64 --hashlimit-htable-expire $((2 * 60 * 1000))"
 {% for _i in ingress_ports %}
 
-  # additional port {{ _i }}
+  # ingress port {{ _i }}
 {% if _i is search(',') or _i is search(':') %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --match multiport --dports {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% else %}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-above 60/minute --hashlimit-burst 10 --hashlimit-htable-expire $((2 * 60 * 1000)) -j DROP
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -j ACCEPT
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ _i }} -m hashlimit $hashlimit_opts --hashlimit-name port6-{{ _i }} --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% endif %}
 {% endfor %}
 {% endif %}
