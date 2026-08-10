@@ -79,7 +79,7 @@ function _go_changed() {
 }
 
 function next_job() {
-  local action job joblog names
+  local action job tmplog names
 
   job=$(
     # shellcheck disable=SC2012
@@ -99,11 +99,11 @@ function next_job() {
   fi
   info "working on ${job}"
   mv ${job} /tmp
-  joblog=/tmp/$(basename ${job}).log
+  tmplog=/tmp/$(basename ${job}).log
 
   if [[ -x ./bin/${action}-server.sh ]]; then
     info "  action ${action}: $(wc -w <<<${names})"
-    if ! ./bin/${action}-server.sh ${names} &>>${joblog}; then
+    if ! ./bin/${action}-server.sh ${names} 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
@@ -113,7 +113,7 @@ function next_job() {
     info "  update: $(wc -w <<<${names})"
     if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) \
       --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
-      -e '{ "kernel_git_build_wait": false }' &>>${joblog}; then
+      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
@@ -121,7 +121,7 @@ function next_job() {
   elif [[ ${action} != "delete" ]]; then
     info "  setup after ${action}"
     if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
-      -e '{ "kernel_git_build_wait": false }' &>>${joblog}; then
+      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
