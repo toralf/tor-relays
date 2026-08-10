@@ -87,18 +87,24 @@ function next_job() {
       sort -V |
       head -n 1
   )
-  if [[ ! -f ${job} ]]; then
+  if [[ -z ${job} ]]; then
     return 0
   fi
 
+  if [[ ! -f ${job} ]]; then
+    info "  fatal issue with ${job}" >&2
+    return 1
+  fi
+
+  info "working on ${job}"
   action=$(cut -f 3 -d '.' <<<${job})
   names=$(xargs <${job})
+  mv ${job} /tmp
   if [[ -z ${names} ]]; then
     info "  no names in ${job}" >&2
     return 0
   fi
-  info "working on ${job}"
-  mv ${job} /tmp
+
   tmplog=/tmp/$(basename ${job}).log
 
   if [[ -x ./bin/${action}-server.sh ]]; then
@@ -241,9 +247,9 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-crud' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop crud 0
 
 while :; do
+  pit_stop crud 0
   next_job
   update_app
   trigger_kernel_update
