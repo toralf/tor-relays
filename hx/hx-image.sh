@@ -14,9 +14,10 @@ logprefix=~/tmp/hx/$(basename $0)
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-image' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop image 0
 
 while :; do
+  pit_stop image 0
+
   while read -r f; do
     # remember current HEAD
     if [[ ! -f ${f}.image ]]; then
@@ -39,5 +40,5 @@ while :; do
       shuf
   )
 
-  pit_stop image 300
+  pit_stop image
 done

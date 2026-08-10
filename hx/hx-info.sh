@@ -41,10 +41,11 @@ type rsync >/dev/null
 trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-info' INT QUIT TERM EXIT
 
 info "pid $$"
-pit_stop info 0
 logprefix=~/tmp/hx/$(basename $0)
 
 while :; do
+  pit_stop info 0
+
   #--------------------------------------------------------------------
   site="site01"
   srvs=""
@@ -73,5 +74,5 @@ while :; do
   pit_stop info
 
   #--------------------------------------------------------------------
-  pit_stop info 300
+  pit_stop info
 done
