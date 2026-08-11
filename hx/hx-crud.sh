@@ -35,23 +35,22 @@ function _git_changed() {
 
   # handle remote git issues
   if ! current_id=$(_git_ls_remote ${group} ${name}); then
-    return 4
+    return 3
   fi
   if [[ -z ${current_id} ]]; then
-    return 3
+    return 2
   fi
 
   old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null) || true
-  # update timestamp of last check
+  # file timestamp is the latest check time
   echo ${current_id} >~/tmp/hx/git.${group}.${name}
 
-  # an empty "old_id" means "unchanged"
+  # an empty "old_id" is taken as "unchanged"
   if [[ -z ${old_id} || ${old_id} == "${current_id}" ]]; then
     return 1
   fi
 
   info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
-  return 0
 }
 
 function _go_changed() {
@@ -88,7 +87,7 @@ function next_job() {
       head -n 1
   )
   if [[ -z ${job} ]]; then
-    return 0
+    return
   fi
 
   if [[ ! -f ${job} ]]; then
@@ -102,7 +101,7 @@ function next_job() {
   mv ${job} /tmp
   if [[ -z ${names} ]]; then
     info "  no names in ${job}" >&2
-    return 0
+    return
   fi
 
   tmplog=/tmp/$(basename ${job}).log
@@ -194,7 +193,7 @@ function handle_down_systems() {
 
   # 1st ping
   info "  ping 1"
-  if ./site-setup.yaml --limit 'hsx,htx' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
+  if ! ./site-setup.yaml --limit 'hsx,htx' --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_1.log; then
     info "  NOT ok" >&2
   fi
   sort ~/tmp/hx/is_down >~/tmp/hx/is_down_1
@@ -208,32 +207,26 @@ function handle_down_systems() {
 
   # 2nd ping
   info "  ping 2"
-  if ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_2.log; then
+  if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" --tags ping -e '{ "infodir": "~/tmp/hx" }' &>${logprefix}.ping_2.log; then
     info "  NOT ok" >&2
   fi
   sort ~/tmp/hx/is_down >~/tmp/hx/is_down_2
   info "  ping 2 down: $(wc -w <~/tmp/hx/is_down_2)"
 
   # was down and is still down
-  names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
+  names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2)
   if [[ -n ${names} ]]; then
     info "  need a rebuild: $(wc -w <<<${names})"
-    limit=$(
-      xargs -n 1 <<<${names} |
-        grep -e "^h[bprs]" |
-        shuf -n 64
-    )
-    if [[ -n ${limit} ]]; then
-      cat <<<${limit} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
-      info "  scheduled for rebuild: $(wc -w <<<${limit})"
-    fi
+    limit=$(shuf -n 64 <<<${names})
+    cat <<<${limit} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
   fi
 
   # was down but is now pingable
-  names=$(comm -23 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
+  names=$(comm -23 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2)
   if [[ -n ${names} ]]; then
     info "  need an update: $(wc -w <<<${names})"
-    cat <<<${names} >~/tmp/hx/job.${EPOCHSECONDS}.update
+    limit=$(shuf -n 64 <<<${names})
+    cat <<<${limit} >~/tmp/hx/job.${EPOCHSECONDS}.update
   fi
 }
 
@@ -245,7 +238,7 @@ export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 cd $(dirname $0)/..
 source ./hx/hx-lib.sh
 
-type git jq yq >/dev/null
+type git yq >/dev/null
 
 [[ -d ~/tmp/hx ]]
 logprefix=~/tmp/hx/$(basename $0)
