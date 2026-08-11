@@ -63,14 +63,3 @@
       loop_control:
         label: "{{ item.name }}"
       loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
-
-    - name: Stop Snowflake
-      ansible.builtin.systemd_service:
-        name: "{{ item.name }}"
-        state: stopped
-        enabled: false
-      loop_control:
-        label: "{{ item.name }}"
-      loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'absent') }}"
-      tags:
-        - snowflake
