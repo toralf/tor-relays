@@ -34,8 +34,7 @@ while :; do
       pit_stop image
     fi
   done < <(
-    find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*' |
-      grep -v "\.image$" |
+    find ~/tmp/hx/ -maxdepth 1 -type f -name 'git.kernel.*.image' |
       grep -E "${1:-.}" |
       shuf
   )
