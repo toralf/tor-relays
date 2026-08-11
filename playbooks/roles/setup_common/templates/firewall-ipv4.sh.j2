@@ -22,6 +22,9 @@ function addRules() {
   # ssh
   $ipt -A INPUT -p tcp --dport 22 --syn -j ACCEPT
 
+  # tarpit
+  $ipt -A INPUT -m set --match-set $tarpitlist src -j DROP
+
   #  PMTUD
   $ipt -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
   $ipt -A INPUT -p icmp --icmp-type time-exceeded -j ACCEPT
@@ -48,6 +51,9 @@ function addRules() {
     --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% endfor %}
 
+  # tarpit
+  $ipt -A INPUT -p tcp -j SET --add-set $tarpitlist src --exist
+
   # default ingress policy
   $ipt -P INPUT DROP
 }
@@ -62,6 +68,13 @@ ipt="iptables"
 max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
 sysctl -w net.netfilter.nf_conntrack_buckets=$max >/dev/null
 sysctl -w net.netfilter.nf_conntrack_max=$max >/dev/null
+
+tarpitlist="torutils-tarpit-v4"
+cmd="ipset create -exist $tarpitlist hash:ip netmask 32 maxelem $max timeout 86400 family inet"
+if ! $cmd; then
+  ipset destroy $tarpitlist
+  $cmd
+fi
 
 trap clearAll INT QUIT TERM EXIT
 if [[ $1 == "start" ]]; then

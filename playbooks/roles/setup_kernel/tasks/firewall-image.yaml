@@ -14,7 +14,6 @@
 - name: Install/Update tools for DDoS
   ansible.builtin.apt:
     name:
-      - ipset
       - jq
 
 - name: Fetch

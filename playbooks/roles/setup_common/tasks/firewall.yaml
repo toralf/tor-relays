@@ -1,8 +1,9 @@
 ---
-- name: Install/Update iptables
+- name: Install/Update Firewall tools
   ansible.builtin.apt:
     name:
       - conntrack
+      - ipset
       - iptables
 
 - name: Firewall base
