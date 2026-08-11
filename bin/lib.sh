@@ -106,7 +106,7 @@ function _getImageBySnapshot() {
   while read -r description id; do
     if [[ ${name} =~ -${description}-*$ ]]; then
       echo ${id}
-      return 0
+      return
     fi
   done <<<${snapshots}
 
@@ -114,7 +114,7 @@ function _getImageBySnapshot() {
   while read -r description id; do
     if [[ ${name} =~ -${description} ]]; then
       echo ${id}
-      return 0
+      return
     fi
   done <<<${snapshots}
 
@@ -122,7 +122,7 @@ function _getImageBySnapshot() {
   if [[ ! ${name} =~ "-dist" && ! ${name} =~ "-mainline" ]]; then
     if alt_name=$(awk -F- -v OFS=- '{ if (NF >=4) { $4="mainline"; print } }' <<<${name}); then
       if [[ -n ${alt_name} ]] && _getImageBySnapshot ${alt_name}; then
-        return 0
+        return
       fi
     fi
   fi
