@@ -6,11 +6,3 @@
     state: restarted
     enabled: true
     daemon_reload: true
-
-- name: Restart snowflake-udp
-  listen: Restart snowflake-udp
-  ansible.builtin.systemd_service:
-    name: snowflake-udp
-    state: restarted
-    enabled: true
-    daemon_reload: true
