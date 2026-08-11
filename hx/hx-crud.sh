@@ -186,7 +186,7 @@ function trigger_kernel_update() {
 }
 
 function handle_down_systems() {
-  local names
+  local limit names
 
   info "down"
   truncate -s 0 ~/tmp/hx/is_down # might contain obsolete entries
@@ -204,7 +204,7 @@ function handle_down_systems() {
     return
   fi
 
-  pit_stop crud
+  pit_stop crud 120
 
   # 2nd ping
   info "  ping 2"
@@ -217,17 +217,22 @@ function handle_down_systems() {
   # was down and is still down
   names=$(comm -12 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
-    info "  needs a rebuild: $(wc -w <<<${names})"
-    # shuffle and limit to reduce the blast radius
-    xargs -r -n 1 <<<${names} |
-      grep -e "^h[bprs]" |
-      shuf -n 64 >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+    info "  need a rebuild: $(wc -w <<<${names})"
+    limit=$(
+      xargs -n 1 <<<${names} |
+        grep -e "^h[bprs]" |
+        shuf -n 64
+    )
+    if [[ -n ${limit} ]]; then
+      cat <<<${limit} >~/tmp/hx/job.${EPOCHSECONDS}.rebuild
+      info "  scheduled for rebuild: $(wc -w <<<${limit})"
+    fi
   fi
 
   # was down but is now pingable
   names=$(comm -23 ~/tmp/hx/is_down_1 ~/tmp/hx/is_down_2 | xargs -r)
   if [[ -n ${names} ]]; then
-    info "  needs an update: $(wc -w <<<${names})"
+    info "  need an update: $(wc -w <<<${names})"
     cat <<<${names} >~/tmp/hx/job.${EPOCHSECONDS}.update
   fi
 }
