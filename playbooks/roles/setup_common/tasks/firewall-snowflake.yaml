@@ -1,4 +1,13 @@
 ---
+- name: Get line number of tarpit iptables rule
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: >-
+      iptables -nvL INPUT --line-numbers |
+        grep ' add-set torutils-tarpit-v' |
+        cut -f 1 -d ' '
+  register: _line_no
+
 - name: ACCEPT incoming UDP to (ephemeral ports of) Snowflake
   ansible.builtin.iptables:
     ip_version: "ip{{ item }}"
@@ -8,6 +17,8 @@
     destination: "{{ (item == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
     destination_ports: "32768:60999" # /proc/sys/net/ipv4/ip_local_port_range
     jump: ACCEPT
+    action: insert
+    rule_num: "{{ _line_no.stdout }}"
   loop:
     - v4
     - v6
