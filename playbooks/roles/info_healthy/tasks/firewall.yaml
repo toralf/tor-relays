@@ -1,11 +1,11 @@
 ---
-- name: Base
+- name: Firewall-base
   when: tor_port == 0
   tags:
     - firewall-base
   block:
     - name: Check if firewall base is in place
-      changed_when: false
+      changed_when: _firewall_base.rc != 0
       failed_when: false
       ansible.builtin.shell:
         cmd: |-
@@ -18,7 +18,6 @@
 
     - name: File firewall base
       delegate_to: localhost
-      changed_when: _firewall_base.rc != 0
       throttle: 1
       ansible.builtin.lineinfile:
         line: "{{ inventory_hostname }}"
@@ -26,7 +25,7 @@
         regexp: "^{{ inventory_hostname }}$"
         state: "{{ (_firewall_base.rc != 0) | ternary('present', 'absent') }}"
 
-- name: Tor
+- name: Firewall-tor
   when: tor_port > 0
   tags:
     - firewall-tor
