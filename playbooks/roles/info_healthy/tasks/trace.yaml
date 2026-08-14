@@ -1,5 +1,5 @@
 ---
-- name: Get trace from systemd log
+- name: Look for trace
   changed_when: false
   ansible.builtin.shell:
     cmd: |-

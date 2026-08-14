@@ -1,5 +1,5 @@
 ---
-- name: Grep system log for issue/s
+- name: Look for issue/s
   changed_when: false
   failed_when: _result_syslog.stderr | length > 0
   ansible.builtin.shell:

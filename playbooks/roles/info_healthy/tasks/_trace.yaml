@@ -5,10 +5,10 @@
   ansible.builtin.lineinfile:
     line: "{{ item }}"
     path: "{{ infodir }}/trace/_known.txt"
-  register: __known
+  register: __known_trace
 
 - name: Work on new trace
-  when: __known.changed
+  when: __known_trace.changed
   block:
     - name: Get trace
       changed_when: false
