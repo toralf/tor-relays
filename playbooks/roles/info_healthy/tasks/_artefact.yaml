@@ -7,6 +7,13 @@
     path: "{{ infodir }}/artefact/_known.txt"
   register: __known_artefact
 
+- name: Store all hostnames of an artefact
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ infodir }}/artefact/_hostname.{{ item.checksum }}.txt"
+
 - name: Work on new artefact
   when: __known_artefact.changed
   vars:

@@ -7,7 +7,10 @@ function cleanLocalDataEntries() {
   local files
 
   echo -e " deleting local entries and facts ..."
-  files=$(find ~/tmp/tor-relays/ -maxdepth 1 -type f)
+  files=$(
+    find ~/tmp/tor-relays/ -maxdepth 1 -type f
+    find ~/tmp/tor-relays/artefact/ -maxdepth 1 -type f -name '_hostname.*.txt'
+  )
   while read -r name; do
     rm -f ./.ansible_facts/{,s1_}${name}
     set +e
