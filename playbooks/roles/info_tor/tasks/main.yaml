@@ -61,8 +61,6 @@
 
     - name: DDoS data
       ansible.builtin.import_tasks: ddos.yaml
-      tags:
-        - ddos
 
     - name: Heartbeat
       ansible.builtin.import_tasks: heartbeat.yaml

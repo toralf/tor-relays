@@ -7,48 +7,57 @@
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
     mode: "0755"
 
-- name: Trigger DDoS save
-  changed_when: true
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+- name: Ipset
+  tags:
+    - ddos-ipset
+  block:
+    - name: Trigger DDoS save
+      changed_when: true
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
 
-      /root/ipv4-rules.sh save
-      /root/ipv6-rules.sh save
+          /root/ipv4-rules.sh save
+          /root/ipv6-rules.sh save
 
-- name: Get DDoS ipset name
-  ansible.builtin.find:
-    paths: /var/tmp/
-    patterns: torutils-ddos-v*
-    file_type: file
-    age: "-1h"
-    age_stamp: atime
-  register: ddos_ipset
+    - name: Get DDoS ipset file names
+      ansible.builtin.find:
+        paths: /var/tmp/
+        patterns: torutils-ddos-v*
+        file_type: file
+        age: "-1h"
+        age_stamp: atime
+      register: ddos_ipset
 
-- name: Fetch DDoS ipset
-  throttle: "{{ concurrent_local_jobs }}"
-  ansible.builtin.fetch:
-    src: "{{ item.path }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
-  loop_control:
-    label: "{{ item.path }}"
-  loop: "{{ ddos_ipset.files | default([]) }}"
+    - name: Fetch DDoS ipsets
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+      loop_control:
+        label: "{{ item.path }}"
+      loop: "{{ ddos_ipset.files | default([]) }}"
 
-- name: Get DDoS hash name
-  ansible.builtin.find:
-    paths:
-      - /proc/net/ipt_hashlimit/
-      - /proc/net/ip6t_hashlimit/
-    patterns: torutils-ddos-v*
-    file_type: file
-  register: ddos_hash
+- name: Hash
+  tags:
+    - ddos-hash
+    - never
+  block:
+    - name: Get DDoS hash names
+      ansible.builtin.find:
+        paths:
+          - /proc/net/ipt_hashlimit/
+          - /proc/net/ip6t_hashlimit/
+        patterns: torutils-ddos-v*
+        file_type: file
+      register: ddos_hash
 
-- name: Fetch DDoS hash
-  throttle: "{{ concurrent_local_jobs }}"
-  ansible.builtin.fetch:
-    src: "{{ item.path }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
-    validate_checksum: false
-  loop_control:
-    label: "{{ item.path }}"
-  loop: "{{ ddos_hash.files | default([]) }}"
+    - name: Fetch DDoS hashes
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.fetch:
+        src: "{{ item.path }}"
+        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+        validate_checksum: false
+      loop_control:
+        label: "{{ item.path }}"
+      loop: "{{ ddos_hash.files | default([]) }}"
