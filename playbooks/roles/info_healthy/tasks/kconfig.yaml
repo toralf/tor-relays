@@ -1,3 +1,0 @@
----
-- name: Fetch kernel config
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"

@@ -34,12 +34,6 @@
       tags:
         - issue
 
-    - name: Kernel config
-      ansible.builtin.import_tasks: kconfig.yaml
-      tags:
-        - kconfig
-        - never
-
     - name: Core dump
       ansible.builtin.import_tasks: coredump.yaml
       tags:

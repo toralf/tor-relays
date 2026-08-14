@@ -56,4 +56,4 @@
       ansible.builtin.include_tasks: _dmesg.yaml
 
     - name: Get kernel config for coredump
-      ansible.builtin.include_tasks: _kconfig.yaml
+      ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
