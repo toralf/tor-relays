@@ -9,14 +9,14 @@ function cleanLocalDataEntries() {
   echo -e " deleting local entries and facts ..."
   files=$(
     find ~/tmp/tor-relays/ -maxdepth 1 -type f
-    find ~/tmp/tor-relays/artefact/ -maxdepth 1 -type f -name '_hostname.*.txt'
+    find ~/tmp/*/artefact/ -maxdepth 1 -type f -name '_hostname.*.txt'
   )
   while read -r name; do
     rm -f ./.ansible_facts/{,s1_}${name}
     set +e
-    # in wellknown files there're 2 subsequent lines to be deleted
+    # delete 2 subsequent lines
     sed -i -e "/^# ${name}$/{N;d;}" ~/tmp/tor-relays/{{,hashed-bridge-}rsa-fingerprint,ed25519-master-pubkey}.txt
-    # 1-line pattern
+    # delete 1-line
     sed -i \
       -e "/^${name}$/d" \
       -e "/^${name} /d" \

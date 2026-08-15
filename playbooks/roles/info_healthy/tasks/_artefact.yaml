@@ -17,21 +17,21 @@
 - name: Work on new artefact
   when: __known_artefact.changed
   vars:
-    _fname: "{{ inventory_hostname }}.{{ item.checksum }}.tar.gz"
+    _fname: "object.{{ item.checksum }}.tar.gz"
   block:
-    - name: Pack artefact
+    - name: Archive artefact
       changed_when: false
       ansible.builtin.command:
         cmd: >-
           tar -czpf /tmp/{{ _fname }} {{ item.path }}
 
-    - name: Fetch artefact
+    - name: Fetch artefact archive
       throttle: 1
       ansible.builtin.fetch:
         src: "/tmp/{{ _fname }}"
         dest: "{{ infodir }}/artefact/{{ _fname }}"
 
-    - name: Delete artefact
+    - name: Delete tmp artefact archive
       ansible.builtin.file:
         path: "/tmp/{{ _fname }}"
         state: absent
