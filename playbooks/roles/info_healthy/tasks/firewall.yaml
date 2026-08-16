@@ -1,28 +1,25 @@
 ---
-- name: Firewall
+- name: Check if firewall is up
+  changed_when: _firewall_healthy.rc != 0
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
+      ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
+      iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
+      ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
+  register: _firewall_healthy
+  notify: Not Healthy
+
+- name: File firewall state
+  delegate_to: localhost
+  throttle: 1
   vars:
-    _pattern: "{{ (tor_port | default(0) == 0) | ternary('Firewall', 'DDoS') }}"
     _file: "{{ (tor_port | default(0) == 0) | ternary('firewall_base_is_down', 'firewall_tor_is_down') }}"
-  block:
-    - name: Check if firewall is up
-      changed_when: _firewall.rc != 0
-      failed_when: false
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          iptables  -nvL INPUT | grep -F '/* {{ _pattern }} IPv4'
-          ip6tables -nvL INPUT | grep -F '/* {{ _pattern }} IPv6'
-          iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
-          ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
-      register: _firewall
-      notify: Not Healthy
-
-    - name: File firewall state
-      delegate_to: localhost
-      throttle: 1
-      ansible.builtin.lineinfile:
-        line: "{{ inventory_hostname }}"
-        path: "{{ infodir }}/{{ _file }}"
-        regexp: "^{{ inventory_hostname }}$"
-        state: "{{ (_firewall.rc != 0) | ternary('present', 'absent') }}"
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }}"
+    path: "{{ infodir }}/{{ _file }}"
+    regexp: "^{{ inventory_hostname }}$"
+    state: "{{ (_firewall_healthy.rc != 0) | ternary('present', 'absent') }}"

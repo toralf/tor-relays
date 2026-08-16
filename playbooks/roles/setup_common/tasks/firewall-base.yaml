@@ -34,8 +34,21 @@
     - v6
   register: _firewall_base
 
+- name: Check if firewall is up
+  changed_when: _firewall_base_is_up.rc != 0
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
+      ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
+      iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
+      ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
+  register: _firewall_base_is_up
+
 - name: Start base fw
-  when: _firewall_base.changed
+  when: _firewall_base.changed or _firewall_base_is_up.changed
   changed_when: true
   ansible.builtin.command:
     cmd: >-
