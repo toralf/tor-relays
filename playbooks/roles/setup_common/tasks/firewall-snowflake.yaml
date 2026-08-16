@@ -2,10 +2,20 @@
 - name: Get line number of tarpit iptables rule
   changed_when: false
   ansible.builtin.shell:
-    cmd: >-
-      iptables -nvL INPUT --line-numbers |
+    cmd: |-
+      set -euf
+
+      if ! iptables -nvL INPUT --line-numbers |
         grep ' add-set torutils-tarpit-v' |
-        cut -f 1 -d ' '
+        cut -f 1 -d ' ' |
+        grep .; then
+        n=$(
+          iptables -nvL INPUT --line-numbers |
+            tail -n 1 |
+            cut -f 1 -d ' '
+        )
+        echo $((n + 1))
+      fi
   register: _line_no
 
 - name: ACCEPT incoming UDP to (ephemeral ports of) Snowflake
@@ -22,10 +32,8 @@
   loop:
     - v4
     - v6
-  register: _firewall_snowflake
 
 - name: Save iptables after Snowflake fw setup
-  when: _firewall_snowflake.changed
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
