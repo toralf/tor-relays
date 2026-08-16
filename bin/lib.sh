@@ -14,9 +14,9 @@ function cleanLocalDataEntries() {
   while read -r name; do
     rm -f ./.ansible_facts/{,s1_}${name}
     set +e
-    # delete 2 subsequent lines
+    # delete next line too
     sed -i -e "/^# ${name}$/{N;d;}" ~/tmp/tor-relays/{{,hashed-bridge-}rsa-fingerprint,ed25519-master-pubkey}.txt
-    # delete 1-line
+    # delete single line
     sed -i \
       -e "/^${name}$/d" \
       -e "/^${name} /d" \
