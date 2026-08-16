@@ -33,7 +33,7 @@
     - v4
     - v6
 
-- name: Save iptables after Snowflake fw setup
+- name: Save iptables after Snowflake firewall setup
   community.general.iptables_state:
     ip_version: "ip{{ item }}"
     state: saved
