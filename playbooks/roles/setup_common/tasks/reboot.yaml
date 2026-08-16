@@ -9,16 +9,19 @@
   register: _reboot_required
   notify: Reboot
 
-- name: Check if a reboot is needed by a kernel
-  changed_when: _kernel_reboot_needed.stdout | length > 0
+- name: Check if a reboot is needed
+  changed_when: _reboot_needed.rc == 123
   environment:
     LC_ALL: C.UTF-8
   ansible.builtin.shell:
     cmd: |-
-      if needrestart -r l -b | grep -e 'NEEDRESTART-KSTA: 2' -e 'NEEDRESTART-KSTA: 3'; then
-        : # yep
+      set -euf
+
+      needrestart -r a -b
+      if needrestart -r l -b | grep -E -e 'NEEDRESTART-KSTA: [23]' -e 'NEEDRESTART-SVC: '; then
+        exit 123
       fi
-  register: _kernel_reboot_needed
+  register: _reboot_needed
   notify: Reboot
 
 - name: Flush handlers (Reboot)
