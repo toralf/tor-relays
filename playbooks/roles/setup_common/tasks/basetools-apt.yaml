@@ -85,6 +85,6 @@
   changed_when: false
   environment:
     LC_ALL: C.UTF-8
-  ansible.builtin.shell:
+  ansible.builtin.command:
     cmd: |-
       needrestart -r a -b

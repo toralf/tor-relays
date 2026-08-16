@@ -10,17 +10,16 @@
   notify: Reboot
 
 - name: Check if a reboot is needed
-  changed_when: _reboot_needed.rc == 123
+  changed_when: _reboot_needed.rc == 0
+  failed_when: _reboot_needed.rc > 1
   environment:
     LC_ALL: C.UTF-8
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      needrestart -r a -b
-      if needrestart -r l -b | grep -E -e 'NEEDRESTART-KSTA: [23]' -e 'NEEDRESTART-SVC: '; then
-        exit 123
-      fi
+      needrestart -r a -b || exit 3
+      needrestart -r l -b | grep -E -e 'NEEDRESTART-KSTA: [23]' -e 'NEEDRESTART-SVC: ' | grep .
   register: _reboot_needed
   notify: Reboot
 
