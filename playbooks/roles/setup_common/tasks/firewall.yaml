@@ -10,10 +10,6 @@
   when: tor_port == 0
   ansible.builtin.import_tasks: firewall-base.yaml
 
-- name: Firewall Snowflake
-  when: snowflake_proxies | length > 0
-  ansible.builtin.import_tasks: firewall-snowflake.yaml
-
 - name: Firewall Tor
   when: tor_port > 0
   ansible.builtin.import_tasks: firewall-tor.yaml

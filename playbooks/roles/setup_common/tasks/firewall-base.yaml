@@ -1,15 +1,4 @@
 ---
-- name: Install/Update persistent firewall helper
-  ansible.builtin.apt:
-    name:
-      - iptables-persistent
-
-- name: Ensure netfilter-persistent is enabled and started
-  ansible.builtin.systemd_service:
-    name: netfilter-persistent
-    enabled: true
-    state: started
-
 - name: Sysctl values for base firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**18) | int, (2**19) | int) }}"
@@ -57,11 +46,12 @@
     - v4
     - v6
 
-- name: Save iptables of base firewall
-  community.general.iptables_state:
-    ip_version: "ip{{ item }}"
-    state: saved
-    path: "/etc/iptables/rules.{{ item }}"
-  loop:
-    - v4
-    - v6
+- name: Create Firewall base cron job for reboot
+  ansible.builtin.cron:
+    # "name" must be the same as for DDoS
+    name: start firewall
+    special_time: reboot
+    job: >-
+      /root/firewall-ipv4.sh start;
+      /root/firewall-ipv6.sh start
+  register: _ddos_cron

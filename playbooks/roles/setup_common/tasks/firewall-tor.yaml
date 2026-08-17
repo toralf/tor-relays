@@ -59,6 +59,7 @@
   block:
     - name: Create DDoS cron job for reboot
       ansible.builtin.cron:
+        # "name" must be the same as for base firewall
         name: start firewall
         special_time: reboot
         job: >-
@@ -88,20 +89,6 @@
 
           {{ _args_v4 }} /root/ipv4-rules.sh start
           {{ _args_v6 }} /root/ipv6-rules.sh start
-
-- name: Remove iptables-persistent
-  ansible.builtin.apt:
-    name:
-      - iptables-persistent
-    state: absent
-
-- name: Remove iptables state after DDoS setup
-  ansible.builtin.file:
-    path: "/etc/iptables/rules.{{ item }}"
-    state: absent
-  loop:
-    - v4
-    - v6
 
 - name: Create DDoS cron job to save ipsets
   ansible.builtin.cron:
@@ -134,7 +121,7 @@
     cmd: |-
       /root/ipv4-rules-egress.sh {{ tor_shape_egress | ternary('start', '') }}
 
-- name: Handle egress firewall cron job
+- name: Create egress firewall cron job
   ansible.builtin.cron:
     name: start firewall egress
     special_time: reboot
