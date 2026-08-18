@@ -6,62 +6,32 @@
       create: true
       firstmatch: true
   block:
-    - name: Block
+    - name: Connections
+      ansible.builtin.import_tasks: _connections.yaml
       tags:
         - connections
-      block:
-        - name: Connections
-          ansible.builtin.include_tasks: _connections.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
 
-    - name: Block
+    - name: Log NAT
+      ansible.builtin.import_tasks: _log-nat.yaml
       tags:
         - log-nat
-      block:
-        - name: Log NAT
-          ansible.builtin.include_tasks: _log-nat.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
 
-    - name: Block
+    - name: Log proxy
+      ansible.builtin.import_tasks: _log-proxy.yaml
       tags:
         - log-proxy
-      block:
-        - name: Log proxy
-          ansible.builtin.include_tasks: _log-proxy.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
 
-    - name: Block
+    - name: Process runtime
+      ansible.builtin.import_tasks: _process-runtime.yaml
       tags:
         - process-runtime
-      block:
-        - name: Process runtime
-          ansible.builtin.include_tasks: _process-runtime.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
 
-    - name: Block
+    - name: Systemd time
+      ansible.builtin.import_tasks: _systemd-time.yaml
       tags:
         - systemd-time
-      block:
-        - name: Systemd time
-          ansible.builtin.include_tasks: _systemd-time.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"
 
-    - name: Block
+    - name: Version of Snowflake
+      ansible.builtin.import_tasks: _version.yaml
       tags:
         - version
-      block:
-        - name: Version of Snowflake
-          ansible.builtin.include_tasks: _version.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies }}"

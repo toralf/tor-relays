@@ -25,12 +25,10 @@
     - name: Snowflake targets
       delegate_to: localhost
       throttle: 1
+      when: is_snowflake
       ansible.builtin.lineinfile:
-        path: "{{ infodir }}/targets_{{ item.name }}.yaml"
-        state: "{{ item.state }}"
-      loop_control:
-        label: "{{ item.name }}"
-      loop: "{{ snowflake_proxies }}"
+        path: "{{ infodir }}/targets_snowflake.yaml"
+        state: present
 
     - name: Tor bridge targets
       delegate_to: localhost

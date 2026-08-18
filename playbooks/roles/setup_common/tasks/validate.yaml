@@ -61,9 +61,8 @@
       - "nginx_site_directories | selectattr('dir') | length > 0"
       - "nginx_site_directories | selectattr('dir') | length == nginx_site_directories | selectattr('port') | length"
 
-- name: Validate snowflake_proxies
+- name: Validate snowflake_metrics_port
   ansible.builtin.assert:
     quiet: true
     that:
-      - "snowflake_proxies | selectattr('state', 'eq', 'present') | selectattr('proxy_metrics_port', 'defined') |
-        selectattr('proxy_metrics_port', 'lt', 1) | length == 0"
+      - "snowflake_metrics_port > 0 and snowflake_metrics_port < 2**16"

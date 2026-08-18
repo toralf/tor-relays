@@ -23,21 +23,10 @@
       tags:
         - tools
 
-    - name: Build
+    - name: Setup
+      ansible.builtin.import_tasks: _snowflake-setup.yaml
       tags:
         - snowflake
-      block:
-        - name: Setup
-          ansible.builtin.include_tasks: _snowflake-setup.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"
-
-        - name: Remove
-          ansible.builtin.include_tasks: _snowflake-remove.yaml
-          loop_control:
-            label: "{{ item.name }}"
-          loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'absent') }}"
 
     - name: Configure
       ansible.builtin.import_tasks: config.yaml
@@ -57,9 +46,6 @@
 
     - name: Ensure Snowflake is enabled and started
       ansible.builtin.systemd_service:
-        name: "{{ item.name }}"
+        name: snowflake
         state: started
         enabled: true
-      loop_control:
-        label: "{{ item.name }}"
-      loop: "{{ snowflake_proxies | selectattr('state', 'eq', 'present') }}"

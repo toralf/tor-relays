@@ -24,8 +24,6 @@ tor_metrics: false
 tor_bridge_distribution: none
 is_snowflake: false
 is_tor: false
-snowflake_proxies: []
-tor_port: 0
 # in Hetzner subnets shape egress
 tor_shape_egress: false
 

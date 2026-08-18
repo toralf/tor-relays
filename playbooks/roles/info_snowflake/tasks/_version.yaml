@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      /usr/bin/{{ item.name }} --version 2>&1 |
+      /usr/bin/snowflake --version 2>&1 |
         head -n 1 |
         cut -f 2- -d ' ' |
         tr ' ' '_'
@@ -16,6 +16,5 @@
     _version: "{{ _result_sf_version.stdout | default('-') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} sf {{ _version }}"
-    path: "{{ infodir }}/{{ item.name }}_version"
+    path: "{{ infodir }}/snowflake_version"
     regexp: "^{{ inventory_hostname }} "
-    state: "{{ (item.state == 'present' and _result_sf_version.stdout | length > 0) | ternary('present', 'absent') }}"

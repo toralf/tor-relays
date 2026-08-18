@@ -4,6 +4,4 @@ is_snowflake: false
 # country-specific metrics
 use_tor_geoip_data: false
 
-snowflake_proxies: []
-
 go_version: ""
