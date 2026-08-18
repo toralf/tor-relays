@@ -166,7 +166,7 @@ server {
     proxy_pass http://127.0.0.1:9052/metrics;
   }
 {% endif %}
-{% if is_snowflake %}
+{% if snowflake_metrics %}
 
   location = /metrics-snowflake {
     proxy_pass http://127.0.0.1:{{ snowflake_metrics_port }}/internal/metrics;

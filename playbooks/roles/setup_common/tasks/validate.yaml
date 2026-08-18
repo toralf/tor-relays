@@ -62,6 +62,7 @@
       - "nginx_site_directories | selectattr('dir') | length == nginx_site_directories | selectattr('port') | length"
 
 - name: Validate snowflake_metrics_port
+  when: snowflake_metrics
   ansible.builtin.assert:
     quiet: true
     that:

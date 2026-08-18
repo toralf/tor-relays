@@ -28,7 +28,7 @@
       when: is_snowflake
       ansible.builtin.lineinfile:
         path: "{{ infodir }}/targets_snowflake.yaml"
-        state: present
+        state: "{{ snowflake_metrics | ternary('present', 'absent') }}"
 
     - name: Tor bridge targets
       delegate_to: localhost

@@ -1,12 +1,12 @@
 ---
 - name: Add the group
   ansible.builtin.group:
-    name: "snowflake"
+    name: snowflake
 
 - name: Add the user
   ansible.builtin.user:
-    group: "snowflake"
-    name: "snowflake"
+    group: snowflake
+    name: snowflake
     create_home: false
 
 - name: Git
@@ -14,7 +14,7 @@
     _git_repo_url: "{{ git_url }}"
     _git_version: "{{ git_version | default('main') }}"
     _git_patches: "{{ git_patches | default([]) }}"
-    _repo_dir: "/root/snowflake"
+    _repo_dir: /root/snowflake
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
 - name: Build
@@ -29,24 +29,24 @@
           GOPROXY="direct" {{ _cmd }}
         fi
       fi
-    chdir: "/root/snowflake/proxy"
+    chdir: /root/snowflake/proxy
 
 - name: Copy
   ansible.builtin.copy:
-    src: "/root/snowflake/proxy/proxy"
-    dest: "/usr/bin/snowflake"
+    src: /root/snowflake/proxy/proxy
+    dest: /usr/bin/snowflake
     mode: a+x
     remote_src: true
-  notify: "Restart snowflake"
+  notify: Restart snowflake
 
 - name: Add/Change systemd unit
   ansible.builtin.template:
     src: snowflake-proxy.service.j2
-    dest: "/etc/systemd/system/snowflake.service"
-  notify: "Restart snowflake"
+    dest: /etc/systemd/system/snowflake.service
+  notify: Restart snowflake
 
 - name: Enable
   ansible.builtin.systemd_service:
-    name: "snowflake"
+    name: snowflake
     enabled: true
-  notify: "Restart snowflake"
+  notify: Restart snowflake
