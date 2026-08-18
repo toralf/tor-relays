@@ -50,7 +50,7 @@ function addRules() {
     --hashlimit-srcmask 32 --hashlimit-htable-expire $((2 * 60 * 1000)) \
     --hashlimit-upto 60/minute --hashlimit-burst 10 -j ACCEPT
 {% endfor %}
-{% if snowflake_proxies | length > 0 %}
+{% if is_snowflake %}
 
   # snowflake
   $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports 32768:60999 -j ACCEPT

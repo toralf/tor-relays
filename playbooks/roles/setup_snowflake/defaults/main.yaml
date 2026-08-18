@@ -1,4 +1,6 @@
 ---
+is_snowflake: false
+
 # country-specific metrics
 use_tor_geoip_data: false
 

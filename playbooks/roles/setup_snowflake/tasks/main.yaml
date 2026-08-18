@@ -1,6 +1,6 @@
 ---
 - name: Main
-  when: snowflake_proxies | length > 0
+  when: is_snowflake
   module_defaults:
     ansible.builtin.apt:
       allow_change_held_packages: true

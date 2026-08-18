@@ -7,9 +7,9 @@
       - iptables
 
 - name: Firewall base
-  when: tor_port == 0
+  when: not is_tor
   ansible.builtin.import_tasks: firewall-base.yaml
 
 - name: Firewall Tor
-  when: tor_port > 0
+  when: is_tor
   ansible.builtin.import_tasks: firewall-tor.yaml
