@@ -12,8 +12,8 @@ all:
       -e "s,{{ (ansible_facts.default_ipv6.address | split(":"))[:4] | join(":") }}\][:[0-9]*]*,<snip ipv6 net>],g"
       -e s",{{ _prometheus_server_v4 }},<snip prometheus>,g"
       -e s",{{ _prometheus_server_v6 }},<snip prometheus6>,g"
-      -e "s,[a-zA-Z0-9+/]{70},<snip b64>,g"
-      -e "s,[a-zA-Z0-9+/]{40},<snip b64>,g"
+      -e "s,[a-zA-Z0-9+/]{70},<snip b64-70>,g"
+      -e "s,[a-zA-Z0-9+/]{40},<snip b64-40>,g"
 
 metrics:
   vars:
