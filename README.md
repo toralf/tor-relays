@@ -129,7 +129,7 @@ A static prometheus config could look like this:
       replacement: "${1}"
 ```
 
-The _targets_ lines for the Prometheus config are in _~/tmp/tor-relays/\*\-targets.yaml_ ([code](./playbooks/roles/setup_common/tasks/targets.yaml)).
+The input for a Prometheus config is created by ([targets.yaml](./playbooks/roles/setup_common/tasks/targets.yaml)).
 
 ### Misc
 
@@ -140,7 +140,7 @@ hcloud context use my_project
 ./bin/create-server.sh my_bridge
 ```
 
-The script [./bin/update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver and _OpenRC_ as the init system,
+The script [update-dns.sh](./bin/update-dns.sh) expects _unbound_ as a local DNS resolver and _OpenRC_ as the init system,
 configured for the appropriate project:
 
 ```config
@@ -160,7 +160,6 @@ name=foo
 good=v6.16-rc2
 bad=HEAD
 
-cd ~/devel/tor-relays
 ./bin/create-server.sh ${name}
 ./site-test-kernel.yaml --limit ${name} --skip-tags kernel-build,delete
 
@@ -168,7 +167,7 @@ cd ~/devel/linux
 git bisect start --no-checkout
 git bisect good ${good}
 git bisect bad ${bad}
-git bisect run ~/devel/tor-relays/bin/bisect.sh ${name}
+git bisect run ./bin/bisect.sh ${name}
 git bisect log
 git bisect reset
 ```
