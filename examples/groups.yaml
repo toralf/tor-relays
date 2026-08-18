@@ -5,15 +5,15 @@ all:
     ca_name: RootCA
     ca_common_name: ROOT CA tor-relays
     ca_country_name: DE
-    filter_sensitive_data: >2-
+    filter_sensitive_data: >-
       sed -E
-      -e 's,{{ ansible_facts.default_ipv4.address }},<snip ipv4>,g'
-      -e 's,{{ ansible_facts.default_ipv6.address}},<snip ipv6>,g'
-      -e "s,{{ (ansible_facts.default_ipv6.address | split(':'))[:4] | join(':') }},<snip ipv6 net>,g"
-      -e s',{{ _prometheus_server_v4 }},<snip prometheus>,g'
-      -e s',{{ _prometheus_server_v6 }},<snip prometheus6>,g'
-      -e 's,[a-zA-Z0-9+/]{70},<snip b64>,g'
-      -e 's,[a-zA-Z0-9+/]{40},<snip b64>,g'
+      -e "s,{{ ansible_facts.default_ipv4.address }}[:[0-9]*]*,<snip ipv4>,g"
+      -e "s,{{ ansible_facts.default_ipv6.address}}\][:[0-9]*]*,<snip ipv6>],g"
+      -e "s,{{ (ansible_facts.default_ipv6.address | split(":"))[:4] | join(":") }}\][:[0-9]*]*,<snip ipv6 net>],g"
+      -e s",{{ _prometheus_server_v4 }},<snip prometheus>,g"
+      -e s",{{ _prometheus_server_v6 }},<snip prometheus6>,g"
+      -e "s,[a-zA-Z0-9+/]{70},<snip b64>,g"
+      -e "s,[a-zA-Z0-9+/]{40},<snip b64>,g"
 
 metrics:
   vars:
