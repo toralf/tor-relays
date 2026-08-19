@@ -6,11 +6,10 @@
       - "tor_port > 0 and tor_port < 2**16"
 
 - name: Validate metrics_port
-  when: metrics_port != 0
+  when: tor_metrics and metrics_port > 0
   ansible.builtin.assert:
     quiet: true
     that:
-      - "metrics_port > 0 and metrics_port < 2**16"
       - "tor_port != metrics_port"
 
 - name: Validate install prereq

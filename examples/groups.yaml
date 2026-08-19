@@ -34,7 +34,7 @@ snapshot:
 
 snowflake:
   vars:
-    command_args: >-
+    snowflake_command_args: >-
       -nat-retest-interval 1h -summary-interval 0h0m15s
     git_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
   children:

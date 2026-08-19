@@ -1,1 +1,7 @@
 ---
+- name: Validate snowflake_metrics_port
+  when: snowflake_metrics
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "snowflake_metrics_port > 0 and snowflake_metrics_port < 2**16"
