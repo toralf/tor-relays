@@ -1,16 +1,4 @@
 ---
-- name: Load multiport module
-  ansible.builtin.iptables:
-    ip_version: "ip{{ item.0 }}"
-    chain: INPUT
-    table: filter
-    protocol: udp
-    destination: "{{ (item.0 == 'v4') | ternary(ansible_facts.default_ipv4.address, ansible_facts.default_ipv6.address) }}"
-    destination_ports: "1234:6789"
-    jump: ACCEPT
-    state: "{{ item.1 }}"
-  loop: "{{ ['v4', 'v6'] | product(['present', 'absent']) }}"
-
 - name: Install/Update tools for DDoS
   ansible.builtin.apt:
     name:
@@ -29,12 +17,13 @@
         - ipv6-rules.sh
         - ipv4-rules-egress.sh
 
-- name: Trigger kernel module load
+- name: Trigger kernel iptables module load
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
+      # DDoS
       export CONFIGURED_RELAYS="{{ ansible_facts.default_ipv4.address }}:1234"
       export CONFIGURED_RELAYS6="[{{ ansible_facts.default_ipv6.address }}]:5678"
 
@@ -42,4 +31,10 @@
       /root/ipv6-rules.sh start
 
       /root/ipv4-rules-egress.sh start
-      /root/ipv4-rules-egress.sh
+
+      # Base
+      /root/firewall-ipv4.sh start
+      /root/firewall-ipv6.sh start
+
+      # Snowflake
+      iptables -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports 32768:60999 -j ACCEPT
