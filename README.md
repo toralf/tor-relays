@@ -85,7 +85,7 @@ The Root CA key has to be configured at Prometheus to enable it to scrape metric
 
 ```yaml
 vars:
-  metrics_port: "{{ range(16000,60999) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
+  metrics_port: "{{ range(1024,65535) | random(seed=seed_metrics + inventory_hostname + ansible_facts.default_ipv4.address + ansible_facts.default_ipv6.address) }}"
   prometheus_server_v4: "1.2.3.4"
 ```
 
