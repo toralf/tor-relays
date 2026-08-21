@@ -2,6 +2,7 @@
 
 /var/log/tor/*.log {
   daily
+  maxsize 10M
   rotate 5
   delaycompress
   missingok
