@@ -9,7 +9,7 @@
 - name: Restore
   when: _tor_identity_restore_dir.stat.exists
   vars:
-    _user: "{{ (not tor_build_from_source and ansible_facts.os_family == 'Debian') | ternary('debian-tor', 'tor') }}"
+    _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   block:
     - name: Create Tor identity dir
       ansible.builtin.file:
