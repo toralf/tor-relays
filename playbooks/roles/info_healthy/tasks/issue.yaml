@@ -17,6 +17,11 @@
           -e '.service: Control process exited' \
           -e 'status=9/KILL' \
           -e "WARNING:" |
+        grep -v -F \
+          -e 'cloud-init.service: Control process exited' \
+          -e "Error: argument 'stop' not supported" \
+          -e 'kernel: Speculative Return Stack Overflow: ' \
+          -e ': System is rebooting.' |
         tail -n 30
   register: _result_syslog
 
