@@ -7,7 +7,6 @@
       - build-essential
       - libevent-dev
       - libssl-dev
-      - logrotate
       - zlib1g-dev
 
 - name: Install/Update toolchain for Tor relay
