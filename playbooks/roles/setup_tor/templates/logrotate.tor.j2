@@ -2,9 +2,7 @@
 
 /var/log/tor/*.log {
   daily
-  size 10M
   rotate 5
-  compress
   delaycompress
   missingok
   notifempty
@@ -20,9 +18,7 @@
 # Tor dump files
 /var/log/tor/*.log-???????? {
   hourly
-  size 10M
   rotate 5
-  compress
   delaycompress
   missingok
   notifempty
