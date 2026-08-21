@@ -8,23 +8,23 @@ function cleanLocalDataEntries() {
 
   echo -e " deleting local entries and facts ..."
   files=$(
-    find ~/${infodir}/ -maxdepth 1 -type f
-    find ~/${infodir}/artefact/ -maxdepth 1 -type f -name '_hostname.*.txt' 2>/dev/null || true
+    find ${infodir}/ -maxdepth 1 -type f
+    find ${infodir}/artefact/ -maxdepth 1 -type f -name '_hostname.*.txt' 2>/dev/null || true
   )
   while read -r name; do
     rm -f ./.ansible_facts/s1_${name}
     set +e
     # delete next line too
-    sed -i -e "/^# ${name}$/{N;d;}" ~/${infodir}/{{,hashed-bridge-}rsa-fingerprint,ed25519-master-pubkey}.txt
+    sed -i -e "/^# ${name}$/{N;d;}" ${infodir}/{{,hashed-bridge-}rsa-fingerprint,ed25519-master-pubkey}.txt
     # delete single line
-    sed -i \
+    sed -i -E \
       -e "/^${name}$/d" \
       -e "/^${name} /d" \
       -e "/ ${name}$/d" \
       -e "/ ${name} /d" \
-      -e "/\[\"${name}:[0-9]*\"\]/d" \
+      -e "/\[\"${name}:[0-9]+\"\]/d" \
       ${files} 2>/dev/null
-    sed -i -e "/ # ${name}$/d" ~/${infodir}/*_bridgeline 2>/dev/null
+    sed -i -e "/ # ${name}$/d" ${infodir}/*_bridgeline 2>/dev/null
     set -e
   done < <(xargs -r -n 1 <<<$*)
 }
@@ -32,10 +32,10 @@ function cleanLocalDataEntries() {
 function cleanLocalDataFiles() {
   echo -e " deleting local data files ..."
   while read -r name; do
-    rm -f ~/${infodir}/{artefact,coredump,dmesg,kconfig,trace}/${name}{,.*}
-    rm -rf ~/${infodir}/fw/${name}/
+    rm -f ${infodir}/{artefact,coredump,dmesg,kconfig,trace}/${name}{,.*}
+    rm -rf ${infodir}/fw/${name}/
     if [[ -z ${KEEP_TOR_KEYS-} ]]; then
-      rm -rf ~/${infodir}/tor-identity/${name}/
+      rm -rf ${infodir}/tor-identity/${name}/
     fi
     if [[ -z ${KEEP_CLIENT_CERTS-} ]]; then
       rm -f ./secrets/ca/*/clients/{crts,csrs,keys}/${name}.{crt,csr,key}
@@ -133,8 +133,5 @@ function _getImageBySnapshot() {
   return 1
 }
 
-# origin is set by base.sh into inventory/all.yaml at time of repo init
-infodir=$(yq -r '.all.vars.infodir' <$(dirname $0)/../inventory/all.yaml)
-if [[ -z ${infodir} ]]; then
-  exit 1
-fi
+# same value has to be set by base.sh at time of repo init
+infodir=~/tmp/tor-relays

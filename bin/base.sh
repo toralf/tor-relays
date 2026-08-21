@@ -24,8 +24,6 @@ EOF
   chmod 400 ${secrets}
 fi
 
-# relative to ~/
-infodir=./tmp/tor-relays
 all_inventory=./inventory/all.yaml
 
 if [[ ! -s ${all_inventory} ]]; then
@@ -43,11 +41,11 @@ all:
     # where to store certificate materials
     ca_dir: "{{ role_path }}/../../../secrets/ca"
     # local directory for site-info files
-    infodir: ~/${infodir}
+    infodir: ~/tmp/tor-relays
 
 EOF
   chmod 600 ${all_inventory}
 fi
 
 # Root CA and certificates are stored separately under <repo dir>/secrets
-mkdir -p ~/${infodir}/{artefact,coredump,dmesg,fw,kconfig,tor-identity,trace}
+mkdir -p ~/tmp/tor-relays/{artefact,coredump,dmesg,fw,kconfig,tor-identity,trace}
