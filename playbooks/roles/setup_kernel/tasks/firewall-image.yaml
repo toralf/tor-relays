@@ -4,37 +4,32 @@
     name:
       - jq
 
-- name: Fetch
+- name: Get DDoS scripts
   throttle: 8
-  block:
-    - name: Get DDoS scripts
-      retries: 1
-      ansible.builtin.get_url:
-        url: "{{ torutils_path }}/{{ item }}"
-        dest: /root/
-      loop:
-        - ipv4-rules.sh
-        - ipv6-rules.sh
-        - ipv4-rules-egress.sh
+  retries: 1
+  ansible.builtin.get_url:
+    url: "{{ torutils_path }}/{{ item }}"
+    dest: /root/
+  loop:
+    - ipv4-rules.sh
+    - ipv6-rules.sh
 
-- name: Trigger kernel iptables module load
+- name: Trigger load of needed kernel modules
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      # DDoS
-      export CONFIGURED_RELAYS="{{ ansible_facts.default_ipv4.address }}:1234"
-      export CONFIGURED_RELAYS6="[{{ ansible_facts.default_ipv6.address }}]:5678"
+      # set, multiport, hashlimit etc.
+      TORUTILS_RELAYS_V4="{{ ansible_facts.default_ipv4.address }}:1234"
+      TORUTILS_RELAYS_V6="[{{ ansible_facts.default_ipv6.address }}]:5678"
+
+      TORUTILS_LOCAL_SERVICES_V4="{{ ansible_facts.default_ipv4.address }}:1234,1236,6000:6099"
+      TORUTILS_LOCAL_SERVICES_V6="{{ ansible_facts.default_ipv6.address }}:6000:6099,1234,1236"
 
       /root/ipv4-rules.sh start
       /root/ipv6-rules.sh start
 
-      /root/ipv4-rules-egress.sh start
-
-      # Base
+      # reset to Base firewall
       /root/firewall-ipv4.sh start
       /root/firewall-ipv6.sh start
-
-      # Snowflake
-      iptables -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports 32768:60999 -j ACCEPT

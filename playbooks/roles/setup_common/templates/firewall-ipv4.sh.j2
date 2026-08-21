@@ -41,7 +41,7 @@ function addRules() {
   $ipt -A INPUT -p tcp --src {{ prometheus_server_v4 }} --dst {{ ansible_facts.default_ipv4.address }} --dport {{ metrics_port }} --syn -j ACCEPT
 {%endif %}
 {% for _i in ingress_ports %}
-{% set _mp = (_i is search(',') or _i is search(':')) | ternary('--match multiport --dports', '--dport') %}
+{% set _mp = (_i is search(',')) | ternary('--match multiport --dports', '--dport') %}
 
   # ingress_ports {{ _i }}
   $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv4.address }} {{ _mp }} {{ _i }} \
@@ -53,7 +53,7 @@ function addRules() {
 {% if is_snowflake %}
 
   # snowflake
-  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --match multiport --dports 32768:60999 -j ACCEPT
+  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv4.address }} --dport 32768:60999 -j ACCEPT
 {% endif %}
 
   # tarpit
