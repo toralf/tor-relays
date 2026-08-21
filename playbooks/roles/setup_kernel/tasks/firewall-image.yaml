@@ -21,15 +21,14 @@
       set -euf
 
       # set, multiport, hashlimit etc.
-      TORUTILS_RELAYS_V4="{{ ansible_facts.default_ipv4.address }}:1234"
-      TORUTILS_RELAYS_V6="[{{ ansible_facts.default_ipv6.address }}]:5678"
-
-      TORUTILS_LOCAL_SERVICES_V4="{{ ansible_facts.default_ipv4.address }}:1234,1236,6000:6099"
-      TORUTILS_LOCAL_SERVICES_V6="{{ ansible_facts.default_ipv6.address }}:6000:6099,1234,1236"
-
+      TORUTILS_RELAYS_V4="{{ ansible_facts.default_ipv4.address }}:1234" \
+      TORUTILS_LOCAL_SERVICES_V4="{{ ansible_facts.default_ipv4.address }}:1234,1236,6000:6099" \
       /root/ipv4-rules.sh start
+
+      TORUTILS_RELAYS_V6="[{{ ansible_facts.default_ipv6.address }}]:5678" \
+      TORUTILS_LOCAL_SERVICES_V6="{{ ansible_facts.default_ipv6.address }}:6000:6099,1234,1236" \
       /root/ipv6-rules.sh start
 
-      # reset to Base firewall
+      # reset Base firewall
       /root/firewall-ipv4.sh start
       /root/firewall-ipv6.sh start
