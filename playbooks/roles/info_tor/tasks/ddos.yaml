@@ -7,9 +7,10 @@
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
     mode: "0755"
 
-- name: Ipset
+- name: DDoS Ipset save
   tags:
-    - ddos-ipset
+    - ddos-ipset-save
+    - never
   block:
     - name: Trigger DDoS save
       changed_when: true
@@ -20,7 +21,11 @@
           /root/ipv4-rules.sh save
           /root/ipv6-rules.sh save
 
-    - name: Get DDoS ipset file names
+- name: DDoS Ipset fetch
+  tags:
+    - ddos-ipset
+  block:
+    - name: Get DDoS ipset file name
       ansible.builtin.find:
         paths: /var/tmp/
         patterns: torutils-ddos-v*
@@ -29,13 +34,15 @@
         age_stamp: atime
       register: ddos_ipset
 
-    - name: Fetch DDoS ipsets
+    - name: Fetch DDoS ipset
       throttle: "{{ concurrent_local_jobs }}"
+      vars:
+        _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-snip-') }}"
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _destfname }}"
       loop_control:
-        label: "{{ item.path }}"
+        label: "{{ _destfname }}"
       loop: "{{ ddos_ipset.files | default([]) }}"
 
 - name: Hash
@@ -43,7 +50,7 @@
     - ddos-hash
     - never
   block:
-    - name: Get DDoS hash names
+    - name: Get DDoS hash name
       ansible.builtin.find:
         paths:
           - /proc/net/ipt_hashlimit/
@@ -52,12 +59,14 @@
         file_type: file
       register: ddos_hash
 
-    - name: Fetch DDoS hashes
+    - name: Fetch DDoS hash
       throttle: "{{ concurrent_local_jobs }}"
+      vars:
+        _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-snip-') }}"
       ansible.builtin.fetch:
         src: "{{ item.path }}"
-        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _destfname }}"
         validate_checksum: false
       loop_control:
-        label: "{{ item.path }}"
+        label: "{{ _destfname }}"
       loop: "{{ ddos_hash.files | default([]) }}"
