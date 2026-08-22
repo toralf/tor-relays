@@ -1,0 +1,28 @@
+---
+- name: Create local firewall info directory
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+    mode: "0755"
+
+- name: Save Tarpit ipset
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      ipset list torutils-tarpit-v4 | sed -e '1,8d' >/var/tmp/torutils-tarpit-v4
+      ipset list torutils-tarpit-v6 | sed -e '1,8d' >/var/tmp/torutils-tarpit-v6
+
+- name: Fetch Tarpit ipset
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.fetch:
+    src: "/var/tmp/torutils-tarpit-{{ item }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+  loop_control:
+    label: "{{ item }}"
+  loop:
+    - v4
+    - v6

@@ -1,6 +1,8 @@
 ---
 - name: Main
   module_defaults:
+    ansible.builtin.fetch:
+      flat: true
     ansible.builtin.lineinfile:
       create: true
       firstmatch: true
@@ -26,6 +28,11 @@
       ansible.builtin.import_tasks: log-nginx.yaml
       tags:
         - log-nginx
+
+    - name: Tarpit data
+      ansible.builtin.import_tasks: tarpit.yaml
+      tags:
+        - tarpit
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml

@@ -1,5 +1,5 @@
 ---
-- name: Create local DDoS info directory
+- name: Create local firewall info directory
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.file:
