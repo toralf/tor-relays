@@ -8,6 +8,10 @@
 
       iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
       ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
+      if [[ {{ is_tor | ternary('y', 'n') }} == "y" ]]; then
+        iptables  -nvL INPUT | grep 'match-set torutils-ddos-v4 src'
+        ip6tables -nvL INPUT | grep 'match-set torutils-ddos-v6 src'
+      fi
       iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
       ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
   register: _firewall_healthy
@@ -17,7 +21,7 @@
   delegate_to: localhost
   throttle: 1
   vars:
-    _file: "{{ (tor_port | default(0) == 0) | ternary('firewall_base_is_down', 'firewall_tor_is_down') }}"
+    _file: "{{ (is_tor | default(false)) | ternary('firewall_base_is_down', 'firewall_tor_is_down') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }}"
     path: "{{ infodir }}/{{ _file }}"
