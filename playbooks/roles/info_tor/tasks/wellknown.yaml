@@ -1,7 +1,7 @@
 ---
 # https://github.com/nusenu/ContactInfo-Information-Sharing-Specification
 
-- name: Wellknown for bridges
+- name: Wellknown for public bridge
   throttle: 1
   when: tor_bridge_distribution | length > 0 and tor_bridge_distribution != 'none'
   block:
