@@ -80,24 +80,27 @@ function addRules() {
 
 #######################################################################
 set -euf
+export LANG=C.utf8
+export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 ipt="ip6tables"
 
-# see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L300
+# see https://github.com/toralf/torutils/blob/main/ipv6-rules.sh#L295
 max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
 
-tarpitlist="torutils-tarpit-v6"
-cmd="ipset create -exist $tarpitlist hash:ip netmask 64 maxelem $max timeout 86400 family inet6"
-if ! $cmd; then
-  ipset destroy $tarpitlist
-  $cmd
-fi
-
 trap clearAll INT QUIT TERM EXIT
-if [[ $1 == "start" ]]; then
+if [[ ${1-} == "start" ]]; then
   clearAll
+  tarpitlist="torutils-tarpit-v6"
+  cmd="ipset create -exist $tarpitlist hash:ip netmask 64 maxelem $max timeout 86400 family inet6"
+  if ! $cmd; then
+    ipset destroy $tarpitlist
+    $cmd
+  fi
   addRules
 else
-  $1
+  date -R
+  echo
+  $ipt -nv -L INPUT
 fi
 trap - INT QUIT TERM EXIT
