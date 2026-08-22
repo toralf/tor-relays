@@ -9,7 +9,11 @@
 - name: Firewall base
   when: not is_tor
   ansible.builtin.import_tasks: firewall-base.yaml
+  tags:
+    - firewall-base
 
 - name: Firewall Tor
   when: is_tor
   ansible.builtin.import_tasks: firewall-tor.yaml
+  tags:
+    - firewall-tor
