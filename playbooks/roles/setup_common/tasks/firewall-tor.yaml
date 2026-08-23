@@ -109,7 +109,7 @@
 - name: Create shutdown script
   ansible.builtin.copy:
     dest: /root/shutdown.sh
-    mode: "0700"
+    mode: "0744"
     content: |
       #!/bin/bash
 

@@ -23,7 +23,7 @@ function addRules() {
   $ipt -A INPUT -p tcp --dport 22 -j ACCEPT
 
   # tarpit
-  $ipt -A INPUT -m set --match-set $tarpitlist src -j DROP
+  $ipt -A INPUT -m set --match-set $tarpitset src -j DROP
 
   # see RFC 4890
 
@@ -72,7 +72,7 @@ function addRules() {
 {% endif %}
 
   # tarpit
-  $ipt -A INPUT -p tcp -j SET --add-set $tarpitlist src --exist
+  $ipt -A INPUT -p tcp -j SET --add-set $tarpitset src --exist
 
   # default ingress policy
   $ipt -P INPUT DROP
@@ -91,10 +91,10 @@ max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
 trap clearAll INT QUIT TERM EXIT
 if [[ ${1-} == "start" ]]; then
   clearAll
-  tarpitlist="torutils-tarpit-v6"
-  cmd="ipset create -exist $tarpitlist hash:ip netmask 64 maxelem $max timeout 86400 family inet6"
+  tarpitset="torutils-tarpit-v6"
+  cmd="ipset create -exist $tarpitset hash:ip netmask 64 maxelem $max timeout 86400 family inet6"
   if ! $cmd; then
-    ipset destroy $tarpitlist
+    ipset destroy $tarpitset
     $cmd
   fi
   addRules

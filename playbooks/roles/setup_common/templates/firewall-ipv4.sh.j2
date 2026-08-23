@@ -23,7 +23,7 @@ function addRules() {
   $ipt -A INPUT -p tcp --dport 22 --syn -j ACCEPT
 
   # tarpit
-  $ipt -A INPUT -m set --match-set $tarpitlist src -j DROP
+  $ipt -A INPUT -m set --match-set $tarpitset src -j DROP
 
   #  PMTUD
   $ipt -A INPUT -p icmp --icmp-type destination-unreachable -j ACCEPT
@@ -57,7 +57,7 @@ function addRules() {
 {% endif %}
 
   # tarpit
-  $ipt -A INPUT -p tcp -j SET --add-set $tarpitlist src --exist
+  $ipt -A INPUT -p tcp -j SET --add-set $tarpitset src --exist
 
   # default ingress policy
   $ipt -P INPUT DROP
@@ -79,10 +79,10 @@ sysctl -w net.netfilter.nf_conntrack_max=$max >/dev/null
 trap clearAll INT QUIT TERM EXIT
 if [[ ${1-} == "start" ]]; then
   clearAll
-  tarpitlist="torutils-tarpit-v4"
-  cmd="ipset create -exist $tarpitlist hash:ip netmask 32 maxelem $max timeout 86400 family inet"
+  tarpitset="torutils-tarpit-v4"
+  cmd="ipset create -exist $tarpitset hash:ip netmask 32 maxelem $max timeout 86400 family inet"
   if ! $cmd; then
-    ipset destroy $tarpitlist
+    ipset destroy $tarpitset
     $cmd
   fi
   addRules
