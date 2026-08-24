@@ -86,29 +86,24 @@ function next_job() {
       sort -V |
       head -n 1
   )
-  if [[ -z ${job} ]]; then
-    return
-  fi
-
-  if [[ ! -f ${job} ]]; then
-    info "  fatal issue with ${job}" >&2
-    return 1
-  fi
-
   info "working on ${job}"
   action=$(cut -f 3 -d '.' <<<${job})
   names=$(xargs <${job})
   mv ${job} /tmp
+  tmplog=/tmp/$(basename ${job}).log
+
+  if [[ -z ${action} ]]; then
+    info "  no action of ${job}" >&2
+    return
+  fi
   if [[ -z ${names} ]]; then
-    info "  no names in ${job}" >&2
+    info "  no name in ${job}" >&2
     return
   fi
 
-  tmplog=/tmp/$(basename ${job}).log
-
   if [[ -x ./bin/${action}-server.sh ]]; then
     info "  action ${action}: $(wc -w <<<${names})"
-    if ! ./bin/${action}-server.sh ${names} 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
+    if ! ./bin/${action}-server.sh ${names} 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
@@ -118,7 +113,7 @@ function next_job() {
     info "  update: $(wc -w <<<${names})"
     if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) \
       --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
-      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
+      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
@@ -126,7 +121,7 @@ function next_job() {
   elif [[ ${action} != "delete" ]]; then
     info "  setup after ${action}"
     if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
-      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee ${tmplog} >${logprefix}.job.log; then
+      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
