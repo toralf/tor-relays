@@ -68,7 +68,7 @@ function addRules() {
 {% if is_snowflake %}
 
   # snowflake
-  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv6.address }} --dport 32768:60999 -j ACCEPT
+  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ snowflake_port }} -j ACCEPT
 {% endif %}
 
   # tarpit
