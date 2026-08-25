@@ -14,8 +14,8 @@
     - ipv4-rules.sh
     - ipv6-rules.sh
 
-- name: Trigger load of needed kernel modules
-  changed_when: false
+- name: Load needed kernel module
+  changed_when: true
   ansible.builtin.shell:
     cmd: |-
       set -euf
@@ -26,7 +26,7 @@
       /root/ipv4-rules.sh start
 
       TORUTILS_RELAYS_V6="[{{ ansible_facts.default_ipv6.address }}]:5678" \
-      TORUTILS_LOCAL_SERVICES_V6="{{ ansible_facts.default_ipv6.address }}:6000:6099,1234,1236" \
+      TORUTILS_LOCAL_SERVICES_V6="[{{ ansible_facts.default_ipv6.address }}]:6000:6099,1234,1236" \
       /root/ipv6-rules.sh start
 
       # reset Base firewall
