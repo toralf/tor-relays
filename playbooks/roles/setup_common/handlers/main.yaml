@@ -24,7 +24,6 @@
     name: nginx
     state: restarted
     enabled: true
-    daemon_reload: true
 
 - name: Reload nginx
   listen: Reload nginx
