@@ -7,45 +7,34 @@
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
     mode: "0755"
 
-- name: DDoS Ipset save
-  tags:
-    - ddos-ipset-save
-    - never
-  block:
-    - name: Trigger DDoS save
-      changed_when: true
-      ansible.builtin.shell:
-        cmd: |-
-          set -euf
-
-          /root/ipv4-rules.sh save
-          /root/ipv6-rules.sh save
-
-- name: DDoS Ipset fetch
+- name: DDoS Ipset
   tags:
     - ddos-ipset
   block:
-    - name: Get DDoS ipset file name
-      ansible.builtin.find:
-        paths: /var/tmp/
-        patterns: torutils-ddos-v*
-        file_type: file
-        age: "-1h"
-        age_stamp: atime
-      register: ddos_ipset
-
-    - name: Fetch DDoS ipset
-      throttle: "{{ concurrent_local_jobs }}"
-      vars:
-        _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-snip-') }}"
-      ansible.builtin.fetch:
-        src: "{{ item.path }}"
-        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _destfname }}"
+    - name: Get DDoS ipset
+      changed_when: false
+      ansible.builtin.shell:
+        cmd: |-
+          name=$(ipset list -n | grep "^torutils-ddos-{{ item }}-")
+          ipset list $name | sed -e '1,8d'
       loop_control:
-        label: "{{ _destfname }}"
-      loop: "{{ ddos_ipset.files | default([]) }}"
+        label: "{{ inventory_hostname }} {{ item }}"
+      loop:
+        - v4
+        - v6
+      register: _ipset_ddos
 
-- name: Hash
+    - name: Save DDoS ipset
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      ansible.builtin.copy:
+        content: "{{ item.stdout }}"
+        dest: "{{ infodir }}/fw/{{ inventory_hostname }}/torutils-ddos-{{ item.item }}"
+      loop_control:
+        label: "{{ inventory_hostname }} {{ item.item }}"
+      loop: "{{ _ipset_ddos.results }}"
+
+- name: DDoS Hash
   tags:
     - ddos-hash
     - never
@@ -62,7 +51,7 @@
     - name: Fetch DDoS hash
       throttle: "{{ concurrent_local_jobs }}"
       vars:
-        _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-snip-') }}"
+        _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-orport-') }}"
       ansible.builtin.fetch:
         src: "{{ item.path }}"
         dest: "{{ infodir }}/fw/{{ inventory_hostname }}/{{ _destfname }}"

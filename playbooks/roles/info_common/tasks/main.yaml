@@ -29,7 +29,7 @@
       tags:
         - log-nginx
 
-    - name: Tarpit data
+    - name: Tarpit ipset
       ansible.builtin.import_tasks: tarpit.yaml
       tags:
         - tarpit

@@ -7,22 +7,24 @@
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
     mode: "0755"
 
-- name: Save Tarpit ipset
-  changed_when: true
+- name: Get Tarpit ipset
+  changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      set -euf
-
-      ipset list torutils-tarpit-v4 | sed -e '1,8d' >/var/tmp/torutils-tarpit-v4
-      ipset list torutils-tarpit-v6 | sed -e '1,8d' >/var/tmp/torutils-tarpit-v6
-
-- name: Fetch Tarpit ipset
-  throttle: "{{ concurrent_local_jobs }}"
-  ansible.builtin.fetch:
-    src: "/var/tmp/torutils-tarpit-{{ item }}"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+      ipset list torutils-tarpit-{{ item }} | sed -e '1,8d'
   loop_control:
-    label: "{{ item }}"
+    label: "{{ inventory_hostname }} {{ item }}"
   loop:
     - v4
     - v6
+  register: _ipset_tarpit
+
+- name: Save Tarpit ipset
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.copy:
+    content: "{{ item.stdout }}"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/torutils-tarpit-{{ item.item }}"
+  loop_control:
+    label: "{{ inventory_hostname }} {{ item.item }}"
+  loop: "{{ _ipset_tarpit.results }}"
