@@ -13,7 +13,6 @@
     name: tor
     state: reloaded
     enabled: true
-    daemon_reload: true
 
 - name: Restart metrics
   listen: Restart metrics

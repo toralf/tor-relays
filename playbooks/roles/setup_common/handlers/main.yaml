@@ -10,6 +10,7 @@
     name: systemd-journald
     state: restarted
     enabled: true
+    daemon_reload: true
 
 - name: Restart ssh
   listen: Restart ssh
@@ -17,6 +18,7 @@
     name: ssh
     state: restarted
     enabled: true
+    daemon_reload: true
 
 - name: Restart nginx
   listen: Restart nginx
@@ -24,6 +26,7 @@
     name: nginx
     state: restarted
     enabled: true
+    daemon_reload: true
 
 - name: Reload nginx
   listen: Reload nginx
