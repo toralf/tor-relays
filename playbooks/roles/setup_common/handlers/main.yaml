@@ -40,6 +40,13 @@
     state: restarted
     enabled: true
 
+- name: Restart tor-relay-shutdown
+  listen: Restart tor-relay-shutdown
+  ansible.builtin.systemd_service:
+    name: tor-relay-shutdown
+    state: restarted
+    enabled: true
+
 - name: Reboot
   listen: Reboot
   retries: 2

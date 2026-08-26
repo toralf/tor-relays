@@ -113,6 +113,9 @@
     content: |
       #!/bin/bash
 
+      exec > /root/shutdown_debug.log 2>&1
+      echo "--- $(date) ---"
+
       /root/ipv4-rules.sh save
       /root/ipv6-rules.sh save
 
@@ -122,25 +125,21 @@
     mode: "0644"
     content: |
       [Unit]
-      Description=Run Script at Shutdown
+      Description=Run Script at Shutdown and Reboot
       DefaultDependencies=no
-      Before=shutdown.target reboot.target halt.target
+      Before=shutdown.target reboot.target halt.target local-fs-pre.target
+      After=multi-user.target
 
       [Service]
       Type=oneshot
       ExecStart=/root/shutdown.sh
-      RemainAfterExit=true
-      TimeoutStartSec=15
+      TimeoutStartSec=30
+      StandardOutput=journal+console
+      StandardError=journal+console
 
       [Install]
-      WantedBy=halt.target reboot.target shutdown.target
-  notify: Reload systemd
-
-- name: Enable and start shutdown script
-  ansible.builtin.systemd:
-    name: tor-relay-shutdown.service
-    enabled: true
-    state: started
+      WantedBy=shutdown.target reboot.target halt.target
+  notify: Restart tor-relay-shutdown
 
 #
 # egress
