@@ -17,3 +17,24 @@
   ansible.builtin.import_tasks: firewall-tor.yaml
   tags:
     - firewall-tor
+
+- name: Create systemd service file for tor-relay-ipset
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/tor-relay-ipset.service
+    content: |
+      [Unit]
+      Description=IPsets Persistence Service
+      Before=network-pre.target
+      Wants=network-pre.target
+      DefaultDependencies=no
+
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStart=/bin/bash -c "if [[ -s /var/tmp/ipset.rules ]]; then /sbin/ipset restore -exist -file /var/tmp/ipset.rules && rm /var/tmp/ipset.rules; fi"
+      ExecStop=/sbin/ipset save -file /var/tmp/ipset.rules
+
+      [Install]
+      WantedBy=sysinit.target
+  notify:
+    - Restart tor-relay-ipset

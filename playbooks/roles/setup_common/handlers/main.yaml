@@ -38,13 +38,15 @@
     name: prometheus-node-exporter
     state: restarted
     enabled: true
+    daemon_reload: true
 
-- name: Restart tor-relay-shutdown
-  listen: Restart tor-relay-shutdown
+- name: Restart tor-relay-ipset
+  listen: Restart tor-relay-ipset
   ansible.builtin.systemd_service:
-    name: tor-relay-shutdown
+    name: tor-relay-ipset
     state: restarted
     enabled: true
+    daemon_reload: true
 
 - name: Reboot
   listen: Reboot

@@ -100,41 +100,6 @@
     special_time: daily
     job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
 
-- name: Create shutdown script
-  ansible.builtin.copy:
-    dest: /root/shutdown.sh
-    mode: "0744"
-    content: |
-      #!/bin/bash
-
-      exec > /root/shutdown_debug.log 2>&1
-      echo "--- $(date) ---"
-
-      /root/ipv4-rules.sh save
-      /root/ipv6-rules.sh save
-
-- name: Create systemd service file for shutdown script
-  ansible.builtin.copy:
-    dest: /etc/systemd/system/tor-relay-shutdown.service
-    mode: "0644"
-    content: |
-      [Unit]
-      Description=Run Script at Shutdown and Reboot
-      DefaultDependencies=no
-      Before=shutdown.target reboot.target halt.target local-fs-pre.target
-      After=multi-user.target
-
-      [Service]
-      Type=oneshot
-      ExecStart=/root/shutdown.sh
-      TimeoutStartSec=30
-      StandardOutput=journal+console
-      StandardError=journal+console
-
-      [Install]
-      WantedBy=shutdown.target reboot.target halt.target
-  notify: Restart tor-relay-shutdown
-
 #
 # egress
 #
