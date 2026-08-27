@@ -16,7 +16,7 @@
       ansible.builtin.shell:
         cmd: |-
           name=$(ipset list -n | grep "^torutils-ddos-{{ item }}-")
-          ipset list $name | sed -e '1,8d'
+          ipset list $name | cut -f 1 -d ' ' | sed -e '1,8d'
       loop_control:
         label: "{{ inventory_hostname }} {{ item }}"
       loop:

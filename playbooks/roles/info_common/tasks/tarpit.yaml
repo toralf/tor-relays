@@ -11,7 +11,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      ipset list torutils-tarpit-{{ item }} | sed -e '1,8d'
+      ipset list torutils-tarpit-{{ item }} | cut -f 1 -d ' ' | sed -e '1,8d'
   loop_control:
     label: "{{ inventory_hostname }} {{ item }}"
   loop:
