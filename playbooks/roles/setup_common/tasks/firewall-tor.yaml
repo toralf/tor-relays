@@ -94,12 +94,6 @@
           {{ _args_v4 }} /root/ipv4-rules.sh start
           {{ _args_v6 }} /root/ipv6-rules.sh start
 
-- name: Create DDoS cron job to update Tor authority ip addresses
-  ansible.builtin.cron:
-    name: Tor authority ip addresses update
-    special_time: daily
-    job: /root/ipv4-rules.sh update; /root/ipv6-rules.sh update
-
 #
 # egress
 #
