@@ -7,31 +7,31 @@
       firstmatch: true
   block:
     - name: Connections
-      ansible.builtin.import_tasks: _connections.yaml
+      ansible.builtin.import_tasks: connections.yaml
       tags:
         - connections
 
     - name: Log NAT
-      ansible.builtin.import_tasks: _log-nat.yaml
+      ansible.builtin.import_tasks: log-nat.yaml
       tags:
         - log-nat
 
     - name: Log proxy
-      ansible.builtin.import_tasks: _log-proxy.yaml
+      ansible.builtin.import_tasks: log-proxy.yaml
       tags:
         - log-proxy
 
     - name: Process runtime
-      ansible.builtin.import_tasks: _process-runtime.yaml
+      ansible.builtin.import_tasks: process-runtime.yaml
       tags:
         - process-runtime
 
     - name: Systemd time
-      ansible.builtin.import_tasks: _systemd-time.yaml
+      ansible.builtin.import_tasks: systemd-time.yaml
       tags:
         - systemd-time
 
     - name: Version of Snowflake
-      ansible.builtin.import_tasks: _version.yaml
+      ansible.builtin.import_tasks: version.yaml
       tags:
         - version
