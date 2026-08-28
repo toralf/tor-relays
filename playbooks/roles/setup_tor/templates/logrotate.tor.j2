@@ -4,6 +4,7 @@
   daily
   maxsize 10M
   rotate 5
+  compress
   delaycompress
   missingok
   notifempty
@@ -20,6 +21,7 @@
 /var/log/tor/*.log-???????? {
   hourly
   rotate 5
+  compress
   delaycompress
   missingok
   notifempty
