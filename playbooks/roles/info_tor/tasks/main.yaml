@@ -53,11 +53,17 @@
           tags:
             - wellknown
 
-    - name: Clients of a bridge
+    - name: Clients
       when: tor_bridge_distribution | length > 0
       ansible.builtin.import_tasks: clients.yaml
       tags:
         - clients
+
+    - name: Connections
+      when: tor_bridge_distribution | length == 0
+      ansible.builtin.import_tasks: connections.yaml
+      tags:
+        - connections
 
     - name: DDoS data
       ansible.builtin.import_tasks: ddos.yaml

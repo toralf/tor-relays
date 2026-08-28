@@ -1,0 +1,22 @@
+---
+- name: Get connections of a server
+  changed_when: false
+  vars:
+    log_notice: /var/log/tor/notice.log
+  ansible.builtin.shell:
+    cmd: |-
+      grep -h ' initiated ' {{ log_notice }}.1 {{ log_notice }} |
+        tail -n 1 |
+        grep -Eo ' [0-9]+ v. connections' |
+        awk '{ print $1 }' |
+        tac |
+        xargs -r
+  register: _result_connections
+
+- name: File connections of a server
+  delegate_to: localhost
+  throttle: 1
+  ansible.builtin.lineinfile:
+    line: "{{ inventory_hostname }} {{ _result_connections.stdout | default('n/a') }}"
+    path: "{{ infodir }}/tor_connections"
+    regexp: "^{{ inventory_hostname }} "

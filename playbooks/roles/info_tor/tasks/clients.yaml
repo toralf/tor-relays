@@ -1,5 +1,5 @@
 ---
-- name: Get unique clients
+- name: Get unique clients of a bridge
   changed_when: false
   vars:
     log_notice: /var/log/tor/notice.log
@@ -15,7 +15,7 @@
         xargs -r
   register: _result_tor_clients
 
-- name: File clients
+- name: File clients of a bridge
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
