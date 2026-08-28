@@ -5,10 +5,10 @@
     log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
-      grep -h ' initiated ' {{ log_notice }}.1 {{ log_notice }} |
-        tail -n 1 |
-        grep -Eo ' [0-9]+ v. connections' |
-        awk '{ print $1 }' |
+      grep -h -Eo 'initiated [0-9]+ and received [0-9]+ v. connections' {{ log_notice }}.1 {{ log_notice }} |
+        awk '{ print $2, $5 }' |
+        xargs -r -n 10 |
+        while read line; do echo $line | tr ' ' '+' | bc; done |
         tac |
         xargs -r
   register: _result_connections
