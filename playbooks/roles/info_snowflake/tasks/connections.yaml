@@ -16,12 +16,12 @@
       )
       echo $(( equatation ))
     executable: /bin/bash
-  register: _result_conns
+  register: _result_connections_snowflake
 
 - name: File connections
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result_conns.stdout | default('n/a') }}"
+    line: "{{ inventory_hostname }} {{ _result_connections_snowflake.stdout | default('n/a') }}"
     path: "{{ infodir }}/snowflake_connections"
     regexp: "^{{ inventory_hostname }} "
