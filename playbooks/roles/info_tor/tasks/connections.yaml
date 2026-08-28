@@ -8,9 +8,10 @@
       grep -h -Eo 'initiated [0-9]+ and received [0-9]+ v. connections' {{ log_notice }}.1 {{ log_notice }} |
         awk '{ print $2, $5 }' |
         xargs -r -n 10 |
-        while read line; do echo $line | tr ' ' '+' | bc; done |
+        while read -r line; do echo $(( ${line// /+} )); done |
         tac |
         xargs -r
+    executable: /bin/bash
   register: _result_connections_tor
 
 - name: File connections of a server

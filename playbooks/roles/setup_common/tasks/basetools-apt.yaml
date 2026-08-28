@@ -50,7 +50,6 @@
   ansible.builtin.apt:
     name:
       - at
-      - bc
       - cron
       - curl
       - elfutils
