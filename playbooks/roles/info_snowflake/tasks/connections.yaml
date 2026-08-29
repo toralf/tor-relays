@@ -14,7 +14,9 @@
         xargs -r |
         tr ' ' '+'
       )
-      echo $(( equatation ))
+      if [[ -n $equatation ]]; then
+        printf "%5s\n" $(( equatation ))
+      fi
     executable: /bin/bash
   register: _result_connections_snowflake
 

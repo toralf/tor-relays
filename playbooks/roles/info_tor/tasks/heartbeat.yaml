@@ -5,8 +5,7 @@
     log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
-      zgrep -h -F 'Heartbeat: Tor' {{ log_notice }}.4{,.gz} {{ log_notice }}.3{,.gz} {{ log_notice }}.2{,.gz} \
-        {{ log_notice }}.1 {{ log_notice }} |
+      zgrep -h -F 'Heartbeat: Tor' {{ log_notice }}.1 {{ log_notice }} |
         tail -n 4
     executable: /bin/bash
   register: _result_heartbeat

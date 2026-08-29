@@ -7,13 +7,13 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -F ' unique clients.' \
-        {{ log_notice }}.4{,.gz} {{ log_notice }}.3{,.gz} {{ log_notice }}.2{,.gz} \
-        {{ log_notice }}.1 {{ log_notice }} |
+        {{ log_notice }}.3{,.gz} {{ log_notice }}.2{,.gz} {{ log_notice }}.1 {{ log_notice }} |
         tail -n 12 |
         cut -f 2- -d ',' |
         grep -Eo ' [0-9]+ ' |
         tac |
-        xargs -r
+        xargs -r printf "%4s %4s %4s %4s %4s %4s %4s %4s %4s %4s %4s %4s\n" |
+        sed 's,  *$,,'
     executable: /bin/bash
   register: _result_tor_clients
 
