@@ -13,7 +13,7 @@
         awk '{ print $2, $5 }' |
         xargs -r -n 10 |
         while read -r line; do echo $(( ${line// /+} )); done |
-        awk 'NR > 1 { printf("%8i", ($0 > prev) ? $0 - prev : $0) } { prev = $0 }'
+        awk 'NR > 1 { printf("%8i", ($0 >= prev) ? $0 - prev : $0) } { prev = $0 }'
     executable: /bin/bash
   register: _result_connections_tor
 
