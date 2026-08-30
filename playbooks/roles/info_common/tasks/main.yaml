@@ -32,6 +32,7 @@
     - name: Tarpit ipset
       ansible.builtin.import_tasks: tarpit.yaml
       tags:
+        - never
         - tarpit
 
     - name: Uname

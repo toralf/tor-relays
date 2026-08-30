@@ -37,7 +37,6 @@
 - name: DDoS Hash
   tags:
     - ddos-hash
-    - never
   block:
     - name: Get DDoS hash name
       ansible.builtin.find:

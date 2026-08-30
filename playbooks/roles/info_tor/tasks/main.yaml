@@ -1,6 +1,5 @@
 ---
 - name: Main
-  when: is_tor
   module_defaults:
     ansible.builtin.fetch:
       flat: true
@@ -68,7 +67,7 @@
     - name: DDoS data
       ansible.builtin.import_tasks: ddos.yaml
       tags:
-        - ddos
+        - never
 
     - name: Heartbeat
       ansible.builtin.import_tasks: heartbeat.yaml
