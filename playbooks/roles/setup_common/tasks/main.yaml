@@ -53,7 +53,7 @@
         - basetools-apt
 
     - name: IPv6
-      when: ansible_facts.distribution != 'Ubuntu' or snapshot_description is not defined
+      when: ansible_facts.distribution != 'Ubuntu' or not is_image
       ansible.builtin.import_tasks: ipv6.yaml
       tags:
         - ipv6

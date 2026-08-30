@@ -20,6 +20,9 @@ prometheus_server_v4: ""
 prometheus_server_v6: ""
 tor_metrics: false
 
+# snapshot Image
+is_image: false
+
 # Tor / Snowflake
 is_snowflake: false
 snowflake_metrics: false

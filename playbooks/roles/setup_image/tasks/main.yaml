@@ -1,0 +1,26 @@
+---
+- name: Main
+  when: is_image
+  module_defaults:
+    ansible.builtin.apt:
+      allow_change_held_packages: true
+      autoclean: true
+      autoremove: true
+      purge: true
+      state: latest
+  block:
+    - name: Firewall Image
+      ansible.builtin.import_tasks: firewall-image.yaml
+      tags:
+        - firewall-image
+
+    - name: Clone repos
+      ansible.builtin.import_tasks: clone-repos.yaml
+      tags:
+        - clone-repos
+
+    - name: Install golang
+      ansible.builtin.import_tasks: golang.yaml
+      tags:
+        - golang
+        - never

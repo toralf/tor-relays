@@ -18,6 +18,7 @@
   tags:
     - firewall-tor
 
+# yamllint disable rule:line-length
 - name: Create systemd service file for tor-relay-ipset
   ansible.builtin.copy:
     dest: /etc/systemd/system/tor-relay-ipset.service
@@ -38,3 +39,4 @@
       WantedBy=sysinit.target
   notify:
     - Restart tor-relay-ipset
+# yamllint enable rule:line-length

@@ -9,7 +9,7 @@
     name: tor
     create_home: false
 
-- name: Work on "{{ _repo_dir }}"
+- name: Git
   vars:
     _git_repo_url: https://gitlab.torproject.org/tpo/core/tor.git
     _git_version: "{{ tor_git_version }}"

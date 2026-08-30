@@ -1,0 +1,20 @@
+---
+- name: Clone repos for snapshot image
+  vars:
+    _git_patches: []
+    _git_repo_url: "{{ item.url }}"
+    _git_version: "{{ item.ver | default('main') }}"
+    _repo_dir: "/root/{{ item.name }}"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+  loop_control:
+    label: "{{ inventory_hostname }} {{ item.name }}"
+  loop:
+    - name: linux
+      url: "{{ kernel_git_repo_url }}"
+      ver: master
+    - name: lyrebird
+      url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
+    - name: snowflake
+      url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+    - name: tor
+      url: https://gitlab.torproject.org/tpo/core/tor.git

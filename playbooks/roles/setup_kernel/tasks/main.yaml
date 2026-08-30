@@ -2,12 +2,6 @@
 - name: Main
   when: kernel_git_repo_url | length > 0
   module_defaults:
-    ansible.builtin.apt:
-      allow_change_held_packages: true
-      autoclean: true
-      autoremove: true
-      purge: true
-      state: latest
     ansible.builtin.copy:
       mode: "0644"
     ansible.builtin.get_url:
@@ -23,12 +17,6 @@
       ansible.builtin.import_tasks: tools.yaml
       tags:
         - tools
-
-    - name: Firewall Image
-      when: (snapshot_description | default('')) | length > 0
-      ansible.builtin.import_tasks: firewall-image.yaml
-      tags:
-        - firewall-image
 
     - name: Check for running kernel build process
       community.general.pids:

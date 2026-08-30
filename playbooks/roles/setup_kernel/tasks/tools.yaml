@@ -15,7 +15,7 @@
       - lz4
 
 - name: Do not upgrade kernel dist package
-  when: (snapshot_description | default('')) | length == 0
+  when: not is_image
   changed_when: false
   vars:
     _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"

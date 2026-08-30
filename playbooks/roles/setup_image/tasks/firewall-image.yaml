@@ -1,5 +1,5 @@
 ---
-- name: Install/Update tools for DDoS
+- name: Install/Update tools for DDoS scripts
   ansible.builtin.apt:
     name:
       - jq
