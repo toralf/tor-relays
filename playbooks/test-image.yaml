@@ -4,6 +4,7 @@
   order: shuffle
   roles:
     - role: setup_common
+    - role: info_common
     - role: setup_image
     - role: setup_kernel
     - role: info_healthy

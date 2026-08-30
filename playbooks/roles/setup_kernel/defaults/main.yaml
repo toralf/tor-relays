@@ -1,4 +1,6 @@
 ---
+is_image: false
+
 kernel_git_build_wait: true
 kernel_git_build_wait_retries: 90 # count
 kernel_git_build_wait_delay: 60 # seconds

@@ -10,7 +10,7 @@
       ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
       if [[ {{ is_tor | ternary('y', 'n') }} == y ]]; then
         iptables  -nvL INPUT | grep 'match-set torutils-ddos-v4-'
-        if [[ {{ (tor_bridge_distribution | length == 0) | ternary('y', 'n') }} == y ]]; then
+        if [[ {{ (is_tor and tor_bridge_distribution | length == 0) | ternary('y', 'n') }} == y ]]; then
           ip6tables -nvL INPUT | grep 'match-set torutils-ddos-v6-'
         fi
       fi

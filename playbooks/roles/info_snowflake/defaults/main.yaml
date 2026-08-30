@@ -1,6 +1,4 @@
 ---
-is_snowflake: false
-
 log_lines: 10
 
 log_connections_seconds_ago: 86400

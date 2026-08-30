@@ -1,17 +1,32 @@
 ---
 - name: Test common
-  hosts: hx
+  hosts: hmx,hsx,htx
   order: shuffle
   roles:
     - role: ping
     - role: setup_common
+    - role: info_common
+
+- name: Test snowflake
+  hosts: hsx
+  order: shuffle
+  roles:
     - role: setup_snowflake
+    - role: info_snowflake
+
+- name: Test tor
+  hosts: htx
+  order: shuffle
+  roles:
     - role: setup_tor
+    - role: info_tor
+
+- name: Test final
+  hosts: hmx,hsx,htx
+  order: shuffle
+  roles:
     - role: setup_kernel
     - role: setup_autoupdate
-    - role: info_common
-    - role: info_snowflake
-    - role: info_tor
     - role: info_healthy
     - role: shutdown
     - role: delete

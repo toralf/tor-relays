@@ -1,8 +1,5 @@
 ---
-- name: Main
-  when: is_image
-  block:
-    - name: Snapshot
-      ansible.builtin.import_tasks: snapshot.yaml
-      tags:
-        - snapshot
+- name: Snapshot
+  ansible.builtin.import_tasks: snapshot.yaml
+  tags:
+    - snapshot

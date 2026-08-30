@@ -1,6 +1,4 @@
 ---
-is_tor: false
-
 tor_bridge_distribution: none
 
 _fp: ""

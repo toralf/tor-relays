@@ -15,3 +15,5 @@ issue_since: ""
 trace_since: ""
 
 filter_sensitive_data: "tee"
+
+is_tor: false

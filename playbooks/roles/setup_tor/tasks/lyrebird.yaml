@@ -1,5 +1,5 @@
 ---
-- name: Git
+- name: Git Lyrebird
   vars:
     _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
     _git_version: "{{ lyrebird_git_version }}"

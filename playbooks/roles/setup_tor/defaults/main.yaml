@@ -1,6 +1,4 @@
 ---
-is_tor: false
-
 tor_build_from_source: false
 use_tor_geoip_data: false
 

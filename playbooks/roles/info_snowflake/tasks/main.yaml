@@ -1,6 +1,5 @@
 ---
 - name: Main
-  when: is_snowflake
   module_defaults:
     ansible.builtin.lineinfile:
       create: true

@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 
 ---
-- name: Test image
+- name: Site test image
   ansible.builtin.import_playbook: playbooks/test-image.yaml

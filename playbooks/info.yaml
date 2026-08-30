@@ -1,10 +1,20 @@
 ---
-- name: Info
+- name: Info common
   hosts: all
   order: shuffle
   roles:
     - role: ping
     - role: info_common
     - role: info_healthy
+
+- name: Info snowflake
+  hosts: snowflake
+  order: shuffle
+  roles:
     - role: info_snowflake
+
+- name: Info tor
+  hosts: tor
+  order: shuffle
+  roles:
     - role: info_tor
