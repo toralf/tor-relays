@@ -6,8 +6,6 @@
       set -eu
 
       equatation=$(
-        set -o pipefail
-
         journalctl -u snowflake --since "{{ log_connections_seconds_ago }} second ago" \
           -g ', there were .* connections' --quiet |
         awk '{ print $14 }' |
@@ -16,6 +14,8 @@
       )
       if [[ -n $equatation ]]; then
         printf "%5s\n" $(( equatation ))
+      else
+        echo "n/a"
       fi
     executable: /bin/bash
   register: _result_connections_snowflake
@@ -24,6 +24,6 @@
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result_connections_snowflake.stdout | default('n/a') }}"
+    line: "{{ inventory_hostname }} {{ _result_connections_snowflake.stdout }}"
     path: "{{ infodir }}/snowflake_connections"
     regexp: "^{{ inventory_hostname }} "
