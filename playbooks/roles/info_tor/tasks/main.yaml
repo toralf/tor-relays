@@ -20,7 +20,6 @@
             - bridgeline
             - bto
             - onionoo
-            - wellknown
 
         - name: Bridge stats
           when: tor_bridge_distribution | length > 0
@@ -32,8 +31,8 @@
           when: tor_bridge_distribution | length > 0
           ansible.builtin.import_tasks: bridgeline.yaml
           tags:
-            - never
             - bridgeline
+            - never
 
         - name: Bto
           when: tor_bridge_distribution | length > 0
@@ -46,11 +45,6 @@
           ansible.builtin.import_tasks: onionoo.yaml
           tags:
             - onionoo
-
-        - name: Wellknown
-          ansible.builtin.import_tasks: wellknown.yaml
-          tags:
-            - wellknown
 
     - name: Clients
       when: tor_bridge_distribution | length > 0

@@ -1,8 +1,6 @@
 # shellcheck shell=bash
 # SPDX-License-Identifier: GPL-3.0-or-later
 
-# note: ./.wellknown entries will not cleaned
-
 function cleanLocalDataEntries() {
   local files
 
@@ -14,9 +12,6 @@ function cleanLocalDataEntries() {
   while read -r name; do
     rm -f ./.ansible_facts/s1_${name}
     set +e
-    # delete next line too
-    sed -i -e "/^# ${name}$/{N;d;}" ${infodir}/{{,hashed-bridge-}rsa-fingerprint,ed25519-master-pubkey}.txt
-    # delete single line
     sed -i -E \
       -e "/^${name}$/d" \
       -e "/^${name} /d" \

@@ -14,6 +14,6 @@
   ansible.builtin.lineinfile:
     line: "Bridge obfs4 {{ _torport }} {{ _fp }} {{ _cert.stdout_lines[0] }} iat-mode=0  # {{ inventory_hostname }}"
     regexp: "^Bridge obfs4 {{ _torport }} {{ _fp }} "
-    path: /tmp/tor_bridgeline
+    path: "{{ infodir }}/tor_bridgeline"
     mode: "0600"
     state: "{{ (_cert.stdout | length > 0) | ternary('present', 'absent') }}"
