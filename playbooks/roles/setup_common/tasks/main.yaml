@@ -105,8 +105,8 @@
         msg: is triggered.
       notify: Reboot
       tags:
-        - never
         - force-a-reboot
+        - never
 
     - name: Check for an advised reboot
       ansible.builtin.import_tasks: reboot.yaml
