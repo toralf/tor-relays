@@ -7,9 +7,6 @@
     _repo_dir: /root/linux
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Flush handlers
-  ansible.builtin.meta: flush_handlers
-
 - name: Gather facts - kernel build
   ansible.builtin.setup:
     gather_subset:
@@ -22,7 +19,7 @@
     cmd: |-
       set -euf
 
-      before=$(grep -v '^#' .config | md5sum)
+      before=$(grep -v '^#' -e '^$' .config | md5sum)
 
       cp /boot/config-{{ ansible_facts.kernel }} .config
       # force module loading
@@ -37,20 +34,13 @@
         scripts/config --disable SYSTEM_TRUSTED_KEYS
       fi
 
-      after=$(grep -v '^#' .config | md5sum)
+      after=$(grep -v -e '^#' -e '^$' .config | md5sum)
       if [[ $before != $after ]]; then
         exit 123 # to mark this Ansible task as "changed"
       fi
     chdir: /root/linux
     executable: /bin/bash
   register: _kernel_configured
-
-- name: Copy build script
-  ansible.builtin.copy:
-    src: kernel-build.sh
-    dest: /root/
-    mode: "0744"
-  register: _kernel_make_script
 
 - name: Make
   when: kernel_build
@@ -67,9 +57,6 @@
           ansible.builtin.shell:
             cmd: >-
               echo /root/kernel-build.sh reboot | at now
-
-        - name: Reset connection
-          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_reset_connection.yaml"
 
     - name: Wait
       when: kernel_git_build_wait
@@ -119,7 +106,7 @@
                 msg: Build failed.
 
         - name: Reboot
-          failed_when: >2-
+          failed_when: >-
             not (
             _reboot_kernel.rebooted or
             _reboot_kernel.msg is search('Action reboot already in progress') or

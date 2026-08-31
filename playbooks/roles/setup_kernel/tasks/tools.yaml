@@ -24,3 +24,10 @@
   ansible.builtin.command:
     cmd: |-
       apt-mark hold linux-image{{ _suffix }}
+
+- name: Copy build script
+  ansible.builtin.copy:
+    src: kernel-build.sh
+    dest: /root/
+    mode: "0744"
+  register: _kernel_make_script
