@@ -1,5 +1,6 @@
 ---
 - name: Get fingerprint
+  retries: 3
   changed_when: false
   ansible.builtin.command:
     cmd: >-
