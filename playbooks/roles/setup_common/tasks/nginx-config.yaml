@@ -21,9 +21,3 @@
   ansible.builtin.command:
     cmd: >-
       nginx -t
-
-- name: Ensure nginx is enabled and started
-  ansible.builtin.systemd_service:
-    name: nginx
-    state: started
-    enabled: true

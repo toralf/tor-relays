@@ -13,3 +13,9 @@
   ansible.builtin.import_tasks: nginx-config.yaml
   tags:
     - nginx-config
+
+- name: Ensure nginx is enabled and started
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: started
+    enabled: true

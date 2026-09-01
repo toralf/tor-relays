@@ -49,4 +49,5 @@
   ansible.builtin.systemd_service:
     name: snowflake
     enabled: true
+    daemon_reload: true
   notify: Restart snowflake
