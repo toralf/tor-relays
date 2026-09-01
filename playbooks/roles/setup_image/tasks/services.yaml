@@ -1,0 +1,11 @@
+---
+- name: Stop and disable services
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: false
+  loop:
+    - apt-daily.timer
+    - apt-daily-upgrade.timer
+    - nginx
+    - unattended-upgrades
