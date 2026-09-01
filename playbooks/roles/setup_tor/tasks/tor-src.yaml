@@ -17,13 +17,20 @@
     _repo_dir: /root/tor
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Test whether Tor binary is there
-  ansible.builtin.stat:
-    path: /root/tor/src/app/tor
+- name: Test that binary is up to date
+  changed_when: false
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      t1=$(stat -c %Y /root/tor/src/app/tor)
+      t2=$(stat -c %Y /usr/bin/tor)
+      ((t1 <= t2))
   register: _binary
 
 - name: Build
-  when: _git_repo_changed or not _binary.stat.exists
+  when: _git_repo_changed or _binary.rc != 0
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
@@ -87,10 +94,11 @@
     dest: /etc/systemd/system/tor.service
   notify: Restart Tor
 
-- name: Enable and start
+- name: Enable
   ansible.builtin.systemd_service:
     name: tor
     enabled: true
+    daemon_reload: true
   notify: Restart Tor
 
 # the PT (not Tor) needs the capability for bridges
