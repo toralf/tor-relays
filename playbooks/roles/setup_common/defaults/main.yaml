@@ -1,45 +1,29 @@
 ---
-ingress_ports: []
 additional_software: []
-
 custom_command_file: ""
-
-# e.g. trixie
+# e.g. trixie or resolute
 desired_release: ""
+ingress_ports: []
 
 # Debian kernel flavours
 kernel_debian_backports: false
 kernel_debian_cloud: false
 
-# metrics
-ddos_metrics: false
+# node metrics
 metrics_port: 0
-nginx_metrics: false
 node_metrics: false
 prometheus_server_v4: ""
 prometheus_server_v6: ""
-tor_metrics: false
 
-# snapshot Image
+# Image
 is_image: false
 
-# Tor / Snowflake
-is_snowflake: false
-snowflake_metrics: false
-is_tor: false
-tor_bridge_distribution: none
-# in Hetzner subnets shape egress
-tor_shape_egress: false
-
-# DDoS solution
-torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
-
-# nginx
+# Nginx
 nginx_public_site: false
 nginx_site_directories: []
 
 # https://github.com/prometheus/node_exporter
-# reduce the pressure at the (tiny cloud) instances itself instead filtering by "params:" in the prometheus.yaml config file
+# due to tiny cloud instances reduce the CPU pressure at the source (instead to filter by "params:" at prometheus server)
 node_exporter_collectors:
   - arp
   - conntrack
@@ -59,3 +43,15 @@ node_exporter_collectors:
   - udp_queues
   - uname
   - vmstat
+
+# Snowflake
+is_snowflake: false
+snowflake_metrics: false
+
+# Tor
+ddos_metrics: false
+is_tor: false
+tor_bridge_distribution: none
+tor_metrics: false
+tor_shape_egress: false
+torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
