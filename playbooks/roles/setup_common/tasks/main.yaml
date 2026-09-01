@@ -2,8 +2,12 @@
 - name: Gather facts - common
   ansible.builtin.setup:
     gather_subset:
+      - "!all,!min"
+      - distribution
       - kernel
+      - network
   tags:
+    - always
     - facts
 
 - name: Validate
