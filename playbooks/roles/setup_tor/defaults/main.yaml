@@ -19,7 +19,7 @@ torrc_config_hosts: []
 # the ORPort or PT port
 tor_port: 0
 
-# safe default: Tor private bridge, an empty string indicates a Tor server
+# safe default: Tor private bridge, an empty string indicates a Tor relay
 tor_bridge_distribution: none
 
 # CPU consuming

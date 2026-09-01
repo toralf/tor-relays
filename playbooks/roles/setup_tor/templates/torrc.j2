@@ -20,7 +20,7 @@ ExtORPort auto
 ServerTransportPlugin obfs4 exec /usr/bin/{{ (tor_build_from_source or ansible_facts.distribution_release == 'forky') | ternary('lyrebird', 'obfs4proxy') }}
 ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
-{# Tor server #}
+{# Tor relay #}
 
 NoExec 1
 {% if ansible_facts.architecture == 'x86_64' %}

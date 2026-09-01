@@ -7,7 +7,7 @@
       create: true
       firstmatch: true
   block:
-    - name: Server and public bridge == no private bridge
+    - name: Relay and public bridge == no private bridge
       when: tor_bridge_distribution != 'none'
       vars:
         _fp: "{{ _result_fp.stdout_lines[0] }}"

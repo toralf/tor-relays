@@ -38,10 +38,10 @@
         state: "{{ (tor_metrics and tor_bridge_distribution | length > 0) |
           ternary('present', 'absent') }}"
 
-    - name: Tor server targets
+    - name: Tor relay targets
       delegate_to: localhost
       throttle: 1
       ansible.builtin.lineinfile:
-        path: "{{ infodir }}/targets_tor-server.yaml"
+        path: "{{ infodir }}/targets_tor-relay.yaml"
         state: "{{ (tor_metrics and tor_bridge_distribution | length == 0) |
           ternary('present', 'absent') }}"

@@ -1,6 +1,6 @@
 ---
 #  (up to) last 3 days (sorted from newest to oldest)
-- name: Get connections of a server
+- name: Get connections of a relay
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -16,7 +16,7 @@
     executable: /bin/bash
   register: _result_connections_tor
 
-- name: File connections of a server
+- name: File connections of a relay
   delegate_to: localhost
   throttle: 1
   ansible.builtin.lineinfile:
