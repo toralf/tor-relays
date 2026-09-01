@@ -19,6 +19,7 @@ prometheus_server_v6: ""
 is_image: false
 
 # Nginx
+nginx_metrics: false
 nginx_public_site: false
 nginx_site_directories: []
 
