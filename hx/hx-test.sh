@@ -39,7 +39,8 @@ if [[ ${task} == "bin" ]]; then
   branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "kernel_git_build_wait": false }' \
+    -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
 
 elif [[ ${task} == "common" ]]; then
   branch=${branch:-'dist'}
