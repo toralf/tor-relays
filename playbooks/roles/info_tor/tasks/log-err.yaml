@@ -1,15 +1,14 @@
 ---
 - name: Check error log
   changed_when: false
-  vars:
-    log_err: /var/log/tor/err.log
   ansible.builtin.shell:
     cmd: |-
-      grep -h -v \
+      zgrep -h -v \
         -e 'opening .*log file.' \
-        {{ log_err }}.1 {{ log_err }} |
+        err.log.1 err.log |
         tail -n 50 |
         {{ filter_sensitive_data }}
+    chdir: /var/log/tor/
     executable: /bin/bash
   register: _result_log_err
 

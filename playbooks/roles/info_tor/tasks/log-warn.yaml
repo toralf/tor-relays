@@ -1,8 +1,6 @@
 ---
 - name: Check warn log
   changed_when: false
-  vars:
-    log_warn: /var/log/tor/warn.log
   ansible.builtin.shell:
     cmd: |-
       grep -h -v \
@@ -10,9 +8,10 @@
         -e 'Please upgrade! This version of Tor' \
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
         -e 'Unrecognized BridgeDistribution value' \
-         {{ log_warn }}.1 {{ log_warn }} |
+         warn.log.1 warn.log |
         tail -n 10 |
         {{ filter_sensitive_data }}
+    chdir: /var/log/tor/
     executable: /bin/bash
   register: _result_log_warn
 

@@ -1,12 +1,11 @@
 ---
 - name: Get Heartbeat
   changed_when: false
-  vars:
-    log_notice: /var/log/tor/notice.log
   ansible.builtin.shell:
     cmd: |-
-      zgrep -h -F 'Heartbeat: Tor' {{ log_notice }}.1 {{ log_notice }} |
+      zgrep -h -F 'Heartbeat: Tor' notice.log.1 notice.log |
         tail -n 4
+    chdir: /var/log/tor/
     executable: /bin/bash
   register: _result_heartbeat
 

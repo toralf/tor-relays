@@ -4,9 +4,10 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -v -e 'Reading database' -e '^$' \
-        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log.1{,.gz} \
-        /var/log/unattended-upgrades/unattended-upgrades-dpkg.log |
+        unattended-upgrades-dpkg.log.1{,.gz} \
+        unattended-upgrades-dpkg.log |
         tail -n 20
+    chdir: /var/log/unattended-upgrades/
     executable: /bin/bash
   register: _result_unatt_log
 
