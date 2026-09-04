@@ -5,13 +5,13 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -Eo 'initiated [0-9]+ and received [0-9]+ v. connections' \
-        notice.log.3{,.gz} notice.log.2{,.gz} notice.log.1 notice.log |
+        notice.log.3.gz notice.log.2.gz notice.log.1 notice.log |
         tail -n 65 |
         tac |
         awk '{ print $2, $5 }' |
         xargs -r -n 10 |
         while read -r line; do echo $(( ${line// /+} )); done |
-        awk 'NR > 1 { printf("%7i", (old < $0) ? $0 : old - $0) } { old = $0 }'
+        awk 'NR > 1 { printf(" %7i", (old < $0) ? $0 : old - $0); old = $0 }'
     chdir: /var/log/tor/
     executable: /bin/bash
   register: _result_connections_tor

@@ -5,7 +5,7 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -F ' unique clients.' \
-        notice.log.3{,.gz} notice.log.2{,.gz} notice.log.1 notice.log |
+        notice.log.3.gz notice.log.2.gz notice.log.1 notice.log |
         tail -n 12 |
         cut -f 2- -d ',' |
         grep -Eo ' [0-9]+ ' |
