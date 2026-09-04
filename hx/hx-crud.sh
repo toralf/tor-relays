@@ -106,6 +106,7 @@ function next_job() {
     if ! ./bin/${action}-server.sh ${names} 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
+    ./bin/clean-snapshots.sh
     pit_stop crud
   fi
 
