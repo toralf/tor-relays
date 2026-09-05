@@ -57,7 +57,7 @@ function addRules() {
 {% endif %}
 
   # tarpit
-  $ipt -A INPUT -p tcp -j SET --add-set $tarpitset src --exist
+  $ipt -A INPUT -p tcp --syn -j SET --add-set $tarpitset src --exist
 
   # default ingress policy
   $ipt -P INPUT DROP
