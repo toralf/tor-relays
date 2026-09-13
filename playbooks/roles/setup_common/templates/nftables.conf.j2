@@ -223,7 +223,7 @@ table inet ingress_filter {
 {% if allow_metrics_port and prometheus_server_v4 | length > 0 %}
 
         # Prometheus
-        define metrics_port    = { {{ metrics_port }} }
+        define metrics_port  = { {{ metrics_port }} }
         define prometheus_v4 = {{ prometheus_server_v4 }}
         define prometheus_v6 = [{{ prometheus_server_v6 }}]
 
