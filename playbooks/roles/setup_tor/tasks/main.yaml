@@ -28,6 +28,7 @@
     - name: Validate
       ansible.builtin.import_tasks: validate.yaml
       tags:
+        - always
         - validate
 
     - name: Test for existance of Tor keys

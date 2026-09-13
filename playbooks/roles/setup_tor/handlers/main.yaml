@@ -14,13 +14,20 @@
     state: reloaded
     enabled: true
 
+- name: Kill running metrics.sh
+  listen: Restart metrics
+  failed_when: false
+  changed_when: false
+  ansible.builtin.command:
+    cmd: |-
+      pkill -9 -f "metrics.sh"
+
 - name: Restart metrics
   listen: Restart metrics
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
-      pkill -9 -x metrics.sh
-      echo 'nice /root/metrics.sh 15 /var/www/metrics-ddos &' | at now
+      nohup nice /root/metrics.sh 15 /var/www/metrics-ddos >/dev/null 2>&1 &
 
 - name: Restart watchdog
   listen: Restart watchdog

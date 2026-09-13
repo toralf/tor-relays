@@ -1,9 +1,4 @@
 ---
-- name: Install/Update tools for DDoS
-  ansible.builtin.apt:
-    name:
-      - jq
-
 #
 # ingress
 #

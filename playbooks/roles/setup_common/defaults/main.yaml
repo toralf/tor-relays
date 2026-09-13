@@ -9,6 +9,9 @@ ingress_ports: []
 kernel_debian_backports: false
 kernel_debian_cloud: false
 
+firewall: ""
+firewall_metrics: false
+
 # node metrics
 metrics_port: 0
 node_metrics: false

@@ -13,6 +13,7 @@
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
+    - always
     - validate
 
 - name: Main
@@ -62,8 +63,15 @@
       tags:
         - ipv6
 
+    - name: Firewall IPTABLES
+      when: firewall == "iptables"
+      ansible.builtin.import_tasks: firewall-iptables.yaml
+      tags:
+        - firewall
+
     - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
+      when: firewall == "nftables"
+      ansible.builtin.import_tasks: firewall-nftables.yaml
       tags:
         - firewall
 
@@ -79,9 +87,7 @@
         - upgrade
 
     - name: Nginx
-      when:
-        nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
-        ddos_metrics or node_metrics or is_snowflake or tor_metrics
+      when: allow_metrics_port
       ansible.builtin.import_tasks: nginx.yaml
       tags:
         - nginx

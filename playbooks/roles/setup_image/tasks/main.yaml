@@ -1,5 +1,6 @@
 ---
 - name: Firewall Image
+  when: firewall == "iptables"
   ansible.builtin.import_tasks: firewall-image.yaml
   tags:
     - firewall-image

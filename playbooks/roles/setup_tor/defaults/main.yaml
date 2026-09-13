@@ -11,10 +11,14 @@ lyrebird_git_version: main
 
 # DDoS solution
 torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
+firewall: ""
+firewall_metrics: false
 
 # 2 lists for additional torrc values
 torrc_config_group: []
 torrc_config_hosts: []
+
+tor_nickname: ""
 
 # the ORPort or PT port
 tor_port: 0

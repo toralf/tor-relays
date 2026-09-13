@@ -117,6 +117,28 @@ server {
   expires 0;
 }
 {% endif %}
+{% if firewall_metrics %}
+
+server {
+  listen 127.0.0.1:3304;
+
+  server_name _3304;
+  root /var/www/metrics-firewall;
+  index nftables.prom;
+
+  access_log off;
+  error_log /dev/null crit;
+
+  proxy_no_cache 1;
+  proxy_cache_bypass 1;
+
+  # browser side
+  add_header Last-Modified $date_gmt;
+  add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+  add_header Pragma "no-cache";
+  expires 0;
+}
+{% endif %}
 {% if metrics_port > 0 %}
 
 server {
@@ -146,6 +168,16 @@ server {
 
   location = /metrics-ddos {
     proxy_pass http://127.0.0.1:3305/;
+    proxy_hide_header Content-Type;
+    add_header Content-Type 'text/plain; charset=utf-8' always;
+  }
+{% endif %}
+{% if firewall_metrics %}
+
+  location = /metrics-firewall {
+    proxy_pass http://127.0.0.1:3304/;
+    proxy_hide_header Content-Type;
+    add_header Content-Type 'text/plain; charset=utf-8' always;
   }
 {% endif %}
 {% if nginx_metrics %}

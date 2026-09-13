@@ -15,6 +15,13 @@
         path: "{{ infodir }}/targets_tor-ddos.yaml"
         state: "{{ ddos_metrics | ternary('present', 'absent') }}"
 
+    - name: Firewall targets
+      delegate_to: localhost
+      throttle: 1
+      ansible.builtin.lineinfile:
+        path: "{{ infodir }}/targets_firewall.yaml"
+        state: "{{ firewall_metrics | ternary('present', 'absent') }}"
+
     - name: Node targets
       delegate_to: localhost
       throttle: 1

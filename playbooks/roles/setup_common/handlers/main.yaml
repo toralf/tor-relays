@@ -35,6 +35,28 @@
     state: reloaded
     enabled: true
 
+- name: Reload nftables
+  listen: Reload nftables
+  ansible.builtin.systemd_service:
+    name: nftables
+    state: reloaded
+    enabled: true
+
+- name: Kill running metrics-firewall.sh
+  listen: Restart metrics firewall
+  failed_when: false
+  changed_when: false
+  ansible.builtin.command:
+    cmd: |-
+      pkill -9 -f "metrics-firewall.sh"
+
+- name: Restart metrics firewall
+  listen: Restart metrics firewall
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      nohup nice /root/metrics-firewall.sh 15 /var/www/metrics-firewall/nftables.prom >/dev/null 2>&1 &
+
 - name: Restart Prometheus node exporter
   listen: Restart Prometheus node exporter
   ansible.builtin.systemd_service:

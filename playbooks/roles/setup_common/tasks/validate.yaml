@@ -67,3 +67,30 @@
     quiet: true
     that:
       - "snowflake_metrics_port > 0 and snowflake_metrics_port < 2**16"
+
+- name: Validate firewall
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - 'firewall in ["", "iptables", "nftables"]'
+
+- name: Validate ddos_metrics
+  when: ddos_metrics
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - 'firewall == "iptables"'
+
+- name: Validate firewall_metrics
+  when: firewall_metrics
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - 'firewall == "nftables"'
+
+- name: Validate metrics
+  when: ddos_metrics or firewall_metrics
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "ddos_metrics != firewall_metrics"

@@ -5,17 +5,23 @@
   ansible.builtin.shell:
     cmd: |-
       set -euf
+      set -o pipefail
 
-      iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
-      ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
-      if [[ {{ (is_tor | default(false)) | ternary('y', 'n') }} == y ]]; then
-        iptables  -nvL INPUT | grep 'match-set torutils-ddos-v4-'
-        if [[ {{ ((tor_bridge_distribution | default('none')) | length == 0) | ternary('y', 'n') }} == y ]]; then
-          ip6tables -nvL INPUT | grep 'match-set torutils-ddos-v6-'
+      if [[ {{ firewall }} == "nftables" ]]; then
+        nft -tns list ruleset | grep -F 'counter name "left_input"'
+
+      elif [[ {{ firewall }} == "iptables" ]]; then
+        iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
+        ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
+        if [[ {{ (is_tor | default(false)) | ternary('y', 'n') }} == y ]]; then
+          iptables  -nvL INPUT | grep 'match-set torutils-ddos-v4-'
+          if [[ {{ ((tor_bridge_distribution | default('none')) | length == 0) | ternary('y', 'n') }} == y ]]; then
+            ip6tables -nvL INPUT | grep 'match-set torutils-ddos-v6-'
+          fi
         fi
+        iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
+        ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
       fi
-      iptables  -nvL INPUT | grep 'add-set torutils-tarpit-v4'
-      ip6tables -nvL INPUT | grep 'add-set torutils-tarpit-v6'
     executable: /bin/bash
   register: _firewall_healthy
   notify: Not Healthy

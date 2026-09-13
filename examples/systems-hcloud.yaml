@@ -99,7 +99,7 @@ htx:
   vars:
     _torrc_config:
       - name: Nickname
-        value: "gnampfx{{ ((seed_address + seed_host) | md5)[0:12] }}"
+        value: "gnampfx{{ ((seed_address + seed_host) | md5)[0:7] }}"
       - name: RelayBandwidthRate
         value: 8 MB
       - name: RelayBandwidthBurst
