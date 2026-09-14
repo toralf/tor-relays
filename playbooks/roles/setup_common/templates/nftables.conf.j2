@@ -322,11 +322,11 @@ table inet ingress_filter {
 
         # DDoS rule 4
         tcp dport $tor_port_{{ tor_nickname }} tcp flags syn ct state new \
-            update @rule4_v4_{{ tor_nickname }} { ip saddr & $network_v4_block ct count over 8 } \
+            add @rule4_v4_{{ tor_nickname }} { ip saddr & $network_v4_block ct count over 8 } \
             counter name "rule4_v4_{{ tor_nickname }}" drop
 
         tcp dport $tor_port_{{ tor_nickname }} tcp flags syn ct state new \
-            update @rule4_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block ct count over 8 } \
+            add @rule4_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block ct count over 8 } \
             counter name "rule4_v6_{{ tor_nickname }}" drop
 
         # DDoS rule 5
