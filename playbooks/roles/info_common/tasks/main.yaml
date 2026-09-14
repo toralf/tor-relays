@@ -19,6 +19,12 @@
         - dryrun-unattended
         - never
 
+    - name: Firewall
+      ansible.builtin.import_tasks: firewall.yaml
+      tags:
+        - firewall-sets
+        - never
+
     - name: Log unattended
       ansible.builtin.import_tasks: log-unattended.yaml
       tags:

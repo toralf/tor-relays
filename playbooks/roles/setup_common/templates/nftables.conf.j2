@@ -287,13 +287,13 @@ table inet ingress_filter {
             update @rule2rate_v4_{{ tor_nickname }} { ip saddr & $network_v4_block } \
             limit rate over 4/minute burst 8 packets \
             update @rule2drop_v4_{{ tor_nickname }} { ip saddr & $network_v4_block } \
-            counter name "rule2rate_v4_{{ tor_nickname }}" drop
+            counter name "rule2drop_v4_{{ tor_nickname }}" drop
 
         ip6 daddr $local_address_v6 tcp dport $tor_port_{{ tor_nickname }} tcp flags syn ct state new \
             update @rule2rate_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
             limit rate over 4/minute burst 8 packets \
             update @rule2drop_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
-            counter name "rule2rate_v6_{{ tor_nickname }}" drop
+            counter name "rule2drop_v6_{{ tor_nickname }}" drop
 
         # DDoS rule 3
         (ip saddr & $network_v4_block) @rule3drop_v4_{{ tor_nickname }} counter name "rule3drop_v4_{{ tor_nickname }}" drop
@@ -302,13 +302,13 @@ table inet ingress_filter {
         ip daddr $local_address_v4 tcp dport $tor_port_{{ tor_nickname }} tcp flags syn ct state new \
             update @rule3rate_v4_{{ tor_nickname }} { ip saddr & $network_v4_block } \
             limit rate over 24/hour burst 24 packets \
-            update @rule2drop_v4_{{ tor_nickname }} { ip saddr & $network_v4_block } \
-            counter name "rule3rate_v4_{{ tor_nickname }}" drop
+            update @rule3drop_v4_{{ tor_nickname }} { ip saddr & $network_v4_block } \
+            counter name "rule3drop_v4_{{ tor_nickname }}" drop
 
         ip6 daddr $local_address_v6 tcp dport $tor_port_{{ tor_nickname }} tcp flags syn ct state new \
-            update @rule3drop_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
+            update @rule3rate_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
             limit rate over 24/hour burst 24 packets \
-            update @rule2drop_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
+            update @rule3drop_v6_{{ tor_nickname }} { ip6 saddr & $network_v6_block } \
             counter name "rule3drop_v6_{{ tor_nickname }}" drop
 
         # DDoS rule 4
