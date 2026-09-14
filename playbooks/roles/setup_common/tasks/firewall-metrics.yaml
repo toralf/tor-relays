@@ -18,6 +18,7 @@
   ansible.builtin.copy:
     src: /home/tfoerste/devel/torutils/metrics-firewall.sh
     dest: /root/
+    mode: "0744"
   notify: Restart metrics firewall
 
 - name: Cron job for metrics firewall
