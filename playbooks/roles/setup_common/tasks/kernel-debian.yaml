@@ -1,4 +1,10 @@
 ---
+- name: Gather facts - kernel-debian
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all,!min"
+      - kernel
+
 - name: Debian
   when: kernel_debian_backports or kernel_debian_cloud
   block:

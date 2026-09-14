@@ -1,4 +1,10 @@
 ---
+- name: Gather facts - ipv6
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all,!min"
+      - network
+
 - name: IPv6 Hetzner
   when: ansible_facts.system_vendor == 'Hetzner'
   ansible.builtin.import_tasks: ipv6-hetzner.yaml

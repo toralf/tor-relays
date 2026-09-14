@@ -101,3 +101,4 @@
         gather_subset:
           - all_ipv6_addresses
           - default_ipv6
+          - network
