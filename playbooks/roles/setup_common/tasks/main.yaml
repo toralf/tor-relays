@@ -52,15 +52,8 @@
       tags:
         - ipv6
 
-    - name: Firewall IPTABLES
-      when: firewall == "iptables"
-      ansible.builtin.import_tasks: firewall-iptables.yaml
-      tags:
-        - firewall
-
     - name: Firewall
-      when: firewall == "nftables"
-      ansible.builtin.import_tasks: firewall-nftables.yaml
+      ansible.builtin.import_tasks: firewall.yaml
       tags:
         - firewall
 

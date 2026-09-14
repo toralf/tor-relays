@@ -25,40 +25,6 @@
     cmd: |-
       nft -c -f /etc/nftables.conf
 
-- name: Create nginx metrics-firewall
-  when: firewall_metrics
-  ansible.builtin.file:
-    path: /var/www/metrics-firewall
-    state: directory
-    group: www-data
-    mode: "0750"
-
-- name: Get metrics firewall
-  throttle: 16
-  retries: 1
-  ansible.builtin.get_url:
-    url: "{{ torutils_path }}/metrics-firewall.sh"
-    dest: /root/
-  notify: Restart metrics firewall
-
-- name: Cron job for metrics firewall
-  ansible.builtin.cron:
-    name: Firewall metrics
-    special_time: reboot
-    job: >-
-      nice /root/metrics-firewall.sh 15 /var/www/metrics-firewall/nftables.prom
-    state: "{{ firewall_metrics | ternary('present', 'absent') }}"
-  notify: Restart metrics firewall
-
-- name: Ensure that metrics firewall is running
-  changed_when: _metrics_firewall_status.rc != 0
-  failed_when: false
-  ansible.builtin.shell:
-    cmd: |-
-      kill -0 $(cat /tmp/metrics-firewall.sh.lock)
-  register: _metrics_firewall_status
-  notify: Restart metrics firewall
-
 #
 # kick away iptables artefacts
 #
