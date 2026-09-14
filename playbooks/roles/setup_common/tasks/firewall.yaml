@@ -1,0 +1,14 @@
+---
+- name: Firewall IPTABLES
+  when: firewall == "iptables"
+  ansible.builtin.import_tasks: firewall-iptables.yaml
+
+- name: Firewall
+  when: firewall == "nftables"
+  ansible.builtin.import_tasks: firewall-nftables.yaml
+
+- name: Firewall metrics
+  when: firewall_metrics
+  ansible.builtin.import_tasks: firewall-metrics.yaml
+  tags:
+    - firewall-metrics
