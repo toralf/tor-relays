@@ -1,2 +1,4 @@
 ---
 filter_sensitive_data: "tee"
+
+firewall_set_pattern: "drop"
