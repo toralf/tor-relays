@@ -36,23 +36,23 @@
 
               if expires is not None:
                   try:
-                      hour = int(expires // 3600)
-                      if 0 <= hour < 24:
-                          histogram[s["name"]][hour] += 1
+                      hours = int(expires // 3600)
+                      if 0 <= hours < 24:
+                          histogram[s["name"]][hours] += 1
                   except (ValueError, TypeError):
                       continue
 
       # print table header
       names = list(histogram.keys())
 
-      header = "Hour | " + " | ".join(f"{name:>25}" for name in names) + " |"
+      header = "tout | " + " | ".join(f"{name:>25}" for name in names) + " |"
       print(header)
       print("-" * len(header))
 
-      # hour 0-23
-      for hour in range(24):
-          row_values = [f"{histogram[name][hour]:>25}" for name in names]
-          print(f"{hour:>4} | " + " | ".join(row_values) + " |")
+      # hours 0-23
+      for hours in range(24):
+          row_values = [f"{histogram[name][hours]:>25}" for name in names]
+          print(f"{hours:>4} | " + " | ".join(row_values) + " |")
 
       '
   register: _result_histogram

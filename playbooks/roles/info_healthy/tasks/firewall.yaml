@@ -8,7 +8,7 @@
       set -o pipefail
 
       if [[ {{ firewall }} == "nftables" ]]; then
-        nft -tns list ruleset | grep -F 'counter name "left_input"'
+        nft -tns list ruleset | grep -F 'counter name "left"'
 
       elif [[ {{ firewall }} == "iptables" ]]; then
         iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
