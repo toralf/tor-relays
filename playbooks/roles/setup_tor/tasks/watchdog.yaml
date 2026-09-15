@@ -3,7 +3,7 @@
   throttle: 16
   retries: 1
   ansible.builtin.get_url:
-    url: "{{ torutils_path }}/watchdog.sh"
+    url: "{{ torutils_path }}/tools/watchdog.sh"
     dest: /root/
   notify: Restart watchdog
 

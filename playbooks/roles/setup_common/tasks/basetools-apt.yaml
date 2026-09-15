@@ -20,14 +20,22 @@
     src: 20phased-updates
     dest: /etc/apt/apt.conf.d/
 
-- name: Debian backports at IONOS
+- name: IONOS
   when: ansible_facts.system_vendor == 'QEMU' and ansible_facts.distribution == 'Debian'
-  vars:
-    _rel: "{{ ansible_facts.distribution_release }}"
-  ansible.builtin.lineinfile:
-    line: "Suites: {{ _rel }} {{ _rel }}-updates {{ _rel }}-backports"
-    path: /etc/apt/sources.list.d/debian.sources
-    regexp: "^Suites: {{ _rel }} {{ _rel }}-updates$"
+  block:
+    - name: Debian backports at IONOS
+      vars:
+        _rel: "{{ ansible_facts.distribution_release }}"
+      ansible.builtin.lineinfile:
+        line: "Suites: {{ _rel }} {{ _rel }}-updates {{ _rel }}-backports"
+        path: /etc/apt/sources.list.d/debian.sources
+        regexp: "^Suites: {{ _rel }} {{ _rel }}-updates$"
+
+    - name: Add non-free-firmware to Components
+      ansible.builtin.lineinfile:
+        line: "Components: main contrib non-free non-free-firmware"
+        path: /etc/apt/sources.list.d/debian.sources
+        regexp: "^Components: main$"
 
 - name: Apt update cache
   ansible.builtin.apt:
