@@ -19,6 +19,12 @@
         owner: "{{ _user }}"
         group: "{{ _user }}"
 
+    - name: Stop Tor
+      failed_when: false
+      ansible.builtin.systemd_service:
+        name: tor
+        state: stopped
+
     - name: Restore Tor identity
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
