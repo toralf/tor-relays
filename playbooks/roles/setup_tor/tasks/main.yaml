@@ -1,4 +1,10 @@
 ---
+- name: Validate
+  ansible.builtin.import_tasks: validate.yaml
+  tags:
+    - always
+    - validate
+
 - name: Main
   module_defaults:
     ansible.builtin.apt:
@@ -25,12 +31,6 @@
     ansible.builtin.template:
       mode: "0644"
   block:
-    - name: Validate
-      ansible.builtin.import_tasks: validate.yaml
-      tags:
-        - always
-        - validate
-
     - name: Test for existance of Tor keys
       when: tor_identity_restore
       ansible.builtin.stat:

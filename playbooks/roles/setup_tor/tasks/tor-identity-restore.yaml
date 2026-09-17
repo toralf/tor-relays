@@ -1,5 +1,5 @@
 ---
-- name: Test for backuped Tor keys
+- name: Test if Tor key can be restored
   delegate_to: localhost
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.stat:
