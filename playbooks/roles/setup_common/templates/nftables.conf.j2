@@ -325,7 +325,6 @@ table inet ingress_filter {
     chain prerouting {
         type filter hook prerouting priority -100; policy accept;
 
-        ct state invalid counter counter name "ct_x_inv" drop
         tcp flags & (syn|rst|ack|fin) != syn ct state new counter name "ct_x_syn" drop
     }
 
@@ -334,6 +333,7 @@ table inet ingress_filter {
 
         # Conntrack
         ct state established,related counter name "ct_x_est" accept
+        ct state invalid counter counter name "ct_x_inv" drop
 
         # Loopback
         iifname "lo" accept
