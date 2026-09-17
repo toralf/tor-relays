@@ -26,7 +26,7 @@
 
       t1=$(stat -c %Y /root/tor/src/app/tor)
       t2=$(stat -c %Y /usr/bin/tor)
-      ((t1 <= t2))
+      ((t1 > t2))
   register: _binary
 
 - name: Build
