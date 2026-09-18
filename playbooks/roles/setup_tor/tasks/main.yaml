@@ -15,6 +15,8 @@
       state: latest
     ansible.builtin.copy:
       mode: "0644"
+    ansible.builtin.fetch:
+      flat: true
     ansible.builtin.file:
       mode: "0644"
     ansible.builtin.get_url:
@@ -31,15 +33,7 @@
     ansible.builtin.template:
       mode: "0644"
   block:
-    - name: Test for existance of Tor keys
-      when: tor_identity_restore
-      ansible.builtin.stat:
-        path: /var/lib/tor/keys/
-      register: _keys
-      tags:
-        - tor-identity-restore
-
-    - name: Install apt package
+    - name: Install dist package
       when: not tor_build_from_source
       ansible.builtin.import_tasks: tor-apt.yaml
       tags:
@@ -67,11 +61,11 @@
           tags:
             - lyrebird
 
-    - name: Tor identity restore
-      when: tor_identity_restore_force or (tor_identity_restore and not _keys.stat.exists)
-      ansible.builtin.import_tasks: tor-identity-restore.yaml
-      tags:
-        - tor-identity-restore
+        - name: Tor identity restore
+          when: tor_identity_restore
+          ansible.builtin.import_tasks: tor-identity-restore.yaml
+          tags:
+            - tor-identity-restore
 
     - name: Config
       ansible.builtin.import_tasks: config.yaml
@@ -108,3 +102,9 @@
         enabled: true
       tags:
         - tor
+
+    - name: Tor identity backup
+      when: tor_identity_backup
+      ansible.builtin.import_tasks: tor-identity-backup.yaml
+      tags:
+        - tor-identity-backup

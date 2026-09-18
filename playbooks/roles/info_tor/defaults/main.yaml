@@ -5,6 +5,4 @@ _fp: ""
 _fp_ed25519: ""
 _fp_hashed: ""
 
-tor_identity_backup: false
-
 filter_sensitive_data: tee

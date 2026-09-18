@@ -36,6 +36,5 @@ tor_secret_family_key_file: ""
 # <name, value> elements
 torrc_config: []
 
-# see info_tor role for tor_identity_backup
+tor_identity_backup: false
 tor_identity_restore: false
-tor_identity_restore_force: false

@@ -1,40 +1,44 @@
 ---
-- name: Test if Tor key can be restored
-  delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+- name: Test that Tor keys are not already created
   ansible.builtin.stat:
-    path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}"
-  register: _tor_identity_restore_dir
+    path: /var/lib/tor/keys/
+  register: _keys_already_created
 
 - name: Restore
-  when: _tor_identity_restore_dir.stat.exists
+  when: not _keys_already_created.stat.exists
   vars:
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   block:
-    - name: Create Tor identity dir
+    - name: Verify that Tor keys backup is available
+      delegate_to: localhost
+      throttle: "{{ concurrent_local_jobs }}"
+      failed_when: not _tor_identity_restore_from.stat.exists
+      ansible.builtin.stat:
+        path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/"
+      register: _tor_identity_restore_from
+
+    - name: Create Tor identity dir/s
       ansible.builtin.file:
         state: directory
-        path: /var/lib/tor/keys/
+        path: "{{ item }}"
         mode: u=rwx,g=s,o=
         owner: "{{ _user }}"
         group: "{{ _user }}"
-
-    - name: Stop Tor
-      failed_when: false
-      ansible.builtin.systemd_service:
-        name: tor
-        state: stopped
+      loop:
+        - /var/lib/tor/
+        - /var/lib/tor/keys/
 
     - name: Restore Tor identity
       throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
-        src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/"
+        src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/{{ item }}"
         dest: /var/lib/tor/keys/
         mode: "0600"
         owner: "{{ _user }}"
         group: "{{ _user }}"
-        backup: true
-      notify: Restart Tor
+      loop:
+        - ed25519_master_id_secret_key
+        - secret_id_key
 
     - name: PT state
       when: tor_bridge_distribution | length > 0
@@ -50,10 +54,11 @@
         - name: Restore PT identity
           throttle: "{{ concurrent_local_jobs }}"
           ansible.builtin.copy:
-            src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/"
+            src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/{{ item }}"
             dest: /var/lib/tor/pt_state/
             mode: "0600"
             owner: "{{ _user }}"
             group: "{{ _user }}"
-            backup: true
-          notify: Restart Tor
+          loop:
+            - obfs4_bridgeline.txt
+            - obfs4_state.json

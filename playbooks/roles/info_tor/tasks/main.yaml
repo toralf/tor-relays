@@ -93,12 +93,6 @@
       tags:
         - systemd-time
 
-    - name: Tor identity backup
-      when: tor_identity_backup
-      ansible.builtin.import_tasks: tor-identity-backup.yaml
-      tags:
-        - tor-identity-backup
-
     - name: Version
       ansible.builtin.import_tasks: version.yaml
       tags:
