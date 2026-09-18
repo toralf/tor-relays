@@ -111,7 +111,7 @@ table inet ingress_filter {
 
     # Tarpit
     counter tarpit_v4_drop  { packets 0 bytes 0 }
-    counter tarpit_v4_addr  { packets 0 bytes 0 }
+    counter tarpit_v4_new   { packets 0 bytes 0 }
     set tarpit_v4 {
         type ipv4_addr
         flags dynamic, timeout
@@ -119,7 +119,7 @@ table inet ingress_filter {
         size {{ _setsize }}
     }
     counter tarpit_v6_drop  { packets 0 bytes 0 }
-    counter tarpit_v6_addr  { packets 0 bytes 0 }
+    counter tarpit_v6_new   { packets 0 bytes 0 }
     set tarpit_v6 {
         type ipv6_addr
         flags dynamic, timeout
@@ -158,9 +158,10 @@ table inet ingress_filter {
         }
     }
 
-    # Tor authorities
+    # DDoS rule 1 - Tor authorities
     #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - | jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
     #   getent ahostsv4 snowflake-01.torproject.net. snowflake-02.torproject.net. | awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
+    counter rule1_v4 { packets 0 bytes 0 }
     set rule1_v4 {
         type ipv4_addr
         elements = {
@@ -171,6 +172,7 @@ table inet ingress_filter {
     }
     #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - | jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
     #   getent ahostsv6 snowflake-01.torproject.net. snowflake-02.torproject.net. | awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
+    counter rule1_v6 { packets 0 bytes 0 }
     set rule1_v6 {
         type ipv6_addr
         elements = {
@@ -180,20 +182,16 @@ table inet ingress_filter {
         }
     }
 
-    # DDoS rule 1 - Tor authorities
-    counter rule1_v4 { packets 0 bytes 0 }
-    counter rule1_v6 { packets 0 bytes 0 }
-
     # DDoS rule 2 - rate limit 8 connections / min
-    counter rule2_v4_rate { packets 0 bytes 0 }
-    set rule2_v4_rate {
+    counter rule2_v4_new { packets 0 bytes 0 }
+    set rule2_v4_new {
         type ipv4_addr . inet_service . ipv4_addr
         flags dynamic, timeout
         timeout 5m
         size {{ _setsize }}
     }
-    counter rule2_v6_rate { packets 0 bytes 0 }
-    set rule2_v6_rate {
+    counter rule2_v6_new { packets 0 bytes 0 }
+    set rule2_v6_new {
         type ipv6_addr . inet_service . ipv6_addr
         flags dynamic, timeout
         timeout 5m
@@ -202,29 +200,29 @@ table inet ingress_filter {
 
     counter rule2_v4_drop { packets 0 bytes 0 }
     set rule2_v4_drop {
-        type ipv4_addr . inet_service
+        type ipv4_addr
         flags dynamic, timeout
         timeout 24h
         size {{ _setsize }}
     }
     counter rule2_v6_drop { packets 0 bytes 0 }
     set rule2_v6_drop {
-        type ipv6_addr . inet_service
+        type ipv6_addr
         flags dynamic, timeout
         timeout 24h
         size {{ _setsize }}
     }
 
     # DDoS rule 3 - rate limit 24 connections / hour
-    counter rule3_v4_rate { packets 0 bytes 0 }
-    set rule3_v4_rate {
+    counter rule3_v4_new { packets 0 bytes 0 }
+    set rule3_v4_new {
         type ipv4_addr . inet_service . ipv4_addr
         flags dynamic, timeout
         timeout 150m
         size {{ _setsize }}
     }
-    counter rule3_v6_rate { packets 0 bytes 0 }
-    set rule3_v6_rate {
+    counter rule3_v6_new { packets 0 bytes 0 }
+    set rule3_v6_new {
         type ipv6_addr . inet_service . ipv6_addr
         flags dynamic, timeout
         timeout 150m
@@ -233,28 +231,28 @@ table inet ingress_filter {
 
     counter rule3_v4_drop { packets 0 bytes 0 }
     set rule3_v4_drop {
-        type ipv4_addr . inet_service
+        type ipv4_addr
         flags dynamic, timeout
         timeout 24h
         size {{ _setsize }}
     }
     counter rule3_v6_drop { packets 0 bytes 0 }
     set rule3_v6_drop {
-        type ipv6_addr . inet_service
+        type ipv6_addr
         flags dynamic, timeout
         timeout 24h
         size {{ _setsize }}
     }
 
     # DDoS rule 4 - not more than 8 connections per remote to same Tor port
-    counter rule4_v4 { packets 0 bytes 0 }
-    set rule4_v4 {
+    counter rule4_v4_conn { packets 0 bytes 0 }
+    set rule4_v4_conn {
         type ipv4_addr . inet_service . ipv4_addr
         flags dynamic
         size {{ _setsize }}
     }
-    counter rule4_v6 { packets 0 bytes 0 }
-    set rule4_v6 {
+    counter rule4_v6_conn { packets 0 bytes 0 }
+    set rule4_v6_conn {
         type ipv6_addr . inet_service . ipv6_addr
         flags dynamic
         size {{ _setsize }}
@@ -269,29 +267,29 @@ table inet ingress_filter {
         ip saddr @rule1_v4 counter name "rule1_v4" accept
 
         # --- DDoS rule 2 ---
-        ip saddr & $network_v4_block . tcp dport @rule2_v4_drop \
-            update @rule2_v4_drop { ip saddr & $network_v4_block . tcp dport } \
+        ip saddr & $network_v4_block @rule2_v4_drop \
+            update @rule2_v4_drop { ip saddr & $network_v4_block } \
             counter name "rule2_v4_drop" drop
 
         meta l4proto tcp \
-            add @rule2_v4_rate { ip saddr & $network_v4_block . tcp dport . ip daddr limit rate over 4/minute burst 8 packets } \
-            update @rule2_v4_drop { ip saddr & $network_v4_block . tcp dport } \
-            counter name "rule2_v4_rate" drop
+            add @rule2_v4_new { ip saddr & $network_v4_block . tcp dport . ip daddr limit rate over 8/minute burst 8 packets } \
+            update @rule2_v4_drop { ip saddr & $network_v4_block } \
+            counter name "rule2_v4_new" drop
 
         # --- DDoS rule 3 ---
         # Check and drop if already listed in the drop set
-        ip saddr & $network_v4_block . tcp dport @rule3_v4_drop \
-            update @rule3_v4_drop { ip saddr & $network_v4_block . tcp dport } \
+        ip saddr & $network_v4_block @rule3_v4_drop \
+            update @rule3_v4_drop { ip saddr & $network_v4_block } \
             counter name "rule3_v4_drop" drop
 
         meta l4proto tcp \
-            add @rule3_v4_rate { ip saddr & $network_v4_block . tcp dport . ip daddr limit rate over 24/hour burst 8 packets } \
-            update @rule3_v4_drop { ip saddr & $network_v4_block . tcp dport } \
-            counter name "rule3_v4_rate" drop
+            add @rule3_v4_new { ip saddr & $network_v4_block . tcp dport . ip daddr limit rate over 24/hour burst 8 packets } \
+            update @rule3_v4_drop { ip saddr & $network_v4_block } \
+            counter name "rule3_v4_new" drop
 
         # --- DDoS rule 4 ---
-        update @rule4_v4 { ip saddr & $network_v4_block . tcp dport . ip daddr ct count over 8 } \
-            counter name "rule4_v4" drop
+        add @rule4_v4_conn { ip saddr & $network_v4_block . tcp dport . ip daddr ct count over 8 } \
+            counter name "rule4_v4_conn" drop
 
         # --- DDoS rule 5 ---
         meta nfproto ipv4 counter name "rule5_v4" accept
@@ -302,26 +300,26 @@ table inet ingress_filter {
         ip6 saddr @rule1_v6 counter name "rule1_v6" accept
 
         # --- DDoS rule 2 ---
-        ip6 saddr & $network_v6_block . tcp dport @rule2_v6_drop \
-            update @rule2_v6_drop { ip6 saddr & $network_v6_block . tcp dport } \
+        ip6 saddr & $network_v6_block @rule2_v6_drop \
+            update @rule2_v6_drop { ip6 saddr & $network_v6_block } \
             counter name "rule2_v6_drop" drop
 
-        add @rule2_v6_rate { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr limit rate over 4/minute burst 8 packets } \
-            update @rule2_v6_drop { ip6 saddr & $network_v6_block . tcp dport } \
-            counter name "rule2_v6_rate" drop
+        add @rule2_v6_new { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr limit rate over 8/minute burst 8 packets } \
+            update @rule2_v6_drop { ip6 saddr & $network_v6_block  } \
+            counter name "rule2_v6_new" drop
 
         # --- DDoS rule 3 ---
-        ip6 saddr & $network_v6_block . tcp dport @rule3_v6_drop \
-            update @rule3_v6_drop { ip6 saddr & $network_v6_block . tcp dport } \
+        ip6 saddr & $network_v6_block @rule3_v6_drop \
+            update @rule3_v6_drop { ip6 saddr & $network_v6_block  } \
             counter name "rule3_v6_drop" drop
 
-        add @rule3_v6_rate { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr limit rate over 24/hour burst 8 packets } \
-            update @rule3_v6_drop { ip6 saddr & $network_v6_block . tcp dport } \
-            counter name "rule3_v6_rate" drop
+        add @rule3_v6_new { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr limit rate over 24/hour burst 8 packets } \
+            update @rule3_v6_drop { ip6 saddr & $network_v6_block } \
+            counter name "rule3_v6_new" drop
 
         # --- DDoS rule 4 ---
-        update @rule4_v6 { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr ct count over 8 } \
-            counter name "rule4_v6" drop
+        add @rule4_v6_conn { ip6 saddr & $network_v6_block . tcp dport . ip6 daddr ct count over 8 } \
+            counter name "rule4_v6_conn" drop
 
         # --- DDoS rule 5 ---
         meta nfproto ipv6 counter name "rule5_v6" accept
@@ -388,11 +386,11 @@ table inet ingress_filter {
         # Tarpit new
         meta l4proto tcp ip daddr $local_address_v4 ct state new \
             update @tarpit_v4 { ip saddr & $network_v4_block } \
-            counter name "tarpit_v4_addr" drop
+            counter name "tarpit_v4_new" drop
 
         meta l4proto tcp ip6 daddr $local_address_v6 ct state new \
             update @tarpit_v6 { ip6 saddr & $network_v6_block } \
-            counter name "tarpit_v6_addr" drop
+            counter name "tarpit_v6_new" drop
 
         counter name "left"
     }
