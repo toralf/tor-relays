@@ -27,15 +27,12 @@ nginx_public_site: false
 nginx_site_directories: []
 
 # https://github.com/prometheus/node_exporter
-# due to tiny cloud instances reduce the CPU pressure at the source (instead to filter by "params:" at prometheus server)
+# reduce the CPU pressure at the source instead to filter "params:" at prometheus
 node_exporter_collectors:
-  - arp
   - conntrack
   - cpu
   - diskstats
   - filefd
-  - filesystem
-  - filesystem.mount-points-exclude="^/(dev|proc|run/credentials/.+|sys)($|/)"
   - loadavg
   - meminfo
   - netdev
