@@ -50,9 +50,8 @@ hix:
 hmx:
   vars:
     ingress_ports:
-      # - 80
-      - 443
-      # - 2049
+      - "443"
+      # - "80, 443, 2049"
     # additional_software:
     #   - nfs-common
     #   - nfs-kernel-server

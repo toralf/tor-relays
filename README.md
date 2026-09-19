@@ -64,7 +64,7 @@ To deploy additional software, configure it (i.e. for a _Quassel_ server) like:
 hosts:
   my_system:
     ingress_ports:
-      - 4242
+      - "4242"
     additional_software:
       - quassel-core
 ```
