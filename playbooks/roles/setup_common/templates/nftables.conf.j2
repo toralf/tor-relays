@@ -58,15 +58,15 @@ table inet ingress_filter {
 
     # Open port/s {{ loop.index }}
 
-    counter ports{{ loop.index }}_v4    { packets 0 bytes 0 }
-    set ports{{ loop.index }}_v4 {
+    counter ports_v4_{{ loop.index }}    { packets 0 bytes 0 }
+    set ports_v4_{{ loop.index }} {
         type ipv4_addr . inet_service
         flags dynamic, timeout
         timeout 5m
         size {{ _setsize }}
     }
-    counter ports{{ loop.index }}_v6    { packets 0 bytes 0 }
-    set ports{{ loop.index }}_v6 {
+    counter ports_v6_{{ loop.index }}    { packets 0 bytes 0 }
+    set ports_v6_{{ loop.index }} {
         type ipv6_addr . inet_service
         flags dynamic, timeout
         timeout 5m
@@ -95,18 +95,18 @@ table inet ingress_filter {
 
         # Open port/s {{ loop.index }}
 
-        define ports{{ loop.index }} = { {{ _i }} }
+        define ports_{{ loop.index }} = { {{ _i }} }
 
-        ip daddr $local_address_v4 tcp dport $ports{{ loop.index }} ct state new \
-            add @ports{{ loop.index }}_v4 { ip saddr & $network_v4_block . tcp dport limit rate over 20/minute burst 10 packets } \
-            counter name "ports{{ loop.index }}_v4" drop
+        ip daddr $local_address_v4 tcp dport $ports_{{ loop.index }} ct state new \
+            add @ports_v4_{{ loop.index }} { ip saddr & $network_v4_block . tcp dport limit rate over 20/minute burst 10 packets } \
+            counter name "ports_v4_{{ loop.index }}" drop
 
-        ip6 daddr $local_address_v6 tcp dport $ports{{ loop.index }} ct state new \
-            add @ports{{ loop.index }}_v6 { ip6 saddr & $network_v6_block . tcp dport limit rate over 20/minute burst 10 packets } \
-            counter name "ports{{ loop.index }}_v6" drop
+        ip6 daddr $local_address_v6 tcp dport $ports_{{ loop.index }} ct state new \
+            add @ports_v6_{{ loop.index }} { ip6 saddr & $network_v6_block . tcp dport limit rate over 20/minute burst 10 packets } \
+            counter name "ports_v6_{{ loop.index }}" drop
 
-        ip daddr $local_address_v4 tcp dport $ports{{ loop.index }} ct state new counter accept
-        ip6 daddr $local_address_v6 tcp dport $ports{{ loop.index }} ct state new counter accept
+        ip daddr $local_address_v4 tcp dport $ports_{{ loop.index }} ct state new counter accept
+        ip6 daddr $local_address_v6 tcp dport $ports_{{ loop.index }} ct state new counter accept
 {% endfor %}
     }
     # ======== ADDITIONAL END ========
