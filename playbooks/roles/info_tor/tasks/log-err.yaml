@@ -9,7 +9,6 @@
         tail -n 50 |
         {{ filter_sensitive_data }}
     chdir: /var/log/tor/
-    executable: /bin/bash
   register: _result_log_err
 
 - name: Results of error log

@@ -13,7 +13,6 @@
         xargs -r printf "%4s %4s %4s %4s %4s %4s %4s %4s %4s %4s %4s %4s\n" |
         sed 's,  *$,,'
     chdir: /var/log/tor/
-    executable: /bin/bash
   register: _result_tor_clients
 
 - name: File clients of a bridge

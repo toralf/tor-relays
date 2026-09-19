@@ -6,7 +6,6 @@
       zgrep -h -F 'Heartbeat: Tor' notice.log.1 notice.log |
         tail -n 4
     chdir: /var/log/tor/
-    executable: /bin/bash
   register: _result_heartbeat
 
 - name: Results of Heartbeat

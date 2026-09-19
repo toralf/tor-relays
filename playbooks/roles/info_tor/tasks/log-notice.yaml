@@ -12,7 +12,6 @@
         tail -n 10 |
         {{ filter_sensitive_data }}
     chdir: /var/log/tor/
-    executable: /bin/bash
   register: _result_log_notice
 
 - name: Results of notice log
