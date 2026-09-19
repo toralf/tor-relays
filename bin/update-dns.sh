@@ -43,7 +43,7 @@ hcloud --quiet server list --output noheader --output columns=name,ipv4 |
     printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv4} "" ${name}
 
     if [[ ${1-} == "-6" ]]; then
-      ipv6=$(awk '/^'"${name}"' / { print $2 }' ~/${infodir}/ipv6)
+      ipv6=$(awk '/^'"${name}"' / { print $2 }' ${infodir}/ipv6)
       if [[ -n ${ipv6} ]]; then
         printf "  local-data:     \"%-40s  %-4s  %s\"\n" ${name} "AAAA" ${ipv6}
         printf "  local-data-ptr: \"%-40s  %-4s  %s\"\n" ${ipv6} "" ${name}
