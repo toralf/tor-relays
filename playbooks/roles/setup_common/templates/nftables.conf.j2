@@ -299,12 +299,12 @@ table inet ingress_filter {
     chain input {
         type filter hook input priority 0; policy drop;
 
+        # Loopback
+        iifname "lo" accept
+
         # Conntrack
         ct state established,related counter name "ct_x_established" accept
         ct state invalid counter counter name "ct_x_invalid" drop
-
-        # Loopback
-        iifname "lo" accept
 
         # IPv6: Multicast
         ip6 saddr fe80::/10 ip6 daddr ff02::/16 counter accept

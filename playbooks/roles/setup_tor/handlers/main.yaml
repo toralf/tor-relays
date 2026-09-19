@@ -6,6 +6,7 @@
     state: restarted
     enabled: true
     daemon_reload: true
+    no_block: true
 
 - name: Reload Tor
   listen: Reload Tor
@@ -20,7 +21,7 @@
   changed_when: false
   ansible.builtin.command:
     cmd: |-
-      pkill -9 -f "metrics.sh"
+      pkill -9 -f metrics.sh
 
 - name: Restart metrics
   listen: Restart metrics
