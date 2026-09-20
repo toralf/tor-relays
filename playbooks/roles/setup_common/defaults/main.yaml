@@ -33,6 +33,8 @@ node_exporter_collectors:
   - cpu
   - diskstats
   - filefd
+  - filesystem
+  - filesystem.mount-points-exclude="^/(dev|mnt|proc|run/credentials/.+|sys)($|/)"
   - loadavg
   - meminfo
   - netdev
