@@ -80,7 +80,7 @@ table inet ingress_filter {
         # Prometheus
         define metrics_port  = { {{ metrics_port }} }
         define prometheus_v4 = {{ prometheus_server_v4 }}
-        define prometheus_v6 = [{{ prometheus_server_v6 }}]
+        define prometheus_v6 = {{ prometheus_server_v6 }}
 
         ip saddr $prometheus_v4 ip daddr $local_address_v4 tcp dport $metrics_port ct state new counter accept
         ip6 saddr $prometheus_v6 ip6 daddr $local_address_v6 tcp dport $metrics_port ct state new counter accept
@@ -323,7 +323,7 @@ table inet ingress_filter {
         ip protocol icmp counter jump icmp_v4
         ip6 nexthdr ipv6-icmp counter jump icmp_v6
 
-        # additional
+        # Additional
         counter jump additional
 {% if is_snowflake %}
 
