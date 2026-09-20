@@ -6,20 +6,20 @@
     group: www-data
     mode: "0750"
 
-# - name: Get metrics firewall
-#   throttle: 16
-#   retries: 1
-#   ansible.builtin.get_url:
-#     url: "{{ torutils_path }}/metrics-firewall.sh"
-#     dest: /root/
-#   notify: Restart metrics firewall
-
-- name: Copy metrics firewall
-  ansible.builtin.copy:
-    src: /home/tfoerste/devel/torutils/metrics-firewall.sh
+- name: Get metrics firewall
+  throttle: 16
+  retries: 1
+  ansible.builtin.get_url:
+    url: "{{ torutils_path }}/metrics-firewall.sh"
     dest: /root/
-    mode: "0744"
   notify: Restart metrics firewall
+
+# - name: Copy metrics firewall
+#   ansible.builtin.copy:
+#     src: /home/tfoerste/devel/torutils/metrics-firewall.sh
+#     dest: /root/
+#     mode: "0744"
+#   notify: Restart metrics firewall
 
 - name: Cron job for metrics firewall
   ansible.builtin.cron:
