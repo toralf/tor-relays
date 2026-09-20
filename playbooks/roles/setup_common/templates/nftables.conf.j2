@@ -337,8 +337,9 @@ table inet ingress_filter {
         ip6 daddr . tcp dport @tor_v6 ct state new counter jump tor_v6
 {% endif %}
 
-        meta nfproto ipv4 meta l4proto tcp counter name "left_v4_input"
-        meta nfproto ipv6 meta l4proto tcp counter name "left_v6_input"
+        # Uncovered packets
+        meta nfproto ipv4 counter name "left_v4_input"
+        meta nfproto ipv6 counter name "left_v6_input"
 
         comment "DDoS is activated"
     }
