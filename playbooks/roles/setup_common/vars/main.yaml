@@ -1,4 +1,4 @@
 ---
-allow_metrics_port: "{{
+open_metrics_port: "{{
   nginx_metrics or nginx_public_site or nginx_site_directories | length > 0 or
   ddos_metrics or node_metrics or is_snowflake or tor_metrics }}"

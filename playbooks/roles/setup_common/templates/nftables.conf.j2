@@ -1,5 +1,6 @@
 # {{ ansible_managed }}
 {% set _setsize = (ansible_facts.memtotal_mb < 1024) | ternary(2**17, 2**19) %}
+{% set _has_additional = inventory_hostname == 'elster4' or ingress_ports | length > 0 or open_metrics_port %}
 
 flush ruleset
 
@@ -32,8 +33,7 @@ table inet ingress_filter {
         icmpv6 type { mld-listener-query, mld-listener-report, mld-listener-reduction, mld2-listener-report } \
             ip6 hoplimit 1 accept
     }
-
-    # ======== ADDITIONAL BEGIN ========
+{% if _has_additional %}
 {% if inventory_hostname == 'elster4' %}
 
     #   e.g. Hetzner monitoring server:
@@ -75,7 +75,7 @@ table inet ingress_filter {
 {% endfor %}
 
     chain additional {
-{% if allow_metrics_port and prometheus_server_v4 | length > 0 %}
+{% if open_metrics_port and prometheus_server_v4 | length > 0 %}
 
         # Prometheus
         define metrics_port  = { {{ metrics_port }} }
@@ -109,10 +109,9 @@ table inet ingress_filter {
         ip6 daddr $local_address_v6 tcp dport $ports_{{ loop.index }} ct state new counter accept
 {% endfor %}
     }
-    # ======== ADDITIONAL END ========
+{% endif %}
 {% if is_snowflake %}
 
-    # ======== SNOWFLAKE BEGIN ========
     counter snowflake_v4    { packets 0 bytes 0 }
     counter snowflake_v6    { packets 0 bytes 0 }
 
@@ -121,11 +120,9 @@ table inet ingress_filter {
         ip daddr $local_address_v4 udp dport {{ snowflake_port }} counter name "snowflake_v4" accept
         ip6 daddr $local_address_v6 udp dport {{ snowflake_port }} counter name "snowflake_v6" accept
     }
-    # ======== SNOWFLAKE END ========
 {% endif %}
 {% if is_tor %}
 
-    # ======== TOR DDOS BEGIN ========
     # Tor address + port
     set tor_v4 {
         type ipv4_addr . inet_service
@@ -141,8 +138,10 @@ table inet ingress_filter {
     }
 
     # DDoS rule 1 - trust Tor authorities
-    #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - | jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
-    #   getent ahostsv4 snowflake-01.torproject.net. snowflake-02.torproject.net. | awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
+    #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - |
+    #       jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
+    #   getent ahostsv4 snowflake-01.torproject.net. snowflake-02.torproject.net. |
+    #       awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
     counter rule1_v4 { packets 0 bytes 0 }
     set rule1_v4 {
         type ipv4_addr
@@ -152,8 +151,10 @@ table inet ingress_filter {
             141.212.118.18, 193.187.88.42, 193.187.88.43, 193.187.88.44, 193.187.88.45, 193.187.88.46,
         }
     }
-    #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - | jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
-    #   getent ahostsv6 snowflake-01.torproject.net. snowflake-02.torproject.net. | awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
+    #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - |
+    #       jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
+    #   getent ahostsv6 snowflake-01.torproject.net. snowflake-02.torproject.net. |
+    #       awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
     counter rule1_v6 { packets 0 bytes 0 }
     set rule1_v6 {
         type ipv6_addr
@@ -279,7 +280,6 @@ table inet ingress_filter {
         # --- DDoS rule 5 ---
         counter name "rule5_v6" accept
     }
-    # ======== TOR DDOS END ========
 
 {% endif %}
 
@@ -322,9 +322,11 @@ table inet ingress_filter {
         # ICMP
         ip protocol icmp counter jump icmp_v4
         ip6 nexthdr ipv6-icmp counter jump icmp_v6
+ {% if _has_additional %}
 
         # Additional
         counter jump additional
+{% endif %}
 {% if is_snowflake %}
 
         # Snowflake
