@@ -17,8 +17,8 @@
     _repo_dir: /root/tor
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Test that binary is up to date
-  changed_when: false
+- name: Test that binstalled Tor is up to date
+  changed_when: _binary.rc != 0
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -27,6 +27,7 @@
       t1=$(stat -c %Y /root/tor/src/app/tor)
       t2=$(stat -c %Y /usr/bin/tor)
       ((t1 > t2))
+    executable: /bin/bash
   register: _binary
 
 - name: Build
