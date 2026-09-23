@@ -76,5 +76,22 @@ while :; do
   pit_stop info
 
   #--------------------------------------------------------------------
+  site="site03"
+  srvs=""
+  tags="firewall-stats"
+
+  info "${site}  tags:  ${tags}"
+  mkdir -p ~/tmp/hx/${site}{,_tmp}/artefact
+  if ! ./site-info.yaml --limit 'hmx,hsx,htx' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'_tmp" }' \
+    &>${logprefix}.${site}.ansible.log; then
+    info "  NOT ok" >&2
+  fi
+  if ! tar -C ~/tmp/hx/${site}_tmp -cjpf ~/tmp/hx/${site}/fw-$(date +%Y%m%d-%H%M%S).tar.bz2 ./fw; then
+    info "  tar failed" >&2
+  fi
+  sync_site ${site} ${srvs}
+  pit_stop info
+
+  #--------------------------------------------------------------------
   pit_stop info
 done
