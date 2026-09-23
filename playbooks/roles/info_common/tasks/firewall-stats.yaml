@@ -1,0 +1,53 @@
+---
+- name: Create local firewall info directory
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.file:
+    state: directory
+    path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
+    mode: "0755"
+
+- name: Get DDoS network block stats
+  changed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      nft -j -n list set inet ingress_filter ddos_{{ item }} |
+      jq -r '.nftables[].set.elem[]?.elem.val' | python3 -c '
+
+      import signal, sys, ipaddress
+      from collections import Counter
+
+      signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+
+      counter = Counter()
+
+      for line in sys.stdin:
+          if not line.strip():
+              continue
+
+          parts = line.strip().split()
+          if parts:
+              ip_obj = ipaddress.ip_address(parts[0])
+              p = 24 if ip_obj.version == 4 else 48
+              net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
+              counter[net] += 1
+
+      for net, count in counter.most_common():
+          print(f"{count:7} {net}")
+      '
+  loop_control:
+    label: "{{ inventory_hostname }} {{ item }}"
+  loop:
+    - v4
+    - v6
+  register: _ddos_stats
+
+- name: Save network stats
+  delegate_to: localhost
+  throttle: "{{ concurrent_local_jobs }}"
+  ansible.builtin.copy:
+    content: "{{ item.stdout }}\n"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ddos-{{ item.item }}-stats"
+  loop_control:
+    label: "{{ inventory_hostname }} {{ item.item }}"
+  loop: "{{ _ddos_stats.results }}"

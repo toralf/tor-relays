@@ -19,10 +19,16 @@
         - dryrun-unattended
         - never
 
-    - name: Firewall
-      ansible.builtin.import_tasks: firewall.yaml
+    - name: Firewall histogram
+      ansible.builtin.import_tasks: firewall-histogram.yaml
       tags:
-        - firewall-sets
+        - firewall-histogram
+        - never
+
+    - name: Firewall stats
+      ansible.builtin.import_tasks: firewall-stats.yaml
+      tags:
+        - firewall-stats
         - never
 
     - name: Log unattended
@@ -34,12 +40,6 @@
       ansible.builtin.import_tasks: log-nginx.yaml
       tags:
         - log-nginx
-
-    - name: Tarpit ipset
-      ansible.builtin.import_tasks: tarpit.yaml
-      tags:
-        - never
-        - tarpit
 
     - name: Uname
       ansible.builtin.import_tasks: uname.yaml

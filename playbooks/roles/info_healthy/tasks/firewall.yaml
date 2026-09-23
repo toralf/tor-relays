@@ -29,10 +29,8 @@
 - name: File firewall state
   delegate_to: localhost
   throttle: 1
-  vars:
-    _file: "{{ (is_tor | default(false)) | ternary('firewall_base_is_down', 'firewall_tor_is_down') }}"
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }}"
-    path: "{{ infodir }}/{{ _file }}"
+    path: "{{ infodir }}/fw_is_down"
     regexp: "^{{ inventory_hostname }}$"
     state: "{{ (_firewall_healthy.rc != 0) | ternary('present', 'absent') }}"

@@ -1,9 +1,10 @@
 ---
-- name: Histogram of all drop sets
+- name: 24h Histogram of nftable set(s)
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
       nft -j -ns list ruleset | python3 -c '
+
       import sys, json
 
       try:
@@ -45,13 +46,13 @@
       # print table header
       names = list(histogram.keys())
 
-      header = "tout | " + " | ".join(f"{name:>25}" for name in names) + " |"
+      header = "tout | " + " | ".join(f"{name:>15}" for name in names) + " |"
       print(header)
       print("-" * len(header))
 
       # hours 0-23
       for hours in range(24):
-          row_values = [f"{histogram[name][hours]:>25}" for name in names]
+          row_values = [f"{histogram[name][hours]:>15}" for name in names]
           print(f"{hours:>4} | " + " | ".join(row_values) + " |")
 
       '

@@ -6,9 +6,7 @@
       conntrack -S |
         head -n $(nproc) |
         grep -v ' insert_failed=0 drop=0 ' |
-        awk '{ print $1, $5, $6 }' |
-        cut -f 2- -d ':' |
-        xargs -r
+        cut -f 2- -d ':'
   register: _result_ct_drop
 
 - name: File conntrack drop value
@@ -16,22 +14,5 @@
   throttle: 1
   ansible.builtin.lineinfile:
     line: "{{ inventory_hostname }} {{ _result_ct_drop.stdout }}"
-    path: "{{ infodir }}/firewall_conntrack_drop"
+    path: "{{ infodir }}/conntrack"
     regexp: "^{{ inventory_hostname }} "
-
-- name: Get conntrack counter
-  changed_when: false
-  failed_when: false
-  ansible.builtin.command:
-    cmd: >-
-      conntrack -C
-  register: _result_ct_counter
-
-- name: File conntrack counter
-  delegate_to: localhost
-  throttle: 1
-  ansible.builtin.lineinfile:
-    line: "{{ inventory_hostname }} {{ _result_ct_counter.stdout }}"
-    path: "{{ infodir }}/firewall_conntrack_counter"
-    regexp: "^{{ inventory_hostname }} "
-    state: "{{ (_result_ct_counter.stderr | length > 0 or _result_ct_counter.rc > 0) | ternary('absent', 'present') }}"
