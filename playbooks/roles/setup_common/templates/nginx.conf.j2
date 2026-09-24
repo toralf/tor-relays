@@ -49,7 +49,7 @@ server {
 {% if nginx_site_directories | length > 0 %}
 {% for site in nginx_site_directories %}
 
-  location /{{ site.secret | default(site.dir) }}/ {
+  location /{{ site.loc | default(site.dir) }}/ {
     proxy_pass http://127.0.0.1:{{ site.port }}/;
   }
 {% endfor %}

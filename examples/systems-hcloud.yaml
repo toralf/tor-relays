@@ -63,7 +63,7 @@ hmx:
         port: 1234
       - dir: site02
         port: 5678
-        secret: "{{ hmx_sec23 }}"
+        loc: "{{ location }}"
   children:
     hm:
 
