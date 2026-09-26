@@ -43,6 +43,7 @@ trap 'echo; echo stopping...; touch ~/tmp/hx/STOP-info' INT QUIT TERM EXIT
 info "pid $$"
 logprefix=~/tmp/hx/$(basename $0)
 
+last=0
 while :; do
   pit_stop info 0
 
@@ -76,6 +77,13 @@ while :; do
   pit_stop info
 
   #--------------------------------------------------------------------
+  # collect certain data only every then and when
+  if ((EPOCHSECONDS - last < 45 * 60)); then
+    continue
+  fi
+  last=$EPOCHSECONDS
+
+  #--------------------------------------------------------------------
   site="site03"
   srvs=""
   tags="firewall-stats"
@@ -90,8 +98,5 @@ while :; do
     info "  tar failed" >&2
   fi
   sync_site ${site} ${srvs}
-  pit_stop info
-
-  #--------------------------------------------------------------------
   pit_stop info
 done

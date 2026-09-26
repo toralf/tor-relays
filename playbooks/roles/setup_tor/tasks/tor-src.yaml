@@ -17,7 +17,7 @@
     _repo_dir: /root/tor
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
-- name: Test that binstalled Tor is up to date
+- name: Test if installed Tor is up to date
   changed_when: _binary.rc != 0
   failed_when: false
   ansible.builtin.shell:
