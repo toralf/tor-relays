@@ -19,6 +19,35 @@
     cmd: |-
       nft -c -f /etc/nftables.conf
 
+# Configure nftables persistence under /var like Gentoo
+
+- name: Ensure target directory exists in /var
+  ansible.builtin.file:
+    path: /var/lib/nftables
+    state: directory
+    mode: "0750"
+
+- name: Create override directory for nftables.service
+  ansible.builtin.file:
+    path: /etc/systemd/system/nftables.service.d
+    state: directory
+    mode: "0755"
+
+- name: Create systemd override with custom start and stop paths
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/nftables.service.d/override.conf
+    content: |
+      [Service]
+      ExecStart=
+      ExecStart=/bin/sh -c 'if ! /usr/sbin/nft -f /var/lib/nftables/rules-save; then \
+        /usr/sbin/nft -f /etc/nftables.conf; fi; rm -f /var/lib/nftables/rules-save'
+
+      ExecStop=
+      ExecStop=/bin/sh -c '{ echo "#!/usr/sbin/nft -f"; echo "flush ruleset"; \
+        /usr/sbin/nft -s list ruleset; } >/var/lib/nftables/rules-save'
+  notify:
+    - Reload systemd
+
 #
 # kick away iptables artefacts
 #
