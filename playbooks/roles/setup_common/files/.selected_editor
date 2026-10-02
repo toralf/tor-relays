@@ -1,2 +1,3 @@
-# {{ ansible_managed }}
+# Ansible managed
+
 SELECTED_EDITOR="/usr/bin/vi"

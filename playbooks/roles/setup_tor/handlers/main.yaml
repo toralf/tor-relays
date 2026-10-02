@@ -36,4 +36,4 @@
   ansible.builtin.shell:
     cmd: |-
       pkill -9 -x watchdog.sh
-      echo 'nice /root/watchdog.sh &' | at now
+      nohup nice /root/watchdog.sh >/dev/null 2>&1 &

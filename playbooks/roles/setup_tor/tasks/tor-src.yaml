@@ -95,13 +95,6 @@
     dest: /etc/systemd/system/tor.service
   notify: Restart Tor
 
-- name: Enable
-  ansible.builtin.systemd_service:
-    name: tor
-    enabled: true
-    daemon_reload: true
-  notify: Restart Tor
-
 # the PT (not Tor) needs the capability for bridges
 - name: Allow low port for Tor relay
   changed_when: false

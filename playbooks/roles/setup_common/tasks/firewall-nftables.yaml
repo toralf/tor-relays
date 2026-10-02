@@ -4,24 +4,29 @@
     name:
       - jq
       - nftables
-  notify: Reload nftables
 
-- name: Create ruleset
+- name: Create/Update nftables config
   ansible.builtin.template:
     src: nftables.conf.j2
     dest: /etc/nftables.conf
-    mode: "0700"
-  notify: Reload nftables
+  register: _new_nftables
 
-- name: Check ruleset
+- name: Check nftables config
   changed_when: false
   ansible.builtin.command:
     cmd: |-
       nft -c -f /etc/nftables.conf
 
+- name: Load new nftables config
+  changed_when: true
+  when: _new_nftables.changed
+  ansible.builtin.command:
+    cmd: |-
+      nft -o -f /etc/nftables.conf
+
 # Configure nftables persistence under /var like Gentoo
 
-- name: Ensure target directory exists in /var
+- name: Ensure target directory exists for nft save
   ansible.builtin.file:
     path: /var/lib/nftables
     state: directory
@@ -33,17 +38,8 @@
     state: directory
     mode: "0755"
 
-- name: Create systemd override with custom start and stop paths
+- name: Add nftables systemd override
   ansible.builtin.copy:
+    src: nftables.override.conf
     dest: /etc/systemd/system/nftables.service.d/override.conf
-    content: |
-      [Service]
-      ExecStart=
-      ExecStart=/bin/sh -c 'if ! /usr/sbin/nft -f /var/lib/nftables/rules-save; then \
-        /usr/sbin/nft -f /etc/nftables.conf; fi; rm -f /var/lib/nftables/rules-save'
-
-      ExecStop=
-      ExecStop=/bin/sh -c '{ echo "#!/usr/sbin/nft -f"; echo "flush ruleset"; \
-        /usr/sbin/nft -s list ruleset; } >/var/lib/nftables/rules-save'
-  notify:
-    - Reload systemd
+  notify: Reload systemd

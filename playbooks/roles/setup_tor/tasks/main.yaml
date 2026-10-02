@@ -78,6 +78,14 @@
         - geoip
         - never
 
+    - name: Enable/Start Tor
+      ansible.builtin.systemd_service:
+        name: tor
+        state: started
+        enabled: true
+      tags:
+        - tor
+
     - name: DDoS metrics
       when: ddos_metrics
       ansible.builtin.import_tasks: ddos-metrics.yaml
@@ -89,19 +97,6 @@
       ansible.builtin.import_tasks: watchdog.yaml
       tags:
         - watchdog
-
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
-      tags:
-        - flush
-
-    - name: Ensure Tor is enabled and started
-      ansible.builtin.systemd_service:
-        name: tor
-        state: started
-        enabled: true
-      tags:
-        - tor
 
     - name: Tor identity backup
       when: tor_identity_backup

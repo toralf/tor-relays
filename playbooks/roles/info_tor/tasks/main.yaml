@@ -97,6 +97,3 @@
       ansible.builtin.import_tasks: version.yaml
       tags:
         - version
-
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers

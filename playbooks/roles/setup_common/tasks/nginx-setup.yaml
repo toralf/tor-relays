@@ -18,7 +18,7 @@
     mode: "0755"
 
 - name: Add nginx systemd override
-  ansible.builtin.template:
-    src: nginx.override.conf.j2
+  ansible.builtin.copy:
+    src: nginx.override.conf
     dest: /etc/systemd/system/nginx.service.d/override.conf
   notify: Restart nginx

@@ -9,5 +9,5 @@
     - name: kernel.yama.ptrace_scope
       value: 3
     - name: user.max_user_namespaces
-      value: 6
+      value: 8
   notify: Restart snowflake

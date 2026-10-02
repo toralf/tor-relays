@@ -24,11 +24,11 @@
         - tools
 
     - name: Setup
-      ansible.builtin.import_tasks: _snowflake-setup.yaml
+      ansible.builtin.import_tasks: snowflake-src.yaml
       tags:
         - snowflake
 
-    - name: Configure
+    - name: Config
       ansible.builtin.import_tasks: config.yaml
       tags:
         - config
@@ -39,12 +39,7 @@
         - geoip
         - never
 
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
-      tags:
-        - flush
-
-    - name: Ensure Snowflake is enabled and started
+    - name: Enable/Start Snowflake
       ansible.builtin.systemd_service:
         name: snowflake
         state: started
