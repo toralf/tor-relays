@@ -15,8 +15,6 @@ cd $(dirname $0)/..
 
 [[ $# -ge 2 ]]
 
-arch='x86'
-os='{d13,u26}'
 uid=$(printf "%07i" $$)
 while getopts a:b:eo:t:u: opt; do
   case ${opt} in
@@ -35,6 +33,9 @@ done
 
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
+arch=${arch:-'x86'}
+os=${os:-'{d13,u26}'}
+
 if [[ ${task} == "bin" ]]; then
   branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
@@ -49,18 +50,29 @@ elif [[ ${task} == "common" ]]; then
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
 elif [[ ${task} == "image" ]]; then
-  branch=${branch:-'{mainline,stablerc}'}
-  names=$(eval echo hi-${os}-${arch}-${branch}-${uid})
+  names=$(
+    for o in $(eval echo ${os}); do
+      if [[ $o =~ ^d ]]; then
+        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-${uid}
+      fi
+      if [[ $o =~ ^u ]]; then
+        eval echo hi-${o}-${arch}-${branch:-'u26{main,next}'}-${uid}
+      fi
+    done
+  )
   time ./bin/create-server.sh ${names}
   time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
 
 elif [[ ${task} == "kernel" ]]; then
-  branch=${branch:-'{mainline,stablerc}'}
   names=$(
-    eval echo hi-${os}-${arch}-${branch}-{bp,nobp,x}-{cl,nocl,x}-${uid} |
-      xargs -n 1 |
-      grep -v -e '^hi-d.*-.*-x' -e '^hi-u.*-.*-.*bp' -e '^hi-u.*-.*-.*-.*cl' |
-      xargs
+    for o in $(eval echo ${os}); do
+      if [[ $o =~ ^d ]]; then
+        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-{,no}bp-{,no}cl-${uid}
+      fi
+      if [[ $o =~ ^u ]]; then
+        eval echo hi-${o}-${arch}-${branch:-'u26{main,next}'}-x-x-${uid}
+      fi
+    done
   )
   time ./bin/create-server.sh ${names}
   time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
