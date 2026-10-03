@@ -23,9 +23,22 @@
       community.general.pids:
         name: build-kernel.sh
       register: _build_is_running
-
-    - name: Build kernel
-      when: _build_is_running.pids | default([]) | length == 0
-      ansible.builtin.import_tasks: kernel-build.yaml
       tags:
         - kernel-build
+
+    - name: Build
+      when: _build_is_running.pids | default([]) | length == 0
+      tags:
+        - kernel-build
+      block:
+        - name: Git
+          vars:
+            _git_repo_url: "{{ kernel_git_repo_url }}"
+            _git_version: "{{ kernel_git_version }}"
+            _git_patches: "{{ kernel_git_patches }}"
+            _repo_dir: /root/linux
+          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+
+        - name: Build kernel
+          when: kernel_build or not is_image
+          ansible.builtin.import_tasks: kernel-build.yaml

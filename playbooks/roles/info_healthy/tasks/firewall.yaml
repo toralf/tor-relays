@@ -1,6 +1,6 @@
 ---
 - name: Check if firewall is up
-  changed_when: _firewall_healthy.rc != 0
+  changed_when: false
   failed_when: false
   ansible.builtin.shell:
     cmd: |-
@@ -8,13 +8,13 @@
       set -o pipefail
 
       if [[ {{ firewall }} == "nftables" ]]; then
-        nft -tns list ruleset | grep -F 'DDoS is activated'
+        nft -nst list ruleset | grep -F 'DDoS is activated'
 
       elif [[ {{ firewall }} == "iptables" ]]; then
         iptables  -nvL INPUT | grep -e "/\* .* IPv4 .* \*/"
         ip6tables -nvL INPUT | grep -e "/\* .* IPv6 .* \*/"
         if [[ {{ (is_tor | default(false)) | ternary('y', 'n') }} == y ]]; then
-          iptables  -nvL INPUT | grep 'match-set torutils-ddos-v4-'
+          iptables -nvL INPUT | grep 'match-set torutils-ddos-v4-'
           if [[ {{ ((tor_bridge_distribution | default('none')) | length == 0) | ternary('y', 'n') }} == y ]]; then
             ip6tables -nvL INPUT | grep 'match-set torutils-ddos-v6-'
           fi

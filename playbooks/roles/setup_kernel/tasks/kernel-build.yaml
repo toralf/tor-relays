@@ -1,12 +1,4 @@
 ---
-- name: Git
-  vars:
-    _git_repo_url: "{{ kernel_git_repo_url }}"
-    _git_version: "{{ kernel_git_version }}"
-    _git_patches: "{{ kernel_git_patches }}"
-    _repo_dir: /root/linux
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
-
 - name: Gather facts - kernel build
   ansible.builtin.setup:
     gather_subset:
@@ -43,7 +35,6 @@
   register: _kernel_configured
 
 - name: Make
-  when: kernel_build
   vars:
     _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
     _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"

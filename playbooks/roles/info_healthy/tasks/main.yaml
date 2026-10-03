@@ -43,3 +43,6 @@
       ansible.builtin.import_tasks: trace.yaml
       tags:
         - trace
+
+    - name: Flush handlers (Info healthy)
+      ansible.builtin.meta: flush_handlers
