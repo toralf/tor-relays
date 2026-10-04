@@ -18,8 +18,13 @@ echo -e "\n$(date) config ...\n"
 yes '' | make oldconfig # >/dev/null
 
 echo -e "\n$(date) make...\n"
+
 # make clean
-make -j $(nproc)
+if git describe | grep -q Ubuntu-6.8.0; then
+  make -j $(nproc) KCFLAGS="-std=gnu17"
+else
+  make -j $(nproc)
+fi
 make modules_install
 make install
 

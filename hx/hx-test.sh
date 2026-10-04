@@ -56,7 +56,7 @@ elif [[ ${task} == "image" ]]; then
         eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-${uid}
       fi
       if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'u26{main,next}'}-${uid}
+        eval echo hi-${o}-${arch}-${branch:-'u26next'}-${uid}
       fi
     done
   )
@@ -70,7 +70,7 @@ elif [[ ${task} == "kernel" ]]; then
         eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-{,no}bp-{,no}cl-${uid}
       fi
       if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'u26{main,next}'}-x-x-${uid}
+        eval echo hi-${o}-${arch}-${branch:-'u26next'}-x-x-${uid}
       fi
     done
   )

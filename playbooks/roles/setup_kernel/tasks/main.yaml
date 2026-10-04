@@ -39,6 +39,17 @@
             _repo_dir: /root/linux
           ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 
+        - name: Copy build script
+          ansible.builtin.copy:
+            src: kernel-build.sh
+            dest: /root/
+            mode: "0744"
+          register: _kernel_make_script
+
         - name: Build kernel
+          vars:
+            _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
+            _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
+            kernel_build: "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running }}"
           when: kernel_build or not is_image
           ansible.builtin.import_tasks: kernel-build.yaml

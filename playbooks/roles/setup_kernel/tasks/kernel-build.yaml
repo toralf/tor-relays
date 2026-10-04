@@ -22,91 +22,87 @@
       EOF
       yes '' | make oldconfig >/dev/null
       if [[ {{ ansible_facts.distribution }} == 'Ubuntu' ]]; then
+        scripts/config --disable CONFIG_EFI
         scripts/config --disable SYSTEM_REVOCATION_KEYS
         scripts/config --disable SYSTEM_TRUSTED_KEYS
+        scripts/config --disable CONFIG_VSOCKETS
       fi
 
       after=$(grep -v -e '^#' -e '^$' .config | md5sum)
       if [[ $before != $after ]]; then
-        exit 123 # to mark this Ansible task as "changed"
+        exit 123
       fi
     chdir: /root/linux
     executable: /bin/bash
   register: _kernel_configured
 
-- name: Make
-  vars:
-    _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
-    _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
-    kernel_build: "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or not _latest_is_running }}"
+- name: No wait
+  when: not kernel_git_build_wait
   block:
-    - name: No wait
-      when: not kernel_git_build_wait
+    - name: Make nowait
+      changed_when: true
+      ansible.builtin.shell:
+        cmd: >-
+          nohup /root/kernel-build.sh reboot >/dev/null 2>&1 &
+
+- name: Wait
+  when: kernel_git_build_wait
+  block:
+    - name: Job
       block:
-        - name: Make nowait
+        - name: Start job
           changed_when: true
-          ansible.builtin.shell:
+          async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
+          poll: 0
+          ansible.builtin.command:
             cmd: >-
-              echo /root/kernel-build.sh reboot | at now
+              /root/kernel-build.sh
+          register: _kernel_make
 
-    - name: Wait
-      when: kernel_git_build_wait
-      block:
-        - name: Job
-          block:
-            - name: Start job
-              changed_when: true
-              async: "{{ kernel_git_build_wait_retries * kernel_git_build_wait_delay }}"
-              poll: 0
-              ansible.builtin.command:
-                cmd: >-
-                  /root/kernel-build.sh
-              register: _kernel_make
+        - name: Poll job
+          retries: "{{ kernel_git_build_wait_retries }}"
+          delay: "{{ kernel_git_build_wait_delay }}"
+          until: _job_result.finished
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_make.ansible_job_id }}"
+          register: _job_result
 
-            - name: Poll job
-              retries: "{{ kernel_git_build_wait_retries }}"
-              delay: "{{ kernel_git_build_wait_delay }}"
-              until: _job_result.finished
-              ansible.builtin.async_status:
-                jid: "{{ _kernel_make.ansible_job_id }}"
-              register: _job_result
+        - name: Cleanup job
+          ansible.builtin.async_status:
+            jid: "{{ _kernel_make.ansible_job_id }}"
+            mode: cleanup
 
-            - name: Cleanup job
-              ansible.builtin.async_status:
-                jid: "{{ _kernel_make.ansible_job_id }}"
-                mode: cleanup
+      rescue:
+        - name: Kernel config
+          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
 
-          rescue:
-            - name: Kernel config
-              ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
+        - name: Slurp make.log
+          ansible.builtin.slurp:
+            src: /root/make.log
+          register: _make_log
 
-            - name: Slurp make.log
-              ansible.builtin.slurp:
-                src: /root/make.log
-              register: _make_log
+        - name: Print last few bits of make.log
+          changed_when: true
+          vars:
+            _last_bits: "{{ (_make_log['content'] | b64decode) | split('\n') }}"
+          ansible.builtin.debug:
+            msg: "{{ _last_bits[-10:] }}"
 
-            - name: Print last few bits of make.log
-              changed_when: true
-              vars:
-                _last_bits: "{{ (_make_log['content'] | b64decode) | split('\n') }}"
-              ansible.builtin.debug:
-                msg: "{{ _last_bits[-10:] }}"
+        - name: Fail
+          ansible.builtin.fail:
+            msg: Build failed.
 
-            - name: Fail
-              ansible.builtin.fail:
-                msg: Build failed.
-
-        - name: Reboot
-          failed_when: >-
-            not (
-            _reboot_kernel.rebooted or
-            _reboot_kernel.msg is search('Action reboot already in progress') or
-            _reboot_kernel.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start'
-            is included in transaction")
-            )
-          retries: 1
-          ansible.builtin.reboot:
-            post_reboot_delay: 20
-            reboot_timeout: 180
-            reboot_command: reboot
-          register: _reboot_kernel
+    - name: Reboot
+      failed_when: >-
+        not (
+        _reboot_kernel.rebooted or
+        _reboot_kernel.msg is search('Action reboot already in progress') or
+        _reboot_kernel.msg is search("systemd-update-utmp.service has 'stop' job queued, but 'start'
+        is included in transaction")
+        )
+      retries: 1
+      ansible.builtin.reboot:
+        post_reboot_delay: 20
+        reboot_timeout: 180
+        reboot_command: reboot
+      register: _reboot_kernel

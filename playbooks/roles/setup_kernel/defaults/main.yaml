@@ -1,5 +1,6 @@
 ---
 is_image: false
+kernel_build: false
 
 kernel_git_build_wait: true
 kernel_git_build_wait_retries: 90 # count
@@ -16,6 +17,7 @@ kernel_git_config: |-
   CONFIG_BACKLIGHT_CLASS_DEVICE=n
   CONFIG_DEBUG_INFO=n
   CONFIG_DEBUG_INFO_NONE=y
+  CONFIG_DEBUG_MISC=n
   CONFIG_DMADEVICES=n
   CONFIG_DRM=n
   CONFIG_EDAC=n
