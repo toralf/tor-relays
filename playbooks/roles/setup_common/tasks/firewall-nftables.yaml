@@ -9,20 +9,13 @@
   ansible.builtin.template:
     src: nftables.conf.j2
     dest: /etc/nftables.conf
-  register: _new_nftables
+  notify: Reload nftables
 
 - name: Check nftables config
   changed_when: false
   ansible.builtin.command:
     cmd: |-
       nft -c -f /etc/nftables.conf
-
-- name: Load nftables config
-  changed_when: true
-  when: _new_nftables.changed
-  ansible.builtin.command:
-    cmd: |-
-      nft -o -f /etc/nftables.conf
 
 # Configure nftables persistence under /var like Gentoo
 
@@ -42,10 +35,11 @@
   ansible.builtin.copy:
     src: nftables.override.conf
     dest: /etc/systemd/system/nftables.service.d/override.conf
-  notify: Restart nftables
+  notify: Reload systemd
 
 - name: Enable/Start nftables
   ansible.builtin.systemd_service:
     name: nftables
     state: started
     enabled: true
+    daemon_reload: true
