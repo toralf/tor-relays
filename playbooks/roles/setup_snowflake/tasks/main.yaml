@@ -17,6 +17,8 @@
       mode: "0644"
     ansible.builtin.file:
       mode: "0644"
+    ansible.builtin.systemd_service:
+      daemon_reload: true
   block:
     - name: Tools
       ansible.builtin.import_tasks: tools.yaml

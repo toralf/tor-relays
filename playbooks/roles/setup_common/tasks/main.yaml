@@ -25,6 +25,8 @@
       create: true
       firstmatch: true
       mode: "0644"
+    ansible.builtin.systemd_service:
+      daemon_reload: true
     ansible.builtin.template:
       mode: "0644"
   block:
