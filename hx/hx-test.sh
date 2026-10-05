@@ -56,9 +56,10 @@ elif [[ ${task} == "image" ]]; then
         eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-${uid}
       fi
       if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'u26next'}-${uid}
+        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc,u26next}'}-${uid}
       fi
-    done
+    done |
+      xargs
   )
   time ./bin/create-server.sh ${names}
   time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
@@ -70,9 +71,10 @@ elif [[ ${task} == "kernel" ]]; then
         eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-{,no}bp-{,no}cl-${uid}
       fi
       if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'u26next'}-x-x-${uid}
+        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc,u26next}'}-x-x-${uid}
       fi
-    done
+    done |
+      xargs
   )
   time ./bin/create-server.sh ${names}
   time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
