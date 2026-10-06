@@ -6,3 +6,4 @@ StartLimitIntervalSec=0
 [Service]
 NoNewPrivileges={{ (tor_bridge_distribution | length > 0 or tor_port > 1024) | ternary('yes', 'no') }}
 Restart=on-failure
+RestartSec=5s

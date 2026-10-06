@@ -1,5 +1,6 @@
 # {{ ansible_managed }}
 
 [Service]
-Restart=on-failure
 Environment="GOMAXPROCS=1"
+Restart=on-failure
+RestartSec=5s
