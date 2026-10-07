@@ -21,6 +21,7 @@
           -e 'cloud-init.service: Control process exited' \
           -e "Error: argument 'stop' not supported" \
           -e 'kernel: Speculative Return Stack Overflow: ' \
+          -e ': SCSI device sr0 has no device ID' \
           -e ': System is rebooting.' |
         tail -n 30
   register: _result_syslog
