@@ -51,7 +51,11 @@
       [[ -f /var/run/reboot-required ]] ||
       needrestart -r l -b | grep -q -E -e 'NEEDRESTART-KSTA: [23]' -e 'NEEDRESTART-SVC: ';
       then
-      {{ _check_cmd }} || reboot;
+      if {{ _check_cmd }};
+      then
+      sleep 120;
+      fi;
+      reboot;
       fi
 
 # 2x per day at :58
