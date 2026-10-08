@@ -5,7 +5,7 @@
   ansible.builtin.shell:
     cmd: |-
       zgrep -h -Eo 'initiated [0-9]+ and received [0-9]+ v. connections' \
-        notice.log.3.gz notice.log.2.gz notice.log.1 notice.log |
+        notice.log.{4,3,2}.gz notice.log{.1,} |
         tail -n 65 |
         tac |
         awk '{ print $2, $5 }' |

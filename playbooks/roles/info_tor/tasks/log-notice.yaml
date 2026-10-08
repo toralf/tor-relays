@@ -8,10 +8,11 @@
         -e 'Please upgrade! This version of Tor' \
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
         -e 'Unrecognized BridgeDistribution value' \
-        notice.log.1 notice.log |
+        notice.log{.1,} |
         tail -n 10 |
         {{ filter_sensitive_data }}
     chdir: /var/log/tor/
+    executable: /bin/bash
   register: _result_log_notice
 
 - name: Results of notice log

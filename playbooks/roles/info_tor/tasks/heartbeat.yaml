@@ -3,9 +3,10 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      zgrep -h -F 'Heartbeat: Tor' notice.log.1 notice.log |
+      zgrep -h -F 'Heartbeat: Tor' notice.log{.1,} |
         tail -n 4
     chdir: /var/log/tor/
+    executable: /bin/bash
   register: _result_heartbeat
 
 - name: Results of Heartbeat
