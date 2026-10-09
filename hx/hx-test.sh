@@ -40,8 +40,8 @@ if [[ ${task} == "bin" ]]; then
   branch=${branch:-'dist'}
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-setup.yaml --limit "h?-*-${uid}" -e '{ "kernel_git_build_wait": false }' \
-    -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
+  time ./site-test-setup.yaml --limit "h?-*-${uid}" \
+    -e '{ "kernel_git_build_wait": false }' -e '{ "go_version": "" }' -e '{ "tor_build_from_source": false }'
 
 elif [[ ${task} == "common" ]]; then
   branch=${branch:-'dist'}
@@ -50,28 +50,20 @@ elif [[ ${task} == "common" ]]; then
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
 elif [[ ${task} == "image" ]]; then
-  names=$(
-    for o in $(eval echo ${os}); do
-      if [[ $o =~ ^d ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-${uid}
-      fi
-      if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc,u26next}'}-${uid}
-      fi
-    done |
-      xargs
-  )
+  branch=${branch:-'{ltsrc,mainline,stablerc}'}
+  names=$(eval echo hi-${os}-${arch}-${branch}-x-x-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
 
 elif [[ ${task} == "kernel" ]]; then
+  branch=${branch:-'{ltsrc,mainline,stablerc}'}
   names=$(
     for o in $(eval echo ${os}); do
       if [[ $o =~ ^d ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc}'}-{,no}bp-{,no}cl-${uid}
+        eval echo hi-${o}-${arch}-${branch}-{,no}bp-{,no}cl-${uid}
       fi
       if [[ $o =~ ^u ]]; then
-        eval echo hi-${o}-${arch}-${branch:-'{mainline,stablerc,u26next}'}-x-x-${uid}
+        eval echo hi-${o}-${arch}-${branch}-x-x-${uid}
       fi
     done |
       xargs
