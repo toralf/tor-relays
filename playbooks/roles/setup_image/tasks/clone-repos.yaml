@@ -11,7 +11,7 @@
   loop:
     - name: linux
       url: "{{ kernel_git_repo_url }}"
-      ver: master
+      ver: "{{ kernel_git_version }}"
     - name: lyrebird
       url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
     - name: snowflake
