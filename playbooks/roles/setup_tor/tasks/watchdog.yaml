@@ -1,11 +1,21 @@
 ---
-- name: Get watchdog script
-  throttle: 16
-  retries: 1
-  ansible.builtin.get_url:
-    url: "{{ torutils_path }}/tools/watchdog.sh"
-    dest: /root/
-  notify: Restart watchdog
+- name: Block
+  when: use_watchdog
+  block:
+    - name: Get watchdog script
+      throttle: 16
+      retries: 1
+      ansible.builtin.get_url:
+        url: "{{ torutils_path }}/tools/watchdog.sh"
+        dest: /root/
+      notify: Restart watchdog
+
+    - name: Get watchdog.sh pid if any
+      changed_when: _watchdog.pids | length not in (1, 2)
+      community.general.pids:
+        name: watchdog.sh
+      register: _watchdog
+      notify: Restart watchdog
 
 - name: Cron job for watchdog
   ansible.builtin.cron:
@@ -13,11 +23,13 @@
     special_time: reboot
     job: >-
       nice /root/watchdog.sh
-  notify: Restart watchdog
+    state: "{{ use_watchdog | ternary('present', 'absent') }}"
 
-- name: Get watchdog.sh pid if any
-  changed_when: _watchdog.pids | length not in (1, 2)
-  community.general.pids:
-    name: watchdog.sh
-  register: _watchdog
-  notify: Restart watchdog
+- name: Stop watchdog
+  when: not use_watchdog
+  changed_when: _stop_watchdog.rc == 0
+  failed_when: false
+  ansible.builtin.shell:
+    cmd: |-
+      pgrep -f watchdog.sh && pkill -9 -x watchdog.sh
+  register: _stop_watchdog

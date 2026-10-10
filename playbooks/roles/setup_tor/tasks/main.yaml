@@ -95,7 +95,6 @@
         - ddos-metrics
 
     - name: Watchdog
-      when: ansible_facts.memtotal_mb < 1024 and tor_bridge_distribution | length == 0
       ansible.builtin.import_tasks: watchdog.yaml
       tags:
         - watchdog
