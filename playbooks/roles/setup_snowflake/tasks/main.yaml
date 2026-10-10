@@ -41,6 +41,9 @@
         - geoip
         - never
 
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
     - name: Enable/Start Snowflake
       ansible.builtin.systemd_service:
         name: snowflake

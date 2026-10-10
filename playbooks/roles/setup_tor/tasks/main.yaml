@@ -80,6 +80,9 @@
         - geoip
         - never
 
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
     - name: Enable/Start Tor
       ansible.builtin.systemd_service:
         name: tor

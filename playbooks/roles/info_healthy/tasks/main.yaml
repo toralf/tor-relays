@@ -44,5 +44,5 @@
       tags:
         - trace
 
-    - name: Flush handlers (Info healthy)
+    - name: Flush handlers
       ansible.builtin.meta: flush_handlers

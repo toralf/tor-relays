@@ -23,5 +23,5 @@
   register: _reboot_needed
   notify: Reboot
 
-- name: Flush handlers (Reboot)
+- name: Flush handlers (reboot)
   ansible.builtin.meta: flush_handlers

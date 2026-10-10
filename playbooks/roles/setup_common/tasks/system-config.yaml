@@ -43,6 +43,9 @@
     content: |
       kernel.sysrq = 0
 
+      net.core.dev_weight = 128
+      net.core.netdev_budget = 600
+      net.core.netdev_max_backlog = 2000
       net.core.somaxconn = {{ _max }}
 
       net.ipv4.tcp_fin_timeout = 10
