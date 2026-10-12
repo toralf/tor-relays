@@ -14,6 +14,6 @@ issue_since: ""
 
 trace_since: ""
 
-filter_sensitive_data: "tee"
+filter_sensitive_data: "grep ."
 
 firewall: ""

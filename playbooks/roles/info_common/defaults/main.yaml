@@ -1,6 +1,8 @@
 ---
-filter_sensitive_data: "tee"
+# default: no filter
+filter_sensitive_data: "grep ."
 
+# resource name
 firewall_set_pattern: "ddos"
 
 # number of bits ip addresses are truncated
