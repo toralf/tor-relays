@@ -28,7 +28,7 @@
           parts = line.strip().split()
           if parts:
               ip_obj = ipaddress.ip_address(parts[0])
-              p = 24 if ip_obj.version == 4 else 48
+              p = {{ 32 - firewall_stats_truncate | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_truncate | int }}
               net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
               counter[net] += 1
 
