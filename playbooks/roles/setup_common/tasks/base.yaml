@@ -31,20 +31,33 @@
       wc -l </root/.ssh/authorized_keys
   register: _result_auth_keys
 
-- name: Create swapfile for tiny systems (e.g. IONOS)
-  when: ansible_facts.memtotal_mb < 2048
+- name: Create swapfile
+  when: swapfile_size | length > 0
   ansible.builtin.shell:
     cmd: |-
       set -euf
 
-      fallocate -l 1G /swapfile
+      fallocate -l {{ swapfile_size }} /swapfile
       chmod 600 /swapfile
       mkswap /swapfile
+      swapon /swapfile
       if ! grep -q "^/swapfile " /etc/fstab; then
         echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
       fi
-      swapon /swapfile
     creates: /swapfile
+
+- name: Remove swapfile
+  when: swapfile_size | length == 0
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
+
+      swapoff -a
+      if grep -q "^/swapfile " /etc/fstab; then
+        sed -i -e '/^swapfile /d' /etc/fstab
+      fi
+      rm /swapfile
+    removes: /swapfile
 
 - name: Suppress motd
   ansible.builtin.copy:

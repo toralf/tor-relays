@@ -58,3 +58,6 @@ tor_bridge_distribution: none
 tor_metrics: false
 tor_shape_egress: false
 torutils_path: "https://github.com/toralf/torutils/raw/{{ torutils_git_version | default('main') }}"
+
+# size of the swap file
+swapfile_size: ""
