@@ -22,6 +22,8 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {% else %}
 {# Tor relay #}
 
+ExitRelay 0
+
 NoExec 1
 {% if ansible_facts.architecture == 'x86_64' %}
 SandBox 1
