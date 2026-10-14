@@ -9,7 +9,7 @@
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
         -e 'Unrecognized BridgeDistribution value' \
         notice.log{.1,} |
-        tail -n 10 |
+        tail -n 5 |
         {{ filter_sensitive_data }}
     chdir: /var/log/tor/
     executable: /bin/bash

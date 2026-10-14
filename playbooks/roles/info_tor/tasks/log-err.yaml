@@ -6,7 +6,7 @@
       zgrep -h -v \
         -e 'opening .*log file.' \
         err.log{.1,} |
-        tail -n 50 |
+        tail -n 5 |
         {{ filter_sensitive_data }}
     chdir: /var/log/tor/
     executable: /bin/bash
@@ -17,4 +17,3 @@
   changed_when: true
   ansible.builtin.debug:
     var: _result_log_err.stdout_lines
-  notify: Not Healthy
