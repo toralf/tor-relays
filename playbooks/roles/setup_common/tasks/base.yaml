@@ -54,7 +54,7 @@
 
       swapoff -a
       if grep -q "^/swapfile " /etc/fstab; then
-        sed -i -e '/^swapfile /d' /etc/fstab
+        sed -i -e "/^\/swapfile /d" /etc/fstab
       fi
       rm /swapfile
     removes: /swapfile
