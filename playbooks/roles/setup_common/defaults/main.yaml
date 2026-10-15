@@ -27,7 +27,7 @@ nginx_public_site: false
 nginx_site_directories: []
 
 # https://github.com/prometheus/node_exporter
-# reduce the CPU pressure at the source instead to filter "params:" at prometheus
+# reduce the CPU pressure at the source system instead filter via "params:" at prometheus system
 node_exporter_collectors:
   - conntrack
   - cpu
@@ -39,7 +39,6 @@ node_exporter_collectors:
   - meminfo
   - netdev
   - netstat
-  - processes
   - sockstat
   - softnet
   - stat
