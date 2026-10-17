@@ -6,47 +6,32 @@
       repo: "{{ _git_repo_url }}"
       dest: "{{ _repo_dir }}"
   block:
-    - name: Git stat before "{{ _repo_dir }}"
+    - name: Git stat "{{ _repo_dir }}"
       ansible.builtin.git:
         clone: false
         update: false
-      register: __repo
+      register: __stat
 
-    - name: Git clone/update
-      throttle: 16
-      block:
-        - name: Git clone "{{ _repo_dir }}"
-          when: __repo.before == None
-          ansible.builtin.git:
-            update: false
-            version: "{{ _git_version }}"
-
-        - name: Git update "{{ _repo_dir }}"
-          when: __repo.before != None
-          ansible.builtin.git:
-            clone: false
-            force: true
-            version: "{{ _git_version }}"
-          register: __updated
-
-    - name: Git stat after "{{ _repo_dir }}"
+    - name: Git update "{{ _repo_dir }}"
+      throttle: 8
       ansible.builtin.git:
-        clone: false
-        update: false
-      register: _git_head
+        clone: "{{ __stat.before == None }}"
+        force: true
+        update: "{{ __stat.before != None }}"
+        version: "{{ _git_version }}"
+      register: __update
 
     - name: Git clean "{{ _repo_dir }}"
-      changed_when: __cleaned.stdout | length > 0
+      changed_when: __clean.stdout | length > 0
       ansible.builtin.command:
         cmd: >-
           git clean --force -d
         chdir: "{{ _repo_dir }}"
-      register: __cleaned
+      register: __clean
 
-    # "git clean" must be made before
     - name: Git patch "{{ _repo_dir }}"
-      throttle: 16
-      changed_when: __patched.stdout_lines is search('patching file ')
+      throttle: 8
+      changed_when: __patch.stdout_lines is search('patching file ')
       ansible.builtin.shell:
         cmd: |-
           set -euf
@@ -59,10 +44,10 @@
       loop_control:
         loop_var: inside_item
       loop: "{{ _git_patches | default([]) }}"
-      register: __patched
+      register: __patch
 
     - name: Git repo changed "{{ _repo_dir }}"
+      changed_when: _git_repo_changed
       ansible.builtin.set_fact:
-        _git_repo_changed: "{{ __repo.changed or __repo.before == None or
-          __updated.changed or __cleaned.changed or __patched.changed or
-          __repo.before != _git_head.before }}"
+        _git_repo_changed: "{{ __stat.changed or __update.changed or
+          __clean.changed or __patch.changed }}"
