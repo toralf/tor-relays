@@ -53,7 +53,7 @@
             _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
             _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
             kernel_build:
-              "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed
-              or not _latest_is_running }}"
+              "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or
+              not _latest_is_running }}"
           when: not is_image or kernel_build
           ansible.builtin.import_tasks: kernel-build.yaml

@@ -3,7 +3,7 @@
   when: use_watchdog
   block:
     - name: Get watchdog script
-      throttle: 16
+      throttle: 8
       retries: 1
       ansible.builtin.get_url:
         url: "{{ torutils_path }}/tools/watchdog.sh"

@@ -94,7 +94,7 @@
 #
 - name: Get egress firewall script
   when: tor_shape_egress
-  throttle: 16
+  throttle: 8
   retries: 1
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/ipv4-rules-egress.sh"

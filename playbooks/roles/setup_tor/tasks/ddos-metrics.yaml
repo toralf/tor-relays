@@ -1,6 +1,6 @@
 ---
 - name: Get DDoS metrics script
-  throttle: 16
+  throttle: 8
   retries: 1
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics.sh"

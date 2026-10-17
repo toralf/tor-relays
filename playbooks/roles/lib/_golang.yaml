@@ -35,7 +35,7 @@
     _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
     _name: "{{ go_version }}.linux-{{ _arch }}.tar.gz"
   block:
-    - name: Get current Go version
+    - name: Current Go version
       changed_when: false
       ansible.builtin.shell:
         cmd: >-
@@ -54,7 +54,7 @@
             mode: "0644"
             force: true
 
-        - name: Install Go from upstream
+        - name: Install Go
           changed_when: true
           ansible.builtin.shell:
             cmd: |-
@@ -84,6 +84,6 @@
             xargs -t -r rm -r
 
           ls /root/go[1-9]*.[0-9]*.[0-9]*.linux-{{ _arch }}.tar.gz |
-             grep -v "/root/{{ go_version }}.linux-{{ _arch }}.tar.gz$" |
-             xargs -t -r rm
+            grep -v "/root/{{ go_version }}.linux-{{ _arch }}.tar.gz$" |
+            xargs -t -r rm
       register: __deleted
