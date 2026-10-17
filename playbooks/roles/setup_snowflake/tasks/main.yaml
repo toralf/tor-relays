@@ -49,3 +49,5 @@
         name: snowflake
         state: started
         enabled: true
+      tags:
+        - snowflake
