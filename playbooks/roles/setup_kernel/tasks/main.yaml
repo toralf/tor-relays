@@ -55,5 +55,5 @@
             kernel_build:
               "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed
               or not _latest_is_running }}"
-          when: kernel_build or not is_image
+          when: not is_image or kernel_build
           ansible.builtin.import_tasks: kernel-build.yaml
