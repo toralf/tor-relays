@@ -9,10 +9,11 @@
   when: kernel_debian_backports or kernel_debian_cloud
   vars:
     _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-    _backports: "{{ kernel_debian_backports | ternary('-backports', '') }}"
-    _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
   block:
     - name: Install/Update Debian kernel
+      vars:
+        _backports: "{{ kernel_debian_backports | ternary('-backports', '') }}"
+        _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
         name:

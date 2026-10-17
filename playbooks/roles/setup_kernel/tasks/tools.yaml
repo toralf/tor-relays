@@ -21,13 +21,22 @@
       - debhelper
       - libncurses-dev
 
-- name: Do no longer upgrade kernel dist package
+- name: Hold
   when: not is_image
-  changed_when: false
-  vars:
-    _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-    _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
-    _suffix: "{{ (ansible_facts.distribution == 'Debian') | ternary(_cloud ~ '-' ~ _arch, '-virtual') }}"
-  ansible.builtin.command:
-    cmd: |-
-      apt-mark hold linux-base{{ _suffix }} linux-image{{ _suffix }}
+  block:
+    - name: Do no longer upgrade Debian dist kernel
+      when: ansible_facts.distribution == 'Debian'
+      changed_when: false
+      vars:
+        _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+        _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
+      ansible.builtin.command:
+        cmd: |-
+          apt-mark hold linux-base{{ _cloud }}-{{ _arch }} linux-image{{ _cloud }}-{{ _arch }}
+
+    - name: Do no longer upgrade Ubuntu dist kernel
+      when: ansible_facts.distribution == 'Ubuntu'
+      changed_when: false
+      ansible.builtin.command:
+        cmd: |-
+          apt-mark hold linux-image-virtual
