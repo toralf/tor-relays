@@ -1,6 +1,6 @@
 ---
 - name: Git
-  environment: "{{ git_environment | default({}) }}"
+  environment: "{{ _git_environment | default({}) }}"
   module_defaults:
     ansible.builtin.git:
       repo: "{{ _git_repo_url }}"

@@ -103,6 +103,7 @@
       when: ansible_facts.distribution == 'Debian'
       ansible.builtin.import_tasks: kernel-debian.yaml
       tags:
+        - kernel
         - kernel-debian
 
     - name: Reboot

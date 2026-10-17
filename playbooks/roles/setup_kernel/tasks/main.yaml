@@ -29,13 +29,15 @@
     - name: Build
       when: _build_is_running.pids | default([]) | length == 0
       tags:
+        - kernel
         - kernel-build
       block:
         - name: Git
           vars:
+            _git_environment: "{{ kernel_git_environment }}"
+            _git_patches: "{{ kernel_git_patches }}"
             _git_repo_url: "{{ kernel_git_repo_url }}"
             _git_version: "{{ kernel_git_version }}"
-            _git_patches: "{{ kernel_git_patches }}"
             _repo_dir: /root/linux
           ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
 

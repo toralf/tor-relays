@@ -7,20 +7,21 @@
 
 - name: Debian
   when: kernel_debian_backports or kernel_debian_cloud
+  vars:
+    _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
+    _backports: "{{ kernel_debian_backports | ternary('-backports', '') }}"
+    _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
   block:
-    - name: Change Debian kernel
-      vars:
-        _arch: "{{ (ansible_facts.architecture == 'x86_64') | ternary('amd64', 'arm64') }}"
-        _backports: "{{ kernel_debian_backports | ternary('-backports', '') }}"
-        _cloud: "{{ kernel_debian_cloud | ternary('-cloud', '') }}"
+    - name: Install/Update Debian kernel
       ansible.builtin.apt:
         default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
         name:
+          - "linux-base{{ _cloud }}-{{ _arch }}"
           - "linux-image{{ _cloud }}-{{ _arch }}"
       register: _kernel_dist
       notify: Reboot
 
-    - name: Changed Debian kernel
+    - name: Changed
       when: _kernel_dist.changed
       block:
         - name: Reboot (changed Debian kernel)
@@ -28,3 +29,10 @@
 
         - name: Upgrade deps of changed Debian kernel
           ansible.builtin.import_tasks: upgrade.yaml
+
+    - name: Remove default Debian kernel
+      ansible.builtin.apt:
+        name:
+          - "linux-base-{{ _arch }}"
+          - "linux-image-{{ _arch }}"
+        state: absent

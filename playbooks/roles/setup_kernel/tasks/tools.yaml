@@ -21,7 +21,7 @@
       - debhelper
       - libncurses-dev
 
-- name: Do not upgrade kernel dist package
+- name: Do no longer upgrade kernel dist package
   when: not is_image
   changed_when: false
   vars:
@@ -30,4 +30,4 @@
     _suffix: "{{ (ansible_facts.distribution == 'Debian') | ternary(_cloud ~ '-' ~ _arch, '-virtual') }}"
   ansible.builtin.command:
     cmd: |-
-      apt-mark hold linux-image{{ _suffix }}
+      apt-mark hold linux-base{{ _suffix }}linux-image{{ _suffix }}
