@@ -1,15 +1,12 @@
 ---
 - name: Set sysctl values
-  ansible.posix.sysctl:
-    name: "{{ item.name }}"
-    value: "{{ item.value }}"
-    sysctl_file: /etc/sysctl.d/21tor-relay.conf
-    sysctl_set: true
-  loop:
-    - name: kernel.yama.ptrace_scope
-      value: "{{ (tor_bridge_distribution | length > 0) | ternary(1, 3) }}"
-    - name: user.max_user_namespaces
-      value: 2
+  ansible.builtin.copy:
+    content: |
+      kernel.yama.ptrace_scope = {{ (tor_bridge_distribution | length > 0) | ternary(1, 3) }}
+      user.max_user_namespaces = 2
+
+    dest: /etc/sysctl.d/23tor.conf
+  notify: Load sysctl
 
 - name: Install family key
   when: tor_secret_family_key_file | length > 0
@@ -67,3 +64,12 @@
         src: tor.override.conf.j2
         dest: "{{ _svcdir }}/override.conf"
       notify: Restart Tor
+
+- name: Sysctl
+  ansible.builtin.copy:
+    content: |
+      net.ipv4.tcp_fin_timeout = 5
+      net.ipv4.tcp_keepalive_time = 120
+
+    dest: /etc/sysctl.d/23tor.conf
+  notify: Load sysctl

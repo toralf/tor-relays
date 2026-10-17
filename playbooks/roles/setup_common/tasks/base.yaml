@@ -31,20 +31,33 @@
       wc -l </root/.ssh/authorized_keys
   register: _result_auth_keys
 
-- name: Create swapfile
+- name: Swapfile
   when: swapfile_size | length > 0
-  ansible.builtin.shell:
-    cmd: |-
-      set -euf
+  block:
+    - name: Create swapfile
+      ansible.builtin.shell:
+        cmd: |-
+          set -euf
 
-      fallocate -l {{ swapfile_size }} /swapfile
-      chmod 600 /swapfile
-      mkswap /swapfile
-      swapon /swapfile
-      if ! grep -q "^/swapfile " /etc/fstab; then
-        echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
-      fi
-    creates: /swapfile
+          fallocate -l {{ swapfile_size }} /swapfile
+          chmod 600 /swapfile
+          mkswap /swapfile
+          swapon /swapfile
+          if ! grep -q "^/swapfile " /etc/fstab; then
+            echo "/swapfile  none  swap  defaults  0  0" >>/etc/fstab
+          fi
+        creates: /swapfile
+
+    - name: Sysctl
+      ansible.builtin.copy:
+        content: |
+          vm.dirty_background_ratio = 3
+          vm.dirty_ratio = 10
+          vm.swappiness = 1
+          vm.vfs_cache_pressure = 50
+
+        dest: /etc/sysctl.d/22swapfile.conf
+      notify: Load sysctl
 
 - name: Remove swapfile
   when: swapfile_size | length == 0
