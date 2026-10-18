@@ -2,7 +2,6 @@
 - name: Load sysctl
   listen: Load sysctl
   changed_when: true
-  failed_when: false # failures expected for older kernels
   ansible.builtin.command:
     cmd: >-
       sysctl --system >/dev/null
