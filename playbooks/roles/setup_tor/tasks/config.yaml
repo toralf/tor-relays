@@ -64,12 +64,3 @@
         src: tor.override.conf.j2
         dest: "{{ _svcdir }}/override.conf"
       notify: Restart Tor
-
-- name: Sysctl
-  ansible.builtin.copy:
-    content: |
-      net.ipv4.tcp_fin_timeout = 5
-      net.ipv4.tcp_keepalive_time = 120
-
-    dest: /etc/sysctl.d/23tor.conf
-  notify: Load sysctl
