@@ -51,6 +51,8 @@
     - name: Sysctl
       ansible.builtin.copy:
         content: |
+          # maintained by Ansible
+
           vm.dirty_background_ratio = 3
           vm.dirty_ratio = 10
           vm.swappiness = 1
@@ -94,11 +96,19 @@
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
   ansible.builtin.copy:
     content: |
+      # maintained by Ansible
+
+      net.ipv4.tcp_fin_timeout = 10
+      net.ipv4.tcp_keepalive_time = 120
+      net.ipv4.tcp_max_syn_backlog = 8192
+      net.ipv4.tcp_synack_retries = 2
       net.ipv4.tcp_syncookies = 1
+      net.ipv4.tcp_tw_reuse = 1
       net.ipv6.ip_nonlocal_bind = 1
 
-      net.ipv4.tcp_fin_timeout = 5
-      net.ipv4.tcp_keepalive_time = 120
+      net.netfilter.nf_conntrack_tcp_timeout_established = 600
+      net.netfilter.nf_conntrack_tcp_timeout_time_wait = 10
+      net.netfilter.nf_conntrack_tcp_timeout_close_wait = 10
 
       net.core.netdev_max_backlog = {{ _max }}
       net.core.somaxconn = {{ _max }}
