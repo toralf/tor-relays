@@ -9,17 +9,17 @@
       - libssl-dev
       - zlib1g-dev
 
-- name: Install/Update toolchain for Tor relay
-  when: tor_bridge_distribution | length == 0
-  ansible.builtin.apt:
-    name:
-      - libseccomp-dev
-
 - name: Install/Update toolchain for Tor under Ubuntu
   when: ansible_facts.distribution == 'Ubuntu'
   ansible.builtin.apt:
     name:
       - autotools-dev
+
+- name: Install/Update toolchain for Tor relay
+  when: tor_bridge_distribution | length == 0
+  ansible.builtin.apt:
+    name:
+      - libseccomp-dev
 
 - name: Install/Update toolchain for Tor bridge
   when: tor_bridge_distribution | length > 0
