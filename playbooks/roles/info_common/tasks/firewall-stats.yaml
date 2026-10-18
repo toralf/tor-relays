@@ -12,7 +12,7 @@
   ansible.builtin.shell:
     cmd: |-
       nft -j -n list set inet ingress_filter ddos_{{ item }} |
-      jq -r '.nftables[].set.elem[]?.elem.val' |
+      jq -r '.nftables[].set.elem[]?.elem | "\(.val) \(.expires)"' |
       python3 -c '
 
       import signal, sys, ipaddress
@@ -28,10 +28,11 @@
 
           parts = line.strip().split()
           if parts:
-              ip_obj = ipaddress.ip_address(parts[0])
-              p = {{ 32 - firewall_stats_truncate | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_truncate | int }}
-              net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
-              counter[net] += 1
+              if int(parts[1]) >= 86400 - 3600:
+                  ip_obj = ipaddress.ip_address(parts[0])
+                  p = {{ 32 - firewall_stats_truncate | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_truncate | int }}
+                  net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
+                  counter[net] += 1
 
       for net, count in counter.most_common():
           print(f"{count:7} {net}")
