@@ -77,7 +77,7 @@ while :; do
   pit_stop info
 
   #--------------------------------------------------------------------
-  # collect certain data only every then and when
+  # run tasks below only every then and when
   if ((EPOCHSECONDS - last < 45 * 60)); then
     continue
   fi
@@ -90,6 +90,7 @@ while :; do
 
   info "${site}  tags:  ${tags}"
   mkdir -p ~/tmp/hx/${site}{,_tmp}/artefact
+  # tar all stats together instead rsync'ing each file
   if ! ./site-info.yaml --limit 'hmx,hsx,htx' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'_tmp" }' \
     &>${logprefix}.${site}.ansible.log; then
     info "  NOT ok" >&2

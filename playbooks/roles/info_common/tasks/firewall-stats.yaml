@@ -12,7 +12,8 @@
   ansible.builtin.shell:
     cmd: |-
       nft -j -n list set inet ingress_filter ddos_{{ item }} |
-      jq -r '.nftables[].set.elem[]?.elem.val' | python3 -c '
+      jq -r '.nftables[].set.elem[]?.elem.val' |
+      python3 -c '
 
       import signal, sys, ipaddress
       from collections import Counter

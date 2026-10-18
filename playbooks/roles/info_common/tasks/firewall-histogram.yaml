@@ -3,7 +3,8 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      nft -j -ns list ruleset | python3 -c '
+      nft -j -ns list ruleset |
+      python3 -c '
 
       import sys, json
 
