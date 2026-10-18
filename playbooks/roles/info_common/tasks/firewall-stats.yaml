@@ -30,7 +30,7 @@
           if parts:
               if int(parts[1]) >= 86400 - 3600:
                   ip_obj = ipaddress.ip_address(parts[0])
-                  p = {{ 32 - firewall_stats_truncate | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_truncate | int }}
+                  p = {{ 32 - firewall_stats_net | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_net | int }}
                   net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
                   counter[net] += 1
 

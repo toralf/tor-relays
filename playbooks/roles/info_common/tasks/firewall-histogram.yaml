@@ -16,11 +16,11 @@
 
       sets = [
           item["set"] for item in data.get("nftables", [])
-          if "set" in item and "{{ firewall_set_pattern }}" in item["set"].get("name", "").lower()
+          if "set" in item and "{{ firewall_hist_set }}" in item["set"].get("name", "").lower()
       ]
 
       if not sets:
-          print("no set founds with \"{{ firewall_set_pattern }}\".")
+          print("no set founds with \"{{ firewall_hist_set }}\".")
           sys.exit()
 
       # init

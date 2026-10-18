@@ -3,7 +3,7 @@
 filter_sensitive_data: "grep ."
 
 # resource name
-firewall_set_pattern: "ddos"
+firewall_hist_set: "ddos"
 
 # number of bits ip addresses are truncated
-firewall_stats_truncate: 8
+firewall_stats_net: 8
