@@ -32,7 +32,7 @@ ddos_metrics: false
 tor_metrics: false
 
 # file containing the private FamilyId key
-tor_secret_family_key_file: ""
+tor_secret_family_key_files: []
 
 # <name, value> elements
 torrc_config: []

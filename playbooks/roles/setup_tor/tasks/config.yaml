@@ -9,16 +9,19 @@
   notify: Load sysctl
 
 - name: Install family key
-  when: tor_secret_family_key_file | length > 0
+  when: tor_secret_family_key_files | length > 0
   vars:
+    # Sandbox is activated on relays
+    _notify: "{{ (tor_bridge_distribution | length == 0) | ternary('Restart Tor', 'Reload Tor') }}"
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
-    src: "{{ tor_secret_family_key_file }}"
+    src: "{{ item }}"
     dest: /var/lib/tor/keys/
     mode: "0600"
     owner: "{{ _user }}"
     group: "{{ _user }}"
-  notify: Restart Tor
+  loop: "{{ tor_secret_family_key_files }}"
+  notify: "{{ _notify }}"
 
 - name: Configure torrc
   ansible.builtin.template:
@@ -26,8 +29,6 @@
     dest: /etc/tor/torrc
     backup: true
   notify: Reload Tor
-  tags:
-    - torrc
 
 - name: Verify torrc
   changed_when: false
