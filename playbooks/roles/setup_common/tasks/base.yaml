@@ -106,9 +106,9 @@
       net.ipv4.tcp_tw_reuse = 1
       net.ipv6.ip_nonlocal_bind = 1
 
+      net.netfilter.nf_conntrack_tcp_timeout_close_wait = 10
       net.netfilter.nf_conntrack_tcp_timeout_established = 600
       net.netfilter.nf_conntrack_tcp_timeout_time_wait = 10
-      net.netfilter.nf_conntrack_tcp_timeout_close_wait = 10
 
       net.core.netdev_max_backlog = {{ _max }}
       net.core.somaxconn = {{ _max }}
