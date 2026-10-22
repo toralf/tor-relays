@@ -33,7 +33,7 @@ done
 
 trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
-arch=${arch:-'x86'}
+arch=${arch:-'{arm,x86}'}
 os=${os:-'{d13,u26}'}
 
 if [[ ${task} == "bin" ]]; then
