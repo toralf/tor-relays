@@ -94,6 +94,7 @@
 - name: Sysctl firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
+    _tcp_mem: "{{ (ansible_facts.memtotal_mb < 1024) | ternary('3000 6000 12000', '12000 24000 96000') }}"
   ansible.builtin.copy:
     content: |
       # maintained by Ansible
@@ -101,6 +102,7 @@
       net.ipv4.tcp_fin_timeout = 10
       net.ipv4.tcp_keepalive_time = 120
       net.ipv4.tcp_max_syn_backlog = 8192
+      net.ipv4.tcp_mem = {{ _tcp_mem }}
       net.ipv4.tcp_synack_retries = 2
       net.ipv4.tcp_syncookies = 1
       net.ipv4.tcp_tw_reuse = 1
@@ -118,6 +120,5 @@
 
       net.netfilter.nf_conntrack_buckets = {{ _max }}
       net.netfilter.nf_conntrack_max = {{ _max }}
-
     dest: /etc/sysctl.d/21firewall.conf
   notify: Load sysctl
