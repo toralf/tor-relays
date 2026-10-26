@@ -1,6 +1,0 @@
-Unattended-Upgrade::Origins-Pattern {
-    "origin=*";
-};
-Unattended-Upgrade::Package-Blacklist {
-};
-Unattended-Upgrade::Automatic-Reboot "true";

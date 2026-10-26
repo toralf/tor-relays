@@ -4,6 +4,10 @@
   order: shuffle
   roles:
     - role: ping
+    - role: setup_autoupdate
+      vars:
+        autoupdate_enabled: false
+        autoupdate_reboot: false
     - role: setup_common
 
 - name: Setup snowflake

@@ -1,0 +1,6 @@
+---
+# the service itself
+autoupdate_enabled: true
+
+# the cron job to detect a mandatory reboot
+autoupdate_reboot: true
