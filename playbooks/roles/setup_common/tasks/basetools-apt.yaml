@@ -1,14 +1,17 @@
 ---
 - name: Configure apt
   ansible.builtin.copy:
-    src: 99local-apt-conf
-    dest: /etc/apt/apt.conf.d/
+    content: |
+      APT::Install-Suggests "0";
+      APT::Install-Recommends "0";
+    dest: /etc/apt/apt.conf.d/99local-apt-conf
 
 - name: Allow phased updates in Ubuntu
   when: ansible_facts.distribution == 'Ubuntu'
   ansible.builtin.copy:
-    src: 20phased-updates
-    dest: /etc/apt/apt.conf.d/
+    content: |
+      APT::Get::Always-Include-Phased-Updates "true";
+    dest: /etc/apt/apt.conf.d/20phased-updates
 
 - name: IONOS
   when: ansible_facts.system_vendor == 'QEMU' and ansible_facts.distribution == 'Debian'
