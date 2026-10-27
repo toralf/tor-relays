@@ -2,16 +2,21 @@
 - name: Set sysctl values
   ansible.builtin.copy:
     content: |
+      # maintained by Ansible
+
+      # must be 1 for bridges to use minicoredumper
       kernel.yama.ptrace_scope = {{ (tor_bridge_distribution | length > 0) | ternary(1, 3) }}
       user.max_user_namespaces = 2
 
     dest: /etc/sysctl.d/23tor.conf
   notify: Load sysctl
+  tags:
+    - sysctl
 
 - name: Install family key
   when: tor_secret_family_key_files | length > 0
   vars:
-    # Sandbox is activated on relays
+    # Sandbox doesn't work on bridges
     _notify: "{{ (tor_bridge_distribution | length == 0) | ternary('Restart Tor', 'Reload Tor') }}"
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:

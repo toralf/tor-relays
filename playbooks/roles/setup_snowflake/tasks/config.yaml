@@ -2,8 +2,12 @@
 - name: Set sysctl values
   ansible.builtin.copy:
     content: |
+      # maintained by Ansible
+
       kernel.yama.ptrace_scope = 3
       user.max_user_namespaces = 8
 
     dest: /etc/sysctl.d/23snowflake.conf
   notify: Load sysctl
+  tags:
+    - sysctl

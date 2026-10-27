@@ -60,6 +60,8 @@
 
         dest: /etc/sysctl.d/22swapfile.conf
       notify: Load sysctl
+      tags:
+        - sysctl
 
 - name: Remove swapfile
   when: swapfile_size | length == 0
@@ -90,6 +92,8 @@
     src: 20generic.conf
     dest: /etc/sysctl.d/
   notify: Load sysctl
+  tags:
+    - sysctl
 
 - name: Sysctl firewall
   vars:
@@ -122,3 +126,5 @@
       net.netfilter.nf_conntrack_max = {{ _max }}
     dest: /etc/sysctl.d/21firewall.conf
   notify: Load sysctl
+  tags:
+    - sysctl
