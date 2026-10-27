@@ -98,6 +98,7 @@
 - name: Sysctl firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
+    _somaxconn: "{{ _max // 4 }}" # noqa jinja[invalid]
     _tcp_mem: "{{ (ansible_facts.memtotal_mb < 1024) | ternary('2000 4000 8000', '20000 40000 80000') }}"
   ansible.builtin.copy:
     content: |
@@ -117,7 +118,7 @@
       net.netfilter.nf_conntrack_tcp_timeout_time_wait = 10
 
       net.core.netdev_max_backlog = {{ _max }}
-      net.core.somaxconn = {{ _max // 4 }}
+      net.core.somaxconn = {{ _somaxconn }}
 
       net.ipv4.tcp_max_syn_backlog = {{ _max }}
       net.ipv4.tcp_notsent_lowat = {{ _max }}
