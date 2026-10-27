@@ -98,7 +98,7 @@
 - name: Sysctl firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
-    _somaxconn: "{{ _max // 4 }}" # noqa jinja[invalid]
+    _somaxconn: "{{ _max // 8 }}" # noqa jinja[invalid]
     _tcp_mem: "{{ (ansible_facts.memtotal_mb < 1024) | ternary('2000 4000 8000', '20000 40000 80000') }}"
   ansible.builtin.copy:
     content: |
