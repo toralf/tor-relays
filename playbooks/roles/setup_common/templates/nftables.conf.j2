@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 {% set _setsize = (ansible_facts.memtotal_mb < 1024) | ternary(2**17, 2**19) %}
-{% set _has_additional = inventory_hostname == 'elster4' or ingress_ports | length > 0 or open_metrics_port %}
+{% set _has_additional = inventory_hostname == 'elster4' or ingress_ports | length > 0 or enable_metrics_port %}
 
 flush ruleset
 
@@ -75,7 +75,7 @@ table inet ingress_filter {
 {% endfor %}
 
     chain additional {
-{% if open_metrics_port and prometheus_server_v4 | length > 0 %}
+{% if enable_metrics_port and prometheus_server_v4 | length > 0 %}
 
         # Prometheus
         define metrics_port  = { {{ metrics_port }} }

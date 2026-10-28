@@ -83,7 +83,7 @@
         - upgrade
 
     - name: Nginx
-      when: open_metrics_port
+      when: enable_metrics_port
       ansible.builtin.import_tasks: nginx.yaml
       tags:
         - nginx
