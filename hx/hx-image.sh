@@ -31,6 +31,12 @@ while :; do
       if ! ./hx/hx-test.sh -e -t image -b ${repo} &>${logprefix}.${repo}.log; then
         info "  NOT ok" >&2
       fi
+
+      info "  clean snapshots"
+      if ! ./bin/clean-snapshots.sh; then
+        info "  NOT ok" >&2
+      fi
+
       pit_stop image
     fi
   done < <(
