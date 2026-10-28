@@ -14,7 +14,7 @@
   tags:
     - nginx-config
 
-- name: Enable/Start Nginx
+- name: Ensure Nginx is enabled and started
   ansible.builtin.systemd_service:
     name: nginx
     state: started
