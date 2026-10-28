@@ -59,7 +59,7 @@ function addRules() {
 {% set _mp = (_i is search(',')) | ternary('--match multiport --dports', '--dport') %}
 
   # ingress_ports {{ _i }}
-  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} {{ _mp }} {{ _i }} \
+  $ipt -A INPUT -p tcp --dst {{ ansible_facts.default_ipv6.address }} {{ _mp }} {{ _i | regex_replace('-', ':') }} \
     -m hashlimit --hashlimit-name ingress_ports-{{ _i }} --hashlimit-mode srcip,dstport \
     --hashlimit-htable-max $max --hashlimit-htable-size $((max / 4)) \
     --hashlimit-srcmask 64 --hashlimit-htable-expire $((2 * 60 * 1000)) \
@@ -68,7 +68,7 @@ function addRules() {
 {% if is_snowflake %}
 
   # snowflake
-  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ snowflake_port }} -j ACCEPT
+  $ipt -A INPUT -p udp --dst {{ ansible_facts.default_ipv6.address }} --dport {{ snowflake_port | regex_replace('-', ':') }} -j ACCEPT
 {% endif %}
 
   # tarpit
