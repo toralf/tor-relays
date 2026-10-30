@@ -139,7 +139,7 @@ table inet ingress_filter {
 
     # DDoS rule 1 - trust Tor authorities
     #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - |
-    #       jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
+    #       jq -r '.relays[].a' | grep -F '.' | tr -d '][", ' | sort -V | xargs -r | sed 's/ /, /g'
     #   getent ahostsv4 snowflake-01.torproject.net. snowflake-02.torproject.net. |
     #       awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
     counter rule1_v4 {}
@@ -152,7 +152,7 @@ table inet ingress_filter {
         }
     }
     #   curl -s 'https://onionoo.torproject.org/summary?search=flag:authority' -o - |
-    #       jq -cr '.relays[].a' | sort -V | xargs -r | sed 's/ /, /g'
+    #       jq -r '.relays[].a' | grep -F ':' | tr -d '][", ' | sort -V | xargs -r | sed 's/ /, /g'
     #   getent ahostsv6 snowflake-01.torproject.net. snowflake-02.torproject.net. |
     #       awk '{ print $1 }' | sort -uV | xargs -r | sed 's/ /, /g'
     counter rule1_v6 {}
