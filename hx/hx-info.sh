@@ -95,7 +95,8 @@ while :; do
     &>${logprefix}.${site}.ansible.log; then
     info "  NOT ok" >&2
   fi
-  if ! tar -C ~/tmp/hx/${site}_tmp -cjpf ~/tmp/hx/${site}/fw-$(date +%Y%m%d-%H%M%S).tar.bz2 ./fw; then
+  if ! tar -C ~/tmp/hx/${site}_tmp -cjpf ~/tmp/hx/${site}/fw-$(date +%Y%m%d-%H%M%S).tar.bz2 ./fw \
+    &>${logprefix}.${site}.tar.log; then
     info "  tar failed" >&2
   fi
   sync_site ${site} ${srvs}

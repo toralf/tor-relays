@@ -15,20 +15,12 @@ if [[ ! -d ~/tmp/hx ]]; then
   mkdir ~/tmp/hx
 fi
 
-info "crud"
-if ! pgrep -f ./hx/hx-crud.sh; then
-  ./hx/hx-crud.sh &>>~/tmp/hx/hx-crud.sh.log &
-fi
-
-info "image"
-if ! pgrep -f ./hx/hx-image.sh; then
-  ./hx/hx-image.sh 'lr|ml|sr' &>>~/tmp/hx/hx-image.sh.log &
-fi
-
-info "info"
-if ! pgrep -f ./hx/hx-info.sh; then
-  ./hx/hx-info.sh &>>~/tmp/hx/hx-info.sh.log &
-fi
+for i in crud image info; do
+  info "${i}"
+  if ! pgrep -f ./hx/hx-${i}.sh; then
+    ./hx/hx-${i}.sh &>>~/tmp/hx/hx-${i}.sh.log &
+  fi
+done
 
 echo -e "\n tail -f ~/tmp/hx/hx-{crud,image,info}.sh.log\n"
 

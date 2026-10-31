@@ -17,8 +17,8 @@ function _git_ls_remote() {
     esac
 
   elif [[ ${group} == "kernel" ]]; then
-    url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hetzner-test.yaml)
-    ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hetzner-test.yaml | grep -v '^null$')
+    url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hxx.yaml)
+    ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hxx.yaml | grep -v '^null$')
     env=$(yq -r ".hx_repos_${name}_env" <./secrets/local.yaml | grep -v '^null$')
   fi
 
@@ -42,7 +42,7 @@ function _git_changed() {
   fi
 
   old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null) || true
-  # file timestamp is the latest check time
+  # file timestamp marks the latest check time
   echo ${current_id} >~/tmp/hx/git.${group}.${name}
 
   # an empty "old_id" is taken as "unchanged"
@@ -56,13 +56,13 @@ function _git_changed() {
 function _go_changed() {
   local go_ver_inventory go_ver_upstream
 
-  if ! go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hetzner-test.yaml); then
+  if ! go_ver_inventory=$(grep -Eo "'go[1-9]+\.[0-9]+\.[0-9]+'" inventory/systems-hxx.yaml); then
     return 5
   fi
   if [[ -z ${go_ver_inventory} || ${go_ver_inventory} =~ " " || ${go_ver_inventory} =~ $'\n' ]]; then
     return 4
   fi
-  # surround it by single quotes here
+  # important to surround variable content by single quotes
   if ! go_ver_upstream=\'$(curl -s --follow 'https://golang.org/VERSION?m=text' | head -n 1)\'; then
     return 3
   fi
@@ -74,11 +74,11 @@ function _go_changed() {
   fi
 
   info "Go: ${go_ver_inventory}  ->  ${go_ver_upstream}"
-  sed -i -E "s,${go_ver_inventory},${go_ver_upstream}," inventory/systems-hetzner-test.yaml
+  sed -i -E "s,${go_ver_inventory},${go_ver_upstream}," inventory/systems-hxx.yaml
 }
 
 function next_job() {
-  local action job tmplog names
+  local action job names
 
   job=$(
     # shellcheck disable=SC2012
@@ -86,50 +86,44 @@ function next_job() {
       sort -V |
       head -n 1
   )
+  if [[ -z ${job} ]]; then
+    return
+  fi
+
   info "working on ${job}"
-  action=$(cut -f 3 -d '.' <<<${job})
   names=$(xargs <${job})
   mv ${job} /tmp
-  tmplog=/tmp/$(basename ${job}).log
-
-  if [[ -z ${action} ]]; then
-    info "  no action of ${job}" >&2
-    return
-  fi
   if [[ -z ${names} ]]; then
-    info "  no name in ${job}" >&2
+    info "  empty ${job}" >&2
     return
   fi
+
+  action=${job##*.}
+  local tmplog=/tmp/$(basename ${job}).log
 
   if [[ -x ./bin/${action}-server.sh ]]; then
     info "  action ${action}: $(wc -w <<<${names})"
     if ! ./bin/${action}-server.sh ${names} 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
       info "  NOT ok" >&2
     fi
-    pit_stop crud
+    continue
   fi
 
+  local tags=""
   if [[ ${action} == "update" ]]; then
-    info "  update: $(wc -w <<<${names})"
-    if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) \
-      --tags upgrade,tools,lyrebird,snowflake,tor-src,kernel-build \
-      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
-      info "  NOT ok" >&2
-    fi
-    pit_stop crud
-
-  elif [[ ${action} != "delete" ]]; then
-    info "  setup after ${action}"
-    if ! ./site-setup.yaml --limit "$(tr ' ' ',' <<<${names})" \
-      -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
-      info "  NOT ok" >&2
-    fi
-    pit_stop crud
+    tags="--tags autoupdate,upgrade,tools,lyrebird,snowflake,tor-src,kernel-build"
   fi
+  info "  ${action}: $(wc -w <<<${names})"
+  if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) ${tags} \
+    -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
+    info "  NOT ok" >&2
+  fi
+  pit_stop crud
 }
 
 function update_app() {
   if _go_changed; then
+    info "deploy go"
     if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags tools,lyrebird,snowflake &>${logprefix}.golang.log; then
       info "  NOT ok" >&2
     fi
@@ -137,6 +131,7 @@ function update_app() {
   fi
 
   if _git_changed app lyrebird; then
+    info "deploy lyrebird"
     if ! ./site-setup.yaml --limit "hbx,hpx" --tags lyrebird &>${logprefix}.app.lyrebird.log; then
       info "  NOT ok" >&2
     fi
@@ -144,6 +139,7 @@ function update_app() {
   fi
 
   if _git_changed app snowflake; then
+    info "deploy snowflake"
     if ! ./site-setup.yaml --limit "hsx" --tags snowflake &>${logprefix}.app.snowflake.log; then
       info "  NOT ok" >&2
     fi
@@ -151,6 +147,7 @@ function update_app() {
   fi
 
   if _git_changed app tor; then
+    info "deploy tor"
     if ! ./site-setup.yaml --limit "htx" --tags tor-src &>${logprefix}.app.tor.log; then
       info "  NOT ok" >&2
     fi
@@ -171,7 +168,7 @@ function trigger_kernel_update() {
       pit_stop crud
     fi
   done < <(
-    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hetzner-test.yaml |
+    yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hxx.yaml |
       tr -d '][",' |
       grep -v '^null$' |
       xargs -r -n 1 |
@@ -246,9 +243,8 @@ while :; do
   next_job
   update_app
   trigger_kernel_update
-  if ls ~/tmp/hx/job.*.* &>/dev/null; then
-    continue
+  if ! ls ~/tmp/hx/job.*.* &>/dev/null; then
+    pit_stop crud 300
+    handle_down_systems
   fi
-  pit_stop crud 300
-  handle_down_systems
 done

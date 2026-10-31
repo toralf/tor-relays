@@ -7,10 +7,10 @@
 function printNames() {
   for o in $(eval echo ${os}); do
     if [[ $o =~ ^d ]]; then
-      eval echo hi-${o}-${arch}-${branch}-bp-cl-${fw}-${mod}-${uid}
+      eval echo hi-${o}-${arch}-${branch}-bp-cl-${mod}-${fw}-${uid}
     fi
     if [[ $o =~ ^u ]]; then
-      eval echo hi-${o}-${arch}-${branch}-x-x-${fw}-${mod}-${uid}
+      eval echo hi-${o}-${arch}-${branch}-x-x-${mod}-${fw}-${uid}
     fi
   done |
     xargs
@@ -31,7 +31,7 @@ uid=$(printf "%07i" $$)
 while getopts a:b:ef:m:o:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
-  b) branch=${OPTARG} ;; # '{lr,lt,ml,sr,st}'
+  b) branch=${OPTARG} ;; # '{lr,ml,sr}'
   e) set +e ;;           # created systems will be always deleted
   f) fw=${OPTARG} ;;
   o) os=${OPTARG} ;;
@@ -53,7 +53,7 @@ mod=${mod:-'{mod,non}'}
 os=${os:-'{d13,u26}'}
 
 if [[ ${task} == "bin" ]]; then
-  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-di-x-x-${fw}-x-${uid})
+  names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-di-x-x-x-${fw}-${uid})
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
