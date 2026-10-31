@@ -4,10 +4,14 @@
     content: |
       # maintained by Ansible
 
-      kernel.yama.ptrace_scope = {{ (ansible_facts.distribution == 'Ubuntu') | ternary(1, 3) }}
-      user.max_user_namespaces = 8
-
+      user.max_user_namespaces = 4
     dest: /etc/sysctl.d/23snowflake.conf
   notify: Load sysctl
   tags:
     - sysctl
+
+- name: Add/Change systemd unit
+  ansible.builtin.template:
+    src: snowflake-proxy.service.j2
+    dest: /etc/systemd/system/snowflake.service
+  notify: Restart snowflake

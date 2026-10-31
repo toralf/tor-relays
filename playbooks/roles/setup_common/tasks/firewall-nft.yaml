@@ -37,6 +37,14 @@
     dest: /etc/systemd/system/nftables.service.d/override.conf
   notify: Reload systemd
 
+- name: Ensure iptables is disabled and stopped
+  failed_when: false
+  ansible.builtin.systemd_service:
+    name: iptables
+    state: stopped
+    enabled: false
+    daemon_reload: true
+
 - name: Ensure nftables is enabled and started
   ansible.builtin.systemd_service:
     name: nftables
@@ -44,7 +52,7 @@
     enabled: true
     daemon_reload: true
 
-# the filesystem is read-only when nftables starts
+# needed b/c the filesystem is read-only when nftables is started
 - name: Create cron job to delete saved nftables after reboot
   ansible.builtin.cron:
     name: delete saved nftables

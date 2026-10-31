@@ -6,20 +6,13 @@
     group: www-data
     mode: "0750"
 
-- name: Get metrics firewall
+- name: Get metrics-firewall.sh
   throttle: 8
   retries: 1
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics-firewall.sh"
     dest: /root/
-  notify: Restart metrics firewall
-
-# - name: Copy metrics firewall
-#   ansible.builtin.copy:
-#     src: /home/tfoerste/devel/torutils/metrics-firewall.sh
-#     dest: /root/
-#     mode: "0744"
-#   notify: Restart metrics firewall
+  notify: Restart metrics-firewall.sh
 
 - name: Cron job for metrics firewall
   ansible.builtin.cron:
@@ -27,7 +20,7 @@
     special_time: reboot
     job: >-
       nice /root/metrics-firewall.sh 15 /var/www/metrics-firewall/nftables.prom
-  notify: Restart metrics firewall
+  notify: Restart metrics-firewall.sh
 
 - name: Ensure that metrics firewall is running
   changed_when: _metrics_firewall_status.rc != 0
@@ -36,4 +29,4 @@
     cmd: |-
       kill -0 $(cat /tmp/metrics-firewall.sh.lock)
   register: _metrics_firewall_status
-  notify: Restart metrics firewall
+  notify: Restart metrics-firewall.sh

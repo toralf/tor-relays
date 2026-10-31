@@ -10,7 +10,10 @@ kernel_git_patches: []
 kernel_git_repo_url: ""
 kernel_git_version: ""
 
+modular_kernel: true
 kernel_git_config: |-
+  CONFIG_MODULES={{ modular_kernel | ternary('y', 'n') }}
+
   # generic
 
   CONFIG_AGP=n

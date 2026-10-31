@@ -53,23 +53,33 @@
       tags:
         - ipv6
 
-    - name: Firewall IPTABLES
+    - name: Firewall IPT
       when: firewall == "iptables"
-      ansible.builtin.import_tasks: firewall-iptables.yaml
-      tags:
-        - firewall
+      block:
+        - name: Firewall
+          ansible.builtin.import_tasks: firewall-ipt.yaml
+          tags:
+            - firewall
 
-    - name: Firewall
+        - name: Firewall metrics
+          when: firewall_metrics
+          ansible.builtin.import_tasks: firewall-ipt-metrics.yaml
+          tags:
+            - firewall-metrics
+
+    - name: Firewall NFT
       when: firewall == "nftables"
-      ansible.builtin.import_tasks: firewall-nftables.yaml
-      tags:
-        - firewall
+      block:
+        - name: Firewall
+          ansible.builtin.import_tasks: firewall-nft.yaml
+          tags:
+            - firewall
 
-    - name: Firewall metrics
-      when: firewall_metrics
-      ansible.builtin.import_tasks: firewall-metrics.yaml
-      tags:
-        - firewall-metrics
+        - name: Firewall metrics
+          when: firewall_metrics
+          ansible.builtin.import_tasks: firewall-nft-metrics.yaml
+          tags:
+            - firewall-metrics
 
     - name: System config
       ansible.builtin.import_tasks: system-config.yaml

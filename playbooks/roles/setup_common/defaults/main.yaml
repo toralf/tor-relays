@@ -51,7 +51,6 @@ is_snowflake: false
 snowflake_metrics: false
 
 # Tor
-ddos_metrics: false
 is_tor: false
 tor_bridge_distribution: none
 tor_metrics: false

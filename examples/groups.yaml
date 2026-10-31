@@ -43,7 +43,6 @@ snowflake:
 
 tor:
   vars:
-    ddos_metrics: true
     torrc_config_group:
       - name: ContactInfo
         value: >-

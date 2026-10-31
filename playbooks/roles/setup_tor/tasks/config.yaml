@@ -4,10 +4,7 @@
     content: |
       # maintained by Ansible
 
-      # must be 1 for bridges to use minicoredumper
-      kernel.yama.ptrace_scope = {{ (tor_bridge_distribution | length > 0) | ternary(1, 3) }}
       user.max_user_namespaces = 2
-
     dest: /etc/sysctl.d/23tor.conf
   notify: Load sysctl
   tags:
@@ -16,8 +13,10 @@
 - name: Install family key
   when: tor_secret_family_key_files | length > 0
   vars:
-    # Sandbox doesn't work on bridges
-    _notify: "{{ (tor_bridge_distribution | length == 0) | ternary('Restart Tor', 'Reload Tor') }}"
+    # b/c Sandbox doesn't work on bridges a reload is sufficient there
+    _notify: >-
+      {{ (tor_bridge_distribution | length > 0) | ternary('Reload Tor', 'Restart Tor')
+      }}
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   ansible.builtin.copy:
     src: "{{ item }}"
@@ -34,6 +33,8 @@
     dest: /etc/tor/torrc
     backup: true
   notify: Reload Tor
+  tags:
+    - torrc
 
 - name: Verify torrc
   changed_when: false

@@ -1,28 +1,28 @@
 ---
-- name: Get DDoS metrics script
+- name: Get metrics.sh
   throttle: 8
   retries: 1
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics.sh"
     dest: /root/
-  notify: Restart metrics
+  notify: Restart metrics.sh
 
 - name: Create nginx metrics-ddos
   ansible.builtin.file:
-    path: /var/www/metrics-ddos
+    path: /var/www/metrics-firewall
     state: directory
     group: www-data
     mode: "0750"
-  notify: Restart metrics
+  notify: Restart metrics.sh
 
-- name: Cron job for DDoS metrics
+- name: Cron job for metrics.sh
   ansible.builtin.cron:
-    name: DDoS metrics
+    name: Firewall metrics
     special_time: reboot
     job: >-
-      nice /root/metrics.sh 15 /var/www/metrics-ddos
-    state: "{{ ddos_metrics | ternary('present', 'absent') }}"
-  notify: Restart metrics
+      nice /root/metrics.sh 15 /var/www/metrics-firewall
+    state: "{{ firewall_metrics | ternary('present', 'absent') }}"
+  notify: Restart metrics.sh
 
 - name: Ensure that metrics.sh is running
   changed_when: _metrics_status.rc != 0
@@ -31,4 +31,4 @@
     cmd: |-
       kill -0 $(cat /tmp/torutils-metrics.sh.lock)
   register: _metrics_status
-  notify: Restart metrics
+  notify: Restart metrics.sh

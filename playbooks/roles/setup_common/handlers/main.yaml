@@ -20,9 +20,11 @@
     enabled: true
     daemon_reload: true
 
+# ignore errors of kernel.yama.ptrace_scope
 - name: Load sysctl
   listen: Load sysctl
   changed_when: true
+  failed_when: false
   ansible.builtin.command:
     cmd: >-
       sysctl --system >/dev/null
@@ -51,19 +53,34 @@
     enabled: true
 
 - name: Kill running metrics-firewall.sh
-  listen: Restart metrics firewall
+  listen: Restart metrics-firewall.sh
   failed_when: false
   changed_when: false
   ansible.builtin.command:
     cmd: |-
       pkill -9 -f "metrics-firewall.sh"
 
-- name: Restart metrics firewall
-  listen: Restart metrics firewall
+- name: Restart metrics-firewall.sh
+  listen: Restart metrics-firewall.sh
   changed_when: true
   ansible.builtin.shell:
     cmd: |-
       nohup nice /root/metrics-firewall.sh 15 /var/www/metrics-firewall/nftables.prom >/dev/null 2>&1 &
+
+- name: Kill running metrics.sh
+  listen: Restart metrics.sh
+  failed_when: false
+  changed_when: false
+  ansible.builtin.command:
+    cmd: |-
+      pkill -9 -f metrics.sh
+
+- name: Restart metrics.sh
+  listen: Restart metrics.sh
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      nohup nice /root/metrics.sh 15 /var/www/metrics-ddos >/dev/null 2>&1 &
 
 - name: Restart Prometheus node exporter
   listen: Restart Prometheus node exporter

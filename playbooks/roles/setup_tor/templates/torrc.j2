@@ -26,7 +26,7 @@ ExitRelay 0
 
 NoExec 1
 {% if ansible_facts.architecture == 'x86_64' %}
-SandBox 1
+# SandBox 1
 {% endif %}
 
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}

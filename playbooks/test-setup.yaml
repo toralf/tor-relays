@@ -7,7 +7,6 @@
     - role: setup_autoupdate
       vars:
         autoupdate_enabled: false
-        autoupdate_reboot: false
     - role: setup_common
     - role: info_common
 
@@ -25,7 +24,7 @@
     - role: setup_tor
     - role: info_tor
 
-- name: Test final
+- name: Test kernel
   hosts: hmx,hsx,htx
   order: shuffle
   roles:

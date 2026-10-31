@@ -92,12 +92,11 @@
 
 - name: Ensure unatt upgrade is {{ _state }}
   vars:
-    _enabled: "{{ autoupdate_enabled }}"
-    _state: "{{ autoupdate_reboot | ternary('started', 'stopped') }}"
+    _state: "{{ autoupdate_enabled | ternary('started', 'stopped') }}"
   failed_when: false
   ansible.builtin.systemd_service:
     name: "{{ item }}"
-    enabled: "{{ _enabled }}"
+    enabled: "{{ autoupdate_enabled }}"
     state: "{{ _state }}"
   loop:
     - apt-daily.timer

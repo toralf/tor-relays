@@ -95,28 +95,6 @@ server {
   stub_status on;
 }
 {% endif %}
-{% if ddos_metrics %}
-
-server {
-  listen 127.0.0.1:3305;
-
-  server_name _3305;
-  root /var/www/metrics-ddos;
-  index torutils.prom;
-
-  access_log off;
-  error_log /dev/null crit;
-
-  proxy_no_cache 1;
-  proxy_cache_bypass 1;
-
-  # browser side
-  add_header Last-Modified $date_gmt;
-  add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
-  add_header Pragma "no-cache";
-  expires 0;
-}
-{% endif %}
 {% if firewall_metrics %}
 
 server {
@@ -164,14 +142,6 @@ server {
 
   access_log off;
   error_log /dev/null crit;
-{% if ddos_metrics %}
-
-  location = /metrics-ddos {
-    proxy_pass http://127.0.0.1:3305/;
-    proxy_hide_header Content-Type;
-    add_header Content-Type 'text/plain; charset=utf-8' always;
-  }
-{% endif %}
 {% if firewall_metrics %}
 
   location = /metrics-firewall {

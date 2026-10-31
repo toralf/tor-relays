@@ -34,13 +34,6 @@
     that:
       - "prometheus_server_v4 is ansible.utils.ipv4"
 
-- name: Validate ingress_ports
-  when: ingress_ports | length > 0
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ingress_ports | unique | length == ingress_ports | length"
-
 - name: Validate prometheus_server_v6
   when: prometheus_server_v6 | length > 0
   ansible.builtin.assert:
@@ -73,24 +66,3 @@
     quiet: true
     that:
       - 'firewall in ["", "iptables", "nftables"]'
-
-- name: Validate ddos_metrics
-  when: ddos_metrics
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - 'firewall == "iptables"'
-
-- name: Validate firewall_metrics
-  when: firewall_metrics
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - 'firewall == "nftables"'
-
-- name: Validate metrics
-  when: ddos_metrics or firewall_metrics
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - "ddos_metrics != firewall_metrics"

@@ -38,9 +38,3 @@
     mode: a+x
     remote_src: true
   notify: Restart snowflake
-
-- name: Add/Change systemd unit
-  ansible.builtin.template:
-    src: snowflake-proxy.service.j2
-    dest: /etc/systemd/system/snowflake.service
-  notify: Restart snowflake

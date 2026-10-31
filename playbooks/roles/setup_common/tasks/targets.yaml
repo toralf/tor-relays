@@ -8,13 +8,6 @@
       line: '- targets: ["{{ inventory_hostname }}:{{ metrics_port }}"]'
       regexp: '^- targets: \["{{ inventory_hostname }}:'
   block:
-    - name: DDoS targets
-      delegate_to: localhost
-      throttle: 1
-      ansible.builtin.lineinfile:
-        path: "{{ infodir }}/targets_tor-ddos.yaml"
-        state: "{{ ddos_metrics | ternary('present', 'absent') }}"
-
     - name: Firewall targets
       delegate_to: localhost
       throttle: 1
@@ -28,14 +21,6 @@
       ansible.builtin.lineinfile:
         path: "{{ infodir }}/targets_node.yaml"
         state: "{{ node_metrics | ternary('present', 'absent') }}"
-
-    - name: Snowflake targets
-      delegate_to: localhost
-      throttle: 1
-      when: is_snowflake
-      ansible.builtin.lineinfile:
-        path: "{{ infodir }}/targets_snowflake.yaml"
-        state: "{{ snowflake_metrics | ternary('present', 'absent') }}"
 
     - name: Tor bridge targets
       delegate_to: localhost
@@ -52,3 +37,11 @@
         path: "{{ infodir }}/targets_tor-relay.yaml"
         state: "{{ (tor_metrics and tor_bridge_distribution | length == 0) |
           ternary('present', 'absent') }}"
+
+    - name: Tor Snowflake targets
+      delegate_to: localhost
+      throttle: 1
+      when: is_snowflake
+      ansible.builtin.lineinfile:
+        path: "{{ infodir }}/targets_tor-snowflake.yaml"
+        state: "{{ snowflake_metrics | ternary('present', 'absent') }}"

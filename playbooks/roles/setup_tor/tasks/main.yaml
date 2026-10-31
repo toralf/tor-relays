@@ -99,17 +99,6 @@
       tags:
         - tor
 
-    - name: DDoS metrics
-      when: ddos_metrics
-      ansible.builtin.import_tasks: ddos-metrics.yaml
-      tags:
-        - ddos-metrics
-
-    - name: Watchdog
-      ansible.builtin.import_tasks: watchdog.yaml
-      tags:
-        - watchdog
-
     - name: Tor identity backup
       when: tor_identity_backup
       ansible.builtin.import_tasks: tor-identity-backup.yaml

@@ -86,10 +86,9 @@ function _getImageByHostname() {
 }
 
 # example for match ordering:
-#   hostname: hs0-d13-arm-stablerc-bp-cl-89
+#   hostname: hs0-d13-arm-sr-bp-cl-89
 #   descriptions:
-#     d13-arm-stablerc
-#     d13-arm-stable
+#     d13-arm-sr
 #     d13-arm
 function _getImageBySnapshot() {
   local name description id alt_name
@@ -116,9 +115,9 @@ function _getImageBySnapshot() {
     fi
   done <<<${snapshots}
 
-  # use "mainline" as fallback to avoid the (expensive) clone of a kernel git repository
-  if [[ ! ${name} =~ "-dist" && ! ${name} =~ "-mainline" ]]; then
-    if alt_name=$(awk -F- -v OFS=- '{ if (NF >=4) { $4="mainline"; print } }' <<<${name}); then
+  # use "ml" as fallback to avoid the (expensive) clone of a kernel git repository
+  if [[ ! ${name} =~ "-di" && ! ${name} =~ "-ml" ]]; then
+    if alt_name=$(awk -F- -v OFS=- '{ if (NF >=4) { $4="ml"; print } }' <<<${name}); then
       if [[ -n ${alt_name} ]] && _getImageBySnapshot ${alt_name}; then
         return
       fi

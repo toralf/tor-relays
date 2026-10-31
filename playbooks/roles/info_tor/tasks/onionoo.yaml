@@ -1,4 +1,8 @@
 ---
+# https://metrics.torproject.org/onionoo.html#examples
+# curl -s 'https://onionoo.torproject.org/details?contact=toralf&fields=flags,or_addresses' |
+#   jq -r '.relays[] | select(.flags[] == "Stable") | .or_addresses[] | select(contains("[") | not) | split(":")[0]'
+#   sort -uV
 - name: Query Onionoo
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.uri:

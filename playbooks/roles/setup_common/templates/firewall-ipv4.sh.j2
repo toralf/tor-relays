@@ -69,7 +69,7 @@ export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin
 
 ipt="iptables"
-modprobe nf_conntrack
+modprobe nf_conntrack || true
 
 # see https://github.com/toralf/torutils/blob/main/ipv4-rules.sh#L300
 max={{ (ansible_facts.memtotal_mb < 1024) | ternary(2**18, 2**19) }}
