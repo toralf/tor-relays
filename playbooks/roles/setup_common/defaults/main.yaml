@@ -23,6 +23,7 @@ is_image: false
 
 # Nginx
 nginx_metrics: false
+nginx_port: 443
 nginx_public_site: false
 nginx_site_directories: []
 
