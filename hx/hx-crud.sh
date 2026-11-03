@@ -80,13 +80,16 @@ function _go_changed() {
 function next_job() {
   local action job names tags tmplog
 
-  while job=$(
+  while :; do
+    if ! job=$(
       # shellcheck disable=SC2012
       ls ~/tmp/hx/job.*.{create,delete,rebuild,setup,update} 2>/dev/null |
         sort -V |
         head -n 1 |
         grep .
-    ); do
+    ); then
+      return
+    fi
 
     info "working on ${job}"
     names=$(xargs <${job})
