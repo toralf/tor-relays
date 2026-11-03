@@ -17,14 +17,18 @@ function _git_ls_remote() {
     esac
 
   elif [[ ${group} == "kernel" ]]; then
-    url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hxx.yaml)
+    url=$(yq -r ".hx.vars.hx_repos.${name}.url" <./inventory/systems-hxx.yaml | grep -v '^null$')
     ver=$(yq -r ".hx.vars.hx_repos.${name}.ver" <./inventory/systems-hxx.yaml | grep -v '^null$')
     env=$(yq -r ".hx_repos_${name}_env" <./secrets/local.yaml | grep -v '^null$')
   fi
 
-  ${env-} git ls-remote --quiet ${url} ${ver:-main} |
-    awk '{ print $1 }' |
-    grep .
+  if [[ -n ${url} ]]; then
+    ${env-} git ls-remote --quiet ${url} ${ver:-main} |
+      awk '{ print $1 }' |
+      grep .
+  else
+    return 2
+  fi
 }
 
 function _git_changed() {
@@ -33,7 +37,6 @@ function _git_changed() {
   group=${1:?GROUP MUST BE GIVEN}
   name=${2:?NAME MUST BE GIVEN}
 
-  # handle remote git issues
   if ! current_id=$(_git_ls_remote ${group} ${name}); then
     return 3
   fi
@@ -42,15 +45,12 @@ function _git_changed() {
   fi
 
   old_id=$(cat ~/tmp/hx/git.${group}.${name} 2>/dev/null) || true
-  # file timestamp marks the latest check time
-  echo ${current_id} >~/tmp/hx/git.${group}.${name}
-
-  # an empty "old_id" is taken as "unchanged"
-  if [[ -z ${old_id} || ${old_id} == "${current_id}" ]]; then
+  if [[ ${old_id} != "${current_id}" ]]; then
+    echo ${current_id} >~/tmp/hx/git.${group}.${name}
+    info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
+  else
     return 1
   fi
-
-  info "git ${group} ${name}: $(cut -c -12 <<<${old_id}) -> $(cut -c -12 <<<${current_id})"
 }
 
 function _go_changed() {
@@ -78,47 +78,48 @@ function _go_changed() {
 }
 
 function next_job() {
-  local action job names
+  local action job names tags tmplog
 
-  job=$(
-    # shellcheck disable=SC2012
-    ls ~/tmp/hx/job.*.{create,delete,rebuild,setup,update} 2>/dev/null |
-      sort -V |
-      head -n 1
-  )
-  if [[ -z ${job} ]]; then
-    return
-  fi
+  while job=$(
+      # shellcheck disable=SC2012
+      ls ~/tmp/hx/job.*.{create,delete,rebuild,setup,update} 2>/dev/null |
+        sort -V |
+        head -n 1 |
+        grep .
+    ); do
 
-  info "working on ${job}"
-  names=$(xargs <${job})
-  mv ${job} /tmp
-  if [[ -z ${names} ]]; then
-    info "  empty ${job}" >&2
-    return
-  fi
-
-  action=${job##*.}
-  local tmplog=/tmp/$(basename ${job}).log
-
-  if [[ -x ./bin/${action}-server.sh ]]; then
-    info "  action ${action}: $(wc -w <<<${names})"
-    if ! ./bin/${action}-server.sh ${names} 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
-      info "  NOT ok" >&2
+    info "working on ${job}"
+    names=$(xargs <${job})
+    mv ${job} /tmp
+    if [[ -z ${names} ]]; then
+      info "  empty" >&2
+      continue
     fi
-    continue
-  fi
 
-  local tags=""
-  if [[ ${action} == "update" ]]; then
-    tags="--tags autoupdate,upgrade,tools,lyrebird,snowflake,tor-src,kernel-build"
-  fi
-  info "  ${action}: $(wc -w <<<${names})"
-  if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) ${tags} \
-    -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
-    info "  NOT ok" >&2
-  fi
-  pit_stop crud
+    action=${job##*.}
+    tmplog=/tmp/$(basename ${job}).log
+
+    if [[ -x ./bin/${action}-server.sh ]]; then
+      info "  action ${action}: $(wc -w <<<${names})"
+      if ! ./bin/${action}-server.sh ${names} 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
+        info "  NOT ok" >&2
+      fi
+    fi
+
+    if [[ ${action} == "setup" || ${action} == "update" ]]; then
+      tags=""
+      if [[ ${action} == "update" ]]; then
+        tags="--tags autoupdate,upgrade,tools,lyrebird,snowflake,tor-src,kernel-build"
+      fi
+      info "  ${action}: $(wc -w <<<${names})"
+      if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) ${tags} \
+        -e '{ "kernel_git_build_wait": false }' 2>&1 | tee -a ${tmplog} >${logprefix}.job.log; then
+        info "  NOT ok" >&2
+      fi
+    fi
+
+    pit_stop crud
+  done
 }
 
 function update_app() {

@@ -27,7 +27,9 @@ cd $(dirname $0)/..
 
 [[ $# -ge 2 ]]
 
+task=""
 uid=$(printf "%07i" $$)
+
 while getopts a:b:ef:m:o:t:u: opt; do
   case ${opt} in
   a) arch=${OPTARG} ;;
@@ -36,7 +38,7 @@ while getopts a:b:ef:m:o:t:u: opt; do
   f) fw=${OPTARG} ;;
   o) os=${OPTARG} ;;
   m) mod=${OPTARG} ;;
-  t) task=${OPTARG} ;;
+  t) task=${OPTARG} ;;   # mandatory
   u) uid=${OPTARG} ;;
   *)
     echo "unknown opt ${opt}" >&2
@@ -45,12 +47,13 @@ while getopts a:b:ef:m:o:t:u: opt; do
   esac
 done
 
-trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
-
 arch=${arch:-'{arm,x86}'}
 fw=${fw:-'{ipt,nft}'}
 mod=${mod:-'{mod,non}'}
+names=""
 os=${os:-'{d13,u26}'}
+
+trap 'echo "  ^^    systems:    ${names}" >&2' INT QUIT TERM EXIT
 
 if [[ ${task} == "bin" ]]; then
   names=$(eval echo h{b,m,p,r,s}-${os}-${arch}-di-x-x-x-${fw}-${uid})
