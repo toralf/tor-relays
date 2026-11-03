@@ -21,7 +21,7 @@ echo -e "\n$(date) make...\n"
 
 # make clean
 if git describe | grep -q Ubuntu-6.8.0; then
-  make -j $(nproc) KCFLAGS="-std=gnu17"
+  make -j $(nproc) KCFLAGS="-std=gnu11"
 else
   make -j $(nproc)
 fi
