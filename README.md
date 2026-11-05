@@ -67,17 +67,17 @@ hosts:
 
 ### Compiling the Linux kernel, Tor, Lyrebird and Snowflake from source
 
-The default branch is defined by the variable _<...>\_git_version_.
-The list _<...>\_patches_ can be used to apply additional patches on the fly.
+The git branch is defined by the variable _<...>\_git_version_.
+The list _<...>\_patches_ can be used to apply additional patches on top.
 
 ### Metrics
 
-If a Prometheus server ip is configured then the inbound traffic from it to the
-metrics port of a Tor relay is opened by a firewall rule ([code](./playbooks/roles/setup_common/tasks/firewall.yaml)).
-The metrics port is pseudo-randomized, _seed_metrics_ is expected to be set.
-Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/nginx.yaml))
+If a Prometheus is configured then the inbound traffic from Prometheus to the
+metrics port of the deployed system is opened in the firewall ([code](./playbooks/roles/setup_common/tasks/firewall-nft.yaml)).
+The metrics port is pseudo-randomized, _seed_metrics_ is expected to be setfor that.
+An Nginx is used to encrypt the data on transit ([code](./playbooks/roles/setup_common/tasks/nginx.yaml)),
 secured by the self-signed Root CA ([code](./playbooks/roles/ca/tasks/main.yaml)).
-The Root CA key has to be configured at Prometheus to enable it to scrape metrics via TLS.
+The Root CA key has to be configured in the Prometheus config scrape metrics over a TLS connection:
 
 ```yaml
 vars:
@@ -87,8 +87,7 @@ vars:
 
 A _Prometheus node exporter_ is deployed if `node_metrics: true` is set.
 For Prometheus config examples and Grafana dashboards take a look at [this](https://github.com/toralf/torutils/tree/main/dashboards) repository.
-
-A static prometheus config could look like this:
+A Prometheus config could look like this:
 
 ```yaml
 - job_name: "Nodes"
@@ -125,11 +124,11 @@ A static prometheus config could look like this:
       replacement: "${1}"
 ```
 
-The input for a Prometheus config is created by ([targets.yaml](./playbooks/roles/setup_common/tasks/targets.yaml)).
+The input for the Prometheus config can be created by ([targets.yaml](./playbooks/roles/setup_common/tasks/targets.yaml)).
 
 ### Misc
 
-To create a new VPS in the Hetzner cloud with the hostname _my_bridge_ and the project name _my_project_, do:
+To create a new VPS in the Hetzner cloud with the hostname _my_bridge_ in the project  _my_project_, do:
 
 ```bash
 hcloud context use my_project
