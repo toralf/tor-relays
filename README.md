@@ -1,5 +1,9 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
+# Why
+
+This repo focuses on sharing ideas for maintaining Tor systems with Ansible.
+
 ## Quick start
 
 Setup a new Tor private bridge (i.e. with the hostname _my_bridge_):
