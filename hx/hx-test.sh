@@ -5,12 +5,14 @@
 # goal: create golden images, test etc.
 
 function printNames() {
+  local t=${1:-'i'}
+
   for o in $(eval echo ${os}); do
     if [[ $o =~ ^d ]]; then
-      eval echo hi-${o}-${arch}-${branch}-bp-cl-${mod}-${fw}-${uid}
+      eval echo h${t}-${o}-${arch}-${branch}-bp-cl-${mod}-${fw}-${uid}
     fi
     if [[ $o =~ ^u ]]; then
-      eval echo hi-${o}-${arch}-${branch}-x-x-${mod}-${fw}-${uid}
+      eval echo h${t}-${o}-${arch}-${branch}-x-x-${mod}-${fw}-${uid}
     fi
   done |
     xargs
@@ -75,7 +77,7 @@ elif [[ ${task} == "kernel" ]]; then
 
 elif [[ ${task} == "setup" ]]; then
   branch=${branch:-'di'}
-  names=$(printNames)
+  names=$(printNames '{b,m,p,r,s}')
   time ./bin/create-server.sh ${names}
   time ./site-test-setup.yaml --limit "h?-*-${uid}"
 
