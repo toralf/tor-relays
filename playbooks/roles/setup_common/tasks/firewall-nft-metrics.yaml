@@ -8,7 +8,7 @@
 
 - name: Get metrics-firewall.sh
   throttle: 8
-  retries: 1
+  retries: 2
   ansible.builtin.get_url:
     url: "{{ torutils_path }}/metrics-firewall.sh"
     dest: /root/

@@ -1,21 +1,26 @@
 ---
 - name: Add the group
   ansible.builtin.group:
-    name: snowflake
+    name: snowflake-proxy
 
 - name: Add the user
   ansible.builtin.user:
-    group: snowflake
-    name: snowflake
+    group: snowflake-proxy
+    name: snowflake-proxy
     create_home: false
+
+- name: Golang
+  ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/golang.yaml"
+  tags:
+    - tools
 
 - name: Git
   vars:
+    _git_patches: "{{ snowflake_git_patches }}"
     _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
     _git_version: "{{ snowflake_git_version }}"
-    _git_patches: "{{ snowflake_git_patches }}"
     _repo_dir: /root/snowflake
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
 - name: Build
   throttle: 16
@@ -34,7 +39,13 @@
 - name: Copy
   ansible.builtin.copy:
     src: /root/snowflake/proxy/proxy
-    dest: /usr/bin/snowflake
+    dest: /usr/bin/snowflake-proxy
     mode: a+x
     remote_src: true
-  notify: Restart snowflake
+  notify: Restart Snowflake
+
+- name: Add/Change systemd unit
+  ansible.builtin.copy:
+    src: snowflake-proxy.service
+    dest: /etc/systemd/system/
+  notify: Restart Snowflake

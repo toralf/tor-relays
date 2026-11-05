@@ -11,11 +11,11 @@
 
 - name: Git Tor
   vars:
+    _git_patches: "{{ tor_git_patches }}"
     _git_repo_url: https://gitlab.torproject.org/tpo/core/tor.git
     _git_version: "{{ tor_git_version }}"
-    _git_patches: "{{ tor_git_patches }}"
     _repo_dir: /root/tor
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
 - name: Test if installed Tor is up to date
   changed_when: _binary.rc != 0
@@ -90,9 +90,9 @@
     chdir: /root/tor
 
 - name: Add/Change systemd unit
-  ansible.builtin.template:
-    src: tor.service.j2
-    dest: /etc/systemd/system/tor.service
+  ansible.builtin.copy:
+    src: tor.service
+    dest: /etc/systemd/system/
   notify: Restart Tor
 
 # the PT (not Tor) needs the capability for bridges

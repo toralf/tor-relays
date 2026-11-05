@@ -10,8 +10,25 @@
   tags:
     - sysctl
 
-- name: Add/Change systemd unit
-  ansible.builtin.template:
-    src: snowflake-proxy.service.j2
-    dest: /etc/systemd/system/snowflake.service
-  notify: Restart snowflake
+- name: Ensure that Snowflake systemd override dir exists
+  ansible.builtin.file:
+    path: /etc/systemd/system/snowflake-proxy.service.d
+    state: directory
+    mode: "0755"
+
+- name: Add Snowflake systemd override
+  ansible.builtin.copy:
+    content: |-
+      # Ansible managed
+
+      [Unit]
+      StartLimitIntervalSec=0
+      StartLimitBurst=0
+
+      [Service]
+      ExecStart=
+      ExecStart=/usr/bin/snowflake-proxy {{ snowflake_command_args }}
+      Restart=on-failure
+      RestartSec=60s
+    dest: /etc/systemd/system/snowflake-proxy.service.d/override.conf
+  notify: Restart Snowflake

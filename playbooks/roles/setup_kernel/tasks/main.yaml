@@ -39,7 +39,7 @@
             _git_repo_url: "{{ kernel_git_repo_url }}"
             _git_version: "{{ kernel_git_version }}"
             _repo_dir: /root/linux
-          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
         - name: Copy build script
           ansible.builtin.copy:

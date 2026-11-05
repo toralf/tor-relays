@@ -20,15 +20,19 @@
     ansible.builtin.systemd_service:
       daemon_reload: true
   block:
-    - name: Tools
-      ansible.builtin.import_tasks: tools.yaml
+    - name: Apt
+      when: not snowflake_build_from_source
+      ansible.builtin.import_tasks: snowflake-apt.yaml
       tags:
-        - tools
+        - snowflake
+        - snowflake-apt
 
-    - name: Setup
+    - name: Src
+      when: snowflake_build_from_source
       ansible.builtin.import_tasks: snowflake-src.yaml
       tags:
         - snowflake
+        - snowflake-src
 
     - name: Config
       ansible.builtin.import_tasks: config.yaml
@@ -46,7 +50,7 @@
 
     - name: Ensure Snowflake is enabled and started
       ansible.builtin.systemd_service:
-        name: snowflake
+        name: snowflake-proxy
         state: started
         enabled: true
       tags:

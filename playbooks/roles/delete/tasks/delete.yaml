@@ -3,7 +3,7 @@
   ansible.builtin.meta: flush_handlers
 
 - name: Reset connection
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_reset_connection.yaml"
+  ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/reset_connection.yaml"
 
 - name: Instance
   delegate_to: localhost

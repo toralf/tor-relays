@@ -112,7 +112,7 @@ function next_job() {
     if [[ ${action} == "setup" || ${action} == "update" ]]; then
       tags=""
       if [[ ${action} == "update" ]]; then
-        tags="--tags autoupdate,upgrade,tools,lyrebird,snowflake,tor-src,kernel-build"
+        tags="--tags autoupdate,upgrade,tools,lyrebird,snowflake,tor,kernel-build"
       fi
       info "  ${action}: $(wc -w <<<${names})"
       if ! ./site-setup.yaml --limit $(tr ' ' ',' <<<${names}) ${tags} \
@@ -128,7 +128,7 @@ function next_job() {
 function update_app() {
   if _go_changed; then
     info "deploy go"
-    if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags tools,lyrebird,snowflake &>${logprefix}.golang.log; then
+    if ! ./site-setup.yaml --limit 'hbx,hpx,hsx' --tags tools,lyrebird,snowflake-src &>${logprefix}.golang.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud
@@ -144,7 +144,7 @@ function update_app() {
 
   if _git_changed app snowflake; then
     info "deploy snowflake"
-    if ! ./site-setup.yaml --limit "hsx" --tags snowflake &>${logprefix}.app.snowflake.log; then
+    if ! ./site-setup.yaml --limit "hsx" --tags snowflake-src &>${logprefix}.app.snowflake.log; then
       info "  NOT ok" >&2
     fi
     pit_stop crud

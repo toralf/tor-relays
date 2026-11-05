@@ -5,3 +5,7 @@ use_tor_geoip_data: false
 go_version: ""
 snowflake_git_patches: []
 snowflake_git_version: main
+
+snowflake_build_from_source: false
+
+snowflake_command_args: ""

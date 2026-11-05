@@ -13,13 +13,8 @@
       - libncurses5-dev
       - libssl-dev
       - lz4
-
-- name: Install/Update toolchain (Ubuntu)
-  when: ansible_facts.distribution == 'Ubuntu'
-  ansible.builtin.apt:
-    name:
-      - debhelper
-      - libncurses-dev
+      - "{{ (ansible_facts.distribution == 'Ubuntu') | ternary('debhelper', omit) }}"
+      - "{{ (ansible_facts.distribution == 'Ubuntu') | ternary('libncurses-dev', omit) }}"
 
 - name: Hold
   when: not is_image

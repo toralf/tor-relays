@@ -1,7 +1,7 @@
 ---
 - name: Get service status
   ansible.builtin.systemd:
-    name: "snowflake"
+    name: snowflake-proxy
   register: _service
 
 - name: File systemd time

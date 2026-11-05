@@ -6,7 +6,7 @@
       set -eu
 
       equatation=$(
-        journalctl -u snowflake --since "{{ log_connections_seconds_ago }} second ago" \
+        journalctl -u snowflake-proxy --since "{{ log_connections_seconds_ago }} second ago" \
           -g ', there were .* connections' --quiet |
         awk '{ print $14 }' |
         xargs -r |

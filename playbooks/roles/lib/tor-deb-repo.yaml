@@ -1,0 +1,29 @@
+---
+# https://support.torproject.org/apt/tor-deb-repo/
+- name: Add Torproject repository
+  vars:
+    _key: A3C4F0F979CAA22CDBA8F512EE8CBC9E886DDD89.asc # gitleaks:allow
+    _uri: https://deb.torproject.org/torproject.org
+  ansible.builtin.deb822_repository:
+    name: tor
+    types:
+      - deb
+      - deb-src
+    uris: "{{ _uri }}"
+    suites: "{{ ansible_facts.distribution_release }}"
+    components: main
+    signed_by: "{{ _uri }}/{{ _key }}"
+  register: _tor_deb_repo
+
+- name: Update apt cache
+  when: _tor_deb_repo.changed
+  ansible.builtin.apt:
+    cache_valid_time: 0
+    update_cache: true
+    update_cache_retries: 1
+
+- name: Install/Update Torproject keyring
+  when: ansible_facts.distribution_release not in ('resolute')
+  ansible.builtin.apt:
+    name:
+      - deb.torproject.org-keyring

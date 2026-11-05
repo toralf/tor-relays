@@ -19,6 +19,14 @@
 
 - name: Add nginx systemd override
   ansible.builtin.copy:
-    src: nginx.override.conf
+    content: |-
+      # Ansible managed
+
+      [Unit]
+      StartLimitIntervalSec=0
+
+      [Service]
+      Restart=on-failure
+      RestartSec=5s
     dest: /etc/systemd/system/nginx.service.d/override.conf
   notify: Restart nginx

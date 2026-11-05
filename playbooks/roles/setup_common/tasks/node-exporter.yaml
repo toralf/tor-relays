@@ -23,8 +23,14 @@
     mode: "0755"
 
 - name: Add Prometheus node exporter systemd override
-  ansible.builtin.template:
-    src: prometheus-node-exporter.override.conf.j2
+  ansible.builtin.copy:
+    content: |-
+      # Ansible managed
+
+      [Service]
+      Environment="GOMAXPROCS=1"
+      Restart=on-failure
+      RestartSec=5s
     dest: /etc/systemd/system/prometheus-node-exporter.service.d/override.conf
   notify: Restart Prometheus node exporter
 

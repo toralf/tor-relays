@@ -1,0 +1,8 @@
+---
+- name: Repo
+  ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/tor-deb-repo.yaml"
+
+- name: Install/Update Snowflake
+  ansible.builtin.apt:
+    name: snowflake-proxy
+  notify: Restart Snowflake

@@ -3,7 +3,7 @@
   changed_when: false
   ansible.builtin.shell:
     cmd: |-
-      journalctl -u snowflake --since "{{ log_proxy_since }}" -b -g "NAT type:" --quiet |
+      journalctl -u snowflake-proxy --since "{{ log_proxy_since }}" -b -g "NAT type:" --quiet |
         tail -n 1 |
         cut -f 10 -d ' '
   register: _result_nattype

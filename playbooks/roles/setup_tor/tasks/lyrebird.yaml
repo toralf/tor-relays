@@ -1,11 +1,11 @@
 ---
 - name: Git Lyrebird
   vars:
+    _git_patches: "{{ lyrebird_git_patches }}"
     _git_repo_url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
     _git_version: "{{ lyrebird_git_version }}"
-    _git_patches: "{{ lyrebird_git_patches }}"
     _repo_dir: /root/lyrebird
-  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_git.yaml"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
 - name: Build Lyrebird
   throttle: 16

@@ -67,7 +67,17 @@
         mode: "0755"
 
     - name: Configure Tor systemd override
-      ansible.builtin.template:
-        src: tor.override.conf.j2
+      ansible.builtin.copy:
+        content: |-
+          # Ansible managed
+
+          [Unit]
+          StartLimitIntervalSec=0
+          StartLimitBurst=0
+
+          [Service]
+          NoNewPrivileges={{ (tor_bridge_distribution | length > 0 or tor_port > 1024) | ternary('yes', 'no') }}
+          Restart=on-failure
+          RestartSec=60s
         dest: "{{ _svcdir }}/override.conf"
       notify: Restart Tor

@@ -74,7 +74,7 @@
 
       rescue:
         - name: Kernel config
-          ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
+          ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/kconfig.yaml"
 
         - name: Slurp make.log
           ansible.builtin.slurp:

@@ -6,10 +6,10 @@
     cmd: >-
       sysctl --system >/dev/null
 
-- name: Restart snowflake
-  listen: Restart snowflake
+- name: Restart Snowflake
+  listen: Restart Snowflake
   ansible.builtin.systemd_service:
-    name: snowflake
+    name: snowflake-proxy
     state: restarted
     enabled: true
     daemon_reload: true

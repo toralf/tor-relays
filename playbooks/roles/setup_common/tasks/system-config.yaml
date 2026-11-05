@@ -78,8 +78,14 @@
     mode: "0755"
 
 - name: Add logrotate systemd override config
-  ansible.builtin.template:
-    src: logrotate.override.conf.j2
+  ansible.builtin.copy:
+    content: |-
+      # Ansible managed
+
+      [Timer]
+      OnCalendar=
+      OnCalendar=hourly
+      Persistent=true
     dest: /etc/systemd/system/logrotate.timer.d/override.conf
   notify: Reload systemd
 
@@ -91,8 +97,13 @@
     mode: "0755"
 
 - name: Add Networkd wait online systemd override
-  ansible.builtin.template:
-    src: networkd-wait-online.override.conf.j2
+  ansible.builtin.copy:
+    content: |-
+      # Ansible managed
+
+      [Service]
+      ExecStart=
+      ExecStart=/usr/lib/systemd/systemd-networkd-wait-online --ipv4 --ipv6
     dest: /etc/systemd/system/systemd-networkd-wait-online.service.d/override.conf
   notify: Reload systemd
 

@@ -50,4 +50,4 @@
       ansible.builtin.include_tasks: _dmesg.yaml
 
     - name: Get kernel config for artefact
-      ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/_kconfig.yaml"
+      ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/kconfig.yaml"

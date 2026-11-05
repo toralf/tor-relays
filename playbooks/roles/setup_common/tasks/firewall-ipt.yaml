@@ -38,6 +38,7 @@
       [Service]
       Type=oneshot
       RemainAfterExit=yes
+      ExecStart=
       ExecStart=/bin/bash -c 'if [[ -s /var/tmp/ipset.rules ]]; then \
         /sbin/ipset restore -exist -file /var/tmp/ipset.rules && rm /var/tmp/ipset.rules; fi'
       ExecStop=/sbin/ipset save -file /var/tmp/ipset.rules
