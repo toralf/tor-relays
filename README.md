@@ -24,28 +24,20 @@ Setup a new Tor private bridge (i.e. with the hostname _my_bridge_):
 
    to create seeds, local dirs (e.g. _~/tmp_ and _./secrets_() and a self-signed Root CA.
 
-1. add your bridge to the Ansible inventory:
-
-   ```yaml
-   ---
-   tor:
-     hosts:
-       my_bridge:
-   ```
-
-   Take a look into [examples](./examples/) for an Ansible inventory leveraging the Hetzner cloud API.
+1. add your Tor system to the Ansible inventory, i.e. as _my_relay_.
+   Take a look into [examples](./examples/).
 
 1. deploy it
 
    ```bash
-   ./site-setup.yaml --limit my_bridge
+   ./site-setup.yaml --limit my_relay
    ```
 
 1. inspect it:
 
    ```bash
-   grep "my_bridge" ~/tmp/tor-relays/*
-   ls ~/tmp/tor-relays/**/my_bridge*
+   tail -v ~/tmp/tor-relays/*
+   ls ~/tmp/tor-relays/**/my_relay*
    ```
 
 1. enjoy it
