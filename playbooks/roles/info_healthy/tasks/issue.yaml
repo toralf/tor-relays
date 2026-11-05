@@ -11,6 +11,7 @@
           -e 'Call Trace: ' \
           -e 'Error: ' \
           -e 'invoked oom-killer' \
+          -e 'nf_conntrack: nf_conntrack: table full' \
           -e 'No space left on device' \
           -e 'Oops: ' \
           -e 'rebooting.' \
