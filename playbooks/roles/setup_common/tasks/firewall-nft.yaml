@@ -33,7 +33,7 @@
 
 - name: Add nftables systemd override
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       # the filesystem is r-o after reboot

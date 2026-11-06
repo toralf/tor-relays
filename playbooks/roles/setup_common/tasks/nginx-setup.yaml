@@ -19,7 +19,7 @@
 
 - name: Add nginx systemd override
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       [Unit]

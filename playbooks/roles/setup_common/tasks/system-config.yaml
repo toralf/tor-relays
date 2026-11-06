@@ -79,7 +79,7 @@
 
 - name: Add logrotate systemd override config
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       [Timer]
@@ -98,7 +98,7 @@
 
 - name: Add Networkd wait online systemd override
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       [Service]

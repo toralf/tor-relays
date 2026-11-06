@@ -24,7 +24,7 @@
 
 - name: Add Prometheus node exporter systemd override
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       [Service]

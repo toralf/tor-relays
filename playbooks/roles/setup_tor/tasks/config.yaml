@@ -68,7 +68,7 @@
 
     - name: Configure Tor systemd override
       ansible.builtin.copy:
-        content: |-
+        content: |
           # Ansible managed
 
           [Unit]

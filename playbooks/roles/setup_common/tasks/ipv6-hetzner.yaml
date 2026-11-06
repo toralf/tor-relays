@@ -72,7 +72,7 @@
 
         - name: Disble network config
           ansible.builtin.copy:
-            content: |-
+            content: |
               network: {config: disabled}
             dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
 
