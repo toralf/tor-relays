@@ -12,8 +12,17 @@
 
 - name: Configure sshd
   ansible.builtin.copy:
-    src: 00sshd.conf
-    dest: /etc/ssh/sshd_config.d/
+    content: |
+      # Ansible managed
+
+      LogLevel                    ERROR
+
+      PasswordAuthentication      no
+      PermitRootLogin             prohibit-password
+      PubkeyAuthentication        yes
+
+      X11Forwarding               no
+    dest: /etc/ssh/sshd_config.d/00sshd.conf
   notify: Restart ssh
 
 - name: Remove cloud init config for sshd at IONOS
