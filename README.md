@@ -1,8 +1,8 @@
 [![StandWithUkraine](https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/badges/StandWithUkraine.svg)](https://github.com/vshymanskyy/StandWithUkraine/blob/main/docs/README.md)
 
-# Why
+# Tor-relays
 
-This repo focuses on sharing ideas for maintaining Tor systems with Ansible.
+This repo focuses on sharing ideas for maintaining Tor nodes.
 
 ## Quick start
 
