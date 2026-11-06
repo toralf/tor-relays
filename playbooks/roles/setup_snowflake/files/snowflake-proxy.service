@@ -1,13 +1,16 @@
 # {{ ansible_managed }}
 
 [Unit]
-Description=snowflake
-After=network-online.target docker.socket firewalld.service systemd-networkd-wait-online.service
+Description=snowflake-proxy
 Wants=network-online.target
 
 [Service]
 User=snowflake-proxy
 Group=snowflake-proxy
+# from the apt package
+DynamicUser=yes
+PrivateMounts=true
+ProtectKernelLogs=true
 # https://www.freedesktop.org/software/systemd/man/systemd.exec.html#Sandboxing
 ProtectSystem=strict
 ProtectHome=tmpfs

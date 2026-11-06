@@ -18,10 +18,11 @@
 
 - name: Add Snowflake systemd override
   ansible.builtin.copy:
-    content: |-
+    content: |
       # Ansible managed
 
       [Unit]
+      After=network-online.target docker.socket firewalld.service systemd-networkd-wait-online.service
       StartLimitIntervalSec=0
       StartLimitBurst=0
 
