@@ -106,8 +106,7 @@
 
 - name: Sysctl firewall
   vars:
-    _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
-    _mem: "{{ (ansible_facts.memtotal_mb < 1024) | ternary('1024 2048 4096', '16000 32000 64000') }}"
+    _max: "{{ (ansible_facts.memtotal_mb <= 1024) | ternary((2**17) | int, (2**19) | int) }}"
   tags:
     - sysctl
   block:
@@ -121,11 +120,21 @@
           net.ipv4.tcp_keepalive_probes = 3
           net.ipv4.tcp_keepalive_time = 60
           net.ipv4.tcp_max_syn_backlog = {{ _max // 8 }}
-          net.ipv4.tcp_mem = {{ _mem }}
           net.ipv4.tcp_synack_retries = 2
           net.ipv4.tcp_syncookies = 1
           net.ipv4.tcp_tw_reuse = 1
-          net.ipv4.udp_mem = {{ _mem }}
+
+          {% if ansible_facts.memtotal_mb <= 1024 %}
+          # tiny VPS
+          net.ipv4.tcp_mem = 40960 51200 61440
+          net.ipv4.tcp_rmem = 4096 8192 65536
+          net.ipv4.tcp_wmem = 4096 8192 65536
+          {% else %}
+          # 4 GiB+ RAM (max. 1024 MB TCP)
+          net.ipv4.tcp_mem = 131072 196608 262144
+          net.ipv4.tcp_rmem = 4096 32768 2097152
+          net.ipv4.tcp_wmem = 4096 16384 2097152
+          {% endif %}
 
           # avoid reboot timing issues
           net.ipv6.ip_nonlocal_bind = 1
