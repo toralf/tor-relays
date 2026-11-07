@@ -27,6 +27,7 @@
       mode: "0644"
     ansible.builtin.systemd_service:
       daemon_reload: true
+      no_block: true
     ansible.builtin.template:
       mode: "0644"
   block:
