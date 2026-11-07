@@ -107,6 +107,7 @@
 - name: Sysctl firewall
   vars:
     _max: "{{ (ansible_facts.memtotal_mb < 1024) | ternary((2**17) | int, (2**19) | int) }}"
+    _mem: "{{ (ansible_facts.memtotal_mb < 1024) | ternary('1024 2048 4096', '16000 32000 64000') }}"
   tags:
     - sysctl
   block:
@@ -116,14 +117,15 @@
           # maintained by Ansible
 
           net.ipv4.tcp_fin_timeout = 10
-          net.ipv4.tcp_keepalive_intvl = 15
-          net.ipv4.tcp_keepalive_probes = 5
-          net.ipv4.tcp_keepalive_time = 120
+          net.ipv4.tcp_keepalive_intvl = 10
+          net.ipv4.tcp_keepalive_probes = 3
+          net.ipv4.tcp_keepalive_time = 60
           net.ipv4.tcp_max_syn_backlog = {{ _max // 8 }}
-          net.ipv4.tcp_mem = {{ (ansible_facts.memtotal_mb < 1024) | ternary('4000 8000 12000', '40000 80000 120000') }}
+          net.ipv4.tcp_mem = {{ _mem }}
           net.ipv4.tcp_synack_retries = 2
           net.ipv4.tcp_syncookies = 1
           net.ipv4.tcp_tw_reuse = 1
+          net.ipv4.udp_mem = {{ _mem }}
 
           # avoid reboot timing issues
           net.ipv6.ip_nonlocal_bind = 1
