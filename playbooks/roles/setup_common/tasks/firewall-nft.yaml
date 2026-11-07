@@ -66,10 +66,11 @@
     enabled: true
     daemon_reload: true
 
-# needed b/c the filesystem is read-only when nftables is started
+# the filesystem is read-only when nftables starts
 - name: Create cron job to delete saved nftables after reboot
   ansible.builtin.cron:
     name: delete saved nftables
     special_time: reboot
     job: >-
-      rm -f /var/lib/nftables/rules-save
+      sleep 30;
+      rm /var/lib/nftables/rules-save
