@@ -1,22 +1,48 @@
 ---
-- name: Firewall Image
-  when: firewall == "iptables"
-  ansible.builtin.import_tasks: firewall-image.yaml
-  tags:
-    - firewall-image
+- name: Stop and disable Nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: stopped
+    enabled: false
+    no_block: true
 
-- name: Clone repos
-  ansible.builtin.import_tasks: clone-repos.yaml
-  tags:
-    - clone-repos
+- name: Load needed kernel modules
+  when: firewall | default('') == "iptables"
+  changed_when: true
+  ansible.builtin.shell:
+    cmd: |-
+      set -euf
 
-- name: Install golang
-  ansible.builtin.import_tasks: golang.yaml
-  tags:
-    - golang
-    - never
+      ipt="iptables"
+      $ipt -A INPUT -p tcp -m multiport --dports 1234,1235 -j ACCEPT
 
-- name: Services
-  ansible.builtin.import_tasks: services.yaml
-  tags:
-    - services
+      ipt="ip6tables"
+      $ipt -A INPUT -p tcp -m multiport --dports 1236,1237 -j ACCEPT
+
+      # reset Base firewall
+      /root/firewall-ipv4.sh start
+      /root/firewall-ipv6.sh start
+
+- name: Clone repos for snapshot image
+  vars:
+    _git_patches: []
+    _git_repo_url: "{{ item.url }}"
+    _git_version: "{{ item.ver | default('main') }}"
+    _repo_dir: "/root/{{ item.name }}"
+  ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
+  loop_control:
+    label: "{{ inventory_hostname }} {{ item.name }}"
+  loop:
+    - name: linux
+      url: "{{ kernel_git_repo_url }}"
+      ver: "{{ kernel_git_version }}"
+    - name: lyrebird
+      url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/lyrebird.git
+    - name: snowflake
+      url: https://gitlab.torproject.org/tpo/anti-censorship/pluggable-transports/snowflake.git
+    - name: tor
+      url: https://gitlab.torproject.org/tpo/core/tor.git
+
+- name: Golang
+  when: go_version | default('') | length > 0
+  ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/golang.yaml"

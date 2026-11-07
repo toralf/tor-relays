@@ -3,6 +3,9 @@
   hosts: hix
   order: shuffle
   roles:
+    - role: setup_autoupdate
+      vars:
+        autoupdate_enabled: false
     - role: setup_common
     - role: info_common
     - role: setup_image
