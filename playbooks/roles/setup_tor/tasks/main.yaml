@@ -97,6 +97,7 @@
         state: started
         enabled: true
       tags:
+        - always
         - tor
 
     - name: Tor identity backup

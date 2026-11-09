@@ -54,4 +54,5 @@
         state: started
         enabled: true
       tags:
+        - always
         - snowflake
