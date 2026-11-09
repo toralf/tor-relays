@@ -1,14 +1,12 @@
 ---
 - name: Git
   environment: "{{ _git_environment | default({}) }}"
-  module_defaults:
-    ansible.builtin.git:
-      repo: "{{ _git_repo_url }}"
-      dest: "{{ _repo_dir }}"
   block:
     - name: Git stat "{{ _repo_dir }}"
       ansible.builtin.git:
         clone: false
+        dest: "{{ _repo_dir }}"
+        repo: "{{ _git_repo_url }}"
         update: false
       register: __stat
 
@@ -16,7 +14,9 @@
       throttle: 8
       ansible.builtin.git:
         clone: "{{ __stat.before == None }}"
+        dest: "{{ _repo_dir }}"
         force: true
+        repo: "{{ _git_repo_url }}"
         update: "{{ __stat.before != None }}"
         version: "{{ _git_version }}"
       register: __update

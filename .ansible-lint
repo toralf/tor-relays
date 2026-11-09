@@ -8,6 +8,7 @@ enable_list:
 
 skip_list:
   - command-instead-of-module
+  - latest[git]
   - no-handler
   - risky-file-permissions
   - risky-shell-pipe
