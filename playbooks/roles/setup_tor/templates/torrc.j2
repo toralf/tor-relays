@@ -46,6 +46,11 @@ HardwareAccel 1
 Log notice file /var/log/tor/notice.log
 Log warn file /var/log/tor/warn.log
 Log err file /var/log/tor/err.log
+{% if not use_tor_geoip_data %}
+
+GeoIPFile /dev/null
+GeoIPv6File /dev/null
+{% endif %}
 
 {% for item in torrc_config %}
 {% if tor_build_from_source or item.name != 'FamilyId' or ansible_facts.distribution_release not in ('bookworm', 'noble') %}
