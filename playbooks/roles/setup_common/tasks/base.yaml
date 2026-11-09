@@ -106,7 +106,7 @@
 
 - name: Sysctl firewall
   vars:
-    _max: "{{ (ansible_facts.memtotal_mb <= 1024) | ternary((2**17) | int, (2**19) | int) }}"
+    _max: "{{ (ansible_facts.memtotal_mb <= 1024) | ternary((2**16) | int, (2**19) | int) }}"
   tags:
     - sysctl
   block:
@@ -125,7 +125,7 @@
 
           {% if ansible_facts.memtotal_mb <= 1024 %}
           # tiny VPS
-          net.ipv4.tcp_mem = 40960 51200 61440
+          net.ipv4.tcp_mem = 12288 16384 24576
           net.ipv4.tcp_rmem = 4096 8192 65536
           net.ipv4.tcp_wmem = 4096 8192 65536
           {% else %}
