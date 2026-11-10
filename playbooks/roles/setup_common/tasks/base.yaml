@@ -115,25 +115,33 @@
         content: |
           # maintained by Ansible
 
+          net.core.default_qdisc = fq
+          net.ipv4.tcp_congestion_control = bbr
+
+          net.ipv4.tcp_abort_on_overflow = 0
           net.ipv4.tcp_fin_timeout = 10
           net.ipv4.tcp_keepalive_intvl = 10
           net.ipv4.tcp_keepalive_probes = 3
           net.ipv4.tcp_keepalive_time = 60
+          net.ipv4.tcp_max_tw_buckets = 10000
           net.ipv4.tcp_synack_retries = 2
           net.ipv4.tcp_syncookies = 1
           net.ipv4.tcp_tw_reuse = 1
 
           {% if ansible_facts.memtotal_mb <= 1024 %}
           # tiny VPS
-          net.ipv4.tcp_mem = 12288 16384 24576
-          net.ipv4.tcp_rmem = 4096 8192 65536
-          net.ipv4.tcp_wmem = 4096 8192 65536
+          net.ipv4.tcp_mem = 16384 24576 32768
+          net.ipv4.tcp_rmem = 4096 8192 45056
+          net.ipv4.tcp_wmem = 4096 8192 45056
           {% else %}
-          # 4 GiB+ RAM (max. 1024 MB TCP)
+          # 4 GiB+ RAM (max. 1 GiB TCP)
           net.ipv4.tcp_mem = 131072 196608 262144
           net.ipv4.tcp_rmem = 4096 32768 2097152
           net.ipv4.tcp_wmem = 4096 16384 2097152
           {% endif %}
+
+          net.ipv6.conf.all.accept_redirects = 0
+          net.ipv6.conf.default.accept_redirects = 0
 
           # avoid reboot timing issues
           net.ipv6.ip_nonlocal_bind = 1
