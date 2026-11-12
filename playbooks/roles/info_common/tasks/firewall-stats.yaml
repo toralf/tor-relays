@@ -49,7 +49,7 @@
   throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.copy:
     content: "{{ item.stdout }}\n"
-    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ddos-{{ item.item }}-stats"
+    dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ddos-{{ item.item }}-stats-{{ firewall_stats_net }}"
   loop_control:
     label: "{{ inventory_hostname }} {{ item.item }}"
   loop: "{{ _ddos_stats.results }}"
