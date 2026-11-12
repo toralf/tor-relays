@@ -89,8 +89,7 @@ while :; do
   tags="firewall-stats"
 
   info "${site}  tags:  ${tags}"
-  mkdir -p ~/tmp/hx/${site}{,_tmp}/artefact
-  # tar all stats together instead rsync'ing each file
+  mkdir -p ~/tmp/hx/${site}{,_tmp}
   if ! ./site-info.yaml --limit 'hmx,hsx,htx' --tags ${tags} -e '{ "infodir": "~/tmp/hx/'${site}'_tmp" }' \
     &>${logprefix}.${site}.ansible.log; then
     info "  NOT ok" >&2
@@ -100,5 +99,6 @@ while :; do
     info "  tar failed" >&2
   fi
   sync_site ${site} ${srvs}
+  rm -rf ~/tmp/hx/${site}_tmp/fw
   pit_stop info
 done
