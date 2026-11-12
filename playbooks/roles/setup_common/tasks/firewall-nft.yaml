@@ -39,15 +39,29 @@
       # the filesystem is r-o after reboot
       [Service]
       ExecStart=
-      ExecStart=/bin/sh -c 'if ! nft -f /var/lib/nftables/rules-save; then nft -f /etc/nftables.conf; fi'
+      ExecStart=/bin/sh -c ' \
+        nft flush ruleset; \
+        if ! nft -f /var/lib/nftables/rules-save; then nft -f /etc/nftables.conf; fi'
 
       ExecStop=
-      ExecStop=/bin/sh -c '{ echo "#!/usr/sbin/nft -f"; echo "flush ruleset"; \
-        nft -n list ruleset; } >/var/lib/nftables/rules-save; \
+      ExecStop=/bin/sh -c ' \
+        { echo "#!/usr/sbin/nft -f"; echo "flush ruleset"; nft -n list ruleset; } >/var/lib/nftables/rules-save; \
         nft flush ruleset'
 
       ExecReload=
-      ExecReload=/bin/sh -c 'nft -c -f /etc/nftables.conf && nft -f /etc/nftables.conf'
+      ExecReload=/bin/sh -c ' \
+        nft -c -f /etc/nftables.conf && \
+        cat /etc/nftables.conf >>/var/lib/nftables/new && \
+      {% if is_tor %}
+        echo >>/var/lib/nftables/new && \
+        nft list set inet ingress_filter ddos_v4 >>/var/lib/nftables/new && \
+        echo >>/var/lib/nftables/new && \
+        nft list set inet ingress_filter ddos_v6 >>/var/lib/nftables/new && \
+        echo >>/var/lib/nftables/new && \
+        nft -c -f /var/lib/nftables/new && \
+      {% endif %}
+        nft -f /var/lib/nftables/new && \
+        rm /var/lib/nftables/new'
     dest: /etc/systemd/system/nftables.service.d/override.conf
   notify: Reload systemd
 
