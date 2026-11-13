@@ -7,6 +7,9 @@
     _repo_dir: /root/lyrebird
   ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
+- name: Go
+  ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/golang.yaml"
+
 - name: Build Lyrebird
   throttle: 16
   changed_when: false

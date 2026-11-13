@@ -9,10 +9,8 @@
     name: snowflake-proxy
     create_home: false
 
-- name: Golang
+- name: Go
   ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/golang.yaml"
-  tags:
-    - tools
 
 - name: Git
   vars:
