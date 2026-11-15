@@ -74,14 +74,6 @@
         - geoip
         - never
 
-    # needed e.g. for an installation via apt
-    - name: Ensure that master key exists
-      changed_when: not _master_key.stat.exists
-      ansible.builtin.stat:
-        path: /var/lib/tor/keys/ed25519_master_id_secret_key
-      register: _master_key
-      notify: Restart Tor
-
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
 
@@ -98,4 +90,5 @@
       when: tor_identity_backup
       ansible.builtin.import_tasks: tor-identity-backup.yaml
       tags:
+        - never
         - tor-identity-backup

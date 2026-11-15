@@ -16,3 +16,4 @@
 - name: Install/Update Tor/PT
   ansible.builtin.apt:
     name: "{{ ['tor', 'tor-geoipdb'] + (['obfs4proxy'] if (tor_bridge_distribution | length > 0) else []) }}"
+  notify: Restart Tor
