@@ -93,7 +93,7 @@ function next_job() {
 
     info "working on ${job}"
     names=$(xargs <${job})
-    mv ${job} /tmp
+    mv ${job} /tmp/${EPOCHSECONDS}_$(basename $job)
     if [[ -z ${names} ]]; then
       info "  empty" >&2
       continue
