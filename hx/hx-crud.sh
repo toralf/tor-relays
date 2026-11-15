@@ -132,22 +132,23 @@ function update_app() {
       info "  NOT ok" >&2
     fi
     pit_stop crud
-  fi
 
-  if _git_changed app lyrebird; then
-    info "deploy lyrebird"
-    if ! ./site-setup.yaml --limit "hbx,hpx" --tags lyrebird &>${logprefix}.app.lyrebird.log; then
-      info "  NOT ok" >&2
+  else
+    if _git_changed app lyrebird; then
+      info "deploy lyrebird"
+      if ! ./site-setup.yaml --limit "hbx,hpx" --tags lyrebird &>${logprefix}.app.lyrebird.log; then
+        info "  NOT ok" >&2
+      fi
+      pit_stop crud
     fi
-    pit_stop crud
-  fi
 
-  if _git_changed app snowflake; then
-    info "deploy snowflake"
-    if ! ./site-setup.yaml --limit "hsx" --tags snowflake-src &>${logprefix}.app.snowflake.log; then
-      info "  NOT ok" >&2
+    if _git_changed app snowflake; then
+      info "deploy snowflake"
+      if ! ./site-setup.yaml --limit "hsx" --tags snowflake-src &>${logprefix}.app.snowflake.log; then
+        info "  NOT ok" >&2
+      fi
+      pit_stop crud
     fi
-    pit_stop crud
   fi
 
   if _git_changed app tor; then
@@ -173,8 +174,8 @@ function trigger_kernel_update() {
     fi
   done < <(
     yq -r ".hx.vars.hx_repos | keys" <./inventory/systems-hxx.yaml |
-      tr -d '][",' |
-      grep -v '^null$' |
+      tr -d '][", ' |
+      grep -v -e '^di$' |
       xargs -r -n 1 |
       shuf
   )
