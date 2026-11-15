@@ -4,6 +4,8 @@
   ansible.builtin.shell:
     cmd: |-
       grep -h -v \
+        -e 'FamilyId was configured, but MyFamily was not' \
+        -e 'MaxMemInQueues is set to a low value' \
         -e 'opening .*log file.' \
         -e 'Please upgrade! This version of Tor' \
         -e 'The IPv4 ORPort address 127.0.0.1 does not match' \
