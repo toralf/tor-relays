@@ -23,12 +23,12 @@ tor_bridge_distribution: none
 # CPU consuming
 tor_metrics: false
 
-# file/s containing a private FamilyId key
+# FamilyId key/s
 tor_secret_family_key_files: []
 
 # <name, value> elements
 torrc_config: []
 
-# The secret Tor keys
+# to re-use secret Tor keys
 tor_identity_backup: false
 tor_identity_restore: false
