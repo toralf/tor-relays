@@ -23,11 +23,7 @@ ServerTransportListenAddr obfs4 0.0.0.0:{{ tor_port }}
 {# Tor relay #}
 
 ExitRelay 0
-
 NoExec 1
-{% if ansible_facts.architecture == 'x86_64' %}
-# SandBox 1
-{% endif %}
 
 ORPort {{ ansible_facts.default_ipv4.address }}:{{ tor_port }}
 ORPort [{{ ansible_facts.default_ipv6.address }}]:{{ tor_port }}
@@ -43,6 +39,7 @@ SocksPort 0
 
 HardwareAccel 1
 
+# Log debug file /var/log/tor/debug.log
 Log notice file /var/log/tor/notice.log
 Log warn file /var/log/tor/warn.log
 Log err file /var/log/tor/err.log
@@ -51,9 +48,9 @@ Log err file /var/log/tor/err.log
 GeoIPFile /dev/null
 GeoIPv6File /dev/null
 {% endif %}
+{% if torrc_config | length > 0 %}
 
 {% for item in torrc_config %}
-{% if tor_build_from_source or item.name != 'FamilyId' or ansible_facts.distribution_release not in ('bookworm', 'noble') %}
 {{ item.name }} {{ item.value }}
-{% endif %}
 {% endfor %}
+{% endif %}
