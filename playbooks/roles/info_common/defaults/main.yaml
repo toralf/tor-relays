@@ -5,5 +5,5 @@ filter_sensitive_data: "grep ."
 # resource name
 firewall_hist_set: "ddos"
 
-# number of bits ip addresses are truncated
-firewall_stats_net: 8
+# number of bits each ip address is truncated for aggregation/stats
+firewall_stats_net: 5
