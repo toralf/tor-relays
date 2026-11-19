@@ -130,7 +130,7 @@
 
           {% if ansible_facts.memtotal_mb <= 1024 %}
           # tiny VPS
-          net.ipv4.tcp_mem = 16384 24576 32768
+          net.ipv4.tcp_mem = 12288 16384 24576
           net.ipv4.tcp_rmem = 4096 8192 45056
           net.ipv4.tcp_wmem = 4096 8192 45056
           {% else %}
