@@ -10,7 +10,7 @@ server {
   index index.html index.htm index.nginx-debian.html;
 
   access_log off;
-  error_log /dev/null crit;
+  error_log /var/log/nginx/error.log crit;
 
   location / {
     try_files $uri $uri/ =404;
@@ -25,7 +25,6 @@ server {
   http2 on;
 
   ssl_protocols TLSv1.3;
-  ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/nginx/conf.d/client.crt;
   ssl_certificate_key /etc/nginx/conf.d/client.key;
   ssl_conf_command Options KTLS;
@@ -36,7 +35,7 @@ server {
   index index.html index.htm index.nginx-debian.html;
 
   access_log off;
-  error_log /dev/null crit;
+  error_log /var/log/nginx/error.log crit;
 
   location / {
     try_files $uri $uri/ =404;
@@ -61,7 +60,7 @@ server {
   root /var/www/{{ site.dir }};
 
   access_log off;
-  error_log /dev/null crit;
+  error_log /var/log/nginx/error.log crit;
 
   location / {
     autoindex on;
@@ -85,7 +84,7 @@ server {
   root /var/www/html;
 
   access_log off;
-  error_log /dev/null crit;
+  error_log /var/log/nginx/error.log warn;
 
   stub_status on;
 }
@@ -100,7 +99,7 @@ server {
   index nftables.prom;
 
   access_log off;
-  error_log /var/log/nginx/error.log crit;
+  error_log /var/log/nginx/error.log warn;
 
   proxy_no_cache 1;
   proxy_cache_bypass 1;
@@ -120,7 +119,6 @@ server {
   http2 on;
 
   ssl_protocols TLSv1.3;
-  ssl_ciphers HIGH:!aNULL:!MD5;
   ssl_certificate /etc/nginx/conf.d/client.crt;
   ssl_certificate_key /etc/nginx/conf.d/client.key;
   ssl_conf_command Options KTLS;
@@ -131,7 +129,7 @@ server {
   index index.html index.htm index.nginx-debian.html;
 
   access_log off;
-  error_log /var/log/nginx/error.log crit;
+  error_log /var/log/nginx/error.log warn;
 {% if firewall_metrics %}
 
   location = /metrics-firewall {
