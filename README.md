@@ -128,7 +128,7 @@ The input for the Prometheus config can be created by ([targets.yaml](./playbook
 
 ### Misc
 
-To create a new VPS in the Hetzner cloud with the hostname _my_bridge_ in the project  _my_project_, do:
+To create a new VPS in the Hetzner cloud with the hostname _my_bridge_ in the project _my_project_, do:
 
 ```bash
 hcloud context use my_project
