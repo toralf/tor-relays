@@ -1,4 +1,15 @@
 ---
+# facts are sometimes lost
+- name: Gather facts - common
+  ansible.builtin.setup:
+    gather_subset:
+      - "!all,!min"
+      - hardware
+      - network
+  tags:
+    - never
+    - facts
+
 - name: Validate
   ansible.builtin.import_tasks: validate.yaml
   tags:
