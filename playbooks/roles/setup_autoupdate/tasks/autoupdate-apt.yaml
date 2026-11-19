@@ -34,13 +34,6 @@
 
 # 2x per day between :40 and :50
 - name: Ensure needrestart cron job is {{ _state }}
-  vars:
-    _check_cmd: >-
-      {{
-      (ansible_facts.distribution_release in ('bookworm', 'noble')) |
-      ternary('pgrep -x sshd | grep -v /usr/sbin/sshd | grep -v grep', 'pgrep -x sshd-session')
-      }}
-    _state: "{{ autoupdate_reboot | ternary('present', 'absent') }}"
   ansible.builtin.cron:
     name: Reboot if needrestart advised it
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"
@@ -52,13 +45,13 @@
       [[ -f /var/run/reboot-required ]] ||
       needrestart -r l -b | grep -q -E -e 'NEEDRESTART-KSTA: [23]' -e 'NEEDRESTART-SVC: ';
       then
-      if {{ _check_cmd }};
+      if pgrep -x sshd-session;
       then
       sleep 120;
       fi;
       reboot;
       fi
-    state: "{{ _state }}"
+    state: "{{ autoupdate_reboot | ternary('present', 'absent') }}"
 
 # 2x per day at :58
 - name: Ensure reaper cron job is present

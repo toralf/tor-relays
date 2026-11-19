@@ -68,7 +68,7 @@
       tags:
         - config
 
-    - name: Geoip
+    - name: Update geoip data
       ansible.builtin.import_tasks: geoip.yaml
       tags:
         - geoip

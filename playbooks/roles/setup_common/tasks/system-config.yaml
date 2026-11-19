@@ -114,10 +114,10 @@
     value: "{{ item.value }}"
     scope: global
   loop:
-    - { name: 'gc.autoDetach', value: 'false' }
-    - { name: 'pack.packSizeLimit', value: '200m' }
-    - { name: 'pack.threads', value: "{{ ansible_facts.processor_vcpus }}" }
-    - { name: 'pack.windowMemory', value: '100m' }
+    - { name: "gc.autoDetach", value: "false" }
+    - { name: "pack.packSizeLimit", value: "200m" }
+    - { name: "pack.threads", value: "{{ ansible_facts.processor_vcpus }}" }
+    - { name: "pack.windowMemory", value: "100m" }
 
 - name: Ensure sysstat is enabled and started
   ansible.builtin.systemd_service:

@@ -1,33 +1,14 @@
 ---
 # curl -s https://go.dev/dl/ | grep -oP 'go[1-9]+\.[0-9]+\.[0-9]+\.linux-amd64\.tar\.gz' | sort -Vr | head -n 1
 
-- name: Go
+- name: Install/Update Go via apt
   when: go_version | length == 0
-  block:
-    - name: Go repo for legacy ubuntu
-      when: ansible_facts.distribution_release in ('noble')
-      block:
-        - name: Install/Update Go ppa repo
-          ansible.builtin.command:
-            cmd: >-
-              add-apt-repository ppa:longsleep/golang-backports
-            creates: /etc/apt/sources.list.d/longsleep-ubuntu-golang-backports-noble.sources
-          register: __go_repo
-
-        - name: Update apt cache
-          when: __go_repo.changed
-          ansible.builtin.apt:
-            cache_valid_time: 0
-            update_cache: true
-            update_cache_retries: 1
-
-    - name: Install/Update Go via apt
-      vars:
-        _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
-      ansible.builtin.apt:
-        default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
-        name:
-          - golang-go
+  vars:
+    _backports: "{{ (ansible_facts.distribution_release == 'resolute') | ternary('', '-backports') }}"
+  ansible.builtin.apt:
+    default_release: "{{ ansible_facts.distribution_release }}{{ _backports }}"
+    name:
+      - golang-go
 
 - name: Go upstream
   when: go_version | length > 0

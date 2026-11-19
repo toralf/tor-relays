@@ -77,8 +77,8 @@ function _getImageByHostname() {
     if [[ -n ${HCLOUD_FALLBACK_IMAGE-} ]]; then
       echo ${HCLOUD_FALLBACK_IMAGE}
     else
-      # 12, 13: bookworm, trixie
-      # 24, 26: noble, resolute
+      # 13: trixie
+      # 26: resolute
       shuf -n 1 -e debian-13 ubuntu-26.04
     fi
     ;;
