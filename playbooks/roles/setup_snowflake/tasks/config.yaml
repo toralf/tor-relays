@@ -4,7 +4,7 @@
     content: |
       # maintained by Ansible
 
-      user.max_user_namespaces = 4
+      user.max_user_namespaces = 8
     dest: /etc/sysctl.d/23snowflake.conf
   notify: Load sysctl
   tags:
