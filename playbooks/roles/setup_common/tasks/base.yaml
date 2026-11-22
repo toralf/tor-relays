@@ -40,6 +40,14 @@
       wc -l </root/.ssh/authorized_keys
   register: _result_auth_keys
 
+- name: Zswap
+  when: ansible_facts.memtotal_mb <= 1024
+  ansible.builtin.copy:
+    content: |
+      w /sys/module/zswap/parameters/enabled - - - - 1
+    dest: /etc/tmpfiles.d/zswap.conf
+  notify: Restart tmpfiles-setup
+
 - name: Swapfile
   when: swapfile_size | length > 0
   block:
@@ -57,7 +65,7 @@
           fi
         creates: /swapfile
 
-    - name: Sysctl
+    - name: Sysctl swapfile
       ansible.builtin.copy:
         content: |
           # maintained by Ansible
@@ -78,7 +86,7 @@
     cmd: |-
       set -euf
 
-      swapoff -a
+      swapoff -a /swapfile
       if grep -q "^/swapfile " /etc/fstab; then
         sed -i -e "/^\/swapfile /d" /etc/fstab
       fi

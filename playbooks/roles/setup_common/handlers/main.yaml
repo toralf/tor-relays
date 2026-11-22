@@ -12,6 +12,14 @@
     enabled: true
     daemon_reload: true
 
+- name: Restart tmpfiles-setup
+  listen: Restart tmpfiles-setup
+  ansible.builtin.systemd_service:
+    name: tmpfiles-setup
+    state: restarted
+    enabled: true
+    daemon_reload: true
+
 - name: Restart ssh
   listen: Restart ssh
   ansible.builtin.systemd_service:
