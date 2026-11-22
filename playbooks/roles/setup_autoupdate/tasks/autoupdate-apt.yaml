@@ -83,7 +83,7 @@
       Unattended-Upgrade::Automatic-Reboot "{{ autoupdate_reboot | ternary('true', 'false') }}";
     dest: /etc/apt/apt.conf.d/50unattended-upgrades
 
-- name: Ensure unatt upgrade is {{ _state }}
+- name: Configure unattended upgrade state
   vars:
     _state: "{{ autoupdate_enabled | ternary('started', 'stopped') }}"
   failed_when: false
