@@ -12,7 +12,16 @@ kernel_git_version: ""
 
 modular_kernel: true
 kernel_git_config: |-
-  CONFIG_MODULES={{ modular_kernel | ternary('y', 'n') }}
+  # (non)/modular kernel
+
+  {% if modular_kernel %}
+  CONFIG_MODULES=y
+  {% else %}
+  CONFIG_MODULES=n
+  CONFIG_SECURITY_LOCKDOWN_LSM=y
+  CONFIG_SECURITY_LOCKDOWN_LSM_EARLY=y
+  CONFIG_LOCK_DOWN_KERNEL_FORCE_CONFIDENTIALITY=y
+  {% endif %}
 
   # generic
 
