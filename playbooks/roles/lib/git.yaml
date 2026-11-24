@@ -47,7 +47,6 @@
       register: __patch
 
     - name: Git repo changed "{{ _repo_dir }}"
-      changed_when: _git_repo_changed
       ansible.builtin.set_fact:
         _git_repo_changed: "{{ __stat.changed or __update.changed or
           __clean.changed or __patch.changed }}"

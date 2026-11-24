@@ -5,7 +5,6 @@
       - kernel
 
 - name: Fetch kconfig
-  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.fetch:
     src: "/boot/config-{{ ansible_facts.kernel }}"
     dest: "{{ infodir }}/kconfig/{{ inventory_hostname }}.kconfig.txt"
@@ -13,7 +12,6 @@
 
 - name: File kconfig info
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.copy:
     content: |
       {{ ansible_facts.distribution }}

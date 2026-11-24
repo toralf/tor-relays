@@ -1,7 +1,6 @@
 ---
 - name: Create local firewall info directory
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.file:
     state: directory
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
@@ -26,7 +25,6 @@
 
     - name: Save DDoS ipset
       delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         content: "{{ item.stdout }}"
         dest: "{{ infodir }}/fw/{{ inventory_hostname }}/torutils-ddos-{{ item.item }}"
@@ -48,7 +46,6 @@
       register: ddos_hash
 
     - name: Fetch DDoS hash
-      throttle: "{{ concurrent_local_jobs }}"
       vars:
         _destfname: "{{ item.path | basename | regex_replace('-\\d{3,5}-', '-orport-') }}"
       ansible.builtin.fetch:

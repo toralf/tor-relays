@@ -31,7 +31,6 @@
 
     - name: File coredump info
       delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
       when: __info.stdout | length > 0
       ansible.builtin.copy:
         content: "{{ __info.stdout }}"
