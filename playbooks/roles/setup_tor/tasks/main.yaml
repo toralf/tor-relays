@@ -61,6 +61,7 @@
           when: tor_identity_restore
           ansible.builtin.import_tasks: tor-identity-restore.yaml
           tags:
+            - never
             - tor-identity-restore
 
     - name: Config

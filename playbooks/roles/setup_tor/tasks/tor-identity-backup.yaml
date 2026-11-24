@@ -1,17 +1,12 @@
 ---
-- name: Test at local Tor identity dir
+- name: Test at local Tor keys backup
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
+  failed_when: _tor_keys_backup_made.stat.exists
   ansible.builtin.stat:
     path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/"
-    get_attributes: false
-    get_checksum: false
-    get_mime: false
-  register: _tor_identity_backup_to
+  register: _tor_keys_backup_made
 
 - name: Backup
-  throttle: "{{ concurrent_local_jobs }}"
-  when: not _tor_identity_backup_to.stat.exists
   block:
     - name: Backup Tor identity
       ansible.builtin.fetch:

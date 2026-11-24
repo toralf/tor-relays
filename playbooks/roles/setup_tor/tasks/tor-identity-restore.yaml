@@ -1,22 +1,26 @@
 ---
+- name: Verify that Tor keys backup is available
+  delegate_to: localhost
+  failed_when: not _tor_keys_backup.stat.exists
+  ansible.builtin.stat:
+    path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/"
+  register: _tor_keys_backup
+
+- name: Ensure Tor is stopped
+  ansible.builtin.systemd_service:
+    name: tor
+    state: stopped
+
 - name: Test that Tor keys are not already created
+  failed_when: _tor_keys_created.stat.exists
   ansible.builtin.stat:
     path: /var/lib/tor/keys/
-  register: _keys_already_created
+  register: _tor_keys_created
 
 - name: Restore
-  when: not _keys_already_created.stat.exists
   vars:
     _user: "{{ tor_build_from_source | ternary('tor', 'debian-tor') }}"
   block:
-    - name: Verify that Tor keys backup is available
-      delegate_to: localhost
-      throttle: "{{ concurrent_local_jobs }}"
-      failed_when: not _tor_identity_restore_from.stat.exists
-      ansible.builtin.stat:
-        path: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/"
-      register: _tor_identity_restore_from
-
     - name: Create Tor identity dir/s
       ansible.builtin.file:
         state: directory
@@ -29,7 +33,6 @@
         - /var/lib/tor/keys/
 
     - name: Restore Tor identity
-      throttle: "{{ concurrent_local_jobs }}"
       ansible.builtin.copy:
         src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/keys/{{ item }}"
         dest: /var/lib/tor/keys/
@@ -52,7 +55,6 @@
             group: "{{ _user }}"
 
         - name: Restore PT identity
-          throttle: "{{ concurrent_local_jobs }}"
           ansible.builtin.copy:
             src: "{{ infodir }}/tor-identity/{{ inventory_hostname }}/pt_state/{{ item }}"
             dest: /var/lib/tor/pt_state/
