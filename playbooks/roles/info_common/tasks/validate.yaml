@@ -1,0 +1,12 @@
+---
+- name: Validate firewall_stats_net
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "firewall_stats_net > 0 and firewall_stats_net <= 32"
+
+- name: Validate firewall_stats_interval
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - "firewall_stats_interval >= 0 and firewall_stats_interval <= 86400"

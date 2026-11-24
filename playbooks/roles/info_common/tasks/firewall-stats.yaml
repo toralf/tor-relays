@@ -1,7 +1,6 @@
 ---
 - name: Create local firewall info directory
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.file:
     state: directory
     path: "{{ infodir }}/fw/{{ inventory_hostname }}/"
@@ -28,9 +27,9 @@
 
           parts = line.strip().split()
           if parts:
-              if int(parts[1]) >= 86400 - 3600:
+              if int(parts[1]) >= 86400 - {{ firewall_stats_interval }}:
                   ip_obj = ipaddress.ip_address(parts[0])
-                  p = {{ 32 - firewall_stats_net | int }} if ip_obj.version == 4 else {{ 64 - firewall_stats_net | int }}
+                  p = {{ 32 - firewall_stats_net }} if ip_obj.version == 4 else {{ 64 - firewall_stats_net }}
                   net = ipaddress.ip_network(f"{parts[0]}/{p}", strict=False).compressed
                   counter[net] += 1
 
@@ -46,7 +45,6 @@
 
 - name: Save network stats
   delegate_to: localhost
-  throttle: "{{ concurrent_local_jobs }}"
   ansible.builtin.copy:
     content: "{{ item.stdout }}\n"
     dest: "{{ infodir }}/fw/{{ inventory_hostname }}/ddos-{{ item.item }}-stats-{{ firewall_stats_net }}"

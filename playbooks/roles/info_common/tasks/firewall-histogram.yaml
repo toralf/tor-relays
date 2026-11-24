@@ -1,5 +1,5 @@
 ---
-- name: 24h Histogram of nftable set(s)
+- name: 24hrs histogram of nftable set(s)
   changed_when: false
   ansible.builtin.shell:
     cmd: |-

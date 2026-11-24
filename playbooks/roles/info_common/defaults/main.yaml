@@ -2,8 +2,9 @@
 # default: no filter
 filter_sensitive_data: "grep ."
 
-# resource name
+# nft set name
 firewall_hist_set: "ddos"
 
 # number of bits each ip address is truncated for aggregation/stats
 firewall_stats_net: 5
+firewall_stats_interval: 3600
