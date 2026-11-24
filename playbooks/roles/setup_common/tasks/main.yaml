@@ -7,7 +7,7 @@
       - hardware
       - network
   tags:
-    - never
+    - always
     - facts
 
 - name: Validate
