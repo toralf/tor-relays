@@ -33,7 +33,7 @@
   notify: Reload systemd
 
 # 2x per day between :40 and :50
-- name: Ensure needrestart cron job is {{ _state }}
+- name: Configure needrestart cron job
   ansible.builtin.cron:
     name: Reboot if needrestart advised it
     hour: "{{ timer_hour1 }},{{ timer_hour2 }}"

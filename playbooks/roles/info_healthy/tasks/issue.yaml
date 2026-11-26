@@ -21,7 +21,9 @@
         grep -v \
           -e 'cloud-init.service: Control process exited' \
           -e "Error: argument 'stop' not supported" \
+          -e 'ipv6: address not found' \
           -e 'kernel: Speculative Return Stack Overflow: ' \
+          -e 'the system booted with an old initrd without unlocked status reporting' \
           -e ': SCSI device s.* has no device ID' \
           -e ': System is rebooting.' |
         tail -n 30
