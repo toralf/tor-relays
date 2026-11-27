@@ -22,12 +22,8 @@ set -euf
 export LANG=C.utf8
 export PATH=/usr/sbin:/usr/bin:/sbin/:/bin:~/bin
 
-export RETRY_FILES_ENABLED="True"
-export RETRY_FILES_SAVE_PATH="/tmp"
-
-cd $(dirname $0)/..
-
 [[ $# -ge 2 ]]
+cd $(dirname $0)/..
 
 task=""
 uid=$(printf "%07i" $$)
@@ -66,14 +62,14 @@ elif [[ ${task} == "image" ]]; then
   branch=${branch:-'{lr,ml,sr}'}
   names=$(eval echo hi-${os}-${arch}-${branch}-x-x-x-x-${uid})
   time ./bin/create-server.sh ${names}
-  time ./site-test-image.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": false }'
+  time ./site-test-image.yaml --limit "h?-*-${uid}"
   ./bin/clean-snapshots.sh
 
 elif [[ ${task} == "kernel" ]]; then
   branch=${branch:-'{lr,ml,sr}'}
   names=$(printNames)
   time ./bin/create-server.sh ${names}
-  time ./site-test-kernel.yaml --limit "h?-*-${uid}" -e '{ "kernel_build": true }'
+  time ./site-test-kernel.yaml --limit "h?-*-${uid}"
 
 elif [[ ${task} == "setup" ]]; then
   branch=${branch:-'di'}

@@ -23,7 +23,7 @@
       /root/firewall-ipv4.sh start
       /root/firewall-ipv6.sh start
 
-- name: Clone repos for snapshot image
+- name: Clone/Update repos
   vars:
     _git_patches: []
     _git_repo_url: "{{ item.url }}"
@@ -43,6 +43,7 @@
     - name: tor
       url: https://gitlab.torproject.org/tpo/core/tor.git
 
+# do not install golang via apt at an image
 - name: Golang
   when: go_version | default('') | length > 0
   ansible.builtin.import_tasks: "{{ role_path }}/../../../playbooks/roles/lib/golang.yaml"

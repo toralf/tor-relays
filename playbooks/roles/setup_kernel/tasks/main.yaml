@@ -8,22 +8,25 @@
       mode: "0744"
       force: true
   block:
+    - name: Gather facts - kernel build
+      ansible.builtin.setup:
+        gather_subset:
+          - kernel
+      tags:
+        - always
+
     - name: Validate
       ansible.builtin.import_tasks: validate.yaml
       tags:
         - always
         - validate
 
-    - name: Tools
-      ansible.builtin.import_tasks: tools.yaml
-      tags:
-        - tools
-
     - name: Check for running kernel build process
       community.general.pids:
         name: build-kernel.sh
       register: _build_is_running
       tags:
+        - kernel
         - kernel-build
 
     - name: Build
@@ -41,6 +44,12 @@
             _repo_dir: /root/linux
           ansible.builtin.include_tasks: "{{ role_path }}/../../../playbooks/roles/lib/git.yaml"
 
+        - name: Tools
+          ansible.builtin.import_tasks: tools.yaml
+
+        - name: Config
+          ansible.builtin.import_tasks: kernel-config.yaml
+
         - name: Copy build script
           ansible.builtin.copy:
             src: kernel-build.sh
@@ -52,8 +61,8 @@
           vars:
             _commit_id: "{{ _git_head.before[:12] | default('n/a') }}"
             _latest_is_running: "{{ ansible_facts.kernel is search(_commit_id) }}"
-            kernel_build:
+            _kernel_build:
               "{{ _git_repo_changed or _kernel_configured.changed or _kernel_make_script.changed or
               not _latest_is_running }}"
-          when: not is_image or kernel_build
+          when: _kernel_build
           ansible.builtin.import_tasks: kernel-build.yaml

@@ -1,6 +1,5 @@
 ---
 is_image: false
-kernel_build: false
 
 kernel_git_build_wait: true
 kernel_git_build_wait_retries: 90 # count
